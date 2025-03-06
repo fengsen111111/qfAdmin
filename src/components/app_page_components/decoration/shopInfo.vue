@@ -185,6 +185,12 @@
 							</a-upload>
             </div>
           </div>
+          <div style="display: flex;margin: 20px 0px 20px 105px;align-items: center;">
+            <div style="display: flex;white-space:nowrap;">
+              <span>店铺公告</span>
+            </div>
+            <a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;"/>
+          </div>
           <!--  -->
           <div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息</div>
           <div style="display: flex;margin: 20px 0px 20px 100px">
