@@ -369,6 +369,13 @@
             </div>
             <a-switch style="margin-left: 10px;" v-model:checked="isChecked" />
           </div>
+          <div style="display: flex;margin: 20px 0px 20px 100px;align-items: center;">
+            <div style="display: flex;white-space:nowrap;">
+              <span style="color: red;">*</span>
+              <span>自动发货</span>
+            </div>
+            <a-switch style="margin-left: 10px;" v-model:checked="isChecked" />
+          </div>
           <!-- 提交 -->
           <div style="text-align: center;">
             <a-button type="primary">提交</a-button>
