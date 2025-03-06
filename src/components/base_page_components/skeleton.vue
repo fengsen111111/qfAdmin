@@ -58,6 +58,16 @@
             type: "shopInfo",
             url: "",
             value: "222222",
+          },
+          {
+            icon: "",
+            label: "我要退店",
+            order: "1",
+            page_id: "0",
+            pid: "706154120674803772",
+            type: "shopOut",
+            url: "",
+            value: "333333",
           }
         ]
       })
