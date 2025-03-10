@@ -31,7 +31,7 @@
 
       res.menu.push({
         icon: "",
-        label: "新增页面",
+        label: "新开发页面",
         order: "1",
         page_id: "0",
         pid: "706154120674803772",
