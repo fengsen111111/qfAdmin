@@ -3,7 +3,7 @@
   import { FormComponents } from "../../form_components/form";
   import { TableComponents } from "../../table_components/table";
   import { Row, Col } from 'ant-design-vue';
-  import { InfoCircleOutlined, CheckCircleOutlined,PlusOutlined } from "@ant-design/icons-vue";
+  import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
   import Map from './map.vue'
   import AMapLoader from '@amap/amap-jsapi-loader';
   import { bd09ToGcj02 } from './zbzh'
@@ -44,8 +44,8 @@
       if (window.navigator.geolocation) {
         window.navigator.geolocation.getCurrentPosition(
           function (position) {
-            console.log('position',position);
-            
+            console.log('position', position);
+
             const hxzb = bd09ToGcj02(position.coords.longitude.toFixed(6), position.coords.latitude.toFixed(6))
             component_state.lng = hxzb.gcj_lon
             component_state.lat = hxzb.gcj_lat
@@ -151,13 +151,15 @@
   }
 
   // 上传
-	function upload(options) {
-		global.file.uploadFile(global, options.file, 'image', 'shopImg', true, complete)
-	}
+  function upload(options) {
+    global.file.uploadFile(global, options.file, 'image', 'shopImg', true, complete)
+  }
   // 相册
-	function complete(response) {
-		console.log('上传回调',response);
-	}
+  function complete(response) {
+    console.log('上传回调', response);
+  }
+
+  const value1 = ref()
 </script>
 
 <template>
@@ -189,17 +191,18 @@
             </div>
             <div style="margin-left: 10px;display: flex;">
               <a-upload :customRequest="upload" :file-list="[]" list-type="text">
-                <div style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+                <div
+                  style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
                   <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                 </div>
-							</a-upload>
+              </a-upload>
             </div>
           </div>
           <div style="display: flex;margin: 20px 0px 20px 105px;align-items: center;">
             <div style="display: flex;white-space:nowrap;">
               <span>店铺公告</span>
             </div>
-            <a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;"/>
+            <a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" />
           </div>
           <!--  -->
           <div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息</div>
@@ -236,13 +239,15 @@
               </div>
               <a-button type="primary" @click="isMap = true" style="margin-left: 10px;">打开</a-button>
               <a-modal v-model:visible="isMap" :centered="true" :closable="false" :footer="null" :keyboard="false"
-                :maskClosable="false" width="650px">搜索<input id="keyword" style="width: 200px;margin-left: 10px;" /> <span
-                  style="color: red;font-size: 13px;margin-left: 10px;">录入信息越多，搜索结果越准确</span>
+                :maskClosable="false" width="650px">搜索<input id="keyword" style="width: 200px;margin-left: 10px;" />
+                <span style="color: red;font-size: 13px;margin-left: 10px;">录入信息越多，搜索结果越准确</span>
                 <div id="container_map" class="map"></div>
                 <div slot="footer" class="dialog-footer">
                   <span style="margin-right: 30px">
-                    经度<a-input v-model:value="component_state.lng" allow-clear style="width: 150px;margin-top: 10px;margin-left: 10px;" />
-                    纬度<a-input v-model:value="component_state.lat" allow-clear style="width: 150px;margin-top: 10px;margin-left: 10px;" />
+                    经度<a-input v-model:value="component_state.lng" allow-clear
+                      style="width: 150px;margin-top: 10px;margin-left: 10px;" />
+                    纬度<a-input v-model:value="component_state.lat" allow-clear
+                      style="width: 150px;margin-top: 10px;margin-left: 10px;" />
                   </span>
                   <a-button style="right: 10px" @click="isMap = false">关闭</a-button>
                 </div>
@@ -259,12 +264,14 @@
               <div style="display: flex;">
                 <div style="margin-left: 10px;display: flex;">
                   <a-upload :customRequest="upload" :file-list="[]" list-type="text">
-                    <div style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+                    <div
+                      style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
                       <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                     </div>
                   </a-upload>
                   <a-upload :customRequest="upload" :file-list="[]" list-type="text">
-                    <div style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+                    <div
+                      style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
                       <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                     </div>
                   </a-upload>
@@ -276,7 +283,8 @@
                   </div>
                   <div style="margin-left: 10px;display: flex;">
                     <a-upload :customRequest="upload" :file-list="[]" list-type="text">
-                      <div style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+                      <div
+                        style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
                         <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                       </div>
                     </a-upload>
@@ -296,8 +304,7 @@
                           <span>姓名</span>
                         </div>
                       </div>
-                      <a-input v-model:value="userName" style="width: 200px;margin-left: 20px;"
-                        placeholder="Basic usage" />
+                      <a-input v-model:value="userName" style="width: 260px;margin-left: 20px;" placeholder="请输入姓名" />
                     </div>
                     <div style="display: flex;align-items: center;margin-top: 20px;">
                       <div style="display: flex;justify-content: space-between;width: 7vw;">
@@ -307,8 +314,7 @@
                           <span>身份证号</span>
                         </div>
                       </div>
-                      <a-input v-model:value="userCode" style="width: 200px;margin-left: 20px;"
-                        placeholder="Basic usage" />
+                      <a-input v-model:value="userCode" style="width: 260px;margin-left: 20px;" placeholder="请输入身份证号" />
                     </div>
                     <div style="display: flex;align-items: center;margin-top: 20px;">
                       <div style="display: flex;justify-content: space-between;width: 7vw;">
@@ -318,8 +324,9 @@
                           <span>身份证有效期</span>
                         </div>
                       </div>
-                      <a-input v-model:value="userCode" style="width: 200px;margin-left: 20px;"
-                        placeholder="Basic usage" />
+                      <div>
+                        <a-range-picker v-model:value="value1" style="width: 260px;margin-left: 20px;" />
+                      </div>
                       <div style="display: flex;align-items: center;margin-left: 10px;">
                         <a-checkbox v-model:checked="isCq">长期</a-checkbox>
                         <a-popover title="规范" placement="rightTop">
@@ -450,7 +457,7 @@
 </template>
 
 <style lang="less" scoped>
- .map {
+  .map {
     z-index: 999;
     height: 300px !important;
     width: 600px !important;
@@ -459,6 +466,7 @@
     border: 1px solid slategrey;
     margin-top: 10px;
   }
+
   .dialog-footer {
     line-height: 32px;
     margin-top: 20px;
