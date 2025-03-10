@@ -28,7 +28,8 @@ import {
     TreeSelect,
     Upload,
     Tabs,
-    Popover
+    Popover,
+    Progress
 } from 'ant-design-vue'
 
 
@@ -36,7 +37,7 @@ const plugins = [
     Layout, Menu, Tag, Dropdown, ConfigProvider, TimePicker, DatePicker, Drawer,
     Input, InputNumber, Radio, Checkbox, Row, Col, Switch, Select, Tree, Cascader,
     Upload, Button, Form, Table, Pagination, Image, Rate, Spin, TreeSelect, Modal,
-    Tabs,Popover
+    Tabs,Popover,Progress
 ];
 
 export const setupAntd = (app: any, options = {}) => {

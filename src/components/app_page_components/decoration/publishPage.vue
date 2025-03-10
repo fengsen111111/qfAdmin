@@ -265,7 +265,10 @@
                     <div style="display: flex;">
                       <div style="display: flex;">
                         <div>填写率</div>
-                        <div style="color: #ff7300;margin-left: 5px;">12%</div>
+                        <div style="margin-left: 5px;">
+                          <a-progress type="circle" :percent="50" :width="16" :strokeWidth="8" :format="() => null" trailColor="#999999" strokeColor="#ff7300" />
+                        </div>
+                        <div style="color: #ff7300;margin-left: 5px;">50%</div>
                       </div>
                       <div style="margin-left: 20px;color: #999999;width: 60%;">请准确填写属性，有利于商品在搜索和推荐中露出，错误填写可能面临商品下架或流量流失
                       </div>
@@ -281,7 +284,13 @@
                     <div style="width: 45%;">
                       <div>
                         <div style="display: flex;align-items: center;margin: 10px 0px;">
-                          <div style="width: 30%;text-align: right;">分类</div>
+                          <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
+                            <div></div>
+                            <div style="display: flex;">
+                              <div style="color: red;">*</div>
+                              <div>分类</div>
+                            </div>
+                          </div>
                           <!-- <a-input type="text" style="width: 60%;margin-left: 20px;" placeholder="请选择分类" /> -->
                           <a-tree-select v-model:value="value" show-search style="width: 60%;margin-left: 20px;"
                             placeholder="请选择商品分类" allow-clear tree-default-expand-all :tree-data="treeData"
@@ -295,7 +304,13 @@
                       </div>
                       <div>
                         <div style="display: flex;align-items: center;margin: 10px 0px;">
-                          <div style="width: 30%;text-align: right;">品牌</div>
+                          <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
+                            <div></div>
+                            <div style="display: flex;">
+                              <div style="color: red;">*</div>
+                              <div>品牌</div>
+                            </div>
+                          </div>
                           <a-select ref="select" v-model:value="value1" style="width: 60%;margin-left: 20px;" placeholder="请选择品牌名称">
                             <a-select-option value="1">品牌1</a-select-option>
                             <a-select-option value="2">品牌2</a-select-option>
