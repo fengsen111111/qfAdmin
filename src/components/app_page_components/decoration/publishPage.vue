@@ -107,7 +107,7 @@
   function addFw() {
     console.log('name', FwName.value);
     if (!FwName.value) {
-      message.error('请填写属性')
+      message.error('请填写服务')
       return false
     }
     FwObj.value.push({
@@ -288,10 +288,10 @@
                             tree-node-filter-prop="label">
                           </a-tree-select>
                         </div>
-                        <div style="display: flex;margin: 10px 0px 10px 104px;">
+                        <!-- <div style="display: flex;margin: 10px 0px 10px 104px;">
                           <div style="color: #999999;">未找到合适分类？</div>
                           <div style="color: #407cff;">点击添加</div>
-                        </div>
+                        </div> -->
                       </div>
                       <div>
                         <div style="display: flex;align-items: center;margin: 10px 0px;">
@@ -301,10 +301,10 @@
                             <a-select-option value="2">品牌2</a-select-option>
                           </a-select>
                         </div>
-                        <div style="display: flex;margin: 10px 0px 10px 104px;">
+                        <!-- <div style="display: flex;margin: 10px 0px 10px 104px;">
                           <div style="color: #999999;">未找到合适品牌？</div>
                           <div style="color: #407cff;">点击添加</div>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                     <div style="width: 45%;">
@@ -432,10 +432,18 @@
                           <a-input type="text" placeholder="输入拼单价" />
                         </td>
                         <td>
-                          <a-input type="text" placeholder="请选择活动" />
+                          <!-- <a-input type="text" placeholder="请选择活动" /> -->
+                          <a-select ref="select" v-model:value="value1" style="width: 100%;" placeholder="请选择品牌名称">
+                            <a-select-option value="1">品牌1</a-select-option>
+                            <a-select-option value="2">品牌2</a-select-option>
+                          </a-select>
                         </td>
                         <td>
-                          <a-input type="text" placeholder="请选择活动" />
+                          <!-- <a-input type="text" placeholder="请选择活动" /> -->
+                          <a-select ref="select" v-model:value="value1" style="width: 100%;" placeholder="请选择品牌名称">
+                            <a-select-option value="1">品牌1</a-select-option>
+                            <a-select-option value="2">品牌2</a-select-option>
+                          </a-select>
                         </td>
                         <td>
                           <a-switch checked-children="是" un-checked-children="否" />
