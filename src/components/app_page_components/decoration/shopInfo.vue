@@ -154,6 +154,10 @@
 	function upload(options) {
 		global.file.uploadFile(global, options.file, 'image', 'shopImg', true, complete)
 	}
+  // 相册
+	function complete(response) {
+		console.log('上传回调',response);
+	}
 </script>
 
 <template>
@@ -170,7 +174,13 @@
               <span>店铺名称</span>
             </div>
             <a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" show-count :maxlength="30" />
-            <div style="color: #1890FF;margin-left: 10px;white-space:nowrap;">查看规范</div>
+            <a-popover title="规范" placement="rightTop">
+              <template #content>
+                <div>不得与已经开通的店铺名称重复</div>
+                <div>不得包含容易造成消费者混淆的信息:包含知名人士、地名的品牌</div>
+              </template>
+              <div style="color: #1890FF;margin-left: 10px;white-space:nowrap;">查看规范</div>
+            </a-popover>
           </div>
           <div style="display: flex;margin: 20px 0px 20px 100px;">
             <div style="display: flex;white-space:nowrap;">
@@ -204,7 +214,13 @@
                 <a-radio value="2">本地商家</a-radio>
               </a-radio-group>
             </div>
-            <span style="color: #1890FF;margin-left: 10px;">查看规范</span>
+            <a-popover title="规范" placement="rightTop">
+              <template #content>
+                <div>商家类型为本地商家需要录入详细地址</div>
+                <div>商家类型为本地商家需要录入具体定位</div>
+              </template>
+              <span style="color: #1890FF;margin-left: 10px;">查看规范</span>
+            </a-popover>
           </div>
           <!-- 本地商家 -->
           <div v-if="type==2">
@@ -306,7 +322,14 @@
                         placeholder="Basic usage" />
                       <div style="display: flex;align-items: center;margin-left: 10px;">
                         <a-checkbox v-model:checked="isCq">长期</a-checkbox>
-                        <div style="color: #1890FF;margin-left: 10px;white-space:nowrap;">查看规范</div>
+                        <a-popover title="规范" placement="rightTop">
+                          <template #content>
+                            <div>请按照身份证准确填写「姓名、身份证号」，核实确认无错别字。</div>
+                            <div>请按照身份证准确填写「身份证有效期」，不可延长有效期。</div>
+                            <div>有效期非“长期”的身份证不可勾选"长期”。</div>
+                          </template>
+                          <div style="color: #1890FF;margin-left: 10px;white-space:nowrap;">查看规范</div>
+                        </a-popover>
                       </div>
                     </div>
                   </div>
@@ -391,7 +414,7 @@
           <div style="padding: 20px;">
             <div style="font-size: 16px;">不符合以下规范将会被审核驳回</div>
             <div style="color: #999999;">
-              <div>1.请开店人本人做人脸识别，确保身份证照片/信息与人脸识别为同一人。</div>
+              <div>1.请开店人仔细检查身份资料，确保身份证照片/信息准确无误。</div>
               <div>2.请上传开店人身份证的正反面实拍图，字体清晰无反光，边角完整，无任何无关水印及故意遮盖。</div>
               <div>3.请按照身份证准确填写「姓名、身份证号」，核实确认无槽别字。</div>
               <div>4.请按照身份证准确填写「身份证有效期」，不可延长有效期，有效期非“长期”的身份证不可勾选"长期”。</div>
