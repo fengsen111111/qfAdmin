@@ -55,14 +55,6 @@
         //触发点击
         input.click();
       },
-      // **禁止粘贴**
-      paste_preprocess: function (plugin, args) {
-        args.content = ""; // 清空粘贴内容
-        alert("粘贴被禁用！");
-      },
-      paste_postprocess: function (plugin, args) {
-        args.node.innerHTML = ""; // 确保不会插入任何内容
-      },
     },
   })
 

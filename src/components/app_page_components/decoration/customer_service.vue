@@ -54,7 +54,7 @@
         };
         //触发点击
         input.click();
-      }
+      },
     },
   })
 
@@ -1292,7 +1292,7 @@
     z-index: 9999;
   }
 
-  .tox-statusbar{
+  .tox-statusbar {
     display: none !important;
   }
 </style>
