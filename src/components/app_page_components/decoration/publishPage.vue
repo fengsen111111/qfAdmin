@@ -57,7 +57,6 @@
     },
   })
 
-
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
 

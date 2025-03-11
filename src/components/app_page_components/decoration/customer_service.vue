@@ -6,6 +6,58 @@
 
   import { emojiData } from "./emojiData.js";
 
+  import Editor from '@tinymce/tinymce-vue'
+  import 'tinymce/tinymce'
+  import 'tinymce/themes/silver/theme'
+  import 'tinymce/icons/default'
+  import 'tinymce/models/dom'
+
+  import 'tinymce/plugins/image' // 插入上传图片插件
+  import 'tinymce/plugins/media' // 插入视频插件
+  import 'tinymce/plugins/table' // 插入表格插件
+  import 'tinymce/plugins/lists' // 列表插件
+  import 'tinymce/plugins/link' //  链接插件
+  import 'tinymce/plugins/wordcount' // 字数统计插件
+
+  const fwbText = ref('')//富文本内容
+  const component_state = reactive({
+    isCollapse: false,
+    myValue: fwbText.value,
+    init: {
+      promotion: false,
+      language_url: `/tinymce/langs/zh_CN.js`,
+      language: 'zh_CN',
+      selector: "#init",
+      skin_url: `/tinymce/skins/ui/oxide`,
+      height: '13vh',
+      content_css: `/tinymce/skins/content/default/content.css`,
+      plugins: 'lists image media table wordcount link',
+      toolbar: false,
+      branding: false,
+      menubar: false,
+      forced_root_block: "",  // 禁止默认 <p>，防止 TinyMCE 自动包装内容
+      paste_data_images: false, // 允许粘贴图像
+      images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+        global.file.uploadFile(global, blobInfo.blob(), 'rich_text_file', 'rich_text_file', true, resolve)
+      }),
+      file_picker_types: 'media',
+      video_template_callback: function (data) {
+        return '<span class="mce-preview-object mce-object-video" contenteditable="false" data-mce-object="video" data-mce-p-allowfullscreen="allowfullscreen" data-mce-p-frameborder="no" data-mce-p-scrolling="no" data-mce-p-src=' + data.source + ' data-mce-p-width=' + data.width + ' data-mce-p-height=' + data.height + ' data-mce-p-controls="controls" data-mce-html="%20"> <video width=' + data.width + ' height=' + data.height + ' controls="controls"> <source src=' + data.source + ' type=' + data.sourcemime + '></source> </video> </span>';
+      },
+      file_picker_callback: (callback, value, meta) => {
+        let input = document.createElement('input');//创建一个隐藏的input
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'video/*');
+        input.onchange = function () {
+          let fileObj = this.files[0];//选取第一个文件
+          global.file.uploadFile(global, fileObj, 'rich_text_file', 'rich_text_file', true, callback);
+        };
+        //触发点击
+        input.click();
+      }
+    },
+  })
+
 
   let props = defineProps(["pageData"])
   const pageData = props.pageData
@@ -228,6 +280,7 @@
         customer_service_state.room = item//保存点击的房间
         customer_service_state.customer_msg = '最新一条消息'
         item.checked = true//设置状态 当前打开
+        emojiVisable.value = false//关闭表情
         _getMessage(item.id) //获取聊天内容
         // 切换房间后自动聚焦  自动滚动到底部
         setTimeout(() => {
@@ -300,6 +353,19 @@
   function addEmoji(emoji) {
     console.log('emoji', emoji);
     customer_service_state.text_content += emoji.alt;//表情追加到后面
+    const emojiMap = {};
+    emojiData.forEach(group => {
+      group.forEach(emoji => {
+        emojiMap[emoji.alt] = emoji.url;
+      });
+    });
+    customer_service_state.text_content = customer_service_state.text_content.replace(/<p>/g, '').replace(/<\/p>/g, '');
+    customer_service_state.text_content = customer_service_state.text_content.replace(/\[([^\]]+)\]/g, (match, alt) => {
+      const url = emojiMap[`[${alt}]`];
+      return url ? `<image src="${url}" style="width:18px;height:18px" />` : match;
+    });
+    // console.log('数据',customer_service_state.text_content);
+
   }
   const emojiVisable = ref(false)//表情开关
   // 打开表情选择
@@ -435,7 +501,7 @@
     });
     customer_service_state.text_content = customer_service_state.text_content.replace(/\[([^\]]+)\]/g, (match, alt) => {
       const url = emojiMap[`[${alt}]`];
-      return url ? `<image src="${url}" class="w30 h30 radius10 relative top8" />` : match;
+      return url ? `<image src="${url}" style="width:18px;height:18px" />` : match;
     });
 
     send({
@@ -920,13 +986,15 @@
         <div class="send">
           <!-- 消息内容块（包含表情包） -->
           <div style="float: left;width: 70%;height: 100%;">
-            <textarea @keydown="handleKeydown" ref="textareaRef" v-if="emojiVisable"
+            <!-- <textarea @keydown="handleKeydown" ref="textareaRef" v-if="emojiVisable"
               v-model="customer_service_state.text_content"
-              style="padding: 6px;width: 100%;border-radius: 5px;resize:none;border: none;outline: none "></textarea>
-            <textarea @keydown="handleKeydown" ref="textareaRef" v-else v-model="customer_service_state.text_content"
-              style="padding: 6px;width: 100%;height:100%;border-radius: 5px;resize:none;border: none;outline: none "></textarea>
+              style="padding: 6px;width: 100%;border-radius: 5px;resize:none;border: none;outline: none;background-color: #f5f5f5;"></textarea> -->
+            <!-- <textarea @keydown="handleKeydown" ref="textareaRef" v-model="customer_service_state.text_content"
+              style="padding: 6px;width: 100%;height:100%;border-radius: 5px;resize:none;border: none;outline: none;background-color: #f5f5f5;"></textarea> -->
+            <editor id="init" v-model="customer_service_state.text_content" :init="component_state.init">
+            </editor>
             <!-- 表情选择 -->
-            <div v-if="emojiVisable" class="">
+            <div v-if="emojiVisable" class="" style="position: relative;top: -238px;">
               <div v-for="(page, pageIndex) in emojiData" :key="pageIndex">
                 <div v-if="emojiIndex==pageIndex"
                   style="display: grid;grid-template-columns: repeat(7, minmax(0, 1fr));">
@@ -1221,5 +1289,9 @@
     top: 13vh;
     right: 20vw;
     z-index: 9999;
+  }
+
+  .tox-statusbar{
+    display: none !important;
   }
 </style>
