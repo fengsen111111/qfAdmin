@@ -36,6 +36,7 @@
       branding: false,
       menubar: true,
       paste_data_images: false, // 允许粘贴图像
+      paste_as_text: true,  // 纯文本粘贴，避免额外格式
       images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
         global.file.uploadFile(global, blobInfo.blob(), 'rich_text_file', 'rich_text_file', true, resolve)
       }),
@@ -53,7 +54,15 @@
         };
         //触发点击
         input.click();
-      }
+      },
+      // **禁止粘贴**
+      paste_preprocess: function (plugin, args) {
+        args.content = ""; // 清空粘贴内容
+        alert("粘贴被禁用！");
+      },
+      paste_postprocess: function (plugin, args) {
+        args.node.innerHTML = ""; // 确保不会插入任何内容
+      },
     },
   })
 
@@ -265,7 +274,8 @@
                       <div style="display: flex;">
                         <div>填写率</div>
                         <div style="margin-left: 5px;">
-                          <a-progress type="circle" :percent="50" :width="16" :strokeWidth="8" :format="() => null" trailColor="#999999" strokeColor="#ff7300" />
+                          <a-progress type="circle" :percent="50" :width="16" :strokeWidth="8" :format="() => null"
+                            trailColor="#999999" strokeColor="#ff7300" />
                         </div>
                         <div style="color: #ff7300;margin-left: 5px;">50%</div>
                       </div>
@@ -310,7 +320,8 @@
                               <div>品牌</div>
                             </div>
                           </div>
-                          <a-select ref="select" v-model:value="value1" style="width: 60%;margin-left: 20px;" placeholder="请选择品牌名称">
+                          <a-select ref="select" v-model:value="value1" style="width: 60%;margin-left: 20px;"
+                            placeholder="请选择品牌名称">
                             <a-select-option value="1">品牌1</a-select-option>
                             <a-select-option value="2">品牌2</a-select-option>
                           </a-select>

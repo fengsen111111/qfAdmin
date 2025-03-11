@@ -1176,6 +1176,7 @@
             height: 50px;
             margin-left: 10px;
             width: 55%;
+            overflow: hidden;
 
             .name {
               line-height: 30px;
