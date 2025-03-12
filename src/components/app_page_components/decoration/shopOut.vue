@@ -108,7 +108,7 @@
                       <div>退店后你还会在哪里经营</div>
                     </div>
                   </div>
-                  <div style="width: 760px;margin-left: 10px;float: left;">
+                  <div style="width: 760px;margin-left: 10px;float: left;display: flex;">
                     <a-radio-group v-model:value="value">
                       <a-radio :value="1">其它店铺</a-radio>
                       <a-radio :value="2">抖音、快手</a-radio>
@@ -340,7 +340,8 @@
               <!-- 弹窗 -->
               <a-modal v-model:visible="tz_visible" title="是否确认开启退店公示？">
                 <div style="color: #999999;">
-                  <div>&nbsp;&nbsp;据2019年1月1日开始施行的《中华人民共和国电子商务法》第二章第十六条要求:电子商务经营者自行终止从事电子商务的，应当提前三十日在首页显著位置持续公示有关信息。</div>
+                  <div>&nbsp;&nbsp;据2019年1月1日开始施行的《中华人民共和国电子商务法》第二章第十六条要求:电子商务经营者自行终止从事电子商务的，应当提前三十日在首页显著位置持续公示有关信息。
+                  </div>
                   <div>&nbsp;&nbsp;退店需提前30日进行公示，开启退店公示后，店铺首页显著位置会公示“本店铺将关闭”标志，持续30天。</div>
                 </div>
                 <template #footer>
@@ -400,13 +401,27 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   }
 
+  :deep(.ant-checkbox-group) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* :deep(.ant-radio-group) {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  } */
+  :deep(.ant-checkbox-wrapper + .ant-checkbox-wrapper) {
+    margin-left: 0px;
+  }
+
   /* :deep(.ant-radio-wrapper) {
     border: 1px solid #d9d9d9 !important;
     margin-bottom: 10px;
     padding: 0px 5px;
-  }
+    white-space:nowrap;
+    border-radius: 4px;
+  } */
 
-  :deep(.ant-checkbox+span) {
+  /* :deep(.ant-checkbox+span) {
     padding-right: 0px;
     padding-left: 8px;
   }
