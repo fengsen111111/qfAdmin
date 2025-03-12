@@ -13,7 +13,7 @@
 
   const global = inject("global").value;
 
-  const current = ref(1)//进度
+  const current = ref(0)//进度
 
   const checkedList = ref(['生意不佳', '没时间经营'])
 
@@ -355,7 +355,7 @@
             </div>
             <div style="display: flex;margin-top: 20px;">
               <div style="margin: 0 auto;">
-                <a-button>撤销退店申请</a-button>
+                <a-button @click="()=>{current=0}">撤销退店申请</a-button>
               </div>
             </div>
           </div>
