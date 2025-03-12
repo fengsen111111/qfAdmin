@@ -9,8 +9,6 @@
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
 
-  let emit = defineEmits(["openChildPage", "closeChildPage"]);
-
   const global = inject("global").value;
 
   const current = ref(0)//进度
@@ -48,6 +46,11 @@
 
   const tz_visible = ref(false)//退店公告弹窗
 
+  let emit = defineEmits(["goLookTD"])
+  // 查看退店
+  function lookTD(){
+    emit("goLookTD");
+  }
 </script>
 
 <template>
@@ -56,7 +59,7 @@
     <div style="padding: 20px;">
       <div style="display: flex;justify-content: space-between;">
         <div style="font-size: 18px;">退店</div>
-        <div style="color: #1890FF;">查看退店</div>
+        <div style="color: #1890FF;" @click="lookTD">查看退店</div>
       </div>
       <div style="text-align: center;padding: 30px 50px;">
         <a-steps :current="current" size="small">

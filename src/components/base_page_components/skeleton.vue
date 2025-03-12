@@ -149,6 +149,7 @@
 
   //打开页面
   function openPage(pageData, openTagStatus = false) {
+    // console.log('pageData', pageData);
     let new_page = true;
     skeleton_state.openedPages.forEach((item, index) => {
       if (
@@ -332,6 +333,26 @@
   function closeVideo() {
     global.videoState.options.src = ""
   }
+
+  // 前往查看退店路由
+  function goLookTD() {
+    // console.log('前往查看退店路由',skeleton_state.menuCheckedValues);
+    openPage({
+      checked: true,
+      checked_status: true,
+      icon: "",
+      label: "发布商品(开发中)",
+      open_status: true,
+      order: "1",
+      page_id: "0",
+      page_key: "e06ac6e73a5db3b8f010acb46114b0fd",
+      pid: "706154120674803772",
+      type: "publishPage",
+      url: "",
+      value: "111111",
+    }, false)
+    skeleton_state.menuCheckedValues=['111111']
+  }
 </script>
 
 <template>
@@ -463,7 +484,7 @@
         <div v-for="page in skeleton_state.openedPages" :key="page.page_key" v-show="page.open_status" class="content">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
-              @openChildPage="openChildPage" />
+              @openChildPage="openChildPage" @goLookTD="goLookTD" />
           </keep-alive>
         </div>
       </a-layout-content>
