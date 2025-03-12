@@ -29,12 +29,14 @@
       language: 'zh_CN',
       selector: "#init",
       skin_url: `/tinymce/skins/ui/oxide`,
-      height: '13vh',
+      height: '12.5vh',
       content_css: `/tinymce/skins/content/default/content.css`,
       plugins: 'lists image media table wordcount link',
       toolbar: false,
       branding: false,
       menubar: false,
+      statusbar: false,
+      // content_style: "body { background-color: #f5f5f5; }", // 修改背景颜色
       forced_root_block: "",  // 禁止默认 <p>，防止 TinyMCE 自动包装内容
       paste_data_images: false, // 允许粘贴图像
       images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
@@ -1290,9 +1292,5 @@
     top: 13vh;
     right: 20vw;
     z-index: 9999;
-  }
-
-  .tox-statusbar {
-    display: none !important;
   }
 </style>
