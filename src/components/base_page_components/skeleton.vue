@@ -3,6 +3,7 @@
   import md5 from "js-md5";
   import { createVNode, inject, onBeforeMount, onMounted, reactive } from "vue";
   import { allPageComponents } from "../../config";
+  import { message } from 'ant-design-vue';
 
   const global = inject("global").value;
 
@@ -149,6 +150,12 @@
 
   //打开页面
   function openPage(pageData, openTagStatus = false) {
+    // if () {//当前是退店页面
+    //   message.error('正在退店，禁止跳转')
+    //   return false
+    // } else {
+    //   // 当前不是退店就跳转到退店
+    // }
     // console.log('pageData', pageData);
     let new_page = true;
     skeleton_state.openedPages.forEach((item, index) => {
@@ -351,7 +358,7 @@
       url: "",
       value: "111111",
     }, false)
-    skeleton_state.menuCheckedValues=['111111']
+    skeleton_state.menuCheckedValues = ['111111']
   }
 </script>
 
