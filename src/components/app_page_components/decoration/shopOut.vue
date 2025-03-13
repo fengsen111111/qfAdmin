@@ -131,9 +131,9 @@
                     </div>
                   </div>
                   <div style="margin-left: 10px;width: 760px;float: left;display: flex;align-items: center;">
-                    <!-- :disabled="phoneDis"  -->
-                    <a-input v-model:value="value" style="width: 296px;" placeholder="请输入主账号绑定手机号" />
-                    <!-- <div @click="()=>{phoneDis=!phoneDis}" style="color: #1890FF;margin-left: 5px;">修改手机号</div> -->
+                    <!--  -->
+                    <a-input v-model:value="value" :disabled="phoneDis" style="width: 296px;" placeholder="请输入主账号绑定手机号" />
+                    <div @click="()=>{phoneDis=!phoneDis}" style="color: #1890FF;margin-left: 5px;">修改手机号</div>
                   </div>
                 </div>
                 <div style="display: flex;margin-top: 20px;align-items: center;">
