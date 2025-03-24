@@ -460,7 +460,7 @@
                   <div style="color: #999999;">图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                   </div>
                   <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));">
-                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;"
+                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
                       v-for="(item,index) in post_params.images" :key="index">
                       <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
                       <a-image :width="90" :src="item" :preview="{ src: item }" />
