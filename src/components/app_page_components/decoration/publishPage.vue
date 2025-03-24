@@ -70,6 +70,14 @@
       }
     ],//商品规格  
   })
+  // 删除服务
+  function delFw(index){
+    post_params.services.splice(index,1)
+  }
+  // 删除属性
+  function delSx(index){
+    post_params.attributes.splice(index,1)
+  }
   // 删除轮播图
   function delImgLb(index) {
     post_params.images.splice(index, 1)
@@ -379,7 +387,8 @@
                   <div style="color: #999999;">图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                   </div>
                   <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(10, minmax(0, 1fr));">
-                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;" v-for="(item,index) in post_params.images" :key="index">
+                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;"
+                      v-for="(item,index) in post_params.images" :key="index">
                       <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
                       <a-image :width="90" :src="item" :preview="{ src: item }" />
                       <div @click="delImgLb(index)" class="imgClose" style="margin-left: 10px;">
@@ -409,7 +418,8 @@
                     图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.cover_image?1:0}}/1张。
                   </div>
                   <div style="margin-top: 5px;display: flex;">
-                    <div v-if="post_params.cover_image" style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+                    <div v-if="post_params.cover_image"
+                      style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
                       <a-image :width="90" :src="post_params.cover_image" :preview="{ src: post_params.cover_image }" />
                       <div @click="delImgFm()" class="imgClose" style="margin-left: 10px;">
                         <CloseCircleOutlined />
@@ -487,10 +497,6 @@
                             tree-default-expand-all :tree-data="treeData" tree-node-filter-prop="label">
                           </a-tree-select>
                         </div>
-                        <!-- <div style="display: flex;margin: 10px 0px 10px 104px;">
-                          <div style="color: #999999;">未找到合适分类？</div>
-                          <div style="color: #407cff;">点击添加</div>
-                        </div> -->
                       </div>
                       <div>
                         <div style="display: flex;align-items: center;margin: 10px 0px;">
@@ -507,19 +513,16 @@
                               :key="item.value">{{item.label}}</a-select-option>
                           </a-select>
                         </div>
-                        <!-- <div style="display: flex;margin: 10px 0px 10px 104px;">
-                          <div style="color: #999999;">未找到合适品牌？</div>
-                          <div style="color: #407cff;">点击添加</div>
-                        </div> -->
                       </div>
                     </div>
                     <div style="width: 45%;">
                       <div>
                         <template v-for="(item,index) in post_params.attributes" :key="index">
                           <div style="display: flex;align-items: center;margin: 10px 0px;">
-                            <div style="width: 30%;text-align: right;">{{item.name}}</div>
-                            <a-input type="text" v-model:value="item.value" style="width: 60%;margin-left: 20px;"
+                            <div style="width: 30%;text-align: right;">{{item.key}}</div>
+                            <a-input type="text" v-model:value="item.value" style="width: 55%;margin-left: 20px;"
                               placeholder="请输入具体属性值" />
+                            <CloseCircleOutlined @click="delSx(index)" style="margin-left: 10px;" />
                           </div>
                         </template>
                       </div>
@@ -709,9 +712,10 @@
                   <div>
                     <template v-for="(item,index) in post_params.services" :key="index">
                       <div style="display: flex;align-items: center;margin: 10px 0px;">
-                        <div style="width: 13%;text-align: right;">{{item.name}}</div>
-                        <a-input type="text" v-model:value="item.value" style="width: 80%;margin-left: 20px;"
+                        <div style="width: 13%;text-align: right;">{{item.key}}</div>
+                        <a-input type="text" v-model:value="item.value" style="width: 75%;margin-left: 20px;"
                           placeholder='请输入服务描述信息' />
+                        <CloseCircleOutlined @click="delFw(index)" style="margin-left: 10px;" />
                       </div>
                     </template>
                   </div>
