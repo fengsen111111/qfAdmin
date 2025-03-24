@@ -20,6 +20,7 @@
 
   const post_params = reactive({
     id: '',//商品ID 修改时必传  
+    name:'',//商品名
     store_id: '',//门店ID    
     cover_image: 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',//封面图   
     images: [
@@ -71,12 +72,12 @@
     ],//商品规格  
   })
   // 删除服务
-  function delFw(index){
-    post_params.services.splice(index,1)
+  function delFw(index) {
+    post_params.services.splice(index, 1)
   }
   // 删除属性
-  function delSx(index){
-    post_params.attributes.splice(index,1)
+  function delSx(index) {
+    post_params.attributes.splice(index, 1)
   }
   // 删除轮播图
   function delImgLb(index) {
@@ -240,17 +241,66 @@
   }
   // 商品分类
   const value = ref();
-  const treeData = ref([{
-    label: '橱窗',
-    value: '1',
-    children: [{
-      label: '沙发',
-      value: '11',
-    }, {
-      label: '茶几',
-      value: '12',
-    }],
-  }]);
+  const treeData = ref([]);
+  // 商品分类列表
+  function findTableRecords() {
+    global.axios
+      .post('decoration/GoodsType/findTableRecords', {}, global)
+      .then((res) => {
+        // console.log('商品分类', res.list);
+        treeData.value = []; // 清空 treeData
+        let arr = []
+        const level1Promises = []; // 一级分类请求的 Promise
+        res.list.forEach((item) => {
+          if (item.status === 'Y') {
+            const level1Category = {
+              label: item.name,
+              value: item.id,
+              children: [],
+            };
+            arr.push(level1Category);
+            // 获取二级分类
+            const level2Promise = global.axios
+              .post('decoration/GoodsType/findTableRecords', { pid: item.id }, global)
+              .then((res2) => {
+                const level2Promises = []; // 二级分类请求的 Promise
+                res2.list.forEach((subItem) => {
+                  if (subItem.status === 'Y') {
+                    const level2Category = {
+                      label: subItem.name,
+                      value: subItem.id,
+                      children: [],
+                    };
+                    level1Category.children.push(level2Category);
+                    // 获取三级分类
+                    const level3Promise = global.axios
+                      .post('decoration/GoodsType/findTableRecords', { pid: subItem.id }, global)
+                      .then((res3) => {
+                        res3.list.forEach((subSubItem) => {
+                          if (subSubItem.status === 'Y') {
+                            level2Category.children.push({
+                              label: subSubItem.name,
+                              value: subSubItem.id,
+                            });
+                          }
+                        });
+                      });
+                    level2Promises.push(level3Promise);
+                  }
+                });
+                return Promise.all(level2Promises); // 等待所有三级分类获取完成
+              });
+            level1Promises.push(level2Promise);
+          }
+        });
+        // 等待所有二级 & 三级分类请求完成
+        Promise.all(level1Promises).then(() => {
+          // console.log('完整分类数据:', arr,treeData.value);
+          treeData.value= arr
+        });
+      });
+  }
+  findTableRecords()
 
   // 商家id
   function getStoreID() {
@@ -321,11 +371,13 @@
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
       })
+    post_params.type_id = post_params.type_id.value
     console.log('post_params', post_params);
     global.axios
       .post('decoration/Goods/webAddGoods', post_params, global)
       .then((res) => {
         console.log('提交数据结果', res);
+        message.success('操作成功');
       });
   }
 
@@ -443,7 +495,7 @@
                   <div style="color: red;">*</div>
                   <div>商品标题</div>
                 </div>
-                <a-input type="text" style="margin-left: 20px;width: 79.5%;" placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                <a-input type="text" v-model:value="post_params.name" style="margin-left: 20px;width: 79.5%;" placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
               </div>
             </div>
             <div style="margin-top: 20px;margin-left: 20px;align-items: center;">
@@ -492,9 +544,8 @@
                               <div>分类</div>
                             </div>
                           </div>
-                          <a-tree-select v-model:value="post_params.type_id" show-search
-                            style="width: 60%;margin-left: 20px;" placeholder="请选择商品分类" allow-clear
-                            tree-default-expand-all :tree-data="treeData" tree-node-filter-prop="label">
+                          <a-tree-select v-model:value="post_params.type_id" labelInValue style="width: 60%;margin-left: 20px;"
+                            placeholder="请选择商品分类" :tree-data="treeData" tree-node-filter-prop="label">
                           </a-tree-select>
                         </div>
                       </div>
