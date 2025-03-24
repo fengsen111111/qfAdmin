@@ -1,9 +1,13 @@
 <script setup>
-  import { inject, onBeforeMount, reactive, ref } from "vue";
+  import { inject, onBeforeMount, reactive, ref, getCurrentInstance } from "vue";
   import { FormComponents } from "../../form_components/form";
   import { TableComponents } from "../../table_components/table";
   import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
+
+  let emit = defineEmits(["openChildPage", "closeChildPage"]);
+  const global = inject("global").value;
+
 
   import Editor from '@tinymce/tinymce-vue'
   import 'tinymce/tinymce'
@@ -20,55 +24,55 @@
 
   const post_params = reactive({
     id: '',//商品ID 修改时必传  
-    name:'',//商品名
+    name: '',//商品名
     store_id: '',//门店ID    
-    cover_image: 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',//封面图   
+    cover_image: '',//封面图   
     images: [
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png'
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
+      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png'
     ],//相册  
     detail: '',//详情 富文本  
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
     status: false,//启用状态 Y上架 N下架    
     attributes: [
-      {
-        key: '产地',
-        value: '四川'
-      }
+      // {
+      //   key: '产地',
+      //   value: '四川'
+      // }
     ],//商品属性  
     services: [
-      {
-        key: '全网低价',
-        value: '多平台对比，优惠力度最大'
-      },
-      {
-        key: '热销爆款',
-        value: '热门商品，大家都在买'
-      }
+      // {
+      //   key: '全网低价',
+      //   value: '多平台对比，优惠力度最大'
+      // },
+      // {
+      //   key: '热销爆款',
+      //   value: '热门商品，大家都在买'
+      // }
     ],//商品服务
     goods_sizes: [
-      {
-        id: '',//
-        name: '',//名称  
-        stock: '',//库存
-        old_price: '',//原价
-        price: '',//价格
-        uper_status: false,//是否需要推荐官推荐
-        commission: '',//佣金
-        goods_activity_id: '',//包邮专区活动 ID  
-        kill_activity_id: '',//秒杀活动 ID
-        status: false,//启用状态
-        order: '',//排序  
-      }
+      // {
+      //   id: '',//
+      //   name: '',//名称  
+      //   stock: '',//库存
+      //   old_price: '',//原价
+      //   price: '',//价格
+      //   uper_status: false,//是否需要推荐官推荐
+      //   commission: '',//佣金
+      //   goods_activity_id: '',//包邮专区活动 ID  
+      //   kill_activity_id: '',//秒杀活动 ID
+      //   status: false,//启用状态
+      //   order: '',//排序  
+      // }
     ],//商品规格  
   })
   // 删除服务
@@ -148,10 +152,27 @@
 
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
+  console.log('props数据', props.pageData.data);
+  // 有数据，编辑数据
+  if (props.pageData.data.id) {
+    global.axios
+      .post('decoration/Goods/webGetGoodsDetail', {
+        id: props.pageData.data.id
+      }, global)
+      .then((res) => {
+        console.log('商品数据', res.goods_datas);
+        res.goods_datas.id = props.pageData.data.id
+        res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
+        component_state.myValue = res.goods_datas.detail
+        res.goods_datas.goods_sizes.map((item) => {
+          item.status = item.status == 'Y' ? true : false
+          item.uper_status = item.uper_status == 'Y' ? true : false
+        })
+        // 富文本单独更新
+        Object.assign(post_params, res.goods_datas);
+      });
+  }
 
-  let emit = defineEmits(["openChildPage", "closeChildPage"]);
-
-  const global = inject("global").value;
 
   const activeKey = ref(['1', '2']);
 
@@ -296,7 +317,7 @@
         // 等待所有二级 & 三级分类请求完成
         Promise.all(level1Promises).then(() => {
           // console.log('完整分类数据:', arr,treeData.value);
-          treeData.value= arr
+          treeData.value = arr
         });
       });
   }
@@ -438,7 +459,7 @@
                   <div style="color: #ff7300;">请优先上传主轮播图，预填白底图</div>
                   <div style="color: #999999;">图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                   </div>
-                  <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(10, minmax(0, 1fr));">
+                  <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));">
                     <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;"
                       v-for="(item,index) in post_params.images" :key="index">
                       <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
@@ -449,8 +470,7 @@
                     </div>
                     <a-upload v-if="post_params.images.length<10" :customRequest="upload" :multiple="true"
                       :file-list="[]" list-type="picture-card">
-                      <div
-                        style="margin-top: 5px;width: 100px;height: 100px;border: 1px solid #f5f5f5;text-align: center;">
+                      <div style="margin-top: 5px;text-align: center;">
                         <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                       </div>
                     </a-upload>
@@ -495,7 +515,8 @@
                   <div style="color: red;">*</div>
                   <div>商品标题</div>
                 </div>
-                <a-input type="text" v-model:value="post_params.name" style="margin-left: 20px;width: 79.5%;" placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                <a-input type="text" v-model:value="post_params.name" style="margin-left: 20px;width: 79.5%;"
+                  placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
               </div>
             </div>
             <div style="margin-top: 20px;margin-left: 20px;align-items: center;">
@@ -544,8 +565,9 @@
                               <div>分类</div>
                             </div>
                           </div>
-                          <a-tree-select v-model:value="post_params.type_id" labelInValue style="width: 60%;margin-left: 20px;"
-                            placeholder="请选择商品分类" :tree-data="treeData" tree-node-filter-prop="label">
+                          <a-tree-select v-model:value="post_params.type_id" labelInValue
+                            style="width: 60%;margin-left: 20px;" placeholder="请选择商品分类" :tree-data="treeData"
+                            tree-node-filter-prop="label">
                           </a-tree-select>
                         </div>
                       </div>
@@ -796,6 +818,11 @@
 </template>
 
 <style scoped>
+  ::v-deep(.ant-upload.ant-upload-select-picture-card) {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
   th,
   td {
     border: 1px solid #f0f2f5;

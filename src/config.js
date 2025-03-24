@@ -9,7 +9,8 @@ export const APPConfig = {
 };
 //项目用到的页面
 import TablePage from '@/components/app_page_components/decoration/table.vue'
-import FormPage from '@/components/app_page_components/beverage/form.vue'
+// import FormPage from '@/components/app_page_components/beverage/form.vue'
+import FormPage from '@/components/app_page_components/decoration/publishPage.vue'
 import DetailPage from '@/components/base_page_components/detail.vue'
 import StatisticsPage from '@/components/app_page_components/decoration/statistics.vue'
 
