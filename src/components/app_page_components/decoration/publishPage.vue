@@ -379,13 +379,15 @@
                   <div style="color: #999999;">图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                   </div>
                   <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(10, minmax(0, 1fr));">
-                    <div style="position: relative;" v-for="(item,index) in post_params.images" :key="index">
-                      <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt="">
+                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;" v-for="(item,index) in post_params.images" :key="index">
+                      <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
+                      <a-image :width="90" :src="item" :preview="{ src: item }" />
                       <div @click="delImgLb(index)" class="imgClose" style="margin-left: 10px;">
                         <CloseCircleOutlined />
                       </div>
                     </div>
-                    <a-upload v-if="post_params.images.length<10" :customRequest="upload" :multiple="true" :file-list="[]" list-type="picture-card">
+                    <a-upload v-if="post_params.images.length<10" :customRequest="upload" :multiple="true"
+                      :file-list="[]" list-type="picture-card">
                       <div
                         style="margin-top: 5px;width: 100px;height: 100px;border: 1px solid #f5f5f5;text-align: center;">
                         <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
@@ -407,20 +409,20 @@
                     图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.cover_image?1:0}}/1张。
                   </div>
                   <div style="margin-top: 5px;display: flex;">
-                    <a-upload :customRequest="uploadFm" :multiple="false" :file-list="[]" list-type="picture-card">
-                      <div v-if="post_params.cover_image" style="position: relative;">
-                        <img :src="post_params.cover_image"
-                          style="width: 100px;height: 100px;margin-right: 10px;margin-left: 10px;border-radius: 4px;"
-                          alt="">
-                        <div @click="delImgFm()" class="imgClose" style="margin-left: 10px;">
-                          <CloseCircleOutlined />
+                    <div v-if="post_params.cover_image" style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+                      <a-image :width="90" :src="post_params.cover_image" :preview="{ src: post_params.cover_image }" />
+                      <div @click="delImgFm()" class="imgClose" style="margin-left: 10px;">
+                        <CloseCircleOutlined />
+                      </div>
+                    </div>
+                    <div v-else>
+                      <a-upload :customRequest="uploadFm" :multiple="false" :file-list="[]" list-type="picture-card">
+                        <div
+                          style="margin-top: 5px;width: 100px;height: 100px;border: 1px solid #f5f5f5;text-align: center;">
+                          <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
                         </div>
-                      </div>
-                      <div v-else
-                        style="margin-top: 5px;width: 100px;height: 100px;border: 1px solid #f5f5f5;text-align: center;">
-                        <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
-                      </div>
-                    </a-upload>
+                      </a-upload>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -749,8 +751,8 @@
     width: 15px;
     height: 15px;
     position: absolute;
-    right: 15px;
-    top: 5px;
+    right: 5px;
+    top: 4px;
     color: #fff;
   }
 </style>
