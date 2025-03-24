@@ -5,7 +5,7 @@
   const global = inject('global').value
 
   const login_state = reactive({
-    loginData: { account: '', password: '', captcha_code: '' },  //登陆数据
+    loginData: { account: '', password: '', captcha_code: '', mobile: '', mobile_code: '' },  //登陆数据
     timer: new Date().getTime(),           //获取验证码的时间戳
     holdLogin: false,                      //是否保持登陆
     captchaInputWidth: '150px',            //验证码输入框宽度
@@ -61,21 +61,65 @@
         }
       })
     } else {
-      // 验证码登陆
-      console.log('验证码登陆');
+      // 校验验证码
+      global.axios.post('decoration/User/checkMobileCode', {
+        mobile: login_state.loginData.mobile,
+        mobile_code: login_state.loginData.mobile_code
+      }, global).then(res => {
+        console.log('校验验证码', res);
+        global.axios.post('decoration/Store/login', {
+          mobile: login_state.loginData.mobile
+        }, global).then(res => {
+          console.log('验证码d登陆', res);
+          if (res) {
+            localStorage.setItem('Authorization', res.token);
+            global.router.push("/")
+          } else {
+            changeCaptcha()
+          }
+        })
+      })
     }
   }
 
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
   import { message } from 'ant-design-vue'
   const active = ref('1')//1账号密码 2手机号
+  const showDjs = ref(false)//显示倒计时
+  const timeData = ref(60)//倒计时
+  const timer = ref(null)//计时器 
+  watch(() => [timeData.value], (newVal, oldVal) => {
+    console.log('时间变化', newVal[0]); //
+    if (newVal[0] == 0) {
+      showDjs.value = false
+      clearInterval(timer.value); //清除定时器
+    }
+  });
   function handActive(type) {
     active.value = type
     reset()
   }
   function sendCode() {
     console.log('发送验证码');
-    message.error('开发中');
+    if (login_state.loginData.mobile) {
+      const regex = /^1[3-9]\d{9}$/;
+      if (login_state.loginData.mobile && !regex.test(login_state.loginData.mobile)) {
+        uni.showToast({
+          title: '手机号格式错误',
+          icon: 'none',
+          duration: 2000
+        })
+        return false
+      }
+    }
+    global.axios.post('decoration/User/getMobileCode', login_state.loginData.mobile, global).then(res => {
+      console.log('验证码', res.code);
+      login_state.loginData.mobile_code = res.code
+      showDjs.value = true
+      timer.value = setInterval(() => {
+        timeData.value = timeData.value - 1
+      }, 1000);
+    })
   }
 </script>
 
@@ -108,8 +152,14 @@
       <a-form layout="horizontal" style="margin-top: 10px;padding: 0 50px;">
         <div style="width: 100%">
           <a-form-item>
-            <a-input v-model:value="login_state.loginData.account" :placeholder="global.findLanguage('请输入账号')"
-              allow-clear size="large" />
+            <template v-if="active==1">
+              <a-input v-model:value="login_state.loginData.account" :placeholder="global.findLanguage('请输入账号')"
+                allow-clear size="large" />
+            </template>
+            <template v-else>
+              <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
+                allow-clear size="large" />
+            </template>
           </a-form-item>
         </div>
         <a-form-item>
@@ -121,12 +171,16 @@
           <!-- 验证码 -->
           <template v-else>
             <div style="background-color: #fff;display: flex;">
-              <a-input v-model:value="login_state.loginData.code" :placeholder="global.findLanguage('请输入验证码')"
+              <a-input v-model:value="login_state.loginData.mobile_code" :placeholder="global.findLanguage('请输入验证码')"
                 size="large">
                 <template #suffix>
-                  <div @click="sendCode"
+                  <div v-if="!showDjs" @click="sendCode"
                     style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
                     发送验证码
+                  </div>
+                  <div v-else
+                    style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
+                    {{timeData}}
                   </div>
                 </template>
               </a-input>
