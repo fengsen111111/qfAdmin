@@ -160,6 +160,17 @@
   }
 
   const value1 = ref()
+
+  // 店铺信息
+  function getStoreInfo() {
+    global.axios
+      .post('decoration/Store/getStoreInfo', {}, global)
+      .then((res) => {
+        console.log('店铺信息', res);
+      });
+  }
+  getStoreInfo()
+
 </script>
 
 <template>
