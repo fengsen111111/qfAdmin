@@ -1,5 +1,5 @@
 <script setup>
-  import { inject, onBeforeMount, reactive, ref, getCurrentInstance } from "vue";
+  import { inject, onBeforeMount, reactive, ref, getCurrentInstance,watch } from "vue";
   import { FormComponents } from "../../form_components/form";
   import { TableComponents } from "../../table_components/table";
   import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
@@ -75,6 +75,25 @@
       // }
     ],//商品规格  
   })
+  const bfb = ref(0)//填写进度
+
+  watch(() => post_params.type_id, (newVal, oldVal) => {
+    console.log('type_id 分类变化:', newVal);
+    bfb.value = 50
+    if(post_params.brand_id){
+      bfb.value = 100
+    }
+  });
+
+  watch(() => post_params.brand_id, (newVal, oldVal) => {
+    console.log('brand_id 品牌变化:', newVal);
+    bfb.value = 50
+    if(post_params.type_id){
+      bfb.value = 100
+    }
+  });
+
+
   // 删除服务
   function delFw(index) {
     post_params.services.splice(index, 1)
@@ -260,69 +279,6 @@
     console.log('商品图片回调', response);
     post_params.images.push(response.url)
   }
-  // 商品分类
-  const value = ref();
-  const treeData = ref([]);
-  // 商品分类列表
-  function findTableRecords() {
-    global.axios
-      .post('decoration/GoodsType/findTableRecords', {}, global)
-      .then((res) => {
-        // console.log('商品分类', res.list);
-        treeData.value = []; // 清空 treeData
-        let arr = []
-        const level1Promises = []; // 一级分类请求的 Promise
-        res.list.forEach((item) => {
-          if (item.status === 'Y') {
-            const level1Category = {
-              label: item.name,
-              value: item.id,
-              children: [],
-            };
-            arr.push(level1Category);
-            // 获取二级分类
-            const level2Promise = global.axios
-              .post('decoration/GoodsType/findTableRecords', { pid: item.id }, global)
-              .then((res2) => {
-                const level2Promises = []; // 二级分类请求的 Promise
-                res2.list.forEach((subItem) => {
-                  if (subItem.status === 'Y') {
-                    const level2Category = {
-                      label: subItem.name,
-                      value: subItem.id,
-                      children: [],
-                    };
-                    level1Category.children.push(level2Category);
-                    // 获取三级分类
-                    const level3Promise = global.axios
-                      .post('decoration/GoodsType/findTableRecords', { pid: subItem.id }, global)
-                      .then((res3) => {
-                        res3.list.forEach((subSubItem) => {
-                          if (subSubItem.status === 'Y') {
-                            level2Category.children.push({
-                              label: subSubItem.name,
-                              value: subSubItem.id,
-                            });
-                          }
-                        });
-                      });
-                    level2Promises.push(level3Promise);
-                  }
-                });
-                return Promise.all(level2Promises); // 等待所有三级分类获取完成
-              });
-            level1Promises.push(level2Promise);
-          }
-        });
-        // 等待所有二级 & 三级分类请求完成
-        Promise.all(level1Promises).then(() => {
-          // console.log('完整分类数据:', arr,treeData.value);
-          treeData.value = arr
-        });
-      });
-  }
-  findTableRecords()
-
   // 商家id
   function getStoreID() {
     global.axios
@@ -460,7 +416,8 @@
                   <div style="color: #999999;">图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                   </div>
                   <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));">
-                    <div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
+                    <div
+                      style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
                       v-for="(item,index) in post_params.images" :key="index">
                       <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
                       <a-image :width="90" :src="item" :preview="{ src: item }" />
@@ -539,10 +496,10 @@
                       <div style="display: flex;">
                         <div>填写率</div>
                         <div style="margin-left: 5px;">
-                          <a-progress type="circle" :percent="50" :width="16" :strokeWidth="8" :format="() => null"
+                          <a-progress type="circle" :percent="bfb" :width="16" :strokeWidth="8" :format="() => null"
                             trailColor="#999999" strokeColor="#ff7300" />
                         </div>
-                        <div style="color: #ff7300;margin-left: 5px;">50%</div>
+                        <div style="color: #ff7300;margin-left: 5px;">{{bfb?bfb+'%':''}}</div>
                       </div>
                       <div style="margin-left: 20px;color: #999999;width: 60%;">请准确填写属性，有利于商品在搜索和推荐中露出，错误填写可能面临商品下架或流量流失
                       </div>
@@ -566,8 +523,8 @@
                             </div>
                           </div>
                           <a-tree-select v-model:value="post_params.type_id" labelInValue
-                            style="width: 60%;margin-left: 20px;" placeholder="请选择商品分类" :tree-data="treeData"
-                            tree-node-filter-prop="label">
+                            style="width: 60%;margin-left: 20px;" placeholder="请选择商品分类" :tree-data="spflList"
+                            tree-node-filter-prop="name">
                           </a-tree-select>
                         </div>
                       </div>
