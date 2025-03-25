@@ -9,10 +9,10 @@ export const APPConfig = {
 };
 //项目用到的页面
 import TablePage from '@/components/app_page_components/decoration/table.vue'
-// import FormPage from '@/components/app_page_components/beverage/form.vue'
-import FormPage from '@/components/app_page_components/decoration/publishPage.vue'
+import FormPage from '@/components/app_page_components/beverage/form.vue'
 import DetailPage from '@/components/base_page_components/detail.vue'
 import StatisticsPage from '@/components/app_page_components/decoration/statistics.vue'
+import goodsPage from '@/components/app_page_components/decoration/publishPage.vue'//发布商品
 
 import CustomerPage from '@/components/app_page_components/decoration/customer_service.vue'
 import IndexPage from '@/components/base_page_components/index.vue' //项目首页，可以采用通用也可以使用个性化
@@ -22,7 +22,7 @@ import shopOut from '@/components/app_page_components/decoration/shopOut.vue'//�
 
 
 export const allPageComponents = {
-    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,StatisticsPage,publishPage,shopInfo,shopOut
+    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,StatisticsPage,publishPage,shopInfo,shopOut,goodsPage
 }
 
 // 项目名称：快鹿送酒

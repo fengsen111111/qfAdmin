@@ -280,7 +280,7 @@
   import QRCode from 'qrcode';
   let qrCodeData = ref('')//存储生成的二维码数据URL
   // 支付弹框点击确定
-  function handOKCode(){
+  function handOKCode() {
     isPay.value = false//关闭弹框
     refresh()//刷新列表
   }
@@ -333,7 +333,45 @@
         );
       }
     }
-
+    //缴纳分类保证金
+    if (handleInfo.handleType == "pay_type_prices") {
+      global.Modal.confirm({
+        title: '是否立即缴纳分类保证金?',
+        okText: global.findLanguage("确定"),
+        cancelText: global.findLanguage("取消"),
+        okType: "primary",
+        onOk: function () {
+          console.log('缴纳分类保证金', requestParams);
+          const params = {
+            store_id: requestParams.id,
+            trade_type: 'A_NATIVE'//T_APP微信  A_NATIVE支付宝  
+          }
+          global.axios.post(
+            handleInfo.requestUrl,
+            params,
+            global,
+            false,
+            true,
+          ).then((res) => {
+            console.log('生成支付数据', res);
+            if (res.pay_info) {
+              // 支付数据转二维码
+              QRCode.toDataURL(res.pay_info)
+                .then((url) => {
+                  console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+                  qrCodeData.value = url
+                })
+                .catch((err) => {
+                  console.error('生成二维码失败', err);
+                });
+              isPay.value = true
+            } else {
+              message.error('生成支付数据失败！')
+            }
+          })
+        },
+      });
+    }
     //支付按钮操作
     if (handleInfo.handleType == "pay") {
       if (handleInfo.warning) {
@@ -747,8 +785,8 @@
   <!--导出-->
 
   <!-- 支付弹框 -->
-  <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付" cancel-text="放弃"
-    :maskClosable="false">
+  <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"
+    cancel-text="放弃" :maskClosable="false">
     <div style="padding: 20px;text-align: center;">
       <div>请打开支付宝扫描二维码！</div>
       <img :src="qrCodeData" alt="支付二维码" />
