@@ -427,8 +427,8 @@
                     </div>
                     <a-upload v-if="post_params.images.length<10" :customRequest="upload" :multiple="true"
                       :file-list="[]" list-type="picture-card">
-                      <div style="margin-top: 5px;text-align: center;">
-                        <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
+                      <div style="text-align: center;">
+                        <PlusOutlined style="font-size: 30px;color: #999999;" />
                       </div>
                     </a-upload>
                   </div>
@@ -457,8 +457,8 @@
                     <div v-else>
                       <a-upload :customRequest="uploadFm" :multiple="false" :file-list="[]" list-type="picture-card">
                         <div
-                          style="margin-top: 5px;width: 100px;height: 100px;border: 1px solid #f5f5f5;text-align: center;">
-                          <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
+                          style="width: 90px;height: 88px;border: 1px solid #f5f5f5;text-align: center;">
+                          <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 30%;" />
                         </div>
                       </a-upload>
                     </div>
