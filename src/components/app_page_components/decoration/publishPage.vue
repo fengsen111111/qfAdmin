@@ -355,8 +355,10 @@
     post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
-        item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
+          item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
+          item.goods_activity_id = item.goods_activity_id ?? '',
+          item.kill_activity_id = item.kill_activity_id ?? ''
       })
 
     if (post_params.type_id.value) {
@@ -365,14 +367,13 @@
     } else {
       // 没得值说明没动
     }
+    loading()
     console.log('post_params', post_params);
-    spinning.value = true
     global.axios
       .post('decoration/Goods/webAddGoods', post_params, global)
       .then((res) => {
         console.log('提交数据结果', res);
         message.success('操作成功');
-        spinning.value = false
         lookData()
       });
   }
@@ -765,15 +766,15 @@
                               <a-input type="text" v-model:value="item.commission" placeholder="输入佣金" />
                             </td>
                             <td>
-                              <a-select ref="select" v-model:value="item.goods_activity_id" style="width: 100%;"
-                                placeholder="选择活动">
+                              <a-select ref="select" :allowClear="true" v-model:value="item.goods_activity_id"
+                                style="width: 100%;" placeholder="选择活动">
                                 <a-select-option :value="item.value" v-for="item in byzqList"
                                   :key="item.value">{{item.label}}</a-select-option>
                               </a-select>
                             </td>
                             <td>
-                              <a-select ref="select" v-model:value="item.kill_activity_id" style="width: 100%;"
-                                placeholder="选择活动">
+                              <a-select ref="select" :allowClear="true" v-model:value="item.kill_activity_id"
+                                style="width: 100%;" placeholder="选择活动">
                                 <a-select-option :value="item.value" v-for="item in xsmsList"
                                   :key="item.value">{{item.label}}</a-select-option>
                               </a-select>
