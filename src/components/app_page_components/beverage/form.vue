@@ -175,17 +175,18 @@ function cancelIcon(){
               :label="global.findLanguage(rowStructure.label)"
               style="position: relative;"
           >
-            <!-- <span class="warning">
-              <span
-                  v-if="rowStructure.warning"
-                  v-html="global.findLanguage(rowStructure.warning)"
-              ></span>
-            </span> -->
-            <template v-if="rowStructure.warning">
+            <!-- 有类型就显示新的 -->
+            <template v-if="rowStructure.warningType">
               <div style="position: absolute;top: -30px;right: 0px;">
                 <QuestionCircleOutlined @click="handIcon(rowStructure)" style="color: #1890ff" />
               </div>
             </template>
+            <!-- 没得类型就显示原来的 -->
+            <span v-else-if="rowStructure.warning" class="warning">
+              <span
+                  v-html="global.findLanguage(rowStructure.warning)"
+              ></span>
+            </span>
             <component
                 :is="FormComponentsNew[rowStructure.component]"
                 :key="
