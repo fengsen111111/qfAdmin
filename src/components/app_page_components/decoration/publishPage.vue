@@ -374,7 +374,7 @@
       .then((res) => {
         console.log('提交数据结果', res);
         message.success('操作成功');
-        lookData()
+        emit("closeChildPage", pageData.page_key);
       });
   }
 
