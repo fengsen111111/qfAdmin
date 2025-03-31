@@ -561,8 +561,8 @@
 
     .menu {
       flex: none !important;
-      min-width: 180px !important;
-      max-width: 180px !important;
+      min-width: 200px !important;
+      max-width: 200px !important;
       background-color: white;
       height: 100vh;
       overflow-y: auto;
@@ -598,7 +598,7 @@
       }
 
       .menu-list {
-        height: calc(100vh - 160px);
+        height: calc(100vh - 95px);
         padding-bottom: 20px;
         overflow-y: auto;
 
