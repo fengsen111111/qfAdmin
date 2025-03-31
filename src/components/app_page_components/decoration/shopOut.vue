@@ -63,6 +63,7 @@
 			.then((res) => {
 				console.log('商家id', res);
 				store_id.value = res.store_id
+				getOutMsg()//查看当前退店详情
 			});
 	}
 	getStoreID()
@@ -95,7 +96,7 @@
 				current.value = res.out_process=='a'?'0':res.out_process=='b'?'1':'1'
 			});
 	}
-	getOutMsg()
+	
 
 	// 倒计时
 	const deadline = ref(Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30)
