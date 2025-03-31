@@ -29,48 +29,48 @@
       skeleton_state.admin = res.admin;
       skeleton_state.admin.portrait = res.admin.portrait ? res.admin.portrait : "/resource/image/head_img.png";
       global.adminMsg = skeleton_state.admin
-      res.menu.push({
-        icon: "",
-        label: "新开发页面",
-        order: "1",
-        page_id: "0",
-        pid: "706154120674803772",
-        type: "publishPage",
-        url: "",
-        value: "723777073939746104",
-        children: [
-          {
-            icon: "",
-            label: "发布商品(开发中)",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803772",
-            type: "publishPage",
-            url: "",
-            value: "111111",
-          },
-          {
-            icon: "",
-            label: "店铺信息(开发中)",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803772",
-            type: "shopInfo",
-            url: "",
-            value: "222222",
-          },
-          {
-            icon: "",
-            label: "我要退店(开发中)",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803772",
-            type: "shopOut",
-            url: "",
-            value: "333333",
-          }
-        ]
-      })
+      // res.menu.push({
+      //   icon: "",
+      //   label: "新开发页面",
+      //   order: "1",
+      //   page_id: "0",
+      //   pid: "706154120674803772",
+      //   type: "publishPage",
+      //   url: "",
+      //   value: "723777073939746104",
+      //   children: [
+      //     {
+      //       icon: "",
+      //       label: "发布商品(开发中)",
+      //       order: "1",
+      //       page_id: "0",
+      //       pid: "706154120674803772",
+      //       type: "publishPage",
+      //       url: "",
+      //       value: "111111",
+      //     },
+      //     {
+      //       icon: "",
+      //       label: "店铺信息(开发中)",
+      //       order: "1",
+      //       page_id: "0",
+      //       pid: "706154120674803772",
+      //       type: "shopInfo",
+      //       url: "",
+      //       value: "222222",
+      //     },
+      //     {
+      //       icon: "",
+      //       label: "我要退店(开发中)",
+      //       order: "1",
+      //       page_id: "0",
+      //       pid: "706154120674803772",
+      //       type: "shopOut",
+      //       url: "",
+      //       value: "333333",
+      //     }
+      //   ]
+      // })
       //初始化tabMenu为未选中
       skeleton_state.menuData = res.menu;
       //循环三次，给每个菜单页面设置page_key以及checked = false
@@ -363,34 +363,22 @@
 
 <template>
   <a-layout>
-    <a-layout-sider class="tab-menu">
-      <div align="center" class="logo">
-        <img :src="global.adminLogo" alt="" class="logo-img" />
-      </div>
-      <div class="tab-menu-list">
-        <div v-for="item in skeleton_state.menuData" :key="item.value" align="center" class="tab-menu-item">
-          <div :class="item.checked ? 'tab-menu-card-checked' : 'tab-menu-card'" :style="{ color: item.font_color }"
-            @click="showFirstMenu(item.value)" @mouseleave="changeFontColor(item.value, 'out')"
-            @mouseover="changeFontColor(item.value, 'in')">
-            <div class="icon-font">
-              <span class="iconfont" v-html="item.icon" />
-            </div>
-            <div class="menu-label">{{ item.label }}</div>
-          </div>
-        </div>
-      </div>
-    </a-layout-sider>
-    <a-layout-sider v-show="!skeleton_state.collapsed" class="menu">
+    <!-- v-show="!skeleton_state.collapsed"  -->
+    <a-layout-sider class="menu">
       <div class="project-name">
-        <span>{{ global.appName }}</span>
+        <div style="display: flex;margin: 0 auto;align-items: center;">
+          <img :src="global.adminLogo" alt="" style="width: 30px;height: 30px;margin-right: 20px;" />
+          <span>{{ global.appName }}</span>
+        </div>
       </div>
       <div class="line"></div>
       <div align="center" style="width: 100%">
         <div class="tab-name">{{ skeleton_state.tabMenuCheckedLabel }}</div>
       </div>
+      <!--  -->
       <div class="menu-list">
-        <a-menu v-model:selectedKeys="skeleton_state.menuCheckedValues" mode="inline">
-          <template v-for="(item, index) in skeleton_state.tabCheckedMenu" :key="index">
+        <a-menu :inlineCollapsed="true" v-model:selectedKeys="skeleton_state.menuCheckedValues" mode="inline" >
+          <template v-for="(item, index) in skeleton_state.menuData" :key="index">
             <a-sub-menu v-if="item.hasOwnProperty('children') && item.children.length > 0" :key="item.value">
               <template #title>
                 <span>
@@ -398,41 +386,45 @@
                   <span>{{ item.label }}</span>
                 </span>
               </template>
-              <a-menu-item v-for="child in item.children" :key="child.value" @click="openPage(child, true)">
-                {{ child.label }}
-              </a-menu-item>
+              <template v-for="child in item.children" :key="child.value">
+                <template v-if="child.children">
+                  <a-sub-menu :key="child.value">
+                    <template #title>
+                      <span>
+                        <!-- <span class="iconfont" v-html="child.icon" /> -->
+                        <span>{{ child.label }}</span>
+                      </span>
+                    </template>
+                    <a-menu-item v-for="iss in child.children" :key="iss.value" @click="openPage(iss, true)">
+                      {{ iss.label }}
+                    </a-menu-item>
+                  </a-sub-menu>
+                </template>
+                <!-- 只有一级 -->
+                <template v-else>
+                  <a-menu-item :key="child.value" @click="openPage(child, true)">
+                    <!-- <template #icon>
+                      <span class="iconfont" v-html="child.icon" />
+                    </template> -->
+                    {{ child.label }}
+                  </a-menu-item>
+                </template>
+              </template>
             </a-sub-menu>
             <a-menu-item v-else :key="item.value" @click="openPage(item, true)">
               <span class="iconfont" v-html="item.icon" />{{ item.label }}
             </a-menu-item>
           </template>
         </a-menu>
-        <a-dropdown>
-          <a class="ant-dropdown-link" href="javascript:;" style="
-              text-align: center;
-              position: fixed;
-              bottom: 10px;
-              width: 180px !important;
-            ">
-            <span v-show="global.copyright" v-html="global.copyright"></span>
-          </a>
-          <template v-if="skeleton_state.author ? true : false" #overlay>
-            <a-menu>
-              <a-menu-item>
-                {{ skeleton_state.author }}
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
       </div>
     </a-layout-sider>
     <a-layout>
       <a-layout-header>
-        <div class="icon-font" style="color: #656565 !important; font-size: 22px">
+        <!-- <div class="icon-font" style="color: #656565 !important; font-size: 22px">
           <span v-if="!skeleton_state.collapsed" class="iconfont"
             @click="skeleton_state.collapsed = !skeleton_state.collapsed">&#xe79a;</span>
           <span v-else class="iconfont" @click="skeleton_state.collapsed = !skeleton_state.collapsed">&#xe794;</span>
-        </div>
+        </div> -->
 
         <div class="tag">
           <a-tag v-for="tag in skeleton_state.tags" :key="tag.value" :class="tag.checked_status ? 'active-tag' : ''"
