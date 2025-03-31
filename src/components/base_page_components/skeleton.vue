@@ -29,7 +29,6 @@
       skeleton_state.admin = res.admin;
       skeleton_state.admin.portrait = res.admin.portrait ? res.admin.portrait : "/resource/image/head_img.png";
       global.adminMsg = skeleton_state.admin
-
       res.menu.push({
         icon: "",
         label: "新开发页面",

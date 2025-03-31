@@ -23,6 +23,7 @@
     "jsencrypt": "^3.3.1",
     "moment": "^2.29.4",
     "qiniu-js": "^3.4.1",
+    "qrcode": "^1.5.4",
     "vue": "^3.2.45",
     "vue-cropper": "^1.0.1",
     "vue-router": "^4.1.6",
