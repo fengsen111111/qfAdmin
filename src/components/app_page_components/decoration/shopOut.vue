@@ -61,7 +61,7 @@
 		global.axios
 			.post('decoration/Store/getStoreID', {}, global)
 			.then((res) => {
-				console.log('商家id', res);
+				console.log('商家id', res.store_id);
 				store_id.value = res.store_id
 				getOutMsg()//查看当前退店详情
 			});
@@ -83,8 +83,11 @@
 			.then((res) => {
 				console.log('提交退店', res);
 				visible.value = false
+				getOutMsg()
 			});
 	}
+
+	const shopStatus = ref()
 	// 查看当前店铺状态
 	function getOutMsg(){
 		global.axios
@@ -92,8 +95,22 @@
 				store_id: store_id.value
 			}, global)
 			.then((res) => {
+				shopStatus.value = res
 				console.log('查看当前店铺状态', res);
-				current.value = res.out_process=='a'?'0':res.out_process=='b'?'1':'1'
+				// 进程 a未申请 b公示中 c材料审核中 d待商家确认退店 e待退款  f已退款 
+				if(res.process=='a'){
+					current.value = 0
+				}else if(res.process=='b'){
+					current.value = 1
+				}else if(res.process=='c'){
+					current.value = 2
+				}else if(res.process=='d'){
+					current.value = 3
+				}else if(res.process=='e'){
+					current.value = 4
+				}else if(res.process=='f'){
+					current.value = 5
+				}
 			});
 	}
 	
@@ -116,6 +133,18 @@
 			}, global)
 			.then((res) => {
 				console.log('撤销退店', res);
+				getOutMsg()
+			});
+	}
+	// 确认退店
+	function outShopOk() {
+		global.axios
+			.post('decoration/Store/submitOutApply2', {
+				store_id: store_id.value
+			}, global)
+			.then((res) => {
+				console.log('撤销退店', res);
+				getOutMsg()
 			});
 	}
 </script>
@@ -312,8 +341,8 @@
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.status=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												店铺无异常
 											</div>
 										</td>
@@ -321,26 +350,28 @@
 										<td>无</td>
 									</tr>
 									<tr>
-										<td rowspan="2">
+										<td rowspan="1">
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.prices=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												资金无异常
 											</div>
 										</td>
-										<td>关闭推广账户</td>
+										<td>无</td>
+										<td>无</td>
+										<!-- <td>关闭推广账户</td>
 										<td>请点击此链接<span style="color: #1890FF;">「关闭推广账户」</span>操作，自行前往推广平台暂停或删除推广无法关闭帐户
 										</td>
 									</tr>
 									<tr>
 										<td>店铺存在欠费</td>
-										<td>联系商家客服或者对接运营</td>
+										<td>联系商家客服或者对接运营</td> -->
 									</tr>
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.goods=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												商品已处理
 											</div>
 										</td>
@@ -350,8 +381,8 @@
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.order=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												订单已完成
 											</div>
 										</td>
@@ -361,15 +392,15 @@
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.after_sale=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												售后已完成
 											</div>
 										</td>
 										<td>无</td>
 										<td>无</td>
 									</tr>
-									<tr>
+									<!-- <tr>
 										<td>
 											<div style="display: flex;align-items: center;">
 												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
@@ -390,21 +421,21 @@
 										</td>
 										<td>无</td>
 										<td>无</td>
-									</tr>
+									</tr> -->
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
+												<CheckCircleOutlined v-if="shopStatus.notice=='N'" style="color: green;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
 												退店已公告
 											</div>
 										</td>
 										<td>退店公示未满30天</td>
 										<td>
 											<div style="display: flex;">
-												<div style="color: #1890FF;" @click="()=>{tz_visible=true}">开启公示</div>
-												<a-statistic-countdown title="倒计时" :value="deadline"
-													format="D 天 H 时 m 分 s 秒" style="font-size: 16px;" />
+												<!-- shopStatus.notice_time -->
+												<!-- <div v-if="shopStatus.notice=='N'"  style="color: #1890FF;" @click="()=>{tz_visible=true}">开启公示</div> -->
+												<div><a-statistic-countdown title="倒计时" :value="deadline" format="D 天 H 时 m 分 s 秒" style="font-size: 16px;" /></div>
 											</div>
 										</td>
 									</tr>
@@ -433,6 +464,40 @@
 								<a-button @click="outShop">撤销退店申请</a-button>
 							</div>
 						</div>
+					</div>
+				</div>
+				<!-- 材料审核 -->
+				<div v-else-if="current==2">
+					<div style="text-align: center;">
+						<ExclamationCircleOutlined style="color: #ff7300;font-size: 50px;" />
+						<div style="font-weight: bold;margin-top: 20px;">材料审核中，请耐心等待！</div>
+					</div>
+				</div>
+				<!-- 确认退店 -->
+				<div v-else-if="current==3">
+					<div style="text-align: center;">
+						<ExclamationCircleOutlined style="color: #ff7300;font-size: 50px;" />
+						<div style="font-weight: bold;margin-top: 20px;">材料已通过，请确认是否退店！</div>
+						<div style="display: flex;margin-top: 20px;">
+							<div style="margin: 0 auto;">
+								<a-button @click="outShop">撤销退店申请</a-button>
+								<a-button @click="outShopOk" danger style="margin-left: 20px;">确认退店</a-button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 银行退款 -->
+				<div v-else-if="current==4">
+					<div style="text-align: center;">
+						<ExclamationCircleOutlined style="color: #ff7300;font-size: 50px;" />
+						<div style="font-weight: bold;margin-top: 20px;">银行退款中，请耐心等待！</div>
+					</div>
+				</div>
+				<!-- 退款成功 -->
+				<div v-else-if="current==5">
+					<div style="text-align: center;">
+						<ExclamationCircleOutlined style="color: #ff7300;font-size: 50px;" />
+						<div style="font-weight: bold;margin-top: 20px;">银行退款完成！</div>
 					</div>
 				</div>
 			</div>
