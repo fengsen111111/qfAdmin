@@ -32,7 +32,8 @@ import {
     Progress,
     Steps,
     Statistic,
-    Empty
+    Empty,
+    Badge
 } from 'ant-design-vue'
 
 
@@ -40,7 +41,7 @@ const plugins = [
     Layout, Menu, Tag, Dropdown, ConfigProvider, TimePicker, DatePicker, Drawer,
     Input, InputNumber, Radio, Checkbox, Row, Col, Switch, Select, Tree, Cascader,
     Upload, Button, Form, Table, Pagination, Image, Rate, Spin, TreeSelect, Modal,
-    Tabs,Popover,Progress,Steps,Statistic,Empty
+    Tabs,Popover,Progress,Steps,Statistic,Empty,Badge
 ];
 
 export const setupAntd = (app: any, options = {}) => {
