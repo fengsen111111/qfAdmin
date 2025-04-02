@@ -20,10 +20,10 @@ import publishPage from '@/components/app_page_components/decoration/publishPage
 import shopInfo from '@/components/app_page_components/decoration/shopInfo.vue'//店铺信息
 import shopOut from '@/components/app_page_components/decoration/shopOut.vue'//商家退店
 import shippingTemplates from '@/components/app_page_components/decoration/shippingTemplates.vue'//运费模板
-
+import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
 
 export const allPageComponents = {
-    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,StatisticsPage,publishPage,shopInfo,shopOut,goodsPage,shippingTemplates
+    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,StatisticsPage,publishPage,shopInfo,shopOut,goodsPage,shippingTemplates,newShop
 }
 
 // 项目名称：快鹿送酒

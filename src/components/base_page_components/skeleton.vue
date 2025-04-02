@@ -59,7 +59,16 @@
             url: "",
             value: "333333",
           },
-
+          {
+            icon: "",
+            label: "发布新商品(开发中)",
+            order: "1",
+            page_id: "0",
+            pid: "706154120674803774",
+            type: "newShop",
+            url: "",
+            value: "444444",
+          },
         ]
       })
       //初始化tabMenu为未选中
