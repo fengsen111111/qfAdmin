@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -19,7 +19,7 @@
 	const store_name = ref('')// 店铺名称
 	const logo = ref('')// 店铺门头照/LOGO  
 	const type = ref('a')//商家类型 a本地商家 b网店商家  
-    const id_card_images = ref([])// 身份证照片  
+	const id_card_images = ref([])// 身份证照片  
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
 	const name = ref('')// 用户姓名  
@@ -140,19 +140,58 @@
 		myMap.add(marker);
 	}
 
-	// 上传
+	// logo上传
 	function upload(options) {
 		global.file.uploadFile(global, options.file, 'image', 'shopImg', true, complete)
 	}
-	// 相册
+	// logo 回调
 	function complete(response) {
-		console.log('上传回调', response);
+		logo.value = response.url
+	}
+	// 删除logo
+	function delImgLogo() {
+		console.log('删除logo');
+		logo.value = ''
+	}
+
+	// 身份证上传
+	function uploadSfz(options) {
+		global.file.uploadFile(global, options.file, 'image', 'idImg', true, completeSfz)
+	}
+	//  身份证 回调
+	function completeSfz(response) {
+		id_card_images.value.push(response.url)
+	}
+	// 删除身份证
+	function delImgSfz(index) {
+		console.log('删除身份证');
+		id_card_images.value.splice(index, 1)
+	}
+
+	// 营业执照上传
+	function uploadYyzz(options) {
+		global.file.uploadFile(global, options.file, 'image', 'yyzzImg', true, completeYyzz)
+	}
+
+	//  营业执照 回调
+	function completeYyzz(response) {
+		license_image.value = response.url
+	}
+
+	// 删除营业执照
+	function delImgYyzz() {
+		console.log('删除营业执照');
+		license_image.value = ''
 	}
 
 	const value1 = ref()
-
-	function handUrl(url){
+	function handUrl(url) {
 		global.router.push(url)
+	}
+
+	// 关闭地图
+	function closeMap(){
+		isMap.value = false
 	}
 
 </script>
@@ -201,9 +240,15 @@
 									<span>门店logo</span>
 								</div>
 								<div style="margin-left: 10px;display: flex;">
-									<a-upload :customRequest="upload" :file-list="[]" list-type="text">
+									<div v-if="logo" style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+										<a-image :width="100" :src="logo" :preview="{ src: logo }" />
+										<div @click="delImgLogo()" class="imgClose" style="margin-left: 10px;">
+											<CloseCircleOutlined />
+										</div>
+									</div>
+									<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
 										<div
-											style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+											style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
 											<PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
 										</div>
 									</a-upload>
@@ -219,8 +264,8 @@
 								</div>
 								<div style="margin-left: 10px;">
 									<a-radio-group v-model:value="type" name="radioGroup">
-										<a-radio :value="b">网店商家</a-radio>
-										<a-radio :value="a">本地商家</a-radio>
+										<a-radio value="b">网店商家</a-radio>
+										<a-radio value="a">本地商家</a-radio>
 									</a-radio-group>
 								</div>
 								<a-popover title="规范" placement="rightTop">
@@ -232,12 +277,12 @@
 								</a-popover>
 							</div>
 							<!-- 本地商家 -->
-							<div v-if="type==a">
+							<div v-if="type=='a'">
 								<div style="display: flex;margin: 20px 0px 20px 105px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span>详细地址</span>
 									</div>
-									<a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" />
+									<a-input v-model:value="address" style="margin-left: 10px;width: 300px;" />
 								</div>
 								<div style="display: flex;margin: 20px 0px 20px 133px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
@@ -258,12 +303,11 @@
 												纬度<a-input v-model:value="component_state.lat" allow-clear
 													style="width: 150px;margin-top: 10px;margin-left: 10px;" />
 											</span>
-											<a-button style="right: 10px" @click="isMap = false">关闭</a-button>
+											<a-button style="right: 10px" @click="closeMap">关闭</a-button>
 										</div>
 									</a-modal>
 								</div>
 							</div>
-
 							<div style="display: flex;margin: 20px 0px 20px 100px;">
 								<div style="display: flex;white-space:nowrap;">
 									<span style="color: red;">*</span>
@@ -272,16 +316,18 @@
 								<div>
 									<div style="display: flex;">
 										<div style="margin-left: 10px;display: flex;">
-											<a-upload :customRequest="upload" :file-list="[]" list-type="text">
-												<div
-													style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
-													<PlusOutlined
-														style="font-size: 30px;color: #999999;margin-top: 35%;" />
+											<div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
+												v-for="(item,index) in id_card_images" :key="index">
+												<a-image :width="90" :src="item" :preview="{ src: item }" />
+												<div @click="delImgSfz(index)" class="imgClose"
+													style="margin-left: 10px;">
+													<CloseCircleOutlined />
 												</div>
-											</a-upload>
-											<a-upload :customRequest="upload" :file-list="[]" list-type="text">
+											</div>
+											<a-upload v-if="id_card_images.length<2" :customRequest="uploadSfz"
+												:file-list="[]" list-type="text">
 												<div
-													style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+													style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
 													<PlusOutlined
 														style="font-size: 30px;color: #999999;margin-top: 35%;" />
 												</div>
@@ -293,9 +339,17 @@
 												<span>营业执照</span>
 											</div>
 											<div style="margin-left: 10px;display: flex;">
-												<a-upload :customRequest="upload" :file-list="[]" list-type="text">
+												<div v-if="license_image"
+													style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+													<a-image :width="100" :src="license_image" :preview="{ src: license_image }" />
+													<div @click="delImgYyzz()" class="imgClose"
+														style="margin-left: 10px;">
+														<CloseCircleOutlined />
+													</div>
+												</div>
+												<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
 													<div
-														style="width: 120px;height: 120px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+														style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
 														<PlusOutlined
 															style="font-size: 30px;color: #999999;margin-top: 35%;" />
 													</div>
@@ -310,21 +364,21 @@
 									<span style="color: red;">*</span>
 									<span>身份证号</span>
 								</div>
-								<a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" />
+								<a-input v-model:value="id_card_number" style="margin-left: 10px;width: 300px;" />
 							</div>
 							<div style="display: flex;margin: 20px 0px 20px 44px;align-items: center;">
 								<div style="display: flex;white-space:nowrap;">
 									<span style="color: red;">*</span>
 									<span>移动端绑定手机号</span>
 								</div>
-								<a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" />
+								<a-input v-model:value="mobile" style="margin-left: 10px;width: 300px;" />
 							</div>
 							<div style="display: flex;margin: 20px 0px 20px 72px;align-items: center;">
 								<div style="display: flex;white-space:nowrap;">
 									<span style="color: red;">*</span>
 									<span>后台登录密码</span>
 								</div>
-								<a-input v-model:value="shopName" style="margin-left: 10px;width: 300px;" />
+								<a-input v-model:value="admin_login_password" style="margin-left: 10px;width: 300px;" />
 							</div>
 							<!-- 提交 -->
 							<div style="text-align: center;">
@@ -383,6 +437,15 @@
 </template>
 
 <style lang="less" scoped>
+	.imgClose {
+		width: 15px;
+		height: 15px;
+		position: absolute;
+		right: 5px;
+		top: 4px;
+		color: #fff;
+	}
+
 	.map {
 		z-index: 999;
 		height: 300px !important;

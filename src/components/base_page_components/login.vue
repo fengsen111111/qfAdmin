@@ -38,7 +38,7 @@
   }
 
   function reset() {
-    login_state.loginData = { account: '', password: '', code: '' };
+    login_state.loginData = { account: '', password: '', code: '',mobile_code:'' };
   }
 
   function login() {
@@ -125,11 +125,38 @@
 
   // 跳转其它路由
   function handUrl(url) {
+    // /openShop //0元开店
     console.log('url', url);
     global.router.push(url)
   }
-</script>
+  const logType = ref(1)//1普通登录 2
+  // 0元开店 / 立即登录
+  function lykd() {
+    console.log('0元开店');
+    reset()//清空账号密码
+    logType.value = logType.value==1?2:1
+  }
 
+  // 立即开店
+  function ljkd(){
+    console.log('立即开店，先注册账号，获取token,再跳转开店页进行填写');
+    console.log('提交数据',login_state.loginData);
+    // 校验验证码
+    global.axios.post('decoration/User/checkMobileCode', {
+        mobile: login_state.loginData.mobile,
+        mobile_code: login_state.loginData.mobile_code
+      }, global).then(res => {
+        console.log('校验验证码结果,通过就注册获取token,', res);
+        // token 获取到 存入
+        // if(true){
+        //   localStorage.setItem('Authorization', res.token);
+        //   handUrl('/openShop')
+        // }
+      })
+  }
+
+  
+</script>
 
 <template>
   <div class="login">
@@ -164,7 +191,7 @@
     </div>
     <div
       style="background-image: url('/resource/image/loginBg.png');background-repeat: no-repeat;background-size: 100% 100%;width: 100vw;height: 63vh;">
-      <div class="login-form">
+      <div v-if="logType==1" class="login-form">
         <div
           style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
           <div style="display: flex;margin: 0 auto;">
@@ -187,12 +214,10 @@
             </a-form-item>
           </div>
           <a-form-item>
-            <!-- 手机号 -->
             <template v-if="active==1">
               <a-input-password v-model:value="login_state.loginData.password"
                 :placeholder="global.findLanguage('请输入密码')" size="large" />
             </template>
-            <!-- 验证码 -->
             <template v-else>
               <div style="background-color: #fff;display: flex;">
                 <a-input v-model:value="login_state.loginData.mobile_code" :placeholder="global.findLanguage('请输入验证码')"
@@ -226,18 +251,62 @@
           <a-form-item>
             <span style="float: left;margin-top: 3px">
               <span style="color: #999999;">还没有店铺？</span>
-              <span @click="handUrl('/openShop')" style="color: #2266AA;">0元开店</span>
+              <span @click="lykd" style="color: #2266AA;">0元开店</span>
             </span>
-            <!-- <span style="float: right">
-              <a-button type="primary" @click="login">{{ global.findLanguage('提交') }}</a-button>
-              <a-button :style="{marginLeft:'20px'}" @click="reset">{{ global.findLanguage('重置') }}</a-button>
-            </span> -->
             <span style="float: right;color: #2266AA;">
               <a-checkbox v-model:checked="login_state.holdLogin"></a-checkbox>
               {{global.findLanguage('记住密码')}}
             </span>
           </a-form-item>
-
+        </a-form>
+      </div>
+      <div v-else class="login-form">
+        <div
+          style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
+          <div style="display: flex;margin: 0 auto;">
+            <div style="color:#FF5454">0元开店</div>
+          </div>
+        </div>
+        <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
+          <div style="width: 100%">
+            <a-form-item>
+              <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
+                allow-clear size="large" />
+            </a-form-item>
+          </div>
+          <a-form-item>
+            <a-input-password v-model:value="login_state.loginData.password" :placeholder="global.findLanguage('设置密码')"
+              size="large" />
+          </a-form-item>
+          <a-form-item>
+            <div style="background-color: #fff;display: flex;">
+              <a-input v-model:value="login_state.loginData.mobile_code" :placeholder="global.findLanguage('请输入验证码')"
+                size="large">
+                <template #suffix>
+                  <div v-if="!showDjs" @click="sendCode"
+                    style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
+                    获取验证码
+                  </div>
+                  <div v-else
+                    style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
+                    {{timeData}}
+                  </div>
+                </template>
+              </a-input>
+            </div>
+          </a-form-item>
+          <a-form-item>
+            <a-button size="large"
+              style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
+              @click="ljkd">{{
+              global.findLanguage('立即开店') }}</a-button>
+          </a-form-item>
+          <a-form-item>
+            <span style="float: left;margin-top: 3px">
+              <span style="color: #999999;">已有账号？</span>
+              <span @click="lykd" style="color: #2266AA;">立即登录</span>
+            </span>
+          </a-form-item>
         </a-form>
       </div>
     </div>
