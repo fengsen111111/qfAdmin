@@ -312,9 +312,9 @@
     </div>
     <div style="display: flex;margin-top: 55px;color: #666666;font-size: 13px;">
       <div style="display: flex;justify-content: space-between;margin: 0 auto;width: 500px;align-items: center;">
-        <span>商家入驻</span>
-        <span>帮助中心</span>
-        <span>规则中心</span>
+        <span @click="lykd">商家入驻</span>
+        <span @click="handUrl('/ruleCenter?title=帮助中心')">帮助中心</span>
+        <span @click="handUrl('/ruleCenter?title=规则中心')">规则中心</span>
         <span>廉正举报</span>
         <span style="border: 1px solid #999999;padding: 2px 10px;border-radius: 3px;">
           <WindowsOutlined />PC版

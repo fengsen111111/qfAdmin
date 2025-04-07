@@ -18,6 +18,18 @@
 	function handUrl(url) {
 		global.router.push(url)
 	}
+
+	import { useRoute } from 'vue-router';
+	const route = useRoute();
+	console.log('当前路径:', route.query.title);
+	const title = ref('')
+	title.value = route.query.title
+
+
+    // 点击了某个标题
+	function handleClick(){
+		console.log('点击了某个标题');
+	}
 </script>
 
 <template>
@@ -28,7 +40,7 @@
 				style="padding: 20px;height: 100%;width: 70vw;margin: 0 auto;display: flex;justify-content: space-between;align-items: center;">
 				<div style="display: flex;">
 					<img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px">
-					<span style="font-size: 28px;margin-left: 5px;color: #fff;font-weight: bold;">规则中心
+					<span style="font-size: 28px;margin-left: 5px;color: #fff;font-weight: bold;">{{title}}
 					</span>
 				</div>
 				<div @click="handUrl('/')" style="color: #fff;">
