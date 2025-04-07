@@ -160,7 +160,7 @@
         <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px">
         <span style="font-size: 28px;margin-left: 5px;">{{global.appName}} </span>
       </div>
-      <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div>
+      <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
     <div
       style="background-image: url('/resource/image/loginBg.png');background-repeat: no-repeat;background-size: 100% 100%;width: 100vw;height: 63vh;">

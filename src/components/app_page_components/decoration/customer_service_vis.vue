@@ -29,7 +29,7 @@
       language: 'zh_CN',
       selector: "#init",
       skin_url: `/tinymce/skins/ui/oxide`,
-      height: '12.5vh',
+      height: '12vh',
       content_css: `/tinymce/skins/content/default/content.css`,
       plugins: 'lists image media table wordcount link',
       toolbar: false,
@@ -1128,16 +1128,17 @@
   }
 
   .table {
-    height: calc(100vh - 176px) !important;
+    height: calc(100vh - 300px) !important;
+    height: 100%;
     overflow-y: auto;
-    border-bottom: 1px solid #f0f0f0;
-    border-top: 1px solid #f0f0f0;
+    /* border-bottom: 1px solid #f0f0f0; */
+    /* border-top: 1px solid #f0f0f0; */
     padding-top: 10px;
   }
 
   .chat {
-    width: 70%;
-    height: 90%;
+    /* width: 70%; */
+    height: 95%;
     border: 1px solid #d4d4d7;
     border-radius: 5px;
     margin-top: 10px;

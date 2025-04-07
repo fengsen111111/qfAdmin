@@ -4,6 +4,7 @@
   import { createVNode, inject, onBeforeMount, onMounted, reactive,ref  } from "vue";
   import { allPageComponents } from "../../config";
   import { message } from 'ant-design-vue';
+  import CustomerPageVis from '@/components/app_page_components/decoration/customer_service_vis.vue'
 
   const global = inject("global").value;
 
@@ -380,6 +381,12 @@
   function editMsgKey(key) {
     msgKey.value = key
   }
+
+  const serVis = ref(false)//聊天弹框开关
+  // 点击消息,点击站内信 1消息2站内信
+  function openSer() {
+    serVis.value = true
+  }
 </script>
 
 <template>
@@ -533,13 +540,19 @@
             </div>
           </a-badge><br>
           <a-badge count="0">
-            <div
+            <div @click="openSer()"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <MessageOutlined style="font-size: 18px;" />
               <br><span style="font-size: 12px;">官方客服</span>
             </div>
           </a-badge>
         </div>
+        <!-- 聊天弹框 -->
+        <a-modal v-model:visible="serVis" width="1000px" :footer="null">
+          <div v-if="serVis">
+           <CustomerPageVis :pageData="{}" />
+          </div>
+        </a-modal>
         <!-- 消息站内信弹框 -->
         <a-modal v-model:visible="msgVisible" width="600px" :footer="null">
           <div >
