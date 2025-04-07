@@ -205,7 +205,7 @@
 				<a-row>
 					<a-col :xl="24" :xxl="16">
 						<div style="background-color: #fff;padding: 20px;border: 2px solid #f5f5f5;border-radius: 5px;">
-							<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">店铺基本信息</div>
+							<div style="border-left: 3px solid #1890FF;padding-left: 10px;font-size: 16px;">店铺基本信息</div>
 							<div style="display: flex;margin: 20px 0px 20px 100px;align-items: center;">
 								<div style="display: flex;white-space:nowrap;">
 									<span style="color: red;">*</span>
@@ -242,7 +242,7 @@
 								</div>
 							</div>
 							<!--  -->
-							<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息
+							<div style="border-left: 3px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息
 							</div>
 							<div style="display: flex;margin: 20px 0px 20px 100px">
 								<div style="display: flex;">

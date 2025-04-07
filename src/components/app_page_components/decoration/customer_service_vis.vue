@@ -63,7 +63,7 @@
 
   let props = defineProps(["pageData"])
   const pageData = props.pageData
-  
+
   let emit = defineEmits(["openChildPage", "closeChildPage"])
   const global = inject('global').value
 
@@ -228,6 +228,14 @@
         // 当前身份是商家,创建与平台客服的聊天
         if (store_id.value == global.adminMsg.id) {
           console.log('当前身份为平台客服！');
+          res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
+          customer_service_state.room_list = res.list
+          // 自动打开第一个人的聊天房间
+          customer_service_state.room = res.list[0] //聊天房间
+          customer_service_state.room_id = res.list[0].id //聊天房间id
+          customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
+          _getMessage()
+          _shopList()//获取商品信息
         } else {
           global.axios.post('decoration/CustomerService/findRoomID', {
             joiner_signs: [store_id.value, global.adminMsg.id]
