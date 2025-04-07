@@ -18,6 +18,12 @@ const routes = [
         props: true,
         component: () => import(/* @vite-ignore */'../components/app_page_components/decoration/openShop.vue')
     },
+    {
+        path: '/ruleCenter',
+        name: 'ruleCenter',//规则中心
+        props: true,
+        component: () => import(/* @vite-ignore */'../components/app_page_components/decoration/ruleCenter.vue')
+    },
 ];
 
 export const router = createRouter({

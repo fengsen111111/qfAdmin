@@ -363,7 +363,8 @@
 
   // 点击规则中心
   function gzzx() {
-    message.error('功能暂未开通')
+    // message.error('功能暂未开通')
+    global.router.push('/ruleCenter')
   }
   const msgVisible = ref(false)//消息弹框开关
   const msgType = ref('1')//消息类型

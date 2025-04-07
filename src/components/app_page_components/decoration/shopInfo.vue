@@ -200,7 +200,7 @@
 	<!--搜索-->
 	<div>
 		<div style="display: flex;background: #fff;height: 92vh;">
-			<div style="padding: 20px;overflow: auto;height: 100%;width: 70vw;margin: 0 auto;">
+			<div style="padding: 20px;overflow: auto;height: 100%;">
 				<div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div>
 				<a-row>
 					<a-col :xl="24" :xxl="16">
