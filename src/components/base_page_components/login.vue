@@ -38,7 +38,7 @@
   }
 
   function reset() {
-    login_state.loginData = { account: '', password: '', code: '',mobile_code:'' };
+    login_state.loginData = { account: '', password: '', code: '', mobile_code: '' };
   }
 
   function login() {
@@ -56,7 +56,11 @@
             localStorage.removeItem('holdLogin.password');
             localStorage.setItem('holdLogin.status', 'false');
           }
-          global.router.push("/")
+          if (isJb.value) { //是否廉政举报
+            global.router.push("/lzjb")
+          } else {
+            global.router.push("/")
+          }
         } else {
           changeCaptcha()
         }
@@ -74,7 +78,12 @@
           console.log('验证码登陆', res);
           if (res) {
             localStorage.setItem('Authorization', res.token);
-            global.router.push("/")
+            // global.router.push("/")
+            if (isJb.value) { //是否廉政举报
+              global.router.push("/lzjb")
+            } else {
+              global.router.push("/")
+            }
           } else {
             changeCaptcha()
           }
@@ -134,28 +143,42 @@
   function lykd() {
     console.log('0元开店');
     reset()//清空账号密码
-    logType.value = logType.value==1?2:1
+    logType.value = logType.value == 1 ? 2 : 1
   }
 
   // 立即开店
-  function ljkd(){
+  function ljkd() {
+    handUrl('/openShop')
+    return false
     console.log('立即开店，先注册账号，获取token,再跳转开店页进行填写');
-    console.log('提交数据',login_state.loginData);
+    console.log('提交数据', login_state.loginData);
     // 校验验证码
     global.axios.post('decoration/User/checkMobileCode', {
-        mobile: login_state.loginData.mobile,
-        mobile_code: login_state.loginData.mobile_code
-      }, global).then(res => {
-        console.log('校验验证码结果,通过就注册获取token,', res);
-        // token 获取到 存入
-        // if(true){
-        //   localStorage.setItem('Authorization', res.token);
-        //   handUrl('/openShop')
-        // }
-      })
+      mobile: login_state.loginData.mobile,
+      mobile_code: login_state.loginData.mobile_code
+    }, global).then(res => {
+      console.log('校验验证码结果,通过就注册获取token,', res);
+      // token 获取到 存入
+      // if(true){
+      //   localStorage.setItem('Authorization', res.token);
+      //   handUrl('/openShop')
+      // }
+    })
+  }
+  const isJb = ref(false)
+
+  // 廉政举报
+  function handLzjb() {
+    console.log('廉政举报');
+    if (localStorage.getItem('Authorization')) {
+      global.router.push("/lzjb")
+    } else {
+      isJb.value = true
+      message.error('请登录！')
+    }
   }
 
-  
+
 </script>
 
 <template>
@@ -190,7 +213,7 @@
       <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
     <div
-      style="background-image: url('/resource/image/loginBg.png');background-repeat: no-repeat;background-size: 100% 100%;width: 100vw;height: 63vh;">
+      style="background-image: url('/resource/image/loginBgTwo.png');background-repeat: no-repeat;background-size: 100% 100%;width: 100vw;height: 63vh;">
       <div v-if="logType==1" class="login-form">
         <div
           style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
@@ -315,7 +338,7 @@
         <span @click="lykd">商家入驻</span>
         <span @click="handUrl('/ruleCenter?title=帮助中心')">帮助中心</span>
         <span @click="handUrl('/ruleCenter?title=规则中心')">规则中心</span>
-        <span>廉正举报</span>
+        <span @click="handLzjb()">廉正举报</span>
         <span style="border: 1px solid #999999;padding: 2px 10px;border-radius: 3px;">
           <WindowsOutlined />PC版
         </span>

@@ -24,6 +24,12 @@ const routes = [
         props: true,
         component: () => import(/* @vite-ignore */'../components/app_page_components/decoration/ruleCenter.vue')
     },
+    {
+        path: '/lzjb',
+        name: 'lzjb',//0元开店
+        props: true,
+        component: () => import(/* @vite-ignore */'../components/app_page_components/decoration/lzjb.vue')
+    }
 ];
 
 export const router = createRouter({
@@ -34,7 +40,7 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/') {
         next();
     } else {
-        let token = localStorage.getItem('token');
+        let token = localStorage.getItem('Authorization');
         if(to.path == '/openShop'){//0元开店不阻止跳转
             next();
         }else if (token === 'null' || token === '') {
