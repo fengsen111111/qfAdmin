@@ -244,6 +244,7 @@
   }
 
   const sqJbxx = ref(false)//商品信息收起展开
+  const ser_sqJbxx = ref(false)//服务信息收起展开
 
   let uploadQueue = []; // 保存要上传的文件
   let isUploading = false; //用于指示上传进度的标志
@@ -354,9 +355,9 @@
     post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
-          item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
+        item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
-          item.goods_activity_id = item.goods_activity_id ?? '',
+        item.goods_activity_id = item.goods_activity_id ?? '',
           item.kill_activity_id = item.kill_activity_id ?? ''
       })
 
@@ -586,8 +587,8 @@
                                 <div>分类</div>
                               </div>
                             </div>
-                            <div style="margin-left: 20px; width: 60%;">
-                              <a-tree-select v-model:value="post_params.type_id" labelInValue style="width: 100%;"
+                            <div style="margin-left: 20px; width: 200px;">
+                              <a-tree-select v-model:value="post_params.type_id" disabled labelInValue style="width: 100%;"
                                 placeholder="请选择商品分类" :tree-data="spflList" :field-names="{
                                 children: 'children',
                                 label: 'name',
@@ -599,7 +600,7 @@
                           </div>
                         </div>
                         <div>
-                          <div style="display: flex;align-items: center;margin: 10px 0px;">
+                          <div style="display: flex;margin: 10px 0px;">
                             <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
                               <div></div>
                               <div style="display: flex;">
@@ -607,11 +608,14 @@
                                 <div>品牌</div>
                               </div>
                             </div>
-                            <a-select ref="select" v-model:value="post_params.brand_id"
-                              style="width: 60%;margin-left: 20px;" placeholder="请选择品牌">
-                              <a-select-option :value="item.value" v-for="item in ppList"
-                                :key="item.value">{{item.label}}</a-select-option>
-                            </a-select>
+                            <div>
+                              <a-select ref="select" v-model:value="post_params.brand_id"
+                                style="width: 200px;margin-left: 20px;" placeholder="请选择品牌">
+                                <a-select-option :value="item.value" v-for="item in ppList"
+                                  :key="item.value">{{item.label}}</a-select-option>
+                              </a-select>
+                              <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span style="color: #ff7300;">点击申请</span></div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -787,7 +791,6 @@
                           </tr>
                         </template>
                       </template>
-
                     </table>
                   </div>
                 </div>
@@ -800,32 +803,147 @@
               <div style="color: #407cff;">3</div>
               <div style="margin-left: 5px;">商品服务</div>
             </div>
-            <div style="display: flex;margin-top: 20px;margin-left: 40px;">
-              <div>商品服务</div>
-              <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">
-                <div style="padding:10px 20px;display: flex;justify-content: space-between;">
-                  <div style="color: #999999;width: 80%;">请准确填写包含的服务内容，错误填写可能面不必要麻烦</div>
-                  <div style="display: flex;">
-                    <div>没有合适服务？</div>
-                    <div @click="()=>{visibleFw=true}" style="color: #407cff;">点击添加</div>
+            <div v-show="!ser_sqJbxx">
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>商品类型</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">普通商品</a-radio>
+                    <a-radio value="2">海外进口</a-radio>
+                    <a-radio value="3">海外CC个人行邮</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>是否二手</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">非二手</a-radio>
+                    <a-radio value="2">二手</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>是否定制</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">非定制</a-radio>
+                    <a-radio value="2">部分库存定制</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>是否预售</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">非预售</a-radio>
+                    <a-radio value="2">定时预售</a-radio>
+                    <a-radio value="3">时段预售</a-radio>
+                    <a-radio value="4">规格预售</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 18px;">
+                <div style="display: flex;">
+                  <div>承诺发货时间</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">当日发货</a-radio>
+                    <a-radio value="2">24小时<span style="color: #FF7300;margin-left: 10px;">获额外流量扶持</span></a-radio>
+                    <a-radio value="3">48小时</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>运费模板</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="value" name="radioGroup">
+                    <a-radio value="1">某某模板<span style="color: #FF7300;margin-left: 10px;">推荐</span></a-radio>
+                    <a-radio value="2">其它模板</a-radio>
+                  </a-radio-group>
+                  <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
+                    <div style="padding-left: 14px;">包邮配送地区：北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京</div>
+                    <div style="display: flex;margin-top: 10px;">
+                      <span>不包邮配送地区：</span>
+                      <div>
+                        <div>1）西藏1件内28.00元，每增加1件，加25元</div>
+                        <div>2）新疆1件内28.00元，每增加1件，加25元</div>
+                      </div>
+                    </div>
+                    <div style="padding-left: 28px;margin-top: 10px;">不配送地区：香港、澳门、台湾</div>
                   </div>
                 </div>
-                <div style="background-color: #999999;height: 1px;width: 100%;"></div>
-                <div style="padding:10px 20px;display: flex;justify-content: space-between;background-color: #f7f8fa;">
-                  <div style="width: 100%;">
-                    <div>
-                      <template v-for="(item,index) in post_params.services" :key="index">
-                        <div style="display: flex;align-items: center;margin: 10px 0px;">
-                          <div style="width: 13%;text-align: right;">{{item.key}}</div>
-                          <a-input type="text" v-model:value="item.value" style="width: 75%;margin-left: 20px;"
-                            placeholder='请输入服务描述信息' />
-                          <CloseCircleOutlined @click="delFw(index)" style="margin-left: 10px;" />
-                        </div>
-                      </template>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 47px;">
+                <div style="display: flex;">
+                  <div>库存计件</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  支付成功减库存
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 68px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>承诺</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  承诺是否是商家服务？？？？
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 47px;">
+                <div>商品服务</div>
+                <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">
+                  <div style="padding:10px 20px;display: flex;justify-content: space-between;">
+                    <div style="color: #999999;width: 80%;">请准确填写包含的服务内容，错误填写可能面不必要麻烦</div>
+                    <div style="display: flex;">
+                      <div>没有合适服务？</div>
+                      <div @click="()=>{visibleFw=true}" style="color: #407cff;">点击添加</div>
+                    </div>
+                  </div>
+                  <div style="background-color: #999999;height: 1px;width: 100%;"></div>
+                  <div
+                    style="padding:10px 20px;display: flex;justify-content: space-between;background-color: #f7f8fa;">
+                    <div style="width: 100%;">
+                      <div>
+                        <template v-if="post_params.services.length==0">
+                          <a-empty />
+                        </template>
+                        <template v-for="(item,index) in post_params.services" :key="index">
+                          <div style="display: flex;align-items: center;margin: 10px 0px;">
+                            <div style="width: 13%;text-align: right;">{{item.key}}</div>
+                            <a-input type="text" v-model:value="item.value" style="width: 75%;margin-left: 20px;"
+                              placeholder='请输入服务描述信息' />
+                            <CloseCircleOutlined @click="delFw(index)" style="margin-left: 10px;" />
+                          </div>
+                        </template>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div @click="()=>ser_sqJbxx=!ser_sqJbxx"
+              style="display: flex;align-items: center;margin-left: 77px;margin-top: 10px;color: #407cff;">
+              <div style="margin-right: 5px;">{{ser_sqJbxx?'展开':'收起'}}</div>
+              <UpCircleOutlined v-if="!ser_sqJbxx" style="color: #407cff;font-size: 14px;" />
+              <DownCircleOutlined v-else style="color: #407cff;font-size: 14px;" />
             </div>
           </div>
           <!-- 添加服务 -->
