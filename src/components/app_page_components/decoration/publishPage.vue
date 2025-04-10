@@ -58,7 +58,7 @@
       //   key: '热销爆款',
       //   value: '热门商品，大家都在买'
       // }
-    ],//商品服务
+    ],//商品服务  
     goods_sizes: [
       // {
       //   id: '',//
@@ -130,7 +130,7 @@
   function delGG(index) {
     post_params.goods_sizes.splice(index, 1)
   }
-
+  
   const component_state = reactive({
     isCollapse: false,
     myValue: post_params.detail,
@@ -180,16 +180,33 @@
       }, global)
       .then((res) => {
         console.log('商品数据', res.goods_datas);
-        res.goods_datas.id = props.pageData.data.id
-        res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
-        component_state.myValue = res.goods_datas.detail
-        res.goods_datas.goods_sizes.map((item) => {
-          item.status = item.status == 'Y' ? true : false
-          item.uper_status = item.uper_status == 'Y' ? true : false
-        })
-        // 富文本单独更新
-        Object.assign(post_params, res.goods_datas);
-      });
+        if (res.goods_datas) {
+          res.goods_datas.id = props.pageData.data.id
+          res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
+          component_state.myValue = res.goods_datas.detail
+          res.goods_datas.goods_sizes.map((item) => {
+            item.status = item.status == 'Y' ? true : false
+            item.uper_status = item.uper_status == 'Y' ? true : false
+          })
+          // 富文本单独更新
+          Object.assign(post_params, res.goods_datas);
+        }else{
+          // 是新增时清空
+          post_params.id = ''
+          post_params.name = ''
+          post_params.store_id = ''
+          post_params.cover_image = ''
+          post_params.images = []
+          post_params.detail = ''
+          post_params.type_id = ''
+          post_params.brand_id = ''
+          post_params.status = ''
+          post_params.attributes = []
+          post_params.services = []
+          post_params.goods_sizes = []
+          component_state.myValue = ''
+        }
+      })         
   }
   // 有数据，编辑数据
   if (props.pageData.data.id) {
@@ -588,8 +605,8 @@
                               </div>
                             </div>
                             <div style="margin-left: 20px; width: 200px;">
-                              <a-tree-select v-model:value="post_params.type_id" disabled labelInValue style="width: 100%;"
-                                placeholder="请选择商品分类" :tree-data="spflList" :field-names="{
+                              <a-tree-select v-model:value="post_params.type_id" disabled labelInValue
+                                style="width: 100%;" placeholder="请选择商品分类" :tree-data="spflList" :field-names="{
                                 children: 'children',
                                 label: 'name',
                                 value: 'id',
@@ -614,7 +631,8 @@
                                 <a-select-option :value="item.value" v-for="item in ppList"
                                   :key="item.value">{{item.label}}</a-select-option>
                               </a-select>
-                              <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span style="color: #ff7300;">点击申请</span></div>
+                              <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span
+                                  style="color: #ff7300;">点击申请</span></div>
                             </div>
                           </div>
                         </div>

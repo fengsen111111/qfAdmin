@@ -190,18 +190,39 @@
 	}
 
 	// 关闭地图
-	function closeMap(){
+	function closeMap() {
 		isMap.value = false
 	}
-
+	// 返回上一页
+	function closeChildPage(page_key) {
+		global.Modal.confirm({
+			title: global.findLanguage(
+				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				emit("closeChildPage", page_key);
+			},
+		});
+	}
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
 		<div style="display: flex;background: #fff;height: 92vh;">
+
 			<div style="padding: 20px;overflow: auto;height: 100%;">
-				<div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div>
+				<!-- <div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div> -->
+				<div style="display: flex;align-items: center;margin-bottom: 20px;">
+					<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+						style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+						@click="closeChildPage(pageData.page_key)">&#xe6d2;
+					</a-button>
+					<div style="font-size: 18px;">店铺信息</div>
+				</div>
 				<a-row>
 					<a-col :xl="24" :xxl="16">
 						<div style="background-color: #fff;padding: 20px;border: 2px solid #f5f5f5;border-radius: 5px;">
@@ -227,7 +248,8 @@
 									<span>门店logo</span>
 								</div>
 								<div style="margin-left: 10px;display: flex;">
-									<div v-if="logo" style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+									<div v-if="logo"
+										style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
 										<a-image :width="100" :src="logo" :preview="{ src: logo }" />
 										<div @click="delImgLogo()" class="imgClose" style="margin-left: 10px;">
 											<CloseCircleOutlined />
@@ -328,13 +350,15 @@
 											<div style="margin-left: 10px;display: flex;">
 												<div v-if="license_image"
 													style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
-													<a-image :width="100" :src="license_image" :preview="{ src: license_image }" />
+													<a-image :width="100" :src="license_image"
+														:preview="{ src: license_image }" />
 													<div @click="delImgYyzz()" class="imgClose"
 														style="margin-left: 10px;">
 														<CloseCircleOutlined />
 													</div>
 												</div>
-												<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
+												<a-upload v-else :customRequest="upload" :file-list="[]"
+													list-type="text">
 													<div
 														style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
 														<PlusOutlined

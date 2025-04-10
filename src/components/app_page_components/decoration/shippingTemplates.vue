@@ -101,13 +101,33 @@
       }
     })
   }
+  // 返回上一页
+	function closeChildPage(page_key) {
+		global.Modal.confirm({
+			title: global.findLanguage(
+				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				emit("closeChildPage", page_key);
+			},
+		});
+	}
 </script>
 
 <template>
   <!--搜索 class="flex"-->
   <div >
     <div class="a1">
-      <div class="a2">运费模板</div>
+      <div style="display: flex;align-items: center;">
+        <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+          style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+          @click="closeChildPage(pageData.page_key)">&#xe6d2;
+        </a-button>
+        <div class="a2">运费模板</div>
+      </div>
       <div class="a3">
         <div class="a4">模板基础信息</div>
         <div class="a5">

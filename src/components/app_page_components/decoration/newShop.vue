@@ -58,17 +58,17 @@
     } else {
       isXn.value = false
     }
-    if (path.length >0) {
+    if (path.length > 0) {
       checkClassify.value.oneClassify = path[0].value
       checkClassify.value.oneList = path[0].children
       selClassify.value = path[0].label
     }
-    if (path.length >1) {
+    if (path.length > 1) {
       checkClassify.value.twoClassify = path[1].value
       checkClassify.value.twoList = path[1].children
       selClassify.value = path[0].label + ' > ' + path[1].label
     }
-    if (path.length >2) {
+    if (path.length > 2) {
       checkClassify.value.threeClassify = path[2].value
       selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
     }
@@ -111,13 +111,13 @@
     } else {
       isXn.value = false
     }
-    if (path.length >0) {
+    if (path.length > 0) {
       selClassify.value = path[0].label
     }
-    if (path.length >1) {
+    if (path.length > 1) {
       selClassify.value = path[0].label + ' > ' + path[1].label
     }
-    if (path.length >2) {
+    if (path.length > 2) {
       selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
     }
   }
@@ -156,17 +156,17 @@
                 } else {
                   isXn.value = false
                 }
-                if (path.length >0) {
+                if (path.length > 0) {
                   checkClassify.value.oneClassify = path[0].value
                   checkClassify.value.oneList = path[0].children
                   selClassify.value = path[0].label
                 }
-                if (path.length >1) {
+                if (path.length > 1) {
                   checkClassify.value.twoClassify = path[1].value
                   checkClassify.value.twoList = path[1].children
                   selClassify.value = path[0].label + ' > ' + path[1].label
                 }
-                if (path.length >2) {
+                if (path.length > 2) {
                   checkClassify.value.threeClassify = path[2].value
                   selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
                 }
@@ -177,14 +177,33 @@
       }
     })
   }
-
+  // 返回上一页
+  function closeChildPage(page_key) {
+    global.Modal.confirm({
+      title: global.findLanguage(
+        "确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+      ),
+      okText: global.findLanguage("确定"),
+      cancelText: global.findLanguage("取消"),
+      okType: "primary",
+      onOk: function () {
+        emit("closeChildPage", page_key);
+      },
+    });
+  }
 
 </script>
 
 <template>
   <!--搜索-->
   <div style="padding: 20px;overflow: auto;height: 100%;">
-    <div style="font-size: 18px;margin-bottom: 20px;">发布新商品</div>
+    <div style="display: flex;align-items: center;margin-bottom: 20px;">
+      <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+        style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+        @click="closeChildPage(pageData.page_key)">&#xe6d2;
+      </a-button>
+      <div style="font-size: 18px;">发布新商品</div>
+    </div>
     <div
       style="display: flex;border: 1px solid #91d5ff;border-radius: 3px;padding:5px 10px;align-items: center;background-color: #F0F7FF;">
       <ExclamationCircleOutlined style="color: #91d5ff;margin-right: 10px;" />
@@ -263,8 +282,7 @@
 </template>
 
 <style scoped>
-
-  .hover:hover{
+  .hover:hover {
     color: #1890FF;
   }
 
