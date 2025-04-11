@@ -148,9 +148,6 @@
 
   // 立即开店
   function ljkd() {
-    handUrl('/openShop')
-    return false
-    console.log('立即开店，先注册账号，获取token,再跳转开店页进行填写');
     console.log('提交数据', login_state.loginData);
     // 校验验证码
     global.axios.post('decoration/User/checkMobileCode', {
@@ -158,10 +155,8 @@
       mobile_code: login_state.loginData.mobile_code
     }, global).then(res => {
       console.log('校验验证码结果,通过就注册获取token,', res);
-      // token 获取到 存入
-      // if(true){
-      //   localStorage.setItem('Authorization', res.token);
-      //   handUrl('/openShop')
+      // if(res.result!=='N'){
+        handUrl('/openShop?password=' + login_state.loginData.password+'&mobile='+login_state.loginData.mobile)
       // }
     })
   }

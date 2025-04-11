@@ -360,7 +360,6 @@
     }, false)
     skeleton_state.menuCheckedValues = ['111111']
   }
-
   // 点击规则中心
   function gzzx() {
     // message.error('功能暂未开通')
