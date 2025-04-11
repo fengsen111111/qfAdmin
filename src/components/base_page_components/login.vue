@@ -142,8 +142,15 @@
   // 0元开店 / 立即登录
   function lykd() {
     console.log('0元开店');
-    reset()//清空账号密码
     logType.value = logType.value == 1 ? 2 : 1
+    reset()//清空账号密码
+    reset()//清空账号密码
+  }
+  // 商家入驻
+  function lykdShop(){
+    logType.value = 2
+    reset()//清空账号密码
+    reset()//清空账号密码
   }
 
   // 立即开店
@@ -330,7 +337,7 @@
     </div>
     <div style="display: flex;margin-top: 55px;color: #666666;font-size: 13px;">
       <div style="display: flex;justify-content: space-between;margin: 0 auto;width: 500px;align-items: center;">
-        <span @click="lykd">商家入驻</span>
+        <span @click="lykdShop">商家入驻</span>
         <span @click="handUrl('/ruleCenter?title=帮助中心')">帮助中心</span>
         <span @click="handUrl('/ruleCenter?title=规则中心')">规则中心</span>
         <span @click="handLzjb()">廉正举报</span>
