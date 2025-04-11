@@ -130,8 +130,6 @@
   const typeVis = ref(1)//1选分类 2 填商品信息
   // 发布该类商品
   function handFb() {
-    typeVis.value = 2
-    return false
     let arr = selClassify.value.split(' > ')
     console.log('arr', arr, checkClassify.value.threeClassify);
     if (arr.length != 3) {
@@ -159,8 +157,10 @@
               console.error('生成二维码失败', err);
             });
           isPay.value = true
+        } else if(res.pay_info=='') {
+          typeVis.value = 2
         } else {
-          message.error('生成支付数据失败！')
+          massage.error('未生成支付数据')
         }
       })
   }
@@ -226,6 +226,7 @@
   let qrCodeData = ref('')//存储生成的二维码数据URL
   function handOKCode() {
     console.log('确定');
+    typeVis.value = 2
   }
 </script>
 
