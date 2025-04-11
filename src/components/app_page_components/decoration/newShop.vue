@@ -5,7 +5,7 @@
   import { Row, Col, message } from 'ant-design-vue';
   import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, ExclamationCircleOutlined, SearchOutlined, RightOutlined } from "@ant-design/icons-vue";
   import AMapLoader from '@amap/amap-jsapi-loader';
-  import publishPage from '@/components/app_page_components/decoration/publishPageAdd.vue'//发布商品
+  import publishPage from '@/components/app_page_components/decoration/publishPage.vue'//发布商品
 
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
@@ -130,6 +130,7 @@
   const typeVis = ref(1)//1选分类 2 填商品信息
   // 发布该类商品
   function handFb() {
+    pageData.data.typeId = checkClassify.value.threeClassify
     let arr = selClassify.value.split(' > ')
     console.log('arr', arr, checkClassify.value.threeClassify);
     if (arr.length != 3) {
@@ -160,7 +161,8 @@
         } else if(res.pay_info=='') {
           typeVis.value = 2
         } else {
-          massage.error('未生成支付数据')
+          message.error('未生成支付数据')
+          // typeVis.value = 2
         }
       })
   }

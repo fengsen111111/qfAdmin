@@ -211,6 +211,9 @@
   // 有数据，编辑数据
   if (props.pageData.data.id) {
     lookData()
+  }else{
+    // 没有id就是新增商品
+    post_params.type_id = props.pageData.data.typeId
   }
 
   const activeKey = ref(['1', '2']);
@@ -612,7 +615,7 @@
                                 value: 'id',
                               }">
                               </a-tree-select>
-                              <div style="color: red;font-size: 12px;">商品分类请选到三级</div>
+                              <!-- <div style="color: red;font-size: 12px;">商品分类请选到三级</div> -->
                             </div>
                           </div>
                         </div>
