@@ -363,7 +363,7 @@
   // 点击规则中心
   function gzzx() {
     // message.error('功能暂未开通')
-    global.router.push('/ruleCenter?title=规则中心')
+    global.router.push('/ruleCenter?title=学习中心')
   }
   const msgVisible = ref(false)//消息弹框开关
   const msgType = ref('1')//消息类型
@@ -474,7 +474,7 @@
           <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
-            <span>规则中心</span>
+            <span>学习中心</span>
           </div>
         </div>
         <div class="admin-msg">

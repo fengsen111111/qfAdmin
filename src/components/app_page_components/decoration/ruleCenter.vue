@@ -21,14 +21,76 @@
 
 	import { useRoute } from 'vue-router';
 	const route = useRoute();
-	console.log('当前路径:', route.query.title);
+	// console.log('当前路径:', route.query.title);
 	const title = ref('')
 	title.value = route.query.title
 
 
-    // 点击了某个标题
-	function handleClick(){
-		console.log('点击了某个标题');
+	const menuList = ref([])
+	const fwbContent = ref('')
+
+	if (title.value == '常见问题') {
+		getQandAList()
+	} else if (title.value == '学习中心') {
+		getStudyList()
+	}
+	// 常见问题
+	function getQandAList() {
+		global.axios
+			.post('decoration/QandA/getQandAList', {}, global)
+			.then((res) => {
+				// console.log('常见问题', res.list);
+				menuList.value = res.list
+				state.selectedKeys = [res.list[0].id]
+				getQandADetail()
+			});
+	}
+	// 常见问题详情
+	function getQandADetail() {
+		global.axios
+			.post('decoration/QandA/getQandADetail', {
+				id: state.selectedKeys[0]
+			}, global)
+			.then((res) => {
+				// console.log('常见问题答案', res);
+				fwbContent.value = res.answer
+			});
+	}
+	// 点击了某个标题
+	function handleClick(item) {
+		// console.log('点击了某个标题', item);
+		state.selectedKeys = [item.id]
+		if (title.value == '常见问题') {
+			getQandADetail()
+		} else if (title.value == '学习中心') {
+			getStudyDetail()
+		}
+	}
+
+	// 学习中心
+	function getStudyList() {
+		global.axios
+			.post('decoration/Study/getStudyList', {}, global)
+			.then((res) => {
+				// console.log('学习中心', res.list);
+				res.list.map((item) => {
+					item.question = item.title
+				})
+				menuList.value = res.list
+				state.selectedKeys = [res.list[0].id]
+				getStudyDetail()
+			});
+	}
+	// 学习中心详情
+	function getStudyDetail() {
+		global.axios
+			.post('decoration/Study/getStudyDetail', {
+				id: state.selectedKeys[0]
+			}, global)
+			.then((res) => {
+				// console.log('学习中心答案', res);
+				fwbContent.value = res.detail
+			});
 	}
 </script>
 
@@ -53,16 +115,14 @@
 				<!-- <div style="font-size: 18px;margin-bottom: 20px;">规则中心</div> -->
 				<div style="display: flex;height: 87vh; width: 100%;">
 					<a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
-						style="width: 256px" mode="vertical" @click="handleClick">
-						<a-menu-item key="1">
-							某某规则1
-						</a-menu-item>
-						<a-menu-item key="2">
-							某某规则2
+						style="width: 256px" mode="vertical">
+						<a-menu-item v-for="item in menuList" :key="item.id" @click="handleClick(item)">
+							{{item.question}}
 						</a-menu-item>
 					</a-menu>
 					<div style="margin-left: 10px;background-color: #fff;border-radius: 4px;padding: 20px;width: 100%;">
-						富文本内容
+						<div v-html="fwbContent"></div>
+						<div v-if="!fwbContent" style="padding-top: 20vh;"><a-empty /></div>
 					</div>
 				</div>
 			</div>

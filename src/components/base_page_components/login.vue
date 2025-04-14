@@ -242,7 +242,7 @@
         </a-menu>
       </template>
     </a-dropdown>
-    <div style="height: 9vh;margin-left: 21vw;padding-top: 14px;color: #FF0000;font-weight: bold;">
+    <div style="height: 9.5vh;margin-left: 21.5vw;padding-top: 14px;color: #FF0000;font-weight: bold;">
       <div style="display: flex;">
         <!-- <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px"> -->
         <img src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
@@ -299,7 +299,7 @@
               </template>
             </a-form-item>
             <a-form-item>
-              <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('请输入验证码')"
+              <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('图形验证码')"
                 :style="{width:'150px',float:'left'}" size="large" />
               <img :src="APPConfig.apiURL+'/factory_system/Base/getCaptcha?timer='+login_state.timer" alt=""
                 style="width: 48%;border-radius: 3px;float: right" @click="changeCaptcha">
@@ -377,8 +377,8 @@
     <div style="display: flex;margin-top: 55px;color: #666666;font-size: 13px;">
       <div style="display: flex;justify-content: space-between;margin: 0 auto;width: 500px;align-items: center;">
         <span @click="lykdShop">商家入驻</span>
-        <span @click="handUrl('/ruleCenter?title=帮助中心')">帮助中心</span>
-        <span @click="handUrl('/ruleCenter?title=规则中心')">规则中心</span>
+        <span @click="handUrl('/ruleCenter?title=常见问题')">常见问题</span>
+        <span @click="handUrl('/ruleCenter?title=学习中心')">学习中心</span>
         <span @click="handLzjb()">廉正举报</span>
         <span style="border: 1px solid #999999;padding: 2px 10px;border-radius: 3px;">
           <WindowsOutlined />PC版
