@@ -522,7 +522,7 @@
         </div>
       </a-layout-content>
       <!-- 固定标 -->
-      <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;">
+      <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
           <!-- BellOutlined,MailOutlined,MessageOutlined -->
           <a-badge count="5">
