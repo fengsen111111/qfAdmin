@@ -13,6 +13,9 @@
     captChaImage: ''                       //captChaImage
   })
 
+  const isJb = ref(false)
+
+
   onBeforeMount(() => {
     //已经有token直接跳转到后台首页
     if (localStorage.getItem('Authorization')) {
@@ -166,7 +169,6 @@
       // }
     })
   }
-  const isJb = ref(false)
 
   // 廉政举报
   function handLzjb() {

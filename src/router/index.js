@@ -37,7 +37,7 @@ export const router = createRouter({
     routes,
 });
 router.beforeEach((to, from, next) => {
-    if (to.path === '/') {
+    if (to.path === '/' || to.path === '/login') {
         next();
     } else {
         let token = localStorage.getItem('Authorization');

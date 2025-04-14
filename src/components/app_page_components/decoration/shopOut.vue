@@ -99,17 +99,17 @@
 				shopStatus.value = res
 				console.log('查看当前店铺状态', res);
 				// 进程 a未申请 b公示中 c材料审核中 d待商家确认退店 e待退款  f已退款 
-				if (res.process == 'a') {
+				if (res.out_process == 'a') {
 					current.value = 0
-				} else if (res.process == 'b') {
+				} else if (res.out_process == 'b') {
 					current.value = 1
-				} else if (res.process == 'c') {
+				} else if (res.out_process == 'c') {
 					current.value = 2
-				} else if (res.process == 'd') {
+				} else if (res.out_process == 'd') {
 					current.value = 3
-				} else if (res.process == 'e') {
+				} else if (res.out_process == 'e') {
 					current.value = 4
-				} else if (res.process == 'f') {
+				} else if (res.out_process == 'f') {
 					current.value = 5
 				}
 			});
