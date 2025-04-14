@@ -1,7 +1,7 @@
 <script setup>
   import { inject, onBeforeMount, reactive } from 'vue'
   import { APPConfig } from "@/config";
-  import { WindowsOutlined, } from "@ant-design/icons-vue";
+  import { WindowsOutlined, CloseCircleOutlined,LeftOutlined } from "@ant-design/icons-vue";
 
   const global = inject('global').value
 
@@ -137,8 +137,7 @@
     // /openShop //0元开店
     console.log('url', url);
     global.router.push(url)
-  }
-  const logType = ref(1)//1普通登录 2
+  } const logType = ref(1)//1普通登录 2
   // 0元开店 / 立即登录
   function lykd() {
     console.log('0元开店');
@@ -147,7 +146,7 @@
     reset()//清空账号密码
   }
   // 商家入驻
-  function lykdShop(){
+  function lykdShop() {
     logType.value = 2
     reset()//清空账号密码
     reset()//清空账号密码
@@ -163,7 +162,7 @@
     }, global).then(res => {
       console.log('校验验证码结果,通过就注册获取token,', res);
       // if(res.result!=='N'){
-        handUrl('/openShop?password=' + login_state.loginData.password+'&mobile='+login_state.loginData.mobile)
+      handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
       // }
     })
   }
@@ -180,6 +179,8 @@
     }
   }
 
+  const visible = ref(false)
+  const keyWt = ref('')
 
 </script>
 
@@ -187,9 +188,41 @@
   <div class="login">
     <div style="position: fixed;right: 20px;top: 12vh;text-align: center;">
       <img src="/resource/image/jpn.png" style="width: 40px;height: 38px;" alt="">
-      <div
-        style="color: #fff;background-color: #FF5454;text-align: center;padding:7px 15px;border-radius: 5px;line-height: 18px;">
-        官方<br>客服</div>
+      <a-popover v-model:visible="visible" trigger="click" placement="leftTop">
+        <template #content>
+          <div style="width: 400px;">
+            <div style="display: flex;justify-content: space-between;">
+              <div v-if="!keyWt" style="font-size: 18px;">您可能想知道</div>
+              <div v-else @click="keyWt=''" style="font-size: 18px;display: flex;align-items: center;">
+                <LeftOutlined />
+                <span style="margin-left: 5px;">返回</span>
+              </div>
+
+              <div>
+                <CloseCircleOutlined @click="visible = false" />
+              </div>
+            </div>
+            <div v-if="!keyWt">
+              <div @click="keyWt = item" class="itemWt"
+                style="display: flex; align-items: center;width: 100%;margin-top: 5px;"
+                v-for="item in [1,2,3,4,5,6,7,8,9]" :key="item">
+                <div style="background-color: #999999;height: 5px;width: 5px;border-radius: 50%;margin-right: 5px;">
+                </div>
+                <div style="border-bottom: 1px solid #f5f5f5;width: 100%;padding-bottom: 5px;padding-top: 5px;">
+                  问题我去恶趣味请问请问请问？</div>
+              </div>
+            </div>
+            <div v-else style="padding: 10px;">
+              <div style="font-weight: bold;margin-bottom: 10px;">问题我去恶趣味请问请问请问？</div>
+              <div>问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问</div>
+            </div>
+          </div>
+        </template>
+        <div @click="visible = true"
+          style="color: #fff;background-color: #FF5454;text-align: center;padding:7px 15px;border-radius: 5px;line-height: 18px;">
+          官方<br>客服</div>
+      </a-popover>
+
     </div>
     <!-- 语言 中文 -->
     <a-dropdown>
@@ -209,8 +242,9 @@
     </a-dropdown>
     <div style="height: 9vh;margin-left: 16vw;padding: 24px;color: #FF0000;font-weight: bold;">
       <div style="display: flex;">
-        <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px">
-        <span style="font-size: 28px;margin-left: 5px;">{{global.appName}} </span>
+        <!-- <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px"> -->
+        <img src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
+        <!-- <span style="font-size: 28px;margin-left: 5px;">{{global.appName}} </span> -->
       </div>
       <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
@@ -366,6 +400,15 @@
 
 
 <style scoped>
+  .itemWt :hover {
+    background-color: #f5f5f5;
+    color: #2266AA;
+  }
+
+  :deep(.ant-popover-inner) {
+    background-color: #FF5454 !important;
+  }
+
   :deep(.ant-form-item) {
     box-sizing: border-box;
     margin: 0;
@@ -393,7 +436,7 @@
     height: 380px;
     position: absolute;
     top: 24vh;
-    right: 13vw;
+    right: 20vw;
     /* background: url("/resource/image/login_form.png"); */
     /* background-size: 100% 100%; */
     background-color: #fff;
