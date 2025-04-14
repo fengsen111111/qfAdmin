@@ -193,7 +193,7 @@
           <div style="width: 400px;">
             <div style="display: flex;justify-content: space-between;">
               <div v-if="!keyWt" style="font-size: 18px;">您可能想知道</div>
-              <div v-else @click="keyWt=''" style="font-size: 18px;display: flex;align-items: center;">
+              <div v-else @click="keyWt=''" style="display: flex;align-items: center;">
                 <LeftOutlined />
                 <span style="margin-left: 5px;">返回</span>
               </div>
@@ -220,7 +220,7 @@
         </template>
         <div @click="visible = true"
           style="color: #fff;background-color: #FF5454;text-align: center;padding:7px 15px;border-radius: 5px;line-height: 18px;">
-          官方<br>客服</div>
+          常见<br>问题</div>
       </a-popover>
 
     </div>
