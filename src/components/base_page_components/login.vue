@@ -1,7 +1,7 @@
 <script setup>
   import { inject, onBeforeMount, reactive } from 'vue'
   import { APPConfig } from "@/config";
-  import { WindowsOutlined, CloseCircleOutlined,LeftOutlined } from "@ant-design/icons-vue";
+  import { WindowsOutlined, CloseCircleOutlined, LeftOutlined } from "@ant-design/icons-vue";
 
   const global = inject('global').value
 
@@ -242,7 +242,7 @@
         </a-menu>
       </template>
     </a-dropdown>
-    <div style="height: 9vh;margin-left: 16vw;padding: 24px;color: #FF0000;font-weight: bold;">
+    <div style="height: 9vh;margin-left: 21vw;padding-top: 14px;color: #FF0000;font-weight: bold;">
       <div style="display: flex;">
         <!-- <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px"> -->
         <img src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
@@ -250,43 +250,104 @@
       </div>
       <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
-    <div
-      style="background-image: url('/resource/image/loginBgTwo.png');background-repeat: no-repeat;background-size: 100% 100%;width: 100vw;height: 63vh;">
-      <div v-if="logType==1" class="login-form">
-        <div
-          style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
-          <div style="display: flex;margin: 0 auto;">
-            <div @click="handActive(1)" :style="{ color: active==1 ? '#FF5454' : ''}">账号登陆</div>
-            <div style="color: #999999;margin: 0px 10px;font-weight: 100;">|</div>
-            <div @click="handActive(2)" :style="{ color: active==2 ? '#FF5454' : ''}">手机登陆</div>
+    <div style="padding: 0px 260px;background-image: linear-gradient(180deg, #103bbc 0%, #00238c 100%);">
+      <div
+        style="background-image: url('/resource/image/loginBgTwo.png');background-repeat: no-repeat;background-size: 100% 100%;height: 63vh;">
+        <div v-if="logType==1" class="login-form">
+          <div
+            style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
+            <div style="display: flex;margin: 0 auto;">
+              <div @click="handActive(1)" :style="{ color: active==1 ? '#FF5454' : ''}">账号登陆</div>
+              <div style="color: #999999;margin: 0px 10px;font-weight: 100;">|</div>
+              <div @click="handActive(2)" :style="{ color: active==2 ? '#FF5454' : ''}">手机登陆</div>
+            </div>
           </div>
-        </div>
-        <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
-          <div style="width: 100%">
+          <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
+            <div style="width: 100%">
+              <a-form-item>
+                <template v-if="active==1">
+                  <a-input v-model:value="login_state.loginData.account" :placeholder="global.findLanguage('请输入账号')"
+                    allow-clear size="large" />
+                </template>
+                <template v-else>
+                  <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
+                    allow-clear size="large" />
+                </template>
+              </a-form-item>
+            </div>
             <a-form-item>
               <template v-if="active==1">
-                <a-input v-model:value="login_state.loginData.account" :placeholder="global.findLanguage('请输入账号')"
-                  allow-clear size="large" />
+                <a-input-password v-model:value="login_state.loginData.password"
+                  :placeholder="global.findLanguage('请输入密码')" size="large" />
               </template>
               <template v-else>
-                <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
-                  allow-clear size="large" />
+                <div style="background-color: #fff;display: flex;">
+                  <a-input v-model:value="login_state.loginData.mobile_code"
+                    :placeholder="global.findLanguage('请输入验证码')" size="large">
+                    <template #suffix>
+                      <div v-if="!showDjs" @click="sendCode"
+                        style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
+                        发送验证码
+                      </div>
+                      <div v-else
+                        style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
+                        {{timeData}}
+                      </div>
+                    </template>
+                  </a-input>
+                </div>
               </template>
             </a-form-item>
+            <a-form-item>
+              <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('请输入验证码')"
+                :style="{width:'150px',float:'left'}" size="large" />
+              <img :src="APPConfig.apiURL+'/factory_system/Base/getCaptcha?timer='+login_state.timer" alt=""
+                style="width: 48%;border-radius: 3px;float: right" @click="changeCaptcha">
+            </a-form-item>
+            <a-form-item>
+              <a-button size="large"
+                style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
+                @click="login">{{
+                global.findLanguage('登录') }}</a-button>
+            </a-form-item>
+            <a-form-item>
+              <span style="float: left;margin-top: 3px">
+                <span style="color: #999999;">还没有店铺？</span>
+                <span @click="lykd" style="color: #2266AA;">0元开店</span>
+              </span>
+              <span style="float: right;color: #2266AA;">
+                <a-checkbox v-model:checked="login_state.holdLogin"></a-checkbox>
+                {{global.findLanguage('记住密码')}}
+              </span>
+            </a-form-item>
+          </a-form>
+        </div>
+        <div v-else class="login-form">
+          <div
+            style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
+            <div style="display: flex;margin: 0 auto;">
+              <div style="color:#FF5454">0元开店</div>
+            </div>
           </div>
-          <a-form-item>
-            <template v-if="active==1">
+          <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
+            <div style="width: 100%">
+              <a-form-item>
+                <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
+                  allow-clear size="large" />
+              </a-form-item>
+            </div>
+            <a-form-item>
               <a-input-password v-model:value="login_state.loginData.password"
-                :placeholder="global.findLanguage('请输入密码')" size="large" />
-            </template>
-            <template v-else>
+                :placeholder="global.findLanguage('设置密码')" size="large" />
+            </a-form-item>
+            <a-form-item>
               <div style="background-color: #fff;display: flex;">
                 <a-input v-model:value="login_state.loginData.mobile_code" :placeholder="global.findLanguage('请输入验证码')"
                   size="large">
                   <template #suffix>
                     <div v-if="!showDjs" @click="sendCode"
                       style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
-                      发送验证码
+                      获取验证码
                     </div>
                     <div v-else
                       style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
@@ -295,82 +356,24 @@
                   </template>
                 </a-input>
               </div>
-            </template>
-          </a-form-item>
-          <a-form-item>
-            <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('请输入验证码')"
-              :style="{width:'150px',float:'left'}" size="large" />
-            <img :src="APPConfig.apiURL+'/factory_system/Base/getCaptcha?timer='+login_state.timer" alt=""
-              style="width: 48%;border-radius: 3px;float: right" @click="changeCaptcha">
-          </a-form-item>
-          <a-form-item>
-            <a-button size="large"
-              style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
-              @click="login">{{
-              global.findLanguage('登录') }}</a-button>
-          </a-form-item>
-          <a-form-item>
-            <span style="float: left;margin-top: 3px">
-              <span style="color: #999999;">还没有店铺？</span>
-              <span @click="lykd" style="color: #2266AA;">0元开店</span>
-            </span>
-            <span style="float: right;color: #2266AA;">
-              <a-checkbox v-model:checked="login_state.holdLogin"></a-checkbox>
-              {{global.findLanguage('记住密码')}}
-            </span>
-          </a-form-item>
-        </a-form>
-      </div>
-      <div v-else class="login-form">
-        <div
-          style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
-          <div style="display: flex;margin: 0 auto;">
-            <div style="color:#FF5454">0元开店</div>
-          </div>
-        </div>
-        <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
-          <div style="width: 100%">
-            <a-form-item>
-              <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
-                allow-clear size="large" />
             </a-form-item>
-          </div>
-          <a-form-item>
-            <a-input-password v-model:value="login_state.loginData.password" :placeholder="global.findLanguage('设置密码')"
-              size="large" />
-          </a-form-item>
-          <a-form-item>
-            <div style="background-color: #fff;display: flex;">
-              <a-input v-model:value="login_state.loginData.mobile_code" :placeholder="global.findLanguage('请输入验证码')"
-                size="large">
-                <template #suffix>
-                  <div v-if="!showDjs" @click="sendCode"
-                    style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
-                    获取验证码
-                  </div>
-                  <div v-else
-                    style="font-size: 14px;color: #999999; border-left: 1px solid #999999;padding-left: 10px;cursor: pointer;">
-                    {{timeData}}
-                  </div>
-                </template>
-              </a-input>
-            </div>
-          </a-form-item>
-          <a-form-item>
-            <a-button size="large"
-              style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
-              @click="ljkd">{{
-              global.findLanguage('立即开店') }}</a-button>
-          </a-form-item>
-          <a-form-item>
-            <span style="float: left;margin-top: 3px">
-              <span style="color: #999999;">已有账号？</span>
-              <span @click="lykd" style="color: #2266AA;">立即登录</span>
-            </span>
-          </a-form-item>
-        </a-form>
+            <a-form-item>
+              <a-button size="large"
+                style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
+                @click="ljkd">{{
+                global.findLanguage('立即开店') }}</a-button>
+            </a-form-item>
+            <a-form-item>
+              <span style="float: left;margin-top: 3px">
+                <span style="color: #999999;">已有账号？</span>
+                <span @click="lykd" style="color: #2266AA;">立即登录</span>
+              </span>
+            </a-form-item>
+          </a-form>
+        </div>
       </div>
     </div>
+
     <div style="display: flex;margin-top: 55px;color: #666666;font-size: 13px;">
       <div style="display: flex;justify-content: space-between;margin: 0 auto;width: 500px;align-items: center;">
         <span @click="lykdShop">商家入驻</span>
