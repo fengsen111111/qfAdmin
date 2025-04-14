@@ -182,7 +182,36 @@
   }
 
   const visible = ref(false)
-  const keyWt = ref('')
+  const keyWt = ref({})//常见问题点击项
+
+  const menuList = ref([]) //常见问题
+  const fwbContent = ref('')//常见问题答案
+
+  function getQandAList() {
+    global.axios
+      .post('decoration/QandA/getQandAList', {}, global)
+      .then((res) => {
+        // console.log('常见问题', res.list);
+        menuList.value = res.list
+      });
+  }
+  getQandAList()
+  // 常见问题详情
+  function getQandADetail() {
+    global.axios
+      .post('decoration/QandA/getQandADetail', {
+        id: keyWt.value.id
+      }, global)
+      .then((res) => {
+        // console.log('常见问题答案', res.answer);
+        fwbContent.value = res.answer
+      });
+  }
+  // 点击其它
+  function editKeyWt(item) {
+    keyWt.value = item
+    getQandADetail()
+  }
 
 </script>
 
@@ -194,29 +223,31 @@
         <template #content>
           <div style="width: 400px;">
             <div style="display: flex;justify-content: space-between;">
-              <div v-if="!keyWt" style="font-size: 18px;">您可能想知道</div>
-              <div v-else @click="keyWt=''" style="display: flex;align-items: center;">
+              <div v-if="!keyWt.id" style="font-size: 18px;">您可能想知道</div>
+              <div v-else @click="keyWt={}" style="display: flex;align-items: center;">
                 <LeftOutlined />
                 <span style="margin-left: 5px;">返回</span>
               </div>
-
               <div>
                 <CloseCircleOutlined @click="visible = false" />
               </div>
             </div>
-            <div v-if="!keyWt">
-              <div @click="keyWt = item" class="itemWt"
-                style="display: flex; align-items: center;width: 100%;margin-top: 5px;"
-                v-for="item in [1,2,3,4,5,6,7,8,9]" :key="item">
+            <div v-if="!keyWt.id">
+              <div @click="editKeyWt(item)" class="itemWt"
+                style="display: flex; align-items: center;width: 100%;margin-top: 5px;" v-for="item in menuList"
+                :key="item.id">
                 <div style="background-color: #999999;height: 5px;width: 5px;border-radius: 50%;margin-right: 5px;">
                 </div>
                 <div style="border-bottom: 1px solid #f5f5f5;width: 100%;padding-bottom: 5px;padding-top: 5px;">
-                  问题我去恶趣味请问请问请问？</div>
+                  {{item.question}}</div>
               </div>
             </div>
             <div v-else style="padding: 10px;">
-              <div style="font-weight: bold;margin-bottom: 10px;">问题我去恶趣味请问请问请问？</div>
-              <div>问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问问题我去恶趣味请问请问请问</div>
+              <div style="font-weight: bold;margin-bottom: 10px;">{{keyWt.question}}</div>
+              <div v-html="fwbContent"></div>
+              <div v-if="!fwbContent">
+                <a-empty />
+              </div>
             </div>
           </div>
         </template>
