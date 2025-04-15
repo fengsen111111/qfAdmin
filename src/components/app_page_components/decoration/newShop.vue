@@ -318,7 +318,8 @@
       </div>
     </div>
     <div v-else style="padding: 20px;overflow: auto;height: 100%;">
-      <publishPage :pageData="pageData" />
+      <publishPage :pageData="pageData" @closeChildPage="closeChildPage"
+      @openChildPage="openChildPage" />
     </div>
     <!-- 支付弹框 -->
     <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"

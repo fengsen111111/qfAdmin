@@ -413,17 +413,7 @@
   }
   // 返回上一页
   function closeChildPage(page_key) {
-    global.Modal.confirm({
-      title: global.findLanguage(
-        "确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
-      ),
-      okText: global.findLanguage("确定"),
-      cancelText: global.findLanguage("取消"),
-      okType: "primary",
-      onOk: function () {
-        emit("closeChildPage", page_key);
-      },
-    });
+    emit("closeChildPage", page_key);
   }
 
 </script>
