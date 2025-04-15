@@ -123,7 +123,7 @@
       selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
     }
   }
-  
+
   import QRCode from 'qrcode';
 
   let arrType = ref([])//缓存的分类
@@ -160,11 +160,11 @@
               console.error('生成二维码失败', err);
             });
           isPay.value = true
-        } else if(res.pay_info=='') {
+        } else if (res.pay_info == '') {
           typeVis.value = 2
         } else {
           message.error('未生成支付数据')
-          typeVis.value = 2
+          // typeVis.value = 2
         }
       })
   }
@@ -230,7 +230,23 @@
   let qrCodeData = ref('')//存储生成的二维码数据URL
   function handOKCode() {
     console.log('确定');
-    typeVis.value = 2
+    // 查询支付结果
+    global.axios
+      .post('decoration/Store/payTypePricesResult', {}, global)
+      .then((res) => {
+        console.log('查询支付结果', res);
+        // P支付中 S成功 F失败  
+        if(res.reslut == 'P'){
+          message.error('支付中')
+        }else if(res.reslut == 'S'){
+          message.error('支付成功')
+          setTimeout(() => {
+            typeVis.value = 2
+          }, 2000);
+        }else if(res.reslut == 'F'){
+          message.error('支付失败')
+        }
+      })
   }
 </script>
 
@@ -320,8 +336,7 @@
       </div>
     </div>
     <div v-else style="padding: 20px;overflow: auto;height: 100%;">
-      <publishPage :pageData="pageData" @closeChildPage="closeChildPage"
-      @openChildPage="openChildPage" />
+      <publishPage :pageData="pageData" @closeChildPage="closeChildPage" @openChildPage="openChildPage" />
     </div>
     <!-- 支付弹框 -->
     <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"
