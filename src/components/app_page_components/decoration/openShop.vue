@@ -34,6 +34,30 @@
 	admin_login_password.value = route.query.password
 	mobile.value = route.query.mobile
 
+	// 商家入驻信息
+	function getSubmitEntryApplyMsg() {
+		global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+			mobile: mobile.value,
+		}, global).then(res => {
+			console.log('商家入驻信息', res);
+			store_name.value = res.store_name
+			logo.value = res.logo
+			type.value = res.type
+			id_card_images.value = res.id_card_images
+			license_image.value = res.license_image
+			id_card_number.value = res.id_card_number
+			name.value = res.name
+			mobile.value = res.mobile
+			admin_login_password.value = res.admin_login_password
+			address.value = res.address
+			location.value = res.location
+		})
+	}
+	try {
+		getSubmitEntryApplyMsg()
+	} catch (err) {
+		console.log('新注册用户');
+	}
 
 	const isMap = ref(false)//是否打开地图
 	watch(() => isMap, val => {
@@ -198,6 +222,7 @@
 
 	// 关闭地图
 	function closeMap() {
+		location.value = component_state.lng + ',' + component_state.lat  //回填经纬度
 		isMap.value = false
 	}
 	const spinning = ref(false)

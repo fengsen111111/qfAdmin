@@ -146,12 +146,10 @@
     console.log('0元开店');
     logType.value = logType.value == 1 ? 2 : 1
     reset()//清空账号密码
-    reset()//清空账号密码
   }
   // 商家入驻
   function lykdShop() {
     logType.value = 2
-    reset()//清空账号密码
     reset()//清空账号密码
   }
 
@@ -163,10 +161,29 @@
       mobile: login_state.loginData.mobile,
       mobile_code: login_state.loginData.mobile_code
     }, global).then(res => {
-      console.log('校验验证码结果,通过就注册获取token,', res);
-      // if(res.result!=='N'){
-      handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-      // }
+      if (res.result == 'N') {
+        try {
+          getSubmitEntryApplyMsg()//商家入驻信息
+        } catch (err) {
+          handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
+        }
+      }
+    })
+  }
+  function getSubmitEntryApplyMsg() {
+    global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+      mobile: login_state.loginData.mobile,
+    }, global).then(res => {
+      console.log('商家入驻信息', res);
+      if (res.check_status == 'a') {
+        message.error('待审核！')
+      } else if (res.check_status == 'b') {
+        message.error('审核已通过，请直接登陆！')
+      } else if (res.check_status == 'c') {
+        // setTimeout(() => {
+          handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
+        // }, 2000);
+      }
     })
   }
 
