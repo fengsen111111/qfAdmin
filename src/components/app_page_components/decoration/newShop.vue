@@ -123,6 +123,8 @@
       selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
     }
   }
+  
+  import QRCode from 'qrcode';
 
   let arrType = ref([])//缓存的分类
   arrType.value = localStorage.getItem('hcspfl') ? JSON.parse(localStorage.getItem('hcspfl')).slice(0, 4) : []
