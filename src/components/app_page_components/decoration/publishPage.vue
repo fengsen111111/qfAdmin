@@ -130,7 +130,7 @@
   function delGG(index) {
     post_params.goods_sizes.splice(index, 1)
   }
-  
+
   const component_state = reactive({
     isCollapse: false,
     myValue: post_params.detail,
@@ -190,7 +190,7 @@
           })
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
-        }else{
+        } else {
           // 是新增时清空
           post_params.id = ''
           post_params.name = ''
@@ -206,12 +206,12 @@
           post_params.goods_sizes = []
           component_state.myValue = ''
         }
-      })         
+      })
   }
   // 有数据，编辑数据
   if (props.pageData.data.id) {
     lookData()
-  }else{
+  } else {
     // 没有id就是新增商品
     post_params.type_id = props.pageData.data.typeId
   }
@@ -883,7 +883,9 @@
                 <div style="margin-left: 20px;">
                   <a-radio-group v-model:value="value" name="radioGroup">
                     <a-radio value="1">当日发货</a-radio>
-                    <a-radio value="2">24小时<span style="color: #FF7300;margin-left: 10px;">获额外流量扶持</span></a-radio>
+                    <a-radio value="2">24小时
+                      <!-- <span style="color: #FF7300;margin-left: 10px;">获额外流量扶持</span> -->
+                    </a-radio>
                     <a-radio value="3">48小时</a-radio>
                   </a-radio-group>
                 </div>
@@ -895,9 +897,15 @@
                 </div>
                 <div style="margin-left: 20px;">
                   <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">某某模板<span style="color: #FF7300;margin-left: 10px;">推荐</span></a-radio>
+                    <a-radio value="1">某某模板
+                      <!-- <span style="color: #FF7300;margin-left: 10px;">推荐</span> -->
+                    </a-radio>
                     <a-radio value="2">其它模板</a-radio>
                   </a-radio-group>
+                  <!-- <a-select ref="select" v-model:value="value" style="width: 245px">
+                    <a-select-option value="某某模板">某某模板</a-select-option>
+                    <a-select-option value="其它模板">其它模板</a-select-option>
+                  </a-select> -->
                   <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
                     <div style="padding-left: 14px;">包邮配送地区：北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京</div>
                     <div style="display: flex;margin-top: 10px;">
@@ -925,7 +933,9 @@
                   <div>承诺</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  承诺是否是商家服务？？？？
+                  <div>承诺是否是商家服务？？？？</div>
+                  <!-- v-model:value="" -->
+                  <a-checkbox-group style="display: grid;" :options="['7天无理由退货 该类商品，必须支持无理由退货','假一赔十']" />
                 </div>
               </div>
               <div style="display: flex;margin-top: 20px;margin-left: 47px;">
