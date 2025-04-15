@@ -245,6 +245,8 @@
           }, 2000);
         }else if(res.reslut == 'F'){
           message.error('支付失败')
+        }else{
+          message.error('未知')
         }
       })
   }
