@@ -236,14 +236,14 @@
       .then((res) => {
         console.log('查询支付结果', res);
         // P支付中 S成功 F失败  
-        if(res.reslut == 'P'){
+        if(res.result == 'P'){
           message.error('支付中')
-        }else if(res.reslut == 'S'){
+        }else if(res.result == 'S'){
           message.error('支付成功')
           setTimeout(() => {
             typeVis.value = 2
           }, 2000);
-        }else if(res.reslut == 'F'){
+        }else if(res.result == 'F'){
           message.error('支付失败')
         }else{
           message.error('未知')
