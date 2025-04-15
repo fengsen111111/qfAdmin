@@ -26,8 +26,20 @@
 </script>
 
 <template>
-  <a-input v-model:value="props.structure.value" :disabled="component_state.disabled"
-    :placeholder="component_state.placeholder" allow-clear />
+  <!-- <a-input
+      v-model:value="props.structure.value"
+      :disabled="component_state.disabled"
+      :placeholder="component_state.placeholder"
+      allow-clear/> -->
+  <div>
+    <div>
+      <a-input v-model:value="props.structure.value" :placeholder="global.findLanguage('图形验证码')"
+        :style="{width:'150px',float:'left'}" size="large" />
+      <img :src="APPConfig.apiURL+'/factory_system/Base/getCaptcha?timer='+timerCode" alt=""
+        style="width: 42%;height: 40px;border-radius: 3px;float: right" @click="changeCaptcha">
+    </div>
+    <span style="color: red;">{{timerCode}}</span>
+  </div>
 </template>
 
 

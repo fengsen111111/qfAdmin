@@ -102,24 +102,24 @@
     })
   }
   // 返回上一页
-	function closeChildPage(page_key) {
-		global.Modal.confirm({
-			title: global.findLanguage(
-				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
-			),
-			okText: global.findLanguage("确定"),
-			cancelText: global.findLanguage("取消"),
-			okType: "primary",
-			onOk: function () {
-				emit("closeChildPage", page_key);
-			},
-		});
-	}
+  function closeChildPage(page_key) {
+    global.Modal.confirm({
+      title: global.findLanguage(
+        "确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+      ),
+      okText: global.findLanguage("确定"),
+      cancelText: global.findLanguage("取消"),
+      okType: "primary",
+      onOk: function () {
+        emit("closeChildPage", page_key);
+      },
+    });
+  }
 </script>
 
 <template>
   <!--搜索 class="flex"-->
-  <div >
+  <div>
     <div class="a1">
       <div style="display: flex;align-items: center;">
         <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
@@ -178,7 +178,7 @@
           <div class="a21">
             <a-checkbox-group @change="bydq()" v-model:value="checkedList" :options="treeData" />
           </div>
-          <div class="a22">
+          <!-- <div class="a22">
             <a-checkbox v-model:checked="checkedXy"></a-checkbox>
             <span class="a23">使用顺丰包邮,并同意<span class="a24">《顺丰包邮服务条款》</span></span>
             <a-popover placement="rightTop">
@@ -192,7 +192,7 @@
           <div v-if="checkedXy" class="a26">
             <div>顺丰可配送区域：<span class="a27">共30个省312个市2682个区县</span></div>
             <div>若商品支持顺丰包邮，如商家未履行承诺，需向消费者赔付 <span class="a28">15</span> 元违约金。</div>
-          </div>
+          </div> -->
         </div>
         <div class="a29">
           买家付运费区域
@@ -215,7 +215,7 @@
                       <template #content>
                         <div> 选择按重计费方式，在新增和编辑商品时需设置重量</div>
                       </template>
-                      按重量计费
+                      按订单计费
                       <ExclamationCircleOutlined class="a33" />
                     </a-popover>
                   </a-radio>
@@ -224,8 +224,8 @@
               </div>
             </div>
             <a-alert class="a35"
-              message="您已选择配送港澳台地区，受海关、物流、当地政策的限制，部分商品是无法出关或在大陆地区以外无法进行购买，请关注禁运清单及相关法律法规，避免错误设置运费模板，造成损失。" type="warning"
-              show-icon />
+              message="您已选择配送港澳台地区，受海关、物流、当地政策的限制，部分商品是无法出关或在大陆地区以外无法进行购买，请关注禁运清单及相关法律法规，避免错误设置运费模板，造成损失。"
+              type="warning" show-icon />
           </div>
           <div v-if="zdqyyf.length">
             <div v-for="item in zdqyyf" :key="item.value" class="a36">
@@ -233,18 +233,19 @@
                 <div class="ellipsisOne" aria-colspan="a37">
                   {{item.label}}
                 </div>
-                <div>
+                <!-- 按件数计费 -->
+                <div v-if="jffs==1">
                   <div class="flex">
                     <div class="a38">
                       <a-input-number :min="1" v-model:value="item.initNumber" class="a39" />
-                      <span>{{jffs==1?'件':'千克'}}内</span>
+                      <span>{{jffs==1?'件':''}}内</span>
                       <a-input-number :min="1" v-model:value="item.initMoney" class="a39" />
                       <span>元</span>
                     </div>
                     <div class="a40">
                       <span>每增加</span>
                       <a-input-number :min="1" v-model:value="item.addNumber" class="a39" />
-                      <span>{{jffs==1?'件':'千克'}}，增加运费</span>
+                      <span>{{jffs==1?'件':''}}，增加运费</span>
                       <a-input-number :min="1" v-model:value="item.addMoney" class="a39" />
                       <span>元</span>
                     </div>
@@ -261,6 +262,36 @@
                           <a-select-option :value="2">元</a-select-option>
                         </a-select>
                         <span>包邮</span>
+                        <span v-if="item.checkType==2" class="a47">({{item.checkNumber}}元是指用券前的商品价格)</span>
+                      </div>
+                      <a-popover placement="rightTop">
+                        <template #content>
+                          <div> 如订单中商品存在多种运费模板，系统将按最优的运费模板优先计算是否包邮。</div>
+                        </template>
+                        <ExclamationCircleOutlined class="a48" />
+                      </a-popover>
+                    </div>
+                  </div>
+                </div>
+                <!-- 按订单计费 -->
+                <div v-else-if="jffs==2">
+                  <div class="flex">
+                    <div class="a381">
+                      运费：
+                      <div style="align-items: center;" class="flex">
+                        <a-input-number :min="1" v-model:value="item.initMoney" class="a39" />
+                        <span>元</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="a41">
+                    <a-checkbox v-model:checked="item.checked"></a-checkbox>
+                    <span class="a42">指定条件包邮</span>
+                    <div class="a43">
+                      <div class="a44">
+                        <span>满</span>
+                        <a-input-number :min="1" v-model:value="item.checkNumber" class="a45" />
+                        <span>元包邮</span>
                         <span v-if="item.checkType==2" class="a47">({{item.checkNumber}}元是指用券前的商品价格)</span>
                       </div>
                       <a-popover placement="rightTop">
@@ -307,8 +338,7 @@
                 <div>{{item.label}}</div>
                 <!-- <div style="color: #1890FF;">删除</div> -->
               </div>
-              <div class="a56"
-                :style="{ 'background-color': item.cause ? '#fff' : '#FFF6F7' }">
+              <div class="a56" :style="{ 'background-color': item.cause ? '#fff' : '#FFF6F7' }">
                 <div>不配送原因</div>
                 <div class="a57">
                   <a-radio-group v-model:value="item.cause" name="radioGroup">
@@ -568,6 +598,12 @@
     margin-left: 20px;
   }
 
+  .a381 {
+    display: flex;
+    /* align-items: center; */
+    margin-left: 20px;
+  }
+
   .a39 {
     width: 70px;
     margin: 0px 5px;
@@ -661,7 +697,9 @@
   }
 
   .a56 {
-    display: flex;padding: 20px;color: #999999;
+    display: flex;
+    padding: 20px;
+    color: #999999;
   }
 
   .a57 {
@@ -669,11 +707,13 @@
   }
 
   .a58 {
-    display: flex;margin-top: 20px;
+    display: flex;
+    margin-top: 20px;
   }
 
   .a59 {
-    display: flex;margin: 0 auto;
+    display: flex;
+    margin: 0 auto;
   }
 
   .a60 {

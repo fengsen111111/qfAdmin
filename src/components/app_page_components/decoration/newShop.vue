@@ -162,7 +162,7 @@
           typeVis.value = 2
         } else {
           message.error('未生成支付数据')
-          // typeVis.value = 2
+          typeVis.value = 2
         }
       })
   }
