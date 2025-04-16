@@ -18,7 +18,7 @@
 
 	const store_name = ref('')// 店铺名称
 	const logo = ref('')// 店铺门头照/LOGO  
-	const type = ref('a')//商家类型 a本地商家 b网店商家  
+	const type = ref('b')//商家类型 a本地商家 b网店商家  
 	const id_card_images = ref([])// 身份证照片  
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
@@ -191,6 +191,7 @@
 
 	// 关闭地图
 	function closeMap() {
+		location.value = component_state.lng + ',' + component_state.lat  //回填经纬度
 		isMap.value = false
 	}
 	// 返回上一页
@@ -207,13 +208,41 @@
 			},
 		});
 	}
+
+	// 提交入驻申请
+	function _submitEntryApply() {
+		// spinning.value = true
+		global.axios
+			.post('decoration/Store/submitEntryApply', {
+				"id": '',
+				"user_id": '',
+				"type": type.value,
+				"name": name.value,
+				"mobile": mobile.value,
+				"id_card_number": id_card_number.value,
+				"id_card_images": id_card_images.value,
+				"store_name": store_name.value,
+				"license_image": license_image.value,
+				"address": address.value,
+				"location": location.value,
+				"logo": logo.value,
+				"admin_login_password": admin_login_password.value
+			}, global)
+			.then((res) => {
+				// spinning.value = false
+				console.log('申请入驻', res);
+				if (res.code == 1) {
+					message.succerr('提交成功')
+					closeChildPage(pageData.page_key)
+				}
+			})
+	}
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
 		<div style="display: flex;background: #fff;height: 92vh;">
-
 			<div style="padding: 20px;overflow: auto;height: 100%;">
 				<!-- <div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div> -->
 				<div style="display: flex;align-items: center;margin-bottom: 20px;">
@@ -357,7 +386,7 @@
 														<CloseCircleOutlined />
 													</div>
 												</div>
-												<a-upload v-else :customRequest="upload" :file-list="[]"
+												<a-upload v-else :customRequest="uploadYyzz" :file-list="[]"
 													list-type="text">
 													<div
 														style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
@@ -393,7 +422,7 @@
 							</div>
 							<!-- 提交 -->
 							<div style="text-align: center;">
-								<a-button type="primary" style="font-size: 15px !important;" size="large">提交</a-button>
+								<a-button  @click="_submitEntryApply" type="primary" style="font-size: 15px !important;" size="large">提交</a-button>
 							</div>
 						</div>
 					</a-col>

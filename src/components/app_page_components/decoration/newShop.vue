@@ -129,6 +129,9 @@
   let arrType = ref([])//缓存的分类
   arrType.value = localStorage.getItem('hcspfl') ? JSON.parse(localStorage.getItem('hcspfl')).slice(0, 4) : []
   // console.log('缓存的分类', arrType.value);
+
+  const money_log_id = ref('')//支付日志id,查询支付结果
+
   const typeVis = ref(1)//1选分类 2 填商品信息
   // 发布该类商品
   function handFb() {
@@ -150,6 +153,7 @@
       .then((res) => {
         console.log('结果', res);
         if (res.pay_info) {
+          money_log_id.value = res.money_log_id
           // 支付数据转二维码
           QRCode.toDataURL(res.pay_info)
             .then((url) => {
@@ -232,7 +236,9 @@
     console.log('确定');
     // 查询支付结果
     global.axios
-      .post('decoration/Store/payTypePricesResult', {}, global)
+      .post('decoration/Store/payTypePricesResult', {
+        money_log_id:money_log_id.value
+      }, global)
       .then((res) => {
         console.log('查询支付结果', res);
         // P支付中 S成功 F失败  

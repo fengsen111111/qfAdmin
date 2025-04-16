@@ -153,6 +153,7 @@
     reset()//清空账号密码
   }
 
+  const rzStatus = ref(0)//0 未入住 1已入住
   // 立即开店
   function ljkd() {
     console.log('提交数据', login_state.loginData);
@@ -162,26 +163,32 @@
       mobile_code: login_state.loginData.mobile_code
     }, global).then(res => {
       if (res.result == 'N') {
-        try {
-          getSubmitEntryApplyMsg()//商家入驻信息
-        } catch (err) {
-          handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-        }
+        getSubmitEntryApplyMsg()//商家入驻信息
+        setTimeout(() => {
+          if (rzStatus.value == 0) {
+            handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
+          } else {
+            // 已入住
+          }
+        }, 2000);
+
       }
     })
   }
   function getSubmitEntryApplyMsg() {
+    rzStatus.value = 0//未入驻
     global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
       mobile: login_state.loginData.mobile,
     }, global).then(res => {
       console.log('商家入驻信息', res);
+      rzStatus.value = 1//入驻
       if (res.check_status == 'a') {
         message.error('待审核！')
       } else if (res.check_status == 'b') {
         message.error('审核已通过，请直接登陆！')
       } else if (res.check_status == 'c') {
         // setTimeout(() => {
-          handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
+        handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
         // }, 2000);
       }
     })

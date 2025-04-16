@@ -18,7 +18,7 @@
 
 	const store_name = ref('')// 店铺名称
 	const logo = ref('')// 店铺门头照/LOGO  
-	const type = ref('a')//商家类型 a本地商家 b网店商家  
+	const type = ref('b')//商家类型 a本地商家 b网店商家  
 	const id_card_images = ref([])// 身份证照片  
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
@@ -27,6 +27,7 @@
 	const admin_login_password = ref('')//后台登录密码  
 	const address = ref('')//店铺地址  
 	const location = ref('')//店铺地址坐标   
+	const id = ref('')//商家id
 	import { message } from 'ant-design-vue';
 
 	import { useRoute } from 'vue-router';
@@ -40,6 +41,7 @@
 			mobile: mobile.value,
 		}, global).then(res => {
 			console.log('商家入驻信息', res);
+			id.value = res.id
 			store_name.value = res.store_name
 			logo.value = res.logo
 			type.value = res.type
@@ -231,6 +233,7 @@
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
+				"id":id.value,
 				"user_id": '',
 				"type": type.value,
 				"name": name.value,
