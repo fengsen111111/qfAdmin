@@ -163,6 +163,22 @@
 			},
 		});
 	}
+
+	const td_visible = ref(false)
+	const td_content = ref('')
+
+	// 退店协议
+	function tdFunc() {
+		global.axios
+			.post('decoration/Setting/getRichTextContent', {
+				type: 'store_out_rule'
+			}, global)
+			.then((res) => {
+				console.log('退店协议', res);
+				td_visible.value = true
+				td_content.value = res
+			});
+	}
 </script>
 
 <template>
@@ -232,58 +248,18 @@
 										<a-input v-model:value="qtyy" placeholder="请输入其它退店原因" />
 									</div>
 								</div>
-								<!-- <div style="display: flex;margin-top: 20px;">
-                  <div style="width: 30%;display: flex;justify-content: space-between;">
-                    <div></div>
-                    <div style="display: flex;">
-                      <div style="color: red;">*</div>
-                      <div>退店后你还会在哪里经营</div>
-                    </div>
-                  </div>
-                  <div style="width: 760px;margin-left: 10px;float: left;display: flex;">
-                    <a-radio-group v-model:value="value">
-                      <a-radio :value="1">其它店铺</a-radio>
-                      <a-radio :value="2">抖音、快手</a-radio>
-                      <a-radio :value="3">淘宝</a-radio>
-                      <a-radio :value="3">京东</a-radio>
-                      <a-radio :value="3">不再经营</a-radio>
-                      <a-radio :value="3">其它平台</a-radio>
-                    </a-radio-group>
-                  </div>
-                </div>
-                <div style="display: flex;margin-top: 20px;align-items: center;">
-                  <div style="width: 30%;display: flex;justify-content: space-between;">
-                    <div></div>
-                    <div style="display: flex;">
-                      <div style="color: red;">*</div>
-                      <div>主账号绑定手机号</div>
-                    </div>
-                  </div>
-                  <div style="margin-left: 10px;width: 760px;float: left;display: flex;align-items: center;">
-                    <a-input v-model:value="value" :disabled="phoneDis" style="width: 296px;" placeholder="请输入主账号绑定手机号" />
-                    <div @click="()=>{phoneDis=!phoneDis}" style="color: #1890FF;margin-left: 5px;">修改手机号</div>
-                  </div>
-                </div>
-                <div style="display: flex;margin-top: 20px;align-items: center;">
-                  <div style="width: 30%;display: flex;justify-content: space-between;">
-                    <div></div>
-                    <div style="display: flex;">
-                      <div style="color: red;">*</div>
-                      <div>短信验证码</div>
-                    </div>
-                  </div>
-                  <div style="margin-left: 10px;width: 760px;float: left;display: flex;align-items: center;">
-                    <a-input v-model:value="value" style="width: 200px;" placeholder="请输入验证码" />
-                    <div style="border: 1px solid #d9d9d9;margin-left: 5px;padding: 4px 10px;border-radius: 4px;">获取验证码
-                    </div>
-                  </div>
-                </div> -->
 								<div style="margin-top: 20px;display: flex;">
 									<div style="margin: 0 auto;display: flex;">
 										<a-checkbox v-model:checked="is_checked" @change="onChange" />
 										<div style="margin-left: 10px;">我已阅读并同意</div>
-										<div style="color: #1890FF;">《圈风退店协议》</div>
+										<div @click="tdFunc" style="color: #1890FF;">《圈风退店协议》</div>
 									</div>
+									<a-drawer v-model:visible="td_visible" class="custom-class"
+										title="圈风退店协议" placement="right">
+										<div>
+											<span v-html="td_content"></span>
+										</div>
+									</a-drawer>
 								</div>
 								<div style="margin-top: 20px;display: flex;">
 									<div style="margin: 0 auto;">
