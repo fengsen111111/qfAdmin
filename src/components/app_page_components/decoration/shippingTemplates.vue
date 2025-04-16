@@ -2,7 +2,7 @@
   import { inject, onBeforeMount, reactive, ref, watch, shallowRef } from "vue";
   import { Row, Col } from 'ant-design-vue';
   import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons-vue";
-	import { message } from 'ant-design-vue';
+  import { message } from 'ant-design-vue';
 
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
@@ -60,7 +60,7 @@
 
   const checkedXy = ref(true)//协议勾选
 
-  const jffs = ref('a')//计费方式 1按件计费 2按重量计费
+  const jffs = ref('a')//计费方式 a按件计费 b按重量计费
 
   const zdqyyf = ref([])//指定区域邮费
   // 点击设置指定区域运费
@@ -185,6 +185,59 @@
         console.log('编辑结果', res);
         loading.value = false
         message.success('操作成功')
+        closeChildPage(pageData.page_key)
+      })
+  }
+
+  console.log('pageData', pageData);
+
+  // 
+  if (pageData.data.id) {
+    // 编辑
+    // console.log('编辑');
+    loading.value = true
+    global.axios
+      .post('decoration/Carriage/getCarriage', {
+        id: pageData.data.id
+      }, global)
+      .then((res) => {
+        console.log('查询结果', res);
+        loading.value = false
+        // 回显赋值
+        id.value = res.id
+        name.value = res.name
+        send_addressText.value = res.send_address//
+        // send_address.value = 取值
+        status.value = res.status
+        // no_price_city.value = res.no_price_city //包邮地区
+        bbydq.value = [] //不包邮地区
+        res.unsupport.map((item)=>{
+          bbydq.value.push({
+            // label: 
+            // is_disabled: false
+            // value: 
+            adcode:item.adcode,
+            reason: item.reason=='因距离远导致的运费上升'?1:item.reason=='因商品重量大导致的运费上升'?2:item.reason=='合作快递不配送该区域'?3:item.reason=='合作快递该区域服务差'?4: 0
+          })
+        })
+        
+        jffs.value = price_city[0].price_type //计费方式
+        zdqyyf.value = [] //指定区域运费
+        res.price_city.map((item) => {
+          zdqyyf.value.push({
+            adcode: item.adcode,
+            is_disabled: true,
+            // label: item.label,
+            // value: item.value,
+            initNumber: item.base_number,//千克或者数量
+            initMoney: item.base_price,//元
+            addNumber: item.add_number,//超出部分千克或者数量
+            addMoney: item.add_price,//超出部分收费元
+            checked: item.has_top=='Y'?true:false,//指定条件包邮选框
+            checkNumber: item.top,//指定条件件或元
+            checkType: item.top_type,//指定条件分类 a件 b元
+          })
+        })
       })
   }
 
@@ -195,7 +248,7 @@
   <div>
     <a-spin :spinning="loading">
       <div class="a1">
-        <div style="display: flex;align-items: center;">
+        <div style="display: flex;align-items: center;margin-bottom: 20px;">
           <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
             style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
             @click="closeChildPage(pageData.page_key)">&#xe6d2;
@@ -242,6 +295,15 @@
                   <a-radio value="Y">启用</a-radio>
                   <a-radio value="N">禁用</a-radio>
                 </a-radio-group>
+              </div>
+            </div>
+            <!-- 描述 -->
+            <div style="margin-top: 20px;padding-left: 8px;" class="flex">
+              <div class="flex">
+                <span>简单描述</span>
+              </div>
+              <div class="a12">
+                <a-textarea v-model:value="des" placeholder="请输入简单描述" class="a9" :rows="4" />
               </div>
             </div>
           </div>
@@ -475,7 +537,6 @@
 
   .a2 {
     font-size: 18px;
-    margin-bottom: 20px;
   }
 
   .a3 {

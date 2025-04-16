@@ -30,28 +30,28 @@
       skeleton_state.admin = res.admin;
       skeleton_state.admin.portrait = res.admin.portrait ? res.admin.portrait : "/resource/image/head_img.png";
       global.adminMsg = skeleton_state.admin
-      res.menu.push({
-        icon: "",
-        label: "新开发页面",
-        order: "1",
-        page_id: "0",
-        pid: "706154120674803772",
-        type: "publishPage",
-        url: "",
-        value: "723777073939746104",
-        children: [
-          {
-            icon: "",
-            label: "运费模板(开发中)",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803773",
-            type: "shippingTemplates",
-            url: "",
-            value: "333333",
-          }
-        ]
-      })
+      // res.menu.push({
+      //   icon: "",
+      //   label: "新开发页面",
+      //   order: "1",
+      //   page_id: "0",
+      //   pid: "706154120674803772",
+      //   type: "publishPage",
+      //   url: "",
+      //   value: "723777073939746104",
+      //   children: [
+      //     {
+      //       icon: "",
+      //       label: "运费模板(开发中)",
+      //       order: "1",
+      //       page_id: "0",
+      //       pid: "706154120674803773",
+      //       type: "shippingTemplates",
+      //       url: "",
+      //       value: "333333",
+      //     }
+      //   ]
+      // })
       //初始化tabMenu为未选中
       skeleton_state.menuData = res.menu;
       //循环三次，给每个菜单页面设置page_key以及checked = false

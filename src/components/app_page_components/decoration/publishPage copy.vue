@@ -68,6 +68,8 @@
       //   price: '',//价格
       //   uper_status: false,//是否需要推荐官推荐
       //   commission: '',//佣金
+      //   goods_activity_id: '',//包邮专区活动 ID  
+      //   kill_activity_id: '',//秒杀活动 ID
       //   status: false,//启用状态
       //   order: '',//排序  
       // }
@@ -83,23 +85,12 @@
     }
   });
 
-  const del_pp_text = ref(false)
-
   watch(() => post_params.brand_id, (newVal, oldVal) => {
-    del_pp_text.value = false
     console.log('brand_id 品牌变化:', newVal);
-    const exists = ppList.some(item => item.value == newVal);
-    if (exists) {
-      bfb.value = 50
-      if (post_params.type_id) {
-        bfb.value = 100
-      }
-    }else{
-      // 品牌已删除
-      post_params.brand_id = ''
-      del_pp_text.value = true
+    bfb.value = 50
+    if (post_params.type_id) {
+      bfb.value = 100
     }
-
   });
 
 
@@ -129,6 +120,8 @@
       price: '',//价格
       uper_status: false,//是否需要推荐官推荐
       commission: '',//佣金
+      // goods_activity_id: '',//包邮专区活动 ID  
+      // kill_activity_id: '',//秒杀活动 ID
       status: false,//启用状态
       order: '',//排序  
     })
@@ -340,7 +333,7 @@
   // 商品品牌列表
   function getGoodsBrandList() {
     global.axios
-      .post('decoration/Setting/getGoodsBrandList', {
+      .post('decoration/GoodsBrand/getGoodsBrandList', {
         store_id: post_params.store_id
       }, global)
       .then((res) => {
@@ -349,6 +342,27 @@
       });
   }
 
+  const byzqList = ref([])//包邮专区活动列表
+  // 包邮专区活动列表
+  function getActivityList() {
+    global.axios
+      .post('decoration/GoodsActivity/getActivityList', {}, global)
+      .then((res) => {
+        // console.log('包邮专区活动列表', res);
+        byzqList.value = res.list
+      });
+  }
+
+  const xsmsList = ref([])//秒杀活动列表
+  // 秒杀活动列表
+  function getKillActivityList() {
+    global.axios
+      .post('decoration/KillActivity/getKillActivityList', {}, global)
+      .then((res) => {
+        // console.log('秒杀活动列表', res);
+        xsmsList.value = res.list
+      });
+  }
   let spinning = ref(false) //加载状态
   function loading() {
     spinning.value = true
@@ -363,6 +377,8 @@
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
+        // item.goods_activity_id = item.goods_activity_id ?? '',
+        //   item.kill_activity_id = item.kill_activity_id ?? ''
       })
 
     if (post_params.type_id.value) {
@@ -594,7 +610,7 @@
                           </div>
                         </div>
                         <div>
-                          <div style="display: flex;margin: 10px 0px;">
+                          <div style="display: flex;margin: 10px 0px;align-items: center;">
                             <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
                               <div></div>
                               <div style="display: flex;">
@@ -608,7 +624,6 @@
                                 <a-select-option :value="item.value" v-for="item in ppList"
                                   :key="item.value">{{item.label}}</a-select-option>
                               </a-select>
-                              <span v-if="del_pp_text" style="color: #ff0000;padding-left: 20px;font-size: 12px;">品牌已被删除，请重新选择</span>
                               <!-- <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span
                                   style="color: #ff7300;">点击申请</span></div> -->
                             </div>
@@ -674,6 +689,7 @@
                     <div style="display: flex;justify-content: space-between;">
                       <div>
                         <div style="color: #ff7300;">请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规</div>
+                        <!-- <div style="color: red;">请注意！一个规格仅可包邮专区活动和秒杀活动二选一</div> -->
                       </div>
                       <div style="color: #407cff;" @click="addGG">添加规格</div>
                     </div>
@@ -721,6 +737,12 @@
                         <th>
                           <div style="color: #999999;">佣金</div>
                         </th>
+                        <!-- <th>
+                          <div style="color: #999999;">包邮专区</div>
+                        </th>
+                        <th>
+                          <div style="color: #999999;">秒杀活动</div>
+                        </th> -->
                         <th>
                           <div style="color: #999999;">启用状态</div>
                         </th>
@@ -757,6 +779,20 @@
                             <td>
                               <a-input type="text" v-model:value="item.commission" placeholder="输入佣金" />
                             </td>
+                            <!-- <td>
+                              <a-select ref="select" :allowClear="true" v-model:value="item.goods_activity_id"
+                                style="width: 100%;" placeholder="选择活动">
+                                <a-select-option :value="item.value" v-for="item in byzqList"
+                                  :key="item.value">{{item.label}}</a-select-option>
+                              </a-select>
+                            </td>
+                            <td>
+                              <a-select ref="select" :allowClear="true" v-model:value="item.kill_activity_id"
+                                style="width: 100%;" placeholder="选择活动">
+                                <a-select-option :value="item.value" v-for="item in xsmsList"
+                                  :key="item.value">{{item.label}}</a-select-option>
+                              </a-select>
+                            </td> -->
                             <td>
                               <a-switch v-model:checked="item.status" checked-children="是" un-checked-children="否" />
                             </td>
