@@ -179,6 +179,11 @@
 				td_content.value = res
 			});
 	}
+
+	function qftdlcsm() {
+		// message.error('功能暂未开通')
+		global.router.push('/ruleCenter?title=学习中心')
+	}
 </script>
 
 <template>
@@ -254,8 +259,8 @@
 										<div style="margin-left: 10px;">我已阅读并同意</div>
 										<div @click="tdFunc" style="color: #1890FF;">《圈风退店协议》</div>
 									</div>
-									<a-drawer v-model:visible="td_visible" class="custom-class"
-										title="圈风退店协议" placement="right">
+									<a-drawer v-model:visible="td_visible" class="custom-class" title="圈风退店协议"
+										placement="right">
 										<div>
 											<span v-html="td_content"></span>
 										</div>
@@ -292,19 +297,19 @@
 											<div
 												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
 											</div>
-											<div>在申请退店后需进行30天的退店公示，店铺首页显著位置会公示“本店铺将关闭”标志;</div>
+											<div>在申请退店后需进行30天的退店公示，店铺首页会有退店公告展示;</div>
 										</div>
-										<div style="display: flex;align-items: center;">
+										<!-- <div style="display: flex;align-items: center;">
 											<div
 												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
 											</div>
 											<div>未有成团订单的商家在完成退店处理环节后，将跳过材料审核环节，直接进入退款环节，且不可撤销退店;</div>
-										</div>
+										</div> -->
 										<div style="display: flex;align-items: center;">
 											<div
 												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
 											</div>
-											<div>在退店环节中如有任何疑问可参考<span style="color: #1890FF;">《圈风退店流程说明及常见问题》</span>;
+											<div>在退店环节中如有任何疑问可参考<span @click="qftdlcsm" style="color: #1890FF;">《圈风退店流程说明及常见问题》</span>;
 											</div>
 										</div>
 										<div style="font-size: 16px;">
@@ -312,8 +317,8 @@
 										</div>
 										<div style="margin-left: 20px;color: red;">
 											<div style="margin-top: 5px;">1、已统计店铺最终剩余可退还资金金额</div>
-											<div style="margin-top: 5px;">2、已开具的电子发票下载完毕</div>
-											<div style="margin-top: 5px;">3、有效发票账单是否需要申请发票</div>
+											<div style="margin-top: 5px;">2、所有商品订单已处理完毕</div>
+											<div style="margin-top: 5px;">3、所有商品已下架，不可见</div>
 										</div>
 									</div>
 									<template #footer>
