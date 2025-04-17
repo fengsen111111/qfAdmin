@@ -68,7 +68,7 @@
 
   const checkedXy = ref(true)//协议勾选
 
-  const jffs = ref('a')//计费方式 a按件计费 b按重量计费
+  const jffs = ref('a')//计费方式 a按件计费 b按订单计费
 
   const zdqyyf = ref([])//指定区域邮费
   // 点击设置指定区域运费
@@ -270,7 +270,7 @@
             })
           })
 
-          jffs.value = res.price_city[0].price_type //计费方式
+          jffs.value = res.price_city[0].price_type?res.price_city[0].price_type:'b' //计费方式
           zdqyyf.value = [] //指定区域运费
           res.price_city.map((item) => {
             let obj = findItemByAdcode(treeData.value, item.adcode);
@@ -284,6 +284,8 @@
               checked: item.has_top == 'Y' ? true : false,//指定条件包邮选框
               checkNumber: item.top,//指定条件件或元
               checkType: item.top_type,//指定条件分类 a件 b元
+
+              order_price:item.order_price//固定邮费
             })
           })
         })
