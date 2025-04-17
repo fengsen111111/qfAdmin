@@ -55,8 +55,7 @@
     unselectedRegions.map((item, index) => {
       zdqyyf.value.map((iss) => {
         if (iss.adcode == item.adcode) {
-          // item.is_disabled = true
-          item.is_disabled = false
+          item.is_disabled = true
         }
       })
     })
@@ -66,7 +65,7 @@
         item.is_disabled = item.is_disabled ? item.is_disabled : false
     })
     bbydq.value = unselectedRegions
-    zdqyyf.value = []
+    zdqyyf.value = zdqyyf.value.filter(region => !checkedList.value.includes(region.value));
   }
 
   const checkedXy = ref(true)//协议勾选
@@ -317,7 +316,6 @@
       jffs.value = 'a'//
       zdqyyf.value = []//
       bbydq.value = []
-      // getAreas()
       checkedList.value = []
       treeData.value.map((item) => {
         checkedList.value.push(item.value)
@@ -340,7 +338,7 @@
             </a-button>
             <div class="a2">运费模板</div>
           </div>
-          <div class="flex">
+          <div class="flex" style="cursor: pointer;">
             <div class="tjBtn" @click="editCarriage">提交</div>
             <div class="cz" @click="setData">重置</div>
           </div>
@@ -412,7 +410,7 @@
           </div>
           <div class="a17">
             <div class="a18">
-              <span @click="handAll" class="a19">全选</span>
+              <span @click="handAll" class="a19" style="cursor: pointer;">全选</span>
               <span>已选<span class="a20"> {{checkedList.length}} </span>个区域</span>
             </div>
             <div class="a21">
