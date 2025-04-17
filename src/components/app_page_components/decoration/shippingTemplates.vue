@@ -50,7 +50,7 @@
   const bbydq = ref([])//不包邮地区
   function bydq() {
     // console.log('包邮地区', checkedList.value);
-    
+
     // 找出未被选择的地区
     let unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
     unselectedRegions.map((item, index) => {
@@ -63,11 +63,11 @@
         }
       })
     })
-    console.log('自定义付费区',zdqyyf.value);
+    console.log('自定义付费区', zdqyyf.value);
     console.log('不包邮地区', unselectedRegions)
     unselectedRegions.map((item) => {
-      item.cause = '1',
-        item.is_disabled = item.is_disabled==true ? true : false
+      item.cause = 1,
+        item.is_disabled = item.is_disabled == true ? true : false
     })
     bbydq.value = unselectedRegions
     zdqyyf.value = zdqyyf.value.filter(region => !checkedList.value.includes(region.value));
@@ -145,6 +145,7 @@
   const loading = ref(false)//加载状态
   // 提交
   function editCarriage() {
+
     let params = {
       id: id.value,
       name: name.value,//
@@ -194,6 +195,19 @@
       }
     })
     console.log('参数', params);
+
+    if (!name.value) {
+      message.error('请输入模板名称')
+      return false
+    }
+    if (!send_addressText.value) {
+      message.error('请选择发货地')
+      return false
+    }
+    if (!params.no_price_city) {
+      message.error('请勾选包邮地区')
+      return false
+    }
     // bbydq  zdqyyf
     loading.value = true
     global.axios
@@ -297,15 +311,15 @@
             zdqyyf.value.push({
               ...obj,
               is_disabled: true,
-              initNumber: item.base_number,//千克或者数量
-              initMoney: item.base_price,//元
-              addNumber: item.add_number,//超出部分千克或者数量
-              addMoney: item.add_price,//超出部分收费元
+              initNumber: item.base_number?item.base_number:1,//千克或者数量
+              initMoney: item.base_price?item.base_price:28,//元
+              addNumber: item.add_number?item.add_number:1,//超出部分千克或者数量
+              addMoney: item.add_price?item.add_price:28,//超出部分收费元
               checked: item.has_top == 'Y' ? true : false,//指定条件包邮选框
               checkNumber: item.top,//指定条件件或元
               checkType: item.top_type,//指定条件分类 a件 b元
 
-              order_price: item.order_price//固定邮费
+              order_price: item.order_price?item.order_price:12//固定邮费
             })
           })
         })

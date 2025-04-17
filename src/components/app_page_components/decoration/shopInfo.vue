@@ -211,6 +211,46 @@
 
 	// 提交入驻申请
 	function _submitEntryApply() {
+		if (!store_name.value) {
+			message.error('请输入店铺名称')
+			return false
+		}
+		if (!logo.value) {
+			message.error('请上传门店logo')
+			return false
+		}
+		if (!id_card_images.value || id_card_images.value.length != 2) {
+			message.error('请检查身份证照片信息')
+			return false
+		}
+		if (!license_image.value) {
+			message.error('请上传营业执照')
+			return false
+		}
+		if (!id_card_number.value) {
+			message.error('请输入身份证号')
+			return false
+		} else {
+			const regex = /^[1-9]\d{5}(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
+			if (id_card_number.value && !regex.test(id_card_number.value)) {
+				message.error('身份证格式错误')
+				return false
+			}
+		}
+		if (!mobile.value) {
+			message.error('请输入手机号')
+			return false
+		} else {
+			const regex = /^1[3-9]\d{9}$/;
+			if (mobile.value && !regex.test(mobile.value)) {
+				message.error('手机号格式错误')
+				return false
+			}
+		}
+		if (!admin_login_password.value) {
+			message.error('请输入后台登陆密码')
+			return false
+		}
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
