@@ -214,7 +214,7 @@
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
-				"check_status":'b',
+				"check_status": 'b',
 				"id": '',
 				"user_id": '',
 				"type": type.value,
@@ -232,10 +232,18 @@
 			.then((res) => {
 				// spinning.value = false
 				console.log('申请入驻', res);
-				if (res.code == 1) {
-					message.succerr('提交成功')
-					closeChildPage(pageData.page_key)
-				}
+				message.succerr('提交成功')
+				global.Modal.confirm({
+					title: global.findLanguage(
+						"保存成功，点击确定返回上一页！"
+					),
+					okText: global.findLanguage("确定"),
+					cancelText: global.findLanguage("取消"),
+					okType: "primary",
+					onOk: function () {
+						emit("closeChildPage", pageData.page_key);
+					},
+				});
 			})
 	}
 </script>
@@ -423,7 +431,8 @@
 							</div>
 							<!-- 提交 -->
 							<div style="text-align: center;">
-								<a-button  @click="_submitEntryApply" type="primary" style="font-size: 15px !important;" size="large">提交</a-button>
+								<a-button @click="_submitEntryApply" type="primary" style="font-size: 15px !important;"
+									size="large">提交</a-button>
 							</div>
 						</div>
 					</a-col>
