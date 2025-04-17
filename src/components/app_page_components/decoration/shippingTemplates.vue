@@ -118,6 +118,7 @@
         zdqyyf.value.splice(index, 1)//删除对应
       }
     })
+    bydq()
   }
   // 返回上一页
   function closeChildPage(page_key) {
