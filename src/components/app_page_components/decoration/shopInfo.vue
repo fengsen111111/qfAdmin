@@ -232,7 +232,7 @@
 			.then((res) => {
 				// spinning.value = false
 				console.log('申请入驻', res);
-				message.succerr('提交成功')
+				// message.succerr('提交成功')
 				global.Modal.confirm({
 					title: global.findLanguage(
 						"保存成功，点击确定返回上一页！"

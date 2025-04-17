@@ -251,9 +251,17 @@
 			.then((res) => {
 				// spinning.value = false
 				console.log('申请入驻', res);
-				if (res.code == 1) {
-					message.succerr('提交成功')
-				}
+				global.Modal.confirm({
+					title: global.findLanguage(
+						"保存成功，点击确定返回上一页！"
+					),
+					okText: global.findLanguage("确定"),
+					cancelText: global.findLanguage("取消"),
+					okType: "primary",
+					onOk: function () {
+						handUrl('/login')
+					},
+				});
 			})
 	}
 

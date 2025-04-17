@@ -26,7 +26,7 @@ const routes = [
     },
     {
         path: '/lzjb',
-        name: 'lzjb',//0元开店
+        name: 'lzjb',//廉政举报
         props: true,
         component: () => import(/* @vite-ignore */'../components/app_page_components/decoration/lzjb.vue')
     }
