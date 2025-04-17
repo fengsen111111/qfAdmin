@@ -94,17 +94,19 @@
   watch(() => post_params.brand_id, (newVal, oldVal) => {
     del_pp_text.value = false
     console.log('brand_id 品牌变化:', newVal);
-    const exists = ppList.some(item => item.value == newVal);
-    if (exists) {
-      bfb.value = 50
-      if (post_params.type_id) {
-        bfb.value = 100
+    setTimeout(() => {
+      const exists = ppList.some(item => item.value == newVal);
+      if (exists) {
+        bfb.value = 50
+        if (post_params.type_id) {
+          bfb.value = 100
+        }
+      } else {
+        // 品牌已删除
+        post_params.brand_id = ''
+        del_pp_text.value = true
       }
-    } else {
-      // 品牌已删除
-      post_params.brand_id = ''
-      del_pp_text.value = true
-    }
+    }, 2000);
 
   });
 
@@ -203,12 +205,12 @@
           })
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
-          post_params.goods_type = res.goods_type//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
-          post_params.is_used = res.is_used//是否二手 Y是 N不是 
-          post_params.is_customized = res.is_customized//是否定制 Y是 N不是  
-          post_params.is_plan_salled = res.is_plan_salled//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
-          post_params.need_send_time = res.need_send_time//承诺发货时间 a当日发货 b24小时 c48小时  
-          post_params.carriage_id = res.carriage_id//运费模板ID
+          // post_params.goods_type = res.goods_type//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+          // post_params.is_used = res.is_used//是否二手 Y是 N不是 
+          // post_params.is_customized = res.is_customized//是否定制 Y是 N不是  
+          // post_params.is_plan_salled = res.is_plan_salled//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
+          // post_params.need_send_time = res.need_send_time//承诺发货时间 a当日发货 b24小时 c48小时  
+          // post_params.carriage_id = res.carriage_id//运费模板ID
         } else {
           // 是新增时清空
           // post_params.id = ''
@@ -337,8 +339,6 @@
         post_params.store_id = res.store_id
         getGoodsTypeList()
         getGoodsBrandList()
-        getActivityList()
-        getKillActivityList()
       });
   }
   getStoreID()
@@ -418,17 +418,89 @@
     emit("closeChildPage", page_key);
   }
 
+  const treeData = ref([])
+  // 行政区数据
+  function getAreas() {
+    global.axios
+      .post('factory_system/Base/getAreas', {}, global)
+      .then((res) => {
+        // console.log('行政区数据',res);
+        treeData.value = res.areas
+        getStoreCarriageList()//处理模板数据
+      });
+  }
+  getAreas()
+  // 查询对应地区id
+  function findItemByLabel(data, targetLabel) {
+    for (const item of data) {
+      if (item.label === targetLabel) {
+        return item;
+      }
+      if (item.children) {
+        const found = findItemByLabel(item.children, targetLabel);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+  function findItemByAdcode(data, targetAdcode) {
+    for (const item of data) {
+      if (item.adcode === targetAdcode) {
+        return item;
+      }
+      if (item.children) {
+        const found = findItemByAdcode(item.children, targetAdcode);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
   // 所有运费模板
   const allYfmb = ref([])
   function getStoreCarriageList() {
     global.axios
       .post('decoration/Carriage/getStoreCarriageList', post_params, global)
       .then((res) => {
-        console.log('所有模板数据', res);
-        allYfmb.value = []
+        // console.log('所有模板数据', res);
+        // allYfmb.value = []
+        allYfmb.value = res.list.map((item) => {
+          let arr = [] //不包邮地区
+          item.price_city.map((item) => {
+            arr.push(item.adcode)
+          })
+          item.unsupport.map((item) => {
+            arr.push(item.adcode)
+          })
+          const result = treeData.value.filter(item => !arr.includes(item.adcode));
+          return {
+            bydq: result.map((iss) => {
+              return iss.label
+            }),
+            ...item,
+            price_city: item.price_city.map((iss) => {
+              let price_city = findItemByAdcode(treeData.value, iss.adcode)
+              // console.log('price_city', price_city);
+              iss = {
+                ...iss,
+                ...price_city
+              }
+              return iss
+            }),
+            unsupport: item.unsupport.map((iss) => {
+              let unsupport = findItemByAdcode(treeData.value, iss.adcode)
+              // console.log('unsupport', unsupport);
+              iss = {
+                ...iss,
+                ...unsupport
+              }
+              return iss
+            }),
+          }
+        })
+        console.log('allYfmb', allYfmb.value);
       });
   }
-  getStoreCarriageList()
 
 
 </script>
@@ -881,22 +953,46 @@
                   <div style="color: red;">*</div>
                   <div>运费模板</div>
                 </div>
-                <div style="margin-left: 20px;">
+                <div style="margin-left: 20px;width: 80%;">
                   <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
-                    <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">某某模板</a-radio>
+                    <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
                     <!-- <a-radio value="2">其它模板</a-radio> -->
                   </a-radio-group>
-                  <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
-                    <div style="padding-left: 14px;">包邮配送地区：北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京</div>
-                    <div style="display: flex;margin-top: 10px;">
-                      <span>不包邮配送地区：</span>
-                      <div>
-                        <div>1）西藏1件内28.00元，每增加1件，加25元</div>
-                        <div>2）新疆1件内28.00元，每增加1件，加25元</div>
+                  <template v-for="item in allYfmb" :key="item.id">
+                    <template v-if="item.id == post_params.carriage_id">
+                      <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
+                        <div style="padding-left: 14px;display: flex;">
+                          <span>包邮配送地区：</span>
+                          <span style="width: 80%;">
+                            <span v-for="(iss,index_bydq) in item.bydq" :key="index_bydq">
+                              {{iss}}
+                              <span>{{index_bydq+1==item.bydq.length?'。':'、'}}</span>
+                            </span>
+                          </span>
+                        </div>
+                        <div style="display: flex;margin-top: 10px;">
+                          <span>不包邮配送地区：</span>
+                          <div v-if="item.price_city.length>0">
+                            <div v-for="(iss,index_sity) in item.price_city" :key="iss.index_sity">
+                              <div v-if="iss.price_type=='a'">
+                                （{{index_sity+1}}）西藏{{iss.base_number}}件{{iss.base_price}}元，每增{{iss.add_number}}件，加{{iss.add_price}}元。
+                              </div>
+                              <div v-else-if="iss.price_type=='b'">（{{index_sity+1}}）固定邮费 {{iss.order_price}} 元。</div>
+                            </div>
+                            <!-- <div>2）新疆1件内28.00元，每增加1件，加25元</div> -->
+                          </div>
+                          <div v-else>未设置</div>
+                        </div>
+                        <div style="margin-top: 10px;">不包邮配送地区：
+                          <span v-for="(iss,index_unsupport) in item.unsupport" :key="index_unsupport">
+                            {{iss.label}}
+                            <span>{{index_unsupport+1==item.unsupport.length?'。':'、'}}</span>
+                          </span>
+                          <span v-if="item.unsupport.length==0">未设置</span>
+                        </div>
                       </div>
-                    </div>
-                    <div style="padding-left: 28px;margin-top: 10px;">不配送地区：香港、澳门、台湾</div>
-                  </div>
+                    </template>
+                  </template>
                 </div>
               </div>
               <div style="display: flex;margin-top: 20px;margin-left: 47px;">
@@ -973,7 +1069,6 @@
         </div>
       </div>
     </a-spin>
-
   </div>
   <!--导出-->
 </template>

@@ -177,6 +177,7 @@
         })
       } else {
         params.price_city.push({
+          adcode: item.adcode,
           order_price: item.order_price,
           has_top: item.checked ? 'Y' : 'N',
           top_type: item.checkType,
