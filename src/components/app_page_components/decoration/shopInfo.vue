@@ -214,6 +214,7 @@
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
+				"check_status":'b',
 				"id": '',
 				"user_id": '',
 				"type": type.value,

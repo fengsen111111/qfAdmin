@@ -22,6 +22,7 @@
         res.areas.map((item) => {
           checkedList.value.push(item.value)
         })
+        setData()//设置数据
       });
   }
   getAreas()
@@ -49,11 +50,18 @@
   function bydq() {
     console.log('包邮地区', checkedList.value);
     // 找出未被选择的地区
-    const unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
+    let unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
+    unselectedRegions.map((item,index)=>{
+      zdqyyf.value.map((iss)=>{
+        if(iss.adcode == item.adcode){
+          item.is_disabled = true
+        }
+      })
+    })
     console.log('不包邮地区', unselectedRegions)
     unselectedRegions.map((item) => {
       item.cause = '1',
-        item.is_disabled = false
+      item.is_disabled = item.is_disabled?item.is_disabled:false
     })
     bbydq.value = unselectedRegions
   }
@@ -190,55 +198,110 @@
   }
 
   console.log('pageData', pageData);
+  // 查询对应地区id
+  function findItemByLabel(data, targetLabel) {
+    for (const item of data) {
+      if (item.label === targetLabel) {
+        return item;
+      }
+      if (item.children) {
+        const found = findItemByLabel(item.children, targetLabel);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+  function findItemByAdcode(data, targetAdcode) {
+    for (const item of data) {
+      if (item.adcode === targetAdcode) {
+        return item;
+      }
+      if (item.children) {
+        const found = findItemByAdcode(item.children, targetAdcode);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
 
-  // 
-  if (pageData.data.id) {
-    // 编辑
-    // console.log('编辑');
-    loading.value = true
-    global.axios
-      .post('decoration/Carriage/getCarriage', {
-        id: pageData.data.id
-      }, global)
-      .then((res) => {
-        console.log('查询结果', res);
-        loading.value = false
-        // 回显赋值
-        id.value = res.id
-        name.value = res.name
-        send_addressText.value = res.send_address//
-        // send_address.value = 取值
-        status.value = res.status
-        // no_price_city.value = res.no_price_city //包邮地区
-        bbydq.value = [] //不包邮地区
-        res.unsupport.map((item)=>{
-          bbydq.value.push({
-            // label: 
-            // is_disabled: false
-            // value: 
-            adcode:item.adcode,
-            reason: item.reason=='因距离远导致的运费上升'?1:item.reason=='因商品重量大导致的运费上升'?2:item.reason=='合作快递不配送该区域'?3:item.reason=='合作快递该区域服务差'?4: 0
+  // 设置数据
+  function setData() {
+    if (pageData.data.id) {
+      // 编辑
+      // console.log('编辑');
+      loading.value = true
+      global.axios
+        .post('decoration/Carriage/getCarriage', {
+          id: pageData.data.id
+        }, global)
+        .then((res) => {
+          console.log('查询结果', res);
+          loading.value = false
+          // 回显赋值
+          id.value = res.id
+          name.value = res.name
+          send_addressText.value = res.send_address//
+          des.value = res.des
+          // 取值  发货地id
+          send_address.value = findItemByLabel(treeData.value, res.send_address).value;
+          console.log('send_address', send_address.value);
+
+          status.value = res.status
+          let arr = [] //不包邮地区
+          res.price_city.map((item)=>{
+            arr.push(item.adcode)
+          })
+          res.unsupport.map((item)=>{
+            arr.push(item.adcode)
+          })
+          const result = treeData.value.filter(item => !arr.includes(item.adcode));
+          checkedList.value = []
+          result.map((item)=>{
+            checkedList.value.push(item.value)
+          })
+          console.log('checkedList',checkedList.value);
+          // no_price_city.value = res.no_price_city //包邮地区
+          bbydq.value = [] //不包邮地区
+          res.unsupport.map((item) => {
+            let obj = findItemByAdcode(treeData.value, item.adcode);
+            bbydq.value.push({
+              ...obj,
+              cause: item.reason == '因距离远导致的运费上升' ? 1 : item.reason == '因商品重量大导致的运费上升' ? 2 : item.reason == '合作快递不配送该区域' ? 3 : item.reason == '合作快递该区域服务差' ? 4 : 0
+            })
+          })
+
+          jffs.value = res.price_city[0].price_type //计费方式
+          zdqyyf.value = [] //指定区域运费
+          res.price_city.map((item) => {
+            let obj = findItemByAdcode(treeData.value, item.adcode);
+            zdqyyf.value.push({
+              ...obj,
+              is_disabled: true,
+              initNumber: item.base_number,//千克或者数量
+              initMoney: item.base_price,//元
+              addNumber: item.add_number,//超出部分千克或者数量
+              addMoney: item.add_price,//超出部分收费元
+              checked: item.has_top == 'Y' ? true : false,//指定条件包邮选框
+              checkNumber: item.top,//指定条件件或元
+              checkType: item.top_type,//指定条件分类 a件 b元
+            })
           })
         })
-        
-        jffs.value = price_city[0].price_type //计费方式
-        zdqyyf.value = [] //指定区域运费
-        res.price_city.map((item) => {
-          zdqyyf.value.push({
-            adcode: item.adcode,
-            is_disabled: true,
-            // label: item.label,
-            // value: item.value,
-            initNumber: item.base_number,//千克或者数量
-            initMoney: item.base_price,//元
-            addNumber: item.add_number,//超出部分千克或者数量
-            addMoney: item.add_price,//超出部分收费元
-            checked: item.has_top=='Y'?true:false,//指定条件包邮选框
-            checkNumber: item.top,//指定条件件或元
-            checkType: item.top_type,//指定条件分类 a件 b元
-          })
-        })
-      })
+    }else{
+      // 新增的重置
+      id.value = ''
+      name.value = ''
+      des.value = ''
+      send_address.value = ''//
+      send_addressText.value = ''//
+      send_addressText.value = ''//
+      status.value = 'Y'//
+      no_price_city.value = []//
+      jffs.value = 'a'//
+      zdqyyf.value = []//
+      bbydq.value = []
+      getAreas()
+    }
   }
 
 </script>
@@ -248,13 +311,20 @@
   <div>
     <a-spin :spinning="loading">
       <div class="a1">
-        <div style="display: flex;align-items: center;margin-bottom: 20px;">
-          <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
-            style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
-            @click="closeChildPage(pageData.page_key)">&#xe6d2;
-          </a-button>
-          <div class="a2">运费模板</div>
+        <div style="display: flex;justify-content: space-between;margin-bottom: 20px;">
+          <div style="display: flex;align-items: center;">
+            <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+              style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+              @click="closeChildPage(pageData.page_key)">&#xe6d2;
+            </a-button>
+            <div class="a2">运费模板</div>
+          </div>
+          <div class="flex">
+            <div class="tjBtn" @click="editCarriage">提交</div>
+            <div class="cz" @click="setData">重置</div>
+          </div>
         </div>
+        
         <div class="a3">
           <div class="a4">模板基础信息</div>
           <div class="a5">
@@ -476,10 +546,10 @@
                   <div>不配送原因</div>
                   <div class="a57">
                     <a-radio-group v-model:value="item.cause" name="radioGroup">
-                      <a-radio value="1">因距离远导致的运费上升</a-radio>
-                      <a-radio value="2">因商品重量大导致的运费上升</a-radio>
-                      <a-radio value="3">合作快递不配送该区域</a-radio>
-                      <a-radio value="4">合作快递该区域服务差</a-radio>
+                      <a-radio :value="1">因距离远导致的运费上升</a-radio>
+                      <a-radio :value="2">因商品重量大导致的运费上升</a-radio>
+                      <a-radio :value="3">合作快递不配送该区域</a-radio>
+                      <a-radio :value="4">合作快递该区域服务差</a-radio>
                     </a-radio-group>
                   </div>
                 </div>
@@ -490,12 +560,12 @@
             </div>
           </div>
           <!-- 操作 -->
-          <div class="a58">
+          <!-- <div class="a58">
             <div class="a59">
               <a-button @click="editCarriage()" type="primary">提交</a-button>
               <a-button @click="closeChildPage(pageData.page_key)" class="a60">取消</a-button>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="a61"></div>
       </div>
@@ -506,6 +576,20 @@
 </template>
 
 <style lang="less" scoped>
+  .cz {
+    background-color: #f97425;
+    color: white;
+    padding: 5px 20px;
+    border-radius: 5px
+  }
+  
+  .tjBtn {
+    margin-right: 20px;
+    background-color: #0ccd00;
+    color: white;
+    padding: 5px 20px;
+    border-radius: 5px;
+  }
   .ellipsisOne {
     display: -webkit-box;
     -webkit-box-orient: vertical;
