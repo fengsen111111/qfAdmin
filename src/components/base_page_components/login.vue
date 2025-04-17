@@ -1,5 +1,5 @@
 <script setup>
-  import { inject, onBeforeMount, reactive,onMounted } from 'vue'
+  import { inject, onBeforeMount, reactive, onMounted } from 'vue'
   import { APPConfig } from "@/config";
   import { WindowsOutlined, CloseCircleOutlined, LeftOutlined } from "@ant-design/icons-vue";
 
@@ -18,7 +18,7 @@
 
   const isJb = ref(false)
 
-  function handleKeydown(event){
+  function handleKeydown(event) {
     if (event.key === 'Enter') {
       console.log('回车键触发了');
       login()
@@ -331,6 +331,20 @@
   //   }
   // }
 
+  const admin_login_logo = ref('')
+  const admin_login_back_image = ref('')
+
+  function getSetting() {
+    global.axios
+      .post('decoration/Setting/getSetting', {}, global)
+      .then((res) => {
+        console.log('登陆页logo', res);
+        admin_login_logo.value = res.admin_login_logo[0]
+        admin_login_back_image.value = res.admin_login_back_image[0]
+      });
+  }
+  getSetting()
+
 </script>
 
 <template>
@@ -393,15 +407,18 @@
     </a-dropdown>
     <div style="height: 9.5vh;margin-left: 21.5vw;padding-top: 14px;color: #FF0000;font-weight: bold;">
       <div style="display: flex;">
-        <!-- <img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px"> -->
-        <img src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
-        <!-- <span style="font-size: 28px;margin-left: 5px;">{{global.appName}} </span> -->
+        <img v-if="admin_login_logo" :src="admin_login_logo" alt="" style="width: auto;height: 75px;border-radius: 5px">
+        <img v-else src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
       </div>
       <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
-    <div style="padding: 0px 260px;background-image: linear-gradient(180deg, #103bbc 0%, #00238c 100%);">
-      <div
-        style="background-image: url('/resource/image/loginBgTwo.png');background-repeat: no-repeat;background-size: 100% 100%;height: 63vh;">
+    <div style="padding: 0px 260px;background-size: 100% 100%;" :style="{
+      backgroundImage: admin_login_back_image 
+        ? `url(${admin_login_back_image})` 
+        : 'linear-gradient(180deg, #103bbc 0%, #00238c 100%)'
+    }">
+      <!-- background-image: url('/resource/image/loginBgTwo.png'); -->
+      <div style="background-repeat: no-repeat;background-size: 100% 100%;height: 63vh;">
         <div v-if="logType==1" class="login-form">
           <div
             style="display: flex;margin-top: 10px;color: #000000CC;font-weight: bold;font-size: 19px; padding: 0 50px;cursor: pointer;">
@@ -454,8 +471,7 @@
                 style="width: 48%;border-radius: 3px;float: right" @click="changeCaptcha"> -->
               <div style="display: flex;justify-content: space-between;align-items: center;margin-top: -5px;">
                 <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('图形验证码')"
-                  :style="{width:'calc(100% - 110px)',float:'left',}" @change="onChange" size="large"
-                  />
+                  :style="{width:'calc(100% - 110px)',float:'left',}" @change="onChange" size="large" />
                 <div @click="drawCaptcha" style="cursor: pointer;padding-top: 5px;">
                   <canvas ref="canvasRef" width="100" height="40"></canvas>
                 </div>
