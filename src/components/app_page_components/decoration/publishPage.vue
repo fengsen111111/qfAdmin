@@ -975,7 +975,7 @@
                           <div v-if="item.price_city.length>0">
                             <div v-for="(iss,index_sity) in item.price_city" :key="iss.index_sity">
                               <div v-if="iss.price_type=='a'">
-                                （{{index_sity+1}}）西藏{{iss.base_number}}件{{iss.base_price}}元，每增{{iss.add_number}}件，加{{iss.add_price}}元。
+                                （{{index_sity+1}}）{{iss.label}}{{iss.base_number}}件{{iss.base_price}}元，每增{{iss.add_number}}件，加{{iss.add_price}}元。
                               </div>
                               <div v-else-if="iss.price_type=='b'">（{{index_sity+1}}）固定邮费 {{iss.order_price}} 元。</div>
                             </div>
