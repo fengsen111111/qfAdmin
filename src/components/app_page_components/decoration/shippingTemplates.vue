@@ -44,6 +44,7 @@
         checkedList.value.push(item.value)
       })
     }
+    bydq()
   }
   // 包邮地区、不包邮地区
   const bbydq = ref([])//不包邮地区
@@ -51,19 +52,21 @@
     console.log('包邮地区', checkedList.value);
     // 找出未被选择的地区
     let unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
-    unselectedRegions.map((item,index)=>{
-      zdqyyf.value.map((iss)=>{
-        if(iss.adcode == item.adcode){
-          item.is_disabled = true
+    unselectedRegions.map((item, index) => {
+      zdqyyf.value.map((iss) => {
+        if (iss.adcode == item.adcode) {
+          // item.is_disabled = true
+          item.is_disabled = false
         }
       })
     })
     console.log('不包邮地区', unselectedRegions)
     unselectedRegions.map((item) => {
       item.cause = '1',
-      item.is_disabled = item.is_disabled?item.is_disabled:false
+        item.is_disabled = item.is_disabled ? item.is_disabled : false
     })
     bbydq.value = unselectedRegions
+    zdqyyf.value = []
   }
 
   const checkedXy = ref(true)//协议勾选
@@ -193,8 +196,19 @@
       .then((res) => {
         console.log('编辑结果', res);
         loading.value = false
-        message.success('操作成功')
-        closeChildPage(pageData.page_key)
+        // message.success('操作成功')
+        // closeChildPage(pageData.page_key)
+        global.Modal.confirm({
+          title: global.findLanguage(
+            "保存成功，点击确定返回上一页！"
+          ),
+          okText: global.findLanguage("确定"),
+          cancelText: global.findLanguage("取消"),
+          okType: "primary",
+          onOk: function () {
+            emit("closeChildPage", pageData.page_key);
+          },
+        });
       })
   }
 
@@ -249,18 +263,18 @@
 
           status.value = res.status
           let arr = [] //不包邮地区
-          res.price_city.map((item)=>{
+          res.price_city.map((item) => {
             arr.push(item.adcode)
           })
-          res.unsupport.map((item)=>{
+          res.unsupport.map((item) => {
             arr.push(item.adcode)
           })
           const result = treeData.value.filter(item => !arr.includes(item.adcode));
           checkedList.value = []
-          result.map((item)=>{
+          result.map((item) => {
             checkedList.value.push(item.value)
           })
-          console.log('checkedList',checkedList.value);
+          console.log('checkedList', checkedList.value);
           // no_price_city.value = res.no_price_city //包邮地区
           bbydq.value = [] //不包邮地区
           res.unsupport.map((item) => {
@@ -271,7 +285,7 @@
             })
           })
 
-          jffs.value = res.price_city[0].price_type?res.price_city[0].price_type:'b' //计费方式
+          jffs.value = res.price_city[0].price_type ? res.price_city[0].price_type : 'b' //计费方式
           zdqyyf.value = [] //指定区域运费
           res.price_city.map((item) => {
             let obj = findItemByAdcode(treeData.value, item.adcode);
@@ -286,11 +300,11 @@
               checkNumber: item.top,//指定条件件或元
               checkType: item.top_type,//指定条件分类 a件 b元
 
-              order_price:item.order_price//固定邮费
+              order_price: item.order_price//固定邮费
             })
           })
         })
-    }else{
+    } else {
       // 新增的重置
       id.value = ''
       name.value = ''
@@ -303,7 +317,7 @@
       jffs.value = 'a'//
       zdqyyf.value = []//
       bbydq.value = []
-      getAreas()
+      // getAreas()
     }
   }
 
@@ -327,7 +341,7 @@
             <div class="cz" @click="setData">重置</div>
           </div>
         </div>
-        
+
         <div class="a3">
           <div class="a4">模板基础信息</div>
           <div class="a5">
@@ -430,8 +444,7 @@
                   <div class="a34">如订单中存在多种运费模板，系统会选取其中最优的模板计算运费，并按商品件数均分到各子单。</div>
                 </div>
               </div>
-              <a-alert class="a35"
-                message="受海关、物流、当地政策的限制，部分商品是无法出关或在大陆地区以外无法进行购买，请关注禁运清单及相关法律法规，避免错误设置运费模板，造成损失。"
+              <a-alert class="a35" message="受海关、物流、当地政策的限制，部分商品是无法出关或在大陆地区以外无法进行购买，请关注禁运清单及相关法律法规，避免错误设置运费模板，造成损失。"
                 type="warning" show-icon />
             </div>
             <div v-if="zdqyyf.length">
@@ -519,7 +532,7 @@
               <a-dropdown placement="bottom">
                 <a-button>设置指定区域运费</a-button>
                 <template #overlay>
-                  <a-menu v-if="bbydq.length">
+                  <a-menu v-if="bbydq.length" style="max-height: 300px; overflow-y: auto;">
                     <!-- disabled 禁用 -->
                     <a-menu-item v-for="(item,index) in bbydq" :key="item.value" :disabled="item.is_disabled"
                       @click="setZdqqyf(index,item)">{{item.label}}</a-menu-item>
@@ -585,7 +598,7 @@
     padding: 5px 20px;
     border-radius: 5px
   }
-  
+
   .tjBtn {
     margin-right: 20px;
     background-color: #0ccd00;
@@ -593,6 +606,7 @@
     padding: 5px 20px;
     border-radius: 5px;
   }
+
   .ellipsisOne {
     display: -webkit-box;
     -webkit-box-orient: vertical;

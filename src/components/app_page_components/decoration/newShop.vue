@@ -241,6 +241,7 @@
       }, global)
       .then((res) => {
         console.log('查询支付结果', res);
+        typeVis.value = 2
         // P支付中 S成功 F失败  
         if(res.result == 'P'){
           message.error('支付中')
