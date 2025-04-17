@@ -71,7 +71,13 @@
       //   status: false,//启用状态
       //   order: '',//排序  
       // }
-    ],//商品规格  
+    ],//商品规格  post_params
+    goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+    is_used: 'N',//是否二手 Y是 N不是  
+    is_customized: 'N',//是否定制 Y是 N不是  
+    is_plan_salled: 'a',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
+    need_send_time: 'a',//承诺发货时间 a当日发货 b24小时 c48小时  
+    carriage_id: '',//运费模板ID 
   })
   const bfb = ref(0)//填写进度
 
@@ -94,7 +100,7 @@
       if (post_params.type_id) {
         bfb.value = 100
       }
-    }else{
+    } else {
       // 品牌已删除
       post_params.brand_id = ''
       del_pp_text.value = true
@@ -197,21 +203,33 @@
           })
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
+          post_params.goods_type = res.goods_type//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+          post_params.is_used = res.is_used//是否二手 Y是 N不是 
+          post_params.is_customized = res.is_customized//是否定制 Y是 N不是  
+          post_params.is_plan_salled = res.is_plan_salled//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
+          post_params.need_send_time = res.need_send_time//承诺发货时间 a当日发货 b24小时 c48小时  
+          post_params.carriage_id = res.carriage_id//运费模板ID
         } else {
           // 是新增时清空
-          post_params.id = ''
-          post_params.name = ''
-          post_params.store_id = ''
-          post_params.cover_image = ''
-          post_params.images = []
-          post_params.detail = ''
-          post_params.type_id = ''
-          post_params.brand_id = ''
-          post_params.status = ''
-          post_params.attributes = []
-          post_params.services = []
-          post_params.goods_sizes = []
-          component_state.myValue = ''
+          // post_params.id = ''
+          // post_params.name = ''
+          // post_params.store_id = ''
+          // post_params.cover_image = ''
+          // post_params.images = []
+          // post_params.detail = ''
+          // post_params.type_id = ''
+          // post_params.brand_id = ''
+          // post_params.status = ''
+          // post_params.attributes = []
+          // post_params.services = []
+          // post_params.goods_sizes = []
+          // // 
+          // post_params.goods_type = 'a'//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+          // post_params.is_used = 'N'//是否二手 Y是 N不是 
+          // post_params.is_customized = 'N'//是否定制 Y是 N不是  
+          // post_params.is_plan_salled = 'a'//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
+          // post_params.need_send_time = 'a'//承诺发货时间 a当日发货 b24小时 c48小时  
+          // post_params.carriage_id = ''//运费模板ID
         }
       })
   }
@@ -399,6 +417,19 @@
   function closeChildPage(page_key) {
     emit("closeChildPage", page_key);
   }
+
+  // 所有运费模板
+  const allYfmb = ref([])
+  function getStoreCarriageList() {
+    global.axios
+      .post('decoration/Carriage/getStoreCarriageList', post_params, global)
+      .then((res) => {
+        console.log('所有模板数据', res);
+        allYfmb.value = []
+      });
+  }
+  getStoreCarriageList()
+
 
 </script>
 
@@ -608,7 +639,8 @@
                                 <a-select-option :value="item.value" v-for="item in ppList"
                                   :key="item.value">{{item.label}}</a-select-option>
                               </a-select>
-                              <span v-if="del_pp_text" style="color: #ff0000;padding-left: 20px;font-size: 12px;">品牌已被删除，请重新选择</span>
+                              <span v-if="del_pp_text"
+                                style="color: #ff0000;padding-left: 20px;font-size: 12px;">品牌已被删除，请重新选择</span>
                               <!-- <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span
                                   style="color: #ff7300;">点击申请</span></div> -->
                             </div>
@@ -785,10 +817,10 @@
                   <div>商品类型</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">普通商品</a-radio>
-                    <a-radio value="2">海外进口</a-radio>
-                    <a-radio value="3">海外CC个人行邮</a-radio>
+                  <a-radio-group v-model:value="post_params.goods_type" name="radioGroup">
+                    <a-radio value="a">普通商品</a-radio>
+                    <a-radio value="b">海外进口</a-radio>
+                    <a-radio value="c">海外CC个人行邮</a-radio>
                   </a-radio-group>
                 </div>
               </div>
@@ -798,9 +830,9 @@
                   <div>是否二手</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">非二手</a-radio>
-                    <a-radio value="2">二手</a-radio>
+                  <a-radio-group v-model:value="post_params.is_used" name="radioGroup">
+                    <a-radio value="N">非二手</a-radio>
+                    <a-radio value="Y">二手</a-radio>
                   </a-radio-group>
                 </div>
               </div>
@@ -810,9 +842,9 @@
                   <div>是否定制</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">非定制</a-radio>
-                    <a-radio value="2">部分库存定制</a-radio>
+                  <a-radio-group v-model:value="post_params.is_customized" name="radioGroup">
+                    <a-radio value="N">非定制</a-radio>
+                    <a-radio value="Y">部分库存定制</a-radio>
                   </a-radio-group>
                 </div>
               </div>
@@ -822,11 +854,11 @@
                   <div>是否预售</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">非预售</a-radio>
-                    <a-radio value="2">定时预售</a-radio>
-                    <a-radio value="3">时段预售</a-radio>
-                    <a-radio value="4">规格预售</a-radio>
+                  <a-radio-group v-model:value="post_params.is_plan_salled" name="radioGroup">
+                    <a-radio value="a">非预售</a-radio>
+                    <a-radio value="b">定时预售</a-radio>
+                    <a-radio value="c">时段预售</a-radio>
+                    <a-radio value="d">规格预售</a-radio>
                   </a-radio-group>
                 </div>
               </div>
@@ -835,12 +867,12 @@
                   <div>承诺发货时间</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">当日发货</a-radio>
-                    <a-radio value="2">24小时
+                  <a-radio-group v-model:value="post_params.need_send_time" name="radioGroup">
+                    <a-radio value="a">当日发货</a-radio>
+                    <a-radio value="b">24小时
                       <!-- <span style="color: #FF7300;margin-left: 10px;">获额外流量扶持</span> -->
                     </a-radio>
-                    <a-radio value="3">48小时</a-radio>
+                    <a-radio value="c">48小时</a-radio>
                   </a-radio-group>
                 </div>
               </div>
@@ -850,16 +882,10 @@
                   <div>运费模板</div>
                 </div>
                 <div style="margin-left: 20px;">
-                  <a-radio-group v-model:value="value" name="radioGroup">
-                    <a-radio value="1">某某模板
-                      <!-- <span style="color: #FF7300;margin-left: 10px;">推荐</span> -->
-                    </a-radio>
-                    <a-radio value="2">其它模板</a-radio>
+                  <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
+                    <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">某某模板</a-radio>
+                    <!-- <a-radio value="2">其它模板</a-radio> -->
                   </a-radio-group>
-                  <!-- <a-select ref="select" v-model:value="value" style="width: 245px">
-                    <a-select-option value="某某模板">某某模板</a-select-option>
-                    <a-select-option value="其它模板">其它模板</a-select-option>
-                  </a-select> -->
                   <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
                     <div style="padding-left: 14px;">包邮配送地区：北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京、安徽、北京</div>
                     <div style="display: flex;margin-top: 10px;">
