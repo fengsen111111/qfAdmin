@@ -54,11 +54,12 @@
     // 找出未被选择的地区
     let unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
     unselectedRegions.map((item, index) => {
+      item.is_disabled = false
+    })
+    unselectedRegions.map((item, index) => {
       zdqyyf.value.map((iss) => {
         if (iss.adcode == item.adcode) {
           item.is_disabled = true
-        }else{
-          item.is_disabled = false
         }
       })
     })
