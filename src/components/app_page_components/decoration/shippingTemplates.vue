@@ -318,6 +318,10 @@
       zdqyyf.value = []//
       bbydq.value = []
       // getAreas()
+      checkedList.value = []
+      treeData.value.map((item) => {
+        checkedList.value.push(item.value)
+      })
     }
   }
 
