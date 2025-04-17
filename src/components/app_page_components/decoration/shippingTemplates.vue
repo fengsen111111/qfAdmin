@@ -49,20 +49,24 @@
   // 包邮地区、不包邮地区
   const bbydq = ref([])//不包邮地区
   function bydq() {
-    console.log('包邮地区', checkedList.value);
+    // console.log('包邮地区', checkedList.value);
+    
     // 找出未被选择的地区
     let unselectedRegions = treeData.value.filter(region => !checkedList.value.includes(region.value));
     unselectedRegions.map((item, index) => {
       zdqyyf.value.map((iss) => {
         if (iss.adcode == item.adcode) {
           item.is_disabled = true
+        }else{
+          item.is_disabled = false
         }
       })
     })
+    console.log('自定义付费区',zdqyyf.value);
     console.log('不包邮地区', unselectedRegions)
     unselectedRegions.map((item) => {
       item.cause = '1',
-        item.is_disabled = item.is_disabled ? item.is_disabled : false
+        item.is_disabled = item.is_disabled==true ? true : false
     })
     bbydq.value = unselectedRegions
     zdqyyf.value = zdqyyf.value.filter(region => !checkedList.value.includes(region.value));
