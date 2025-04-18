@@ -152,6 +152,7 @@
       }, global)
       .then((res) => {
         console.log('结果', res);
+
         if (res.pay_info) {
           money_log_id.value = res.money_log_id
           // 支付数据转二维码
@@ -164,7 +165,7 @@
               console.error('生成二维码失败', err);
             });
           isPay.value = true
-        } else if (res.pay_info == '') {
+        } else if (res == []) {
           typeVis.value = 2
         } else {
           message.error('未生成支付数据')
@@ -225,6 +226,20 @@
       },
     });
   }
+  // 保存成功
+  function closeChildPageTwo(page_key) {
+    global.Modal.confirm({
+      title: global.findLanguage(
+        "保存成功，点击确定返回上一页！"
+      ),
+      okText: global.findLanguage("确定"),
+      cancelText: global.findLanguage("取消"),
+      okType: "primary",
+      onOk: function () {
+        emit("closeChildPage", page_key);
+      },
+    });
+  }
   // 跳转其它路由
   function handUrl(url) {
     global.router.push(url)
@@ -237,21 +252,22 @@
     // 查询支付结果
     global.axios
       .post('decoration/Store/payTypePricesResult', {
-        money_log_id:money_log_id.value
+        money_log_id: money_log_id.value
       }, global)
       .then((res) => {
         console.log('查询支付结果', res);
         // P支付中 S成功 F失败  
-        if(res.result == 'P'){
+        if (res.result == 'P') {
           message.error('支付中')
-        }else if(res.result == 'S'){
-          message.error('支付成功')
+        } else if (res.result == 'S') {
+          message.success('支付成功')
+          isPay.value = false
           setTimeout(() => {
             typeVis.value = 2
           }, 2000);
-        }else if(res.result == 'F'){
+        } else if (res.result == 'F') {
           message.error('支付失败')
-        }else{
+        } else {
           message.error('未知')
         }
       })
@@ -344,7 +360,8 @@
       </div>
     </div>
     <div v-else style="padding: 20px;overflow: auto;height: 100%;">
-      <publishPage :pageData="pageData" @closeChildPage="closeChildPage" @openChildPage="openChildPage" />
+      <publishPage :pageData="pageData" @closeChildPageTwo="closeChildPageTwo" @closeChildPage="closeChildPage"
+        @openChildPage="openChildPage" />
     </div>
     <!-- 支付弹框 -->
     <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"

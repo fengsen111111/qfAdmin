@@ -395,8 +395,8 @@
       .post('decoration/Goods/webAddGoods', post_params, global)
       .then((res) => {
         console.log('提交数据结果', res);
-        message.success('操作成功');
-        emit("closeChildPage", pageData.page_key);
+        // message.success('操作成功');
+        emit("closeChildPageTwo", pageData.page_key);
       });
   }
 
