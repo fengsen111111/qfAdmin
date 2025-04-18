@@ -152,7 +152,6 @@
       }, global)
       .then((res) => {
         console.log('结果', res);
-
         if (res.pay_info) {
           money_log_id.value = res.money_log_id
           // 支付数据转二维码
@@ -165,11 +164,9 @@
               console.error('生成二维码失败', err);
             });
           isPay.value = true
-        } else if (res == []) {
-          typeVis.value = 2
         } else {
-          message.error('未生成支付数据')
-          // typeVis.value = 2
+          // message.error('未生成支付数据')
+          typeVis.value = 2
         }
       })
   }
