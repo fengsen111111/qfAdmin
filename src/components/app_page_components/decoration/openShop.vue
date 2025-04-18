@@ -355,7 +355,7 @@
 				<div style="padding: 20px;overflow: auto;height: 100%;width: 70vw;margin: 0 auto;">
 					<div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div>
 					<a-row>
-						<a-col :xl="24" :xxl="16">
+						<a-col :xl="24" :xxl="14">
 							<div
 								style="background-color: #fff;padding: 20px;border: 2px solid #f5f5f5;border-radius: 5px;">
 								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">店铺基本信息
@@ -559,7 +559,7 @@
 								</div>
 							</div>
 						</a-col>
-						<a-col :xl="10" :xxl="6">
+						<a-col :xl="10" :xxl="8">
 							<div
 								style="margin-top: 20px;margin-left: 20px;border: 2px solid #f5f5f5;border-radius: 5px;background-color: #fff;">
 								<div
@@ -576,7 +576,7 @@
 										<!-- <div>4.请按照身份证准确填写「身份证有效期」，不可延长有效期，有效期非“长期”的身份证不可勾选"长期”。</div> -->
 									</div>
 									<div style="font-size: 16px;margin: 10px 0px;">示例图</div>
-									<div style="background-color: #f6f8fa;padding: 20px;">
+									<div style="padding: 20px;">
 										<div style="display: flex;">
 											<img style="width: 180px;object-fit: contain;border-radius: 5px;"
 												src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/202535/ceoe98ri2u3wjmcejvothruie3dkirih.jpg"

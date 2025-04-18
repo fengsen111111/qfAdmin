@@ -547,7 +547,7 @@
 									<!-- <div>4.请按照身份证准确填写「身份证有效期」，不可延长有效期，有效期非“长期”的身份证不可勾选"长期”。</div> -->
 								</div>
 								<div style="font-size: 16px;margin: 10px 0px;">示例图</div>
-								<div style="background-color: #f6f8fa;padding: 20px;">
+								<div>
 									<div style="display: flex;">
 										<img style="width: 180px;object-fit: contain;border-radius: 5px;"
 											src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/202535/ceoe98ri2u3wjmcejvothruie3dkirih.jpg"

@@ -135,11 +135,7 @@
     if (login_state.loginData.mobile) {
       const regex = /^1[3-9]\d{9}$/;
       if (login_state.loginData.mobile && !regex.test(login_state.loginData.mobile)) {
-        uni.showToast({
-          title: '手机号格式错误',
-          icon: 'none',
-          duration: 2000
-        })
+        message.error('手机号格式错误')
         return false
       }
     }
@@ -147,6 +143,7 @@
       console.log('验证码', res.code);
       login_state.loginData.mobile_code = res.code
       showDjs.value = true
+      timeData.value = 60
       timer.value = setInterval(() => {
         timeData.value = timeData.value - 1
       }, 1000);
@@ -168,6 +165,7 @@
       console.log('刷新验证码');
       setTimeout(() => {
         drawCaptcha()
+        showDjs.value = false
       }, 500);
     }
   }
