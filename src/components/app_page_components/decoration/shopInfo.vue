@@ -31,26 +31,31 @@
 
 	const isMap = ref(false)//是否打开地图
 	watch(() => isMap, val => {
-		// console.log('地图', val.value);
+		console.log('地图', val.value);
 		if (val.value) {
 			// initMap()
-			if (window.navigator.geolocation) {
-				window.navigator.geolocation.getCurrentPosition(
-					function (position) {
-						const hxzb = bd09ToGcj02(position.coords.longitude.toFixed(6), position.coords.latitude.toFixed(6))
-						component_state.lng = hxzb.gcj_lon
-						component_state.lat = hxzb.gcj_lat
-						initMap()
-					},
-					function (error) {
-						alert(`获取位置失败: ${error.message}`)
-					},
-					{
-						enableHighAccuracy: true
-					}
-				);
+			if (component_state.lat & component_state.lng) {
+				console.log('都有值');
+				initMap()
 			} else {
-				alert('浏览器不支持地理定位')
+				if (window.navigator.geolocation) {
+					window.navigator.geolocation.getCurrentPosition(
+						function (position) {
+							const hxzb = bd09ToGcj02(position.coords.longitude.toFixed(6), position.coords.latitude.toFixed(6))
+							component_state.lng = hxzb.gcj_lon
+							component_state.lat = hxzb.gcj_lat
+							initMap()
+						},
+						function (error) {
+							alert(`获取位置失败: ${error.message}`)
+						},
+						{
+							enableHighAccuracy: true
+						}
+					);
+				} else {
+					alert('浏览器不支持地理定位')
+				}
 			}
 		}
 	}, { deep: true });
