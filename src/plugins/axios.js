@@ -1,9 +1,9 @@
-import {message} from "ant-design-vue";
+import { message } from "ant-design-vue";
 import axios from "axios";
-import {Base64} from "js-base64";
+import { Base64 } from "js-base64";
 import JSEncrypt from "jsencrypt";
-import {APPConfig} from "../config";
-import {router} from "../router/index";
+import { APPConfig } from "../config";
+import { router } from "../router/index";
 
 let findLanguageFunction = null;
 // 创建axios实例
@@ -208,10 +208,10 @@ export function download(url = null, path = null, params, global, type = "file")
     return new Promise((resolve, reject) => {
         post(APPConfig.apiURL + "/factory_storage/Ticket/getTicket", {}, global)
             .then((ticket_res) => {
-                params = Object.assign({ticket_time: ticket_res.ticket_time}, params);
+                params = Object.assign({ ticket_time: ticket_res.ticket_time }, params);
                 if (!url) {
                     url = APPConfig.apiURL + "/factory_storage/File/downloadFile";
-                    params = Object.assign({url: path}, params);
+                    params = Object.assign({ url: path }, params);
                 }
                 //参数加密
                 let rsa_result = rsaEncode(params, false);
@@ -225,28 +225,28 @@ export function download(url = null, path = null, params, global, type = "file")
                         rsa: rsa_result.rsa_params_status,
                     },
                 }).then((response) => {
-                        const blob = new Blob([response], {
-                            type: "text/plain;charset=utf-8",
-                        });
-                        if (type == "file") {
-                            //保存文件流为文件
-                            let downloadElement = document.createElement("a");
-                            let href = window.URL.createObjectURL(blob); //创建下载的链接
-                            downloadElement.href = href;
-                            if (params.name) downloadElement.download = params.name; //下载后文件名
-                            document.body.appendChild(downloadElement);
-                            downloadElement.click(); //点击下载
-                            document.body.removeChild(downloadElement); //下载完成移除元素
-                            window.URL.revokeObjectURL(href); //释放掉blob对象
-                        } else {
-                            //返回文件內容
-                            blob.text().then((data) => {
-                                    resolve(data);
-                                }).catch((err) => {});
-                        }
-                    }).catch((error) => {
-                        handleError(error);
+                    const blob = new Blob([response], {
+                        type: "text/plain;charset=utf-8",
                     });
+                    if (type == "file") {
+                        //保存文件流为文件
+                        let downloadElement = document.createElement("a");
+                        let href = window.URL.createObjectURL(blob); //创建下载的链接
+                        downloadElement.href = href;
+                        if (params.name) downloadElement.download = params.name; //下载后文件名
+                        document.body.appendChild(downloadElement);
+                        downloadElement.click(); //点击下载
+                        document.body.removeChild(downloadElement); //下载完成移除元素
+                        window.URL.revokeObjectURL(href); //释放掉blob对象
+                    } else {
+                        //返回文件內容
+                        blob.text().then((data) => {
+                            resolve(data);
+                        }).catch((err) => { });
+                    }
+                }).catch((error) => {
+                    handleError(error);
+                });
                 handleLoading(global);
             }).catch((e) => {
             });
@@ -276,6 +276,13 @@ function handleError(error) {
             localStorage.removeItem("Authorization");
             router.push("/login");
         }
+        if (error.status === -2) {
+            message.error(findLanguageFunction(error.message));
+            setTimeout(() => {
+                localStorage.removeItem("Authorization");
+                router.push("/login");
+            }, 2000);
+        }
     }, 100);
 }
 
@@ -296,7 +303,7 @@ function rsaEncode(params, rsa_status) {
             params.push(encryptor.encrypt(item));
         });
     }
-    return {params: params, rsa: rsa_params_status};
+    return { params: params, rsa: rsa_params_status };
 }
 
 //解密
@@ -313,5 +320,5 @@ function rsaDecode(data) {
 }
 
 export default {
-    post, upload, download,rsaEncode,rsaDecode
+    post, upload, download, rsaEncode, rsaDecode
 };
