@@ -58,7 +58,7 @@
   }
 
   function login() {
-    if (login_state.loginData.captcha_code != captchaCode.value) {
+    if (login_state.loginData.captcha_code.toLowerCase() !== captchaCode.value.toLowerCase()) {
       message.error('图形验证码输入有误')
       return false
     }

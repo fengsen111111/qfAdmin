@@ -7,6 +7,7 @@
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
+	import { message } from 'ant-design-vue';
 
 
 	let props = defineProps(["pageData"]);
@@ -209,8 +210,14 @@
 		});
 	}
 
+	const xygx = ref(false)
+
 	// 提交入驻申请
 	function _submitEntryApply() {
+		if (!xygx.value) {
+			message.error('请阅读并勾选协议')
+			return false
+		}
 		if (!store_name.value) {
 			message.error('请输入店铺名称')
 			return false
@@ -225,6 +232,10 @@
 		}
 		if (!license_image.value) {
 			message.error('请上传营业执照')
+			return false
+		}
+		if (!name.value) {
+			message.error('请输入负责人姓名')
 			return false
 		}
 		if (!id_card_number.value) {
@@ -286,6 +297,23 @@
 				});
 			})
 	}
+
+	const visible_dr = ref(false)
+	const drTitle = ref('')
+	const drFwb = ref('')
+
+	function handOpen(type) {
+		drTitle.value = type == 'store_entry_introduce' ? '商家入驻介绍' : type == 'store_privacy_rule' ? '商家隐私协议' : type == 'store_rule' ? '平台商家规则' : '标题'
+		global.axios
+			.post('decoration/Setting/getRichTextContent', {
+				type: type
+			}, global)
+			.then((res) => {
+				console.log('协议内容', res);
+				visible_dr.value = true
+				drFwb.value = res
+			})
+	}
 </script>
 
 <template>
@@ -302,7 +330,7 @@
 					<div style="font-size: 18px;">店铺信息</div>
 				</div>
 				<a-row>
-					<a-col :xl="24" :xxl="16">
+					<a-col :xl="24" :xxl="14">
 						<div style="background-color: #fff;padding: 20px;border: 2px solid #f5f5f5;border-radius: 5px;">
 							<div style="border-left: 3px solid #1890FF;padding-left: 10px;font-size: 16px;">店铺基本信息</div>
 							<div style="display: flex;margin: 20px 0px 20px 100px;align-items: center;">
@@ -455,6 +483,13 @@
 								</div>
 								<a-input v-model:value="id_card_number" style="margin-left: 10px;width: 300px;" />
 							</div>
+							<div style="display: flex;margin: 20px 0px 20px 87px;align-items: center;">
+								<div style="display: flex;white-space:nowrap;">
+									<span style="color: red;">*</span>
+									<span>负责人姓名</span>
+								</div>
+								<a-input v-model:value="name" style="margin-left: 10px;width: 300px;" />
+							</div>
 							<div style="display: flex;margin: 20px 0px 20px 44px;align-items: center;">
 								<div style="display: flex;white-space:nowrap;">
 									<span style="color: red;">*</span>
@@ -469,6 +504,25 @@
 								</div>
 								<a-input v-model:value="admin_login_password" style="margin-left: 10px;width: 300px;" />
 							</div>
+							<div style="text-align: center;margin-bottom: 20px;display: flex;">
+								<div style="display: flex;margin: 0 auto;">
+									<a-checkbox v-model:checked="xygx"></a-checkbox>
+									<div style="display: flex;margin-left: 5px;">
+										<span>已仔细阅读并自愿同意</span>
+										<span style="color: #1890FF;"
+											@click="handOpen('store_entry_introduce')">《商家入驻介绍》</span>
+										<span style="color: #1890FF;"
+											@click="handOpen('store_privacy_rule')">《商家隐私协议》</span>
+										<span style="color: #1890FF;" @click="handOpen('store_rule')">《平台商家规则》</span>
+									</div>
+								</div>
+							</div>
+							<a-drawer v-model:visible="visible_dr" class="custom-class" :title="drTitle"
+								placement="right">
+								<div>
+									<span v-html="drFwb"></span>
+								</div>
+							</a-drawer>
 							<!-- 提交 -->
 							<div style="text-align: center;">
 								<a-button @click="_submitEntryApply" type="primary" style="font-size: 15px !important;"
@@ -495,7 +549,7 @@
 								<div style="font-size: 16px;margin: 10px 0px;">示例图</div>
 								<div style="background-color: #f6f8fa;padding: 20px;">
 									<div style="display: flex;">
-										<img style="width: 60%;object-fit: contain;border-radius: 5px;"
+										<img style="width: 180px;object-fit: contain;border-radius: 5px;"
 											src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/202535/ceoe98ri2u3wjmcejvothruie3dkirih.jpg"
 											alt="">
 										<div style="margin: 0 10px;">
