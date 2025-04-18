@@ -127,6 +127,7 @@
   });
   function handActive(type) {
     active.value = type
+    drawCaptcha()
     reset()
   }
   function sendCode() {
@@ -163,6 +164,12 @@
     console.log('0元开店');
     logType.value = logType.value == 1 ? 2 : 1
     reset()//清空账号密码
+    if(logType.value==1){
+      console.log('刷新验证码');
+      setTimeout(() => {
+        drawCaptcha()
+      }, 500);
+    }
   }
   // 商家入驻
   function lykdShop() {
@@ -313,7 +320,7 @@
 
   setTimeout(() => {
     drawCaptcha()
-  }, 1000);
+  }, 500);
   // 生成随机颜色
   function getRandomColor() {
     const r = Math.floor(Math.random() * 150)
