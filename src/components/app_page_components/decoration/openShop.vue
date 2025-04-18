@@ -585,16 +585,16 @@
 												<div
 													style="display: flex;align-items: center;font-size: 14px;margin-top: 8px;">
 													<CheckCircleOutlined style="color: #4DB23F;" />
-													<div style="margin-left: 5px;">四角完整</div>
+													<div style="margin-left: 5px;white-space:nowrap">四角完整</div>
 												</div>
 												<div
 													style="display: flex;align-items: center;font-size: 14px;margin: 15px 0px;">
 													<CheckCircleOutlined style="color: #4DB23F;" />
-													<div style="margin-left: 5px;">亮度均匀</div>
+													<div style="margin-left: 5px;white-space:nowrap">亮度均匀</div>
 												</div>
 												<div style="display: flex;align-items: center;font-size: 14px;">
 													<CheckCircleOutlined style="color: #4DB23F;" />
-													<div style="margin-left: 5px;">照片清晰</div>
+													<div style="margin-left: 5px;white-space:nowrap">照片清晰</div>
 												</div>
 											</div>
 										</div>
