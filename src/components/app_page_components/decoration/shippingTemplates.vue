@@ -7,7 +7,6 @@
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
   let emit = defineEmits(["openChildPage", "closeChildPage"]);
-
   const global = inject("global").value;
 
   const treeData = ref([])//行政区数据
