@@ -25,9 +25,41 @@
       });
   }
   getAreas()
+
+  // 找出上面两级
+  function findParentsByLabel(tree, targetLabel) {
+    let result = null;
+    function dfs(node, parents = []) {
+      if (node.label === targetLabel) {
+        result = [...parents, node]; // 祖父 → 父 → 自己
+        return true;
+      }
+      if (node.children) {
+        for (const child of node.children) {
+          if (dfs(child, [...parents, node])) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    for (const item of tree) {
+      if (dfs(item)) break;
+    }
+    return result;
+  }
+  // 拼接
+  function getFullRegionNameByLabel(tree, targetLabel) {
+    const result = findParentsByLabel(tree, targetLabel); // 上一个函数
+    if (!result || result.length === 0) return '';
+    return result.map(item => item.label).join(''); // 默认不加空格或逗号，按需调整
+  }
+
   function onChange(val, label) {
     console.log('选择了行政区', val, label);
-    send_addressText.value = label[0]
+    console.log('三级', getFullRegionNameByLabel(treeData.value, label[0]));
+    send_addressText.value = getFullRegionNameByLabel(treeData.value, label[0])
+    // send_addressText.value = label[0]
   }
   const checkedList = ref([])
 
@@ -257,6 +289,29 @@
     return null;
   }
 
+  // 回显省市区数据
+  function findRegionChainByFullName(tree, fullName) {
+    let result = null;
+    function dfs(node, path = []) {
+      const newPath = [...path, node];
+      const pathLabels = newPath.map(n => n.label).join('');
+      if (pathLabels === fullName) {
+        result = newPath;
+        return true;
+      }
+      if (node.children) {
+        for (const child of node.children) {
+          if (dfs(child, newPath)) return true;
+        }
+      }
+      return false;
+    }
+    for (const item of tree) {
+      if (dfs(item)) break;
+    }
+    return result;
+  }
+
   // 设置数据
   function setData() {
     if (pageData.data.id) {
@@ -276,7 +331,9 @@
           send_addressText.value = res.send_address//
           des.value = res.des
           // 取值  发货地id
-          send_address.value = findItemByLabel(treeData.value, res.send_address).value;
+          // send_address.value = findItemByLabel(treeData.value, res.send_address).value;
+          let objArr = findRegionChainByFullName(treeData.value, res.send_address)
+          send_address.value = objArr[objArr.length-1].value
           console.log('send_address', send_address.value);
 
           status.value = res.status
@@ -310,15 +367,15 @@
             zdqyyf.value.push({
               ...obj,
               is_disabled: true,
-              initNumber: item.base_number?item.base_number:1,//千克或者数量
-              initMoney: item.base_price?item.base_price:28,//元
-              addNumber: item.add_number?item.add_number:1,//超出部分千克或者数量
-              addMoney: item.add_price?item.add_price:28,//超出部分收费元
+              initNumber: item.base_number ? item.base_number : 1,//千克或者数量
+              initMoney: item.base_price ? item.base_price : 28,//元
+              addNumber: item.add_number ? item.add_number : 1,//超出部分千克或者数量
+              addMoney: item.add_price ? item.add_price : 28,//超出部分收费元
               checked: item.has_top == 'Y' ? true : false,//指定条件包邮选框
               checkNumber: item.top,//指定条件件或元
               checkType: item.top_type,//指定条件分类 a件 b元
 
-              order_price: item.order_price?item.order_price:12//固定邮费
+              order_price: item.order_price ? item.order_price : 12//固定邮费
             })
           })
         })

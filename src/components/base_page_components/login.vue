@@ -55,6 +55,10 @@
 
   function reset() {
     login_state.loginData = { account: '', password: '', code: '', mobile_code: '' };
+    // 清空密码账号 清除定时器
+    if(timer.value){
+      clearInterval(timer.value); 
+    }
   }
 
   function login() {
@@ -118,6 +122,12 @@
   const showDjs = ref(false)//显示倒计时
   const timeData = ref(60)//倒计时
   const timer = ref(null)//计时器 
+  
+  // 页面还要定时器，清除
+  if(timer.value){
+    clearInterval(timer.value); //清除定时器
+  }
+
   watch(() => [timeData.value], (newVal, oldVal) => {
     console.log('时间变化', newVal[0]); //
     if (newVal[0] == 0) {

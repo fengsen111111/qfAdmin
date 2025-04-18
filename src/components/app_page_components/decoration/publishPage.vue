@@ -5,9 +5,9 @@
   import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
 
-  let emit = defineEmits(["openChildPage", "closeChildPage"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo"]);
   const global = inject("global").value;
-
+  import dayjs from 'dayjs';
 
   import Editor from '@tinymce/tinymce-vue'
   import 'tinymce/tinymce'
@@ -78,6 +78,11 @@
     is_plan_salled: 'a',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
     need_send_time: 'a',//承诺发货时间 a当日发货 b24小时 c48小时  
     carriage_id: '',//运费模板ID 
+
+    power_level_id: '',//曝光等级id
+    power_start_time: '',//曝光开始时间
+    power_end_time: '',//曝光结束时间
+
   })
   const bfb = ref(0)//填写进度
 
@@ -184,6 +189,26 @@
     },
   })
 
+
+  function setRangePicker(time1, time2) {
+    // 支持秒级时间戳（自动转毫秒）
+    const toDayjs = (val) => {
+      if (!val) return null;
+      if (typeof val === 'number' && val.toString().length === 10) {
+        return dayjs(val * 1000);
+      }
+      return dayjs(val);
+    };
+    const start = toDayjs(time1);
+    const end = toDayjs(time2);
+    if (start && end && start.isValid() && end.isValid()) {
+      timeStaEnd.value = [start, end];
+    } else {
+      timeStaEnd.value = []; // 清空不合法的情况
+    }
+    console.log('timeStaEnd', timeStaEnd.value);
+  }
+
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
   console.log('props数据', props.pageData.data);
@@ -205,33 +230,8 @@
           })
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
-          // post_params.goods_type = res.goods_type//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
-          // post_params.is_used = res.is_used//是否二手 Y是 N不是 
-          // post_params.is_customized = res.is_customized//是否定制 Y是 N不是  
-          // post_params.is_plan_salled = res.is_plan_salled//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
-          // post_params.need_send_time = res.need_send_time//承诺发货时间 a当日发货 b24小时 c48小时  
-          // post_params.carriage_id = res.carriage_id//运费模板ID
-        } else {
-          // 是新增时清空
-          // post_params.id = ''
-          // post_params.name = ''
-          // post_params.store_id = ''
-          // post_params.cover_image = ''
-          // post_params.images = []
-          // post_params.detail = ''
-          // post_params.type_id = ''
-          // post_params.brand_id = ''
-          // post_params.status = ''
-          // post_params.attributes = []
-          // post_params.services = []
-          // post_params.goods_sizes = []
-          // // 
-          // post_params.goods_type = 'a'//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
-          // post_params.is_used = 'N'//是否二手 Y是 N不是 
-          // post_params.is_customized = 'N'//是否定制 Y是 N不是  
-          // post_params.is_plan_salled = 'a'//是否预售 a非预售 b定时预售 c时段预售 d规格预售 
-          // post_params.need_send_time = 'a'//承诺发货时间 a当日发货 b24小时 c48小时  
-          // post_params.carriage_id = ''//运费模板ID
+          // 曝光时间单独更行
+          setRangePicker(res.goods_datas.power_start_time,res.goods_datas.power_end_time)
         }
       })
   }
@@ -376,6 +376,10 @@
   }
   // 提交商品数据
   function tjShopData() {
+    if (timeStaEnd.value) {
+      post_params.power_start_time = timeStaEnd.value[0]?.valueOf()
+      post_params.power_end_time = timeStaEnd.value[1]?.valueOf()
+    }
     post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
@@ -396,7 +400,22 @@
       .then((res) => {
         console.log('提交数据结果', res);
         // message.success('操作成功');
-        emit("closeChildPageTwo", pageData.page_key);
+        if (props.pageData.data.id) {
+          global.Modal.confirm({
+            title: global.findLanguage(
+              "保存成功，点击确定返回上一页！"
+            ),
+            okText: global.findLanguage("确定"),
+            cancelText: global.findLanguage("取消"),
+            okType: "primary",
+            onOk: function () {
+              emit("closeChildPage", pageData.page_key);
+            },
+          });
+        } else {
+          // 没有id就是新增商品
+          emit("closeChildPageTwo", pageData.page_key);
+        }
       });
   }
 
@@ -501,6 +520,22 @@
         console.log('allYfmb', allYfmb.value);
       });
   }
+
+  const bgdjList = ref([])
+  // 曝光等级
+  function getPowerLevelList() {
+    global.axios
+      .post('decoration/PowerLevel/getPowerLevelList', {
+        type: 'goods'
+      }, global)
+      .then((res) => {
+        console.log('曝光等级列表', res);
+        bgdjList.value = res.list
+      });
+  }
+  getPowerLevelList()
+
+  const timeStaEnd = ref()//曝光日期
 
 
 </script>
@@ -1001,6 +1036,27 @@
                 </div>
                 <div style="margin-left: 20px;">
                   支付成功减库存
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 13px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>商品曝光等级</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-radio-group v-model:value="post_params.power_level_id" name="radioGroup">
+                    <a-radio :value="item.id" v-for="item in bgdjList"
+                      :key="item.id">{{item.name}}(消耗曝光量：{{item.power}})</a-radio>
+                  </a-radio-group>
+                </div>
+              </div>
+              <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div style="display: flex;">
+                  <div style="color: red;">*</div>
+                  <div>曝光时间</div>
+                </div>
+                <div style="margin-left: 20px;">
+                  <a-range-picker v-model:value="timeStaEnd" show-time />
                 </div>
               </div>
               <!-- <div style="display: flex;margin-top: 20px;margin-left: 68px;">
