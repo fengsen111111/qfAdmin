@@ -460,7 +460,7 @@
   const allYfmb = ref([])
   function getStoreCarriageList() {
     global.axios
-      .post('decoration/Carriage/getStoreCarriageList', post_params, global)
+      .post('decoration/Carriage/getStoreCarriageList', {}, global)
       .then((res) => {
         // console.log('所有模板数据', res);
         // allYfmb.value = []
