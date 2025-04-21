@@ -231,7 +231,7 @@
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
           // 曝光时间单独更行
-          setRangePicker(res.goods_datas.power_start_time,res.goods_datas.power_end_time)
+          setRangePicker(res.goods_datas.power_start_time*1000,res.goods_datas.power_end_time*1000)
         }
       })
   }
@@ -377,8 +377,8 @@
   // 提交商品数据
   function tjShopData() {
     if (timeStaEnd.value) {
-      post_params.power_start_time = timeStaEnd.value[0]?.valueOf()
-      post_params.power_end_time = timeStaEnd.value[1]?.valueOf()
+      post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf())/1000
+      post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf())/1000
     }
     post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
