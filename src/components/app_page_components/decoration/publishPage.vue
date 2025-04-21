@@ -82,6 +82,7 @@
     power_level_id: '',//曝光等级id
     power_start_time: '',//曝光开始时间
     power_end_time: '',//曝光结束时间
+    power: '',//曝光量
 
   })
   const bfb = ref(0)//填写进度
@@ -231,7 +232,7 @@
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
           // 曝光时间单独更行
-          setRangePicker(res.goods_datas.power_start_time*1000,res.goods_datas.power_end_time*1000)
+          setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
         }
       })
   }
@@ -377,8 +378,13 @@
   // 提交商品数据
   function tjShopData() {
     if (timeStaEnd.value) {
-      post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf())/1000
-      post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf())/1000
+      post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf()) / 1000
+      post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf()) / 1000
+    }
+    // 新增不要曝光量字段
+    if (!props.pageData.data.id) {
+      console.log('新增不要曝光量字段');
+      delete post_params.power
     }
     post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
@@ -386,7 +392,6 @@
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
       })
-
     if (post_params.type_id.value) {
       // 有值就重新拿
       post_params.type_id = post_params.type_id.value
@@ -1057,6 +1062,15 @@
                 </div>
                 <div style="margin-left: 20px;">
                   <a-range-picker v-model:value="timeStaEnd" show-time />
+                </div>
+              </div>
+              <div style="margin-top: 20px;margin-left: 60px;align-items: center;">
+                <div style="display: flex;align-items: center;">
+                  <div style="display: flex;">
+                    <div>曝光量</div>
+                  </div>
+                  <a-input type="text" v-model:value="post_params.power" style="margin-left: 20px;width: 412px;"
+                    placeholder="请输入曝光量" />
                 </div>
               </div>
               <!-- <div style="display: flex;margin-top: 20px;margin-left: 68px;">
