@@ -449,7 +449,7 @@
       sender_id: store_id.value, //商家id
       geter_id: customer_service_state.room.joiner_sign,//接收人id
       money: hbMoney.value,//红包金额
-      trade_type: 'A_NATIVE',//T_APP微信  A_NATIVE支付宝  
+      trade_type: store_id.value == global.adminMsg.id ? 'BALANCE' : 'A_NATIVE',//T_APP微信  A_NATIVE支付宝   BALANCE余额支付
     }, global, true).then((res) => {
       console.log('发送红包', res);
       const { resp_code } = res
