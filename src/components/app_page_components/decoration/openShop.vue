@@ -35,6 +35,8 @@
 	admin_login_password.value = route.query.password
 	mobile.value = route.query.mobile
 
+	const check_remark = ref('')//拒绝理由
+
 	// 商家入驻信息
 	function getSubmitEntryApplyMsg() {
 		global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
@@ -53,6 +55,7 @@
 			admin_login_password.value = res.admin_login_password
 			address.value = res.address
 			location.value = res.location
+			check_remark.value = res.check_remark
 		})
 	}
 	try {
@@ -558,6 +561,7 @@
 										<span v-html="drFwb"></span>
 									</div>
 								</a-drawer>
+								<div v-if="check_remark" style="text-align: center;color: red;margin-bottom: 20px;">被拒绝原因：{{check_remark}}</div>
 								<!-- 提交 -->
 								<div style="text-align: center;">
 									<a-button @click="_submitEntryApply" type="primary"

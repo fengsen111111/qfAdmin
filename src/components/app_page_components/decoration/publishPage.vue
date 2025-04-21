@@ -72,11 +72,11 @@
       //   order: '',//排序  
       // }
     ],//商品规格  post_params
-    goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
-    is_used: 'N',//是否二手 Y是 N不是  
-    is_customized: 'N',//是否定制 Y是 N不是  
-    is_plan_salled: 'a',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
-    need_send_time: 'a',//承诺发货时间 a当日发货 b24小时 c48小时  
+    goods_type: '',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+    is_used: '',//是否二手 Y是 N不是  
+    is_customized: '',//是否定制 Y是 N不是  
+    is_plan_salled: '',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
+    need_send_time: '',//承诺发货时间 a当日发货 b24小时 c48小时  
     carriage_id: '',//运费模板ID 
 
     power_level_id: '',//曝光等级id
@@ -431,8 +431,31 @@
       cancelText: global.findLanguage("取消"),
       okType: "primary",
       onOk: function () {
-        console.log('重置');
-        lookData()
+        if (props.pageData.data.id) {
+          lookData()
+        } else {
+          // 没有id就是新增商品
+          post_params.name = ''
+          post_params.cover_image = ''
+          post_params.images = []
+          post_params.detail = ''
+          component_state.myValue = ''
+          post_params.brand_id = ''
+          post_params.status = false
+          post_params.attributes = []
+          post_params.services = []
+          post_params.goods_sizes = []
+          post_params.carriage_id = ''
+          post_params.power_level_id = ''
+          post_params.power_start_time = ''
+          post_params.power_end_time = ''
+          timeStaEnd.value = []
+          post_params.goods_type = ''
+          post_params.is_used = ''
+          post_params.is_customized = ''
+          post_params.is_plan_salled = ''
+          post_params.need_send_time = ''
+        }
         loading()//加载
       },
     });
@@ -558,7 +581,7 @@
           <div class="spbj">商品编辑
           </div>
         </div>
-        <div class="flex">
+        <div class="flex" style="cursor: pointer;">
           <!-- <div class="tjBtn" @click="tjShopData">提交</div> -->
           <div class="cz" @click="reset">重置</div>
         </div>
@@ -1069,8 +1092,8 @@
                   <div style="display: flex;">
                     <div>曝光量</div>
                   </div>
-                  <a-input-number :min="0" :max="100" v-model:value="post_params.power" style="margin-left: 20px;width: 412px;"
-                    placeholder="请输入曝光量" />
+                  <a-input-number :min="0" :max="100" v-model:value="post_params.power"
+                    style="margin-left: 20px;width: 412px;" placeholder="请输入曝光量" />
                 </div>
               </div>
               <!-- <div style="display: flex;margin-top: 20px;margin-left: 68px;">

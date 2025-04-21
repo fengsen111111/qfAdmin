@@ -153,7 +153,9 @@
             message.error('请先前往app端商家管理，缴纳商家保证金')
             return false
           }
-
+          console.log('checkClassify.value.threeClassify',checkClassify.value.threeClassify);
+          console.log('pageData.data',pageData.data);
+          pageData.data = pageData.data?pageData.data:{}
           pageData.data.typeId = checkClassify.value.threeClassify
           let arr = selClassify.value.split(' > ')
           console.log('arr', arr, checkClassify.value.threeClassify);

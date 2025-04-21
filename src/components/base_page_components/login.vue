@@ -222,6 +222,9 @@
         // setTimeout(() => {
         handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
         // }, 2000);
+      }else{
+        console.log('空数组');
+        handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
       }
     })
   }
