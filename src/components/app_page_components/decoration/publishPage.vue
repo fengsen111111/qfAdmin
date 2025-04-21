@@ -1064,7 +1064,7 @@
                   <a-range-picker v-model:value="timeStaEnd" show-time />
                 </div>
               </div>
-              <div style="margin-top: 20px;margin-left: 60px;align-items: center;">
+              <div v-if="!props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
                 <div style="display: flex;align-items: center;">
                   <div style="display: flex;">
                     <div>曝光量</div>
