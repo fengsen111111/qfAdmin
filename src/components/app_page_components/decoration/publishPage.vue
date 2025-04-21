@@ -1064,12 +1064,12 @@
                   <a-range-picker v-model:value="timeStaEnd" show-time />
                 </div>
               </div>
-              <div v-if="!props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
+              <div v-if="props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
                 <div style="display: flex;align-items: center;">
                   <div style="display: flex;">
                     <div>曝光量</div>
                   </div>
-                  <a-input type="text" v-model:value="post_params.power" style="margin-left: 20px;width: 412px;"
+                  <a-input-number :min="0" :max="100" v-model:value="post_params.power" style="margin-left: 20px;width: 412px;"
                     placeholder="请输入曝光量" />
                 </div>
               </div>
