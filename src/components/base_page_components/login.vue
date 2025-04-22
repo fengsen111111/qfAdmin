@@ -425,8 +425,8 @@
     </a-dropdown>
     <div style="height: 9.5vh;margin-left: 21.5vw;padding-top: 14px;color: #FF0000;font-weight: bold;">
       <div style="display: flex;">
-        <img v-if="admin_login_logo" :src="admin_login_logo" alt="" style="width: auto;height: 75px;border-radius: 5px">
-        <img v-else src="/resource/image/logoqf.png" alt="" style="width: auto;height: 75px;border-radius: 5px">
+        <img v-if="admin_login_logo" :src="admin_login_logo" alt="" style="width: auto;height: 7vh;border-radius: 5px">
+        <img v-else src="/resource/image/logoqf.png" alt="" style="width: auto;height: 7vh;border-radius: 5px">
       </div>
       <!-- <div>logo图标加文字尺寸 拼多多那边宽118px 高56px；背景图尺寸 宽2124 高673</div> -->
     </div>
@@ -567,7 +567,7 @@
       </div>
     </div>
 
-    <div style="display: flex;margin-top: 55px;color: #666666;font-size: 13px;">
+    <div style="display: flex;margin-top: 5vh;color: #666666;font-size: 13px;">
       <div style="display: flex;justify-content: space-between;margin: 0 auto;width: 500px;align-items: center;">
         <span @click="lykdShop">商家入驻</span>
         <span @click="handUrl('/ruleCenter?title=常见问题')">常见问题</span>
@@ -633,7 +633,7 @@
     width: 380px;
     height: 380px;
     position: absolute;
-    top: 24vh;
+    top: 22vh;
     right: 20vw;
     /* background: url("/resource/image/login_form.png"); */
     /* background-size: 100% 100%; */
