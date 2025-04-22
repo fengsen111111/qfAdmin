@@ -47,7 +47,7 @@
 			store_name.value = res.store_name
 			logo.value = res.logo
 			type.value = res.type
-			id_card_images.value = res.id_card_images
+			id_card_images.value = res.id_card_images?res.id_card_images:[]
 			license_image.value = res.license_image
 			id_card_number.value = res.id_card_number
 			name.value = res.name
@@ -561,7 +561,8 @@
 										<span v-html="drFwb"></span>
 									</div>
 								</a-drawer>
-								<div v-if="check_remark" style="text-align: center;color: red;margin-bottom: 20px;">被拒绝原因：{{check_remark}}</div>
+								<div v-if="check_remark" style="text-align: center;color: red;margin-bottom: 20px;">
+									被拒绝原因：{{check_remark}}</div>
 								<!-- 提交 -->
 								<div style="text-align: center;">
 									<a-button @click="_submitEntryApply" type="primary"

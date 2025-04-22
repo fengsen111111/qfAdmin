@@ -367,6 +367,8 @@
   function openSer() {
     serVis.value = true
   }
+  import Print from '@/components/app_page_components/decoration/print.vue'
+
 </script>
 
 <template>
@@ -504,6 +506,9 @@
       <!-- 固定标 -->
       <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
+          <div>
+            <Print />
+          </div>
           <!-- BellOutlined,MailOutlined,MessageOutlined -->
           <a-badge count="5">
             <div @click="openVis(1)"
