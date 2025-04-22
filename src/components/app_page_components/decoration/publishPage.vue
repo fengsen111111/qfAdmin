@@ -1092,7 +1092,7 @@
                   <div style="display: flex;">
                     <div>曝光量</div>
                   </div>
-                  <a-input-number :min="0" :max="100" v-model:value="post_params.power"
+                  <a-input-number :min="0" v-model:value="post_params.power"
                     style="margin-left: 20px;width: 412px;" placeholder="请输入曝光量" />
                 </div>
               </div>
