@@ -43,26 +43,24 @@
 			mobile: mobile.value,
 		}, global).then(res => {
 			console.log('商家入驻信息', res);
-			id.value = res.id
-			store_name.value = res.store_name
-			logo.value = res.logo
-			type.value = res.type
-			id_card_images.value = res.id_card_images?res.id_card_images:[]
-			license_image.value = res.license_image
-			id_card_number.value = res.id_card_number
-			name.value = res.name
-			mobile.value = res.mobile
-			admin_login_password.value = res.admin_login_password
-			address.value = res.address
-			location.value = res.location
-			check_remark.value = res.check_remark
+			if (res.id) {
+				id.value = res.id
+				store_name.value = res.store_name
+				logo.value = res.logo
+				type.value = res.type
+				id_card_images.value = res.id_card_images ? res.id_card_images : []
+				license_image.value = res.license_image
+				id_card_number.value = res.id_card_number
+				name.value = res.name
+				mobile.value = res.mobile
+				admin_login_password.value = res.admin_login_password
+				address.value = res.address
+				location.value = res.location
+				check_remark.value = res.check_remark
+			}
 		})
 	}
-	try {
-		getSubmitEntryApplyMsg()
-	} catch (err) {
-		console.log('新注册用户');
-	}
+	getSubmitEntryApplyMsg()
 
 	const isMap = ref(false)//是否打开地图
 	watch(() => isMap, val => {
