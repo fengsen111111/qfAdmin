@@ -1,7 +1,7 @@
 <script setup>
   import { inject, onBeforeMount, reactive, onMounted } from 'vue'
   import { APPConfig } from "@/config";
-  import { WindowsOutlined, CloseCircleOutlined, LeftOutlined } from "@ant-design/icons-vue";
+  import { WindowsOutlined, CloseCircleOutlined, LeftOutlined, ExclamationCircleFilled, CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons-vue";
 
   // import graphicsVerify from 'src/components/form_components/graphicsVerify.vue'
   import graphicsVerify from '@/components/form_components/graphicsVerify.vue'
@@ -55,41 +55,84 @@
 
   function reset() {
     login_state.loginData = { account: '', password: '', code: '', mobile_code: '' };
+    sqObj.value = {}//清空商家数据
+    rzStatus.value = 0 //清空
+    errorMsg.value = ''//清空报错信息
     // 清空密码账号 清除定时器
-    if(timer.value){
-      clearInterval(timer.value); 
+    if (timer.value) {
+      clearInterval(timer.value);
     }
   }
 
+  const errorMsg = ref('')//错误信息
+
   function login() {
     if (login_state.loginData.captcha_code.toLowerCase() !== captchaCode.value.toLowerCase()) {
-      message.error('图形验证码输入有误')
+      errorMsg.value = '图形验证码输入有误'
       return false
     }
     if (active.value == 1) {
+      // 1账号
+      if (login_state.loginData.account) {
+        console.log('有账号');
+      } else {
+        errorMsg.value = '请填写账号'
+        return false
+      }
+      // 2密码
+      if (login_state.loginData.password) {
+        console.log('有密码');
+      } else {
+        errorMsg.value = '请填写密码'
+        return false
+      }
       // 账号密码登陆
-      global.axios.post('factory_system/Base/login', login_state.loginData, global).then(res => {
-        if (res) {
-          localStorage.setItem('Authorization', res.token);
-          if (login_state.holdLogin) {
-            localStorage.setItem('holdLogin.account', login_state.loginData.account);
-            localStorage.setItem('holdLogin.password', login_state.loginData.password);
-            localStorage.setItem('holdLogin.status', 'true');
+      global.axios.post('factory_system/Base/login', login_state.loginData, global)
+        .then(res => {
+          if (res) {
+            localStorage.setItem('Authorization', res.token);
+            errorMsg.value = '' //清空报错信息
+            if (login_state.holdLogin) {
+              localStorage.setItem('holdLogin.account', login_state.loginData.account);
+              localStorage.setItem('holdLogin.password', login_state.loginData.password);
+              localStorage.setItem('holdLogin.status', 'true');
+            } else {
+              localStorage.removeItem('holdLogin.account');
+              localStorage.removeItem('holdLogin.password');
+              localStorage.setItem('holdLogin.status', 'false');
+            }
+            if (isJb.value) { //是否廉政举报
+              global.router.push("/lzjb")
+            } else {
+              global.router.push("/")
+            }
           } else {
-            localStorage.removeItem('holdLogin.account');
-            localStorage.removeItem('holdLogin.password');
-            localStorage.setItem('holdLogin.status', 'false');
+            changeCaptcha()
           }
-          if (isJb.value) { //是否廉政举报
-            global.router.push("/lzjb")
-          } else {
-            global.router.push("/")
-          }
-        } else {
-          changeCaptcha()
-        }
-      })
+        })
+        .catch(error => {
+          console.log('error', error);
+          errorMsg.value = error.message
+        })
     } else {
+      // 1手机号
+      if (login_state.loginData.mobile) {
+        const regex = /^1[3-9]\d{9}$/;
+        if (login_state.loginData.mobile && !regex.test(login_state.loginData.mobile)) {
+          errorMsg.value = '手机号格式错误'
+          return false
+        }
+      } else {
+        errorMsg.value = '手机号不可为空'
+        return false
+      }
+      // 2验证码
+      if (login_state.loginData.mobile_code) {
+        console.log('有验证码');
+      } else {
+        errorMsg.value = '请填写验证码'
+        return false
+      }
       // 校验验证码
       global.axios.post('decoration/User/checkMobileCode', {
         mobile: login_state.loginData.mobile,
@@ -102,6 +145,7 @@
           console.log('验证码登陆', res);
           if (res) {
             localStorage.setItem('Authorization', res.token);
+            errorMsg.value = '' //清空报错信息
             // global.router.push("/")
             if (isJb.value) { //是否廉政举报
               global.router.push("/lzjb")
@@ -122,9 +166,9 @@
   const showDjs = ref(false)//显示倒计时
   const timeData = ref(60)//倒计时
   const timer = ref(null)//计时器 
-  
+
   // 页面还要定时器，清除
-  if(timer.value){
+  if (timer.value) {
     clearInterval(timer.value); //清除定时器
   }
 
@@ -145,11 +189,16 @@
     if (login_state.loginData.mobile) {
       const regex = /^1[3-9]\d{9}$/;
       if (login_state.loginData.mobile && !regex.test(login_state.loginData.mobile)) {
-        message.error('手机号格式错误')
+        errorMsg.value = '手机号格式错误'
         return false
       }
+    } else {
+      errorMsg.value = '手机号不可为空'
+      return false
     }
-    global.axios.post('decoration/User/getMobileCode', login_state.loginData.mobile, global).then(res => {
+    global.axios.post('decoration/User/getMobileCode', {
+      mobile: login_state.loginData.mobile
+    }, global).then(res => {
       console.log('验证码', res.code);
       login_state.loginData.mobile_code = res.code
       showDjs.value = true
@@ -171,7 +220,7 @@
     console.log('0元开店');
     logType.value = logType.value == 1 ? 2 : 1
     reset()//清空账号密码
-    if(logType.value==1){
+    if (logType.value == 1) {
       console.log('刷新验证码');
       setTimeout(() => {
         drawCaptcha()
@@ -186,24 +235,41 @@
   }
 
   const rzStatus = ref(0)//0 未入住 1已入住
+  const sqObj = ref({})//申请信息
   // 立即开店
   function ljkd() {
+    // 1手机号
+    if (login_state.loginData.mobile) {
+      const regex = /^1[3-9]\d{9}$/;
+      if (login_state.loginData.mobile && !regex.test(login_state.loginData.mobile)) {
+        errorMsg.value = '手机号格式错误'
+        return false
+      }
+    } else {
+      errorMsg.value = '手机号不可为空'
+      return false
+    }
+    // 2 密码
+    const result = validatePassword(login_state.loginData.password)
+    if (!result.valid) {
+      console.log('密码不合法：', result.msg, pasYz.value);
+      errorMsg.value = '密码不满足所有规则'
+      return false
+    } else {
+      console.log('通过校验');
+    }
+
     console.log('提交数据', login_state.loginData);
     // 校验验证码
     global.axios.post('decoration/User/checkMobileCode', {
       mobile: login_state.loginData.mobile,
       mobile_code: login_state.loginData.mobile_code
     }, global).then(res => {
-      if (res.result == 'N') {
+      console.log('res', res);
+      if (res.result !== 'N') {
         getSubmitEntryApplyMsg()//商家入驻信息
-        setTimeout(() => {
-          if (rzStatus.value == 0) {
-            handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-          } else {
-            // 已入住
-          }
-        }, 2000);
-
+      } else {
+        errorMsg.value = res.message
       }
     })
   }
@@ -213,17 +279,13 @@
       mobile: login_state.loginData.mobile,
     }, global).then(res => {
       console.log('商家入驻信息', res);
-      rzStatus.value = 1//入驻
-      if (res.check_status == 'a') {
-        message.error('待审核！')
-      } else if (res.check_status == 'b') {
-        message.error('审核已通过，请直接登陆！')
-      } else if (res.check_status == 'c') {
-        // setTimeout(() => {
-        handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-        // }, 2000);
-      }else{
-        console.log('空数组');
+      res = res == [] ? {} : res
+      if (res.id) {
+        rzStatus.value = 1//入驻
+        errorMsg.value = ''//清空错误信息
+        sqObj.value = res
+      } else {
+        rzStatus.value = 0//未入驻
         handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
       }
     })
@@ -340,14 +402,6 @@
     return `rgb(${r},${g},${b})`
   }
   const verifyCode = ref(0)//验证状态
-  // function onChange() {
-  //   console.log('变化', login_state.loginData.captcha_code, captchaCode.value);
-  //   if (login_state.loginData.captcha_code == captchaCode.value) {
-  //     verifyCode.value = 1
-  //   } else {
-  //     verifyCode.value = 2
-  //   }
-  // }
 
   const admin_login_logo = ref('')
   const admin_login_back_image = ref('')
@@ -362,6 +416,63 @@
       });
   }
   getSetting()
+
+  let pasYz = ref({
+    rule_a: false,//规则1
+    rule_b: false,//规则2
+    rule_c: false,//规则3
+    level: 0//安全等级
+  })//密码验证情况
+  // o元开店密码变化
+  function pasChange() {
+    const result = validatePassword(login_state.loginData.password)
+    if (!result.valid) {
+      console.log('密码不合法：', result.msg, pasYz.value);
+    } else {
+      console.log('通过校验');
+    }
+  }
+  // 校验密码
+  function validatePassword(pwd) {
+    let passedCount = 0; // 统计通过的规则数
+    // 1. 长度校验
+    if (pwd.length >= 8 && pwd.length <= 20) {
+      pasYz.value.rule_a = true;
+      passedCount++;
+    } else {
+      pasYz.value.rule_a = false;
+    }
+    // 2. 字符合法性（不含空格、中文）
+    const allowedChars = /^[A-Za-z0-9~!@#$%^&*()_+\-=`[\]{}|;:'",.<>/?]+$/;
+    if (allowedChars.test(pwd)) {
+      pasYz.value.rule_b = true;
+      passedCount++;
+    } else {
+      pasYz.value.rule_b = false;
+    }
+    // 3. 至少包含三种类型字符
+    let count = 0;
+    if (/[A-Z]/.test(pwd)) count++;       // 大写
+    if (/[a-z]/.test(pwd)) count++;       // 小写
+    if (/[0-9]/.test(pwd)) count++;       // 数字
+    // 只计算“合法符号”
+    const symbolRegex = /[~!@#$%^&*()_+\-=`[\]{}|;:'",.<>/?]/;
+    if (symbolRegex.test(pwd)) count++; // 合法符号
+    if (count >= 3) {
+      pasYz.value.rule_c = true;
+      passedCount++;
+    } else {
+      pasYz.value.rule_c = false;
+    }
+    // 设置最终安全等级
+    pasYz.value.level = passedCount;
+    // 返回最终结果
+    if (passedCount === 3) {
+      return { valid: true, msg: '密码合法' };
+    } else {
+      return { valid: false, msg: '密码未满足所有规则' };
+    }
+  }
 
 </script>
 
@@ -446,7 +557,15 @@
               <div @click="handActive(2)" :style="{ color: active==2 ? '#FF5454' : ''}">手机登陆</div>
             </div>
           </div>
-          <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
+          <a-form layout="horizontal" style="margin-top: 10px;padding: 0 10px;">
+            <!-- 展示错误信息 -->
+            <a-form-item v-if="errorMsg">
+              <div
+                style="display: flex;color:#FF5454;border: 1px solid #FF5454;font-size: 12px;background-color: #fff4f2;padding: 4px 10px;line-height: 16px;border-radius: 2px;">
+                <ExclamationCircleFilled style="color: #FF5454;font-size: 12px;margin-top: 3px;" />
+                <span style="margin-left: 5px;">{{errorMsg}}</span>
+              </div>
+            </a-form-item>
             <div style="width: 100%">
               <a-form-item>
                 <template v-if="active==1">
@@ -483,10 +602,6 @@
               </template>
             </a-form-item>
             <a-form-item>
-              <!-- <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('图形验证码')"
-                :style="{width:'150px',float:'left'}" size="large" />
-              <img :src="APPConfig.apiURL+'/factory_system/Base/getCaptcha?timer='+login_state.timer" alt=""
-                style="width: 48%;border-radius: 3px;float: right" @click="changeCaptcha"> -->
               <div style="display: flex;justify-content: space-between;align-items: center;margin-top: -5px;">
                 <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('图形验证码')"
                   :style="{width:'calc(100% - 110px)',float:'left',}" @change="onChange" size="large" />
@@ -494,8 +609,6 @@
                   <canvas ref="canvasRef" width="100" height="40"></canvas>
                 </div>
               </div>
-              <!-- <span v-if="verifyCode==1" style="color: green;">验证通过！</span>
-              <span v-else-if="verifyCode==2" style="color: red;">验证码有误！</span> -->
             </a-form-item>
             <a-form-item>
               <a-button size="large"
@@ -504,7 +617,7 @@
                 global.findLanguage('登录') }}</a-button>
             </a-form-item>
             <a-form-item>
-              <span style="float: left;margin-top: 3px">
+              <span style="float: left;margin-top: 3px;cursor: pointer;">
                 <span style="color: #999999;">还没有店铺？</span>
                 <span @click="lykd" style="color: #2266AA;">0元开店</span>
               </span>
@@ -522,16 +635,89 @@
               <div style="color:#FF5454">0元开店</div>
             </div>
           </div>
-          <a-form layout="horizontal" style="margin-top: 30px;padding: 0 10px;">
-            <div style="width: 100%">
-              <a-form-item>
-                <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
-                  allow-clear size="large" />
-              </a-form-item>
-            </div>
+          <a-form layout="horizontal" style="padding: 0 10px;margin-top: 10px;">
+            <!-- 展示错误信息 -->
+            <a-form-item v-if="errorMsg">
+              <div
+                style="display: flex;color:#FF5454;border: 1px solid #FF5454;font-size: 12px;background-color: #fff4f2;padding: 4px 10px;line-height: 16px;border-radius: 2px;">
+                <ExclamationCircleFilled style="color: #FF5454;font-size: 12px;margin-top: 3px;" />
+                <span style="margin-left: 5px;">{{errorMsg}}</span>
+              </div>
+            </a-form-item>
+            <!-- 已申请用户,提示登陆 -->
+            <a-form-item v-else-if="rzStatus==1">
+              <div
+                style="display: flex;color:#FF5454;border: 1px solid #FF5454;font-size: 12px;background-color: #fff4f2;padding: 4px 10px;line-height: 16px;border-radius: 2px;">
+                <ExclamationCircleFilled style="color: #FF5454;font-size: 12px;margin-top: 3px;" />
+                <span style="margin-left: 5px;">该手机号已开店，店铺名：{{sqObj.store_name}}；请直接前往商家后台登录</span>
+              </div>
+            </a-form-item>
             <a-form-item>
-              <a-input-password v-model:value="login_state.loginData.password"
-                :placeholder="global.findLanguage('设置密码')" size="large" />
+              <a-input v-model:value="login_state.loginData.mobile" :placeholder="global.findLanguage('请输入手机号')"
+                allow-clear size="large" />
+            </a-form-item>
+            <a-form-item>
+              <a-popover placement="leftTop">
+                <template #content>
+                  <div style="font-size: 12px;">
+                    <div style="display: flex;align-items: center;">
+                      安全程度：
+                      <!-- 密码安全度中级单独判断 -->
+                      <div v-if="pasYz.level==2" style="margin-left: 3px;display: flex;margin-top: 2px;">
+                        <div v-if="pasYz.rule_a"
+                          style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-if="pasYz.rule_b"
+                          style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="border:1px solid orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-if="pasYz.rule_c"
+                          style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="border:1px solid orange;width: 40px;height: 8px;margin-right: 3px;"></div>
+                      </div>
+                      <!-- 密码安全度 低 或  高 -->
+                      <div v-else style="margin-left: 3px;display: flex;margin-top: 2px;">
+                        <div v-if="pasYz.rule_a"
+                          style="background-color: green;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <!-- 规则2 或者规则3 满足一个就是框 -->
+                        <div v-else-if="pasYz.rule_b||pasYz.rule_c"
+                          style="border: 1px solid #FF5454;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="background-color: #FF5454;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-if="pasYz.rule_b"
+                          style="background-color: green;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="border:1px solid#FF5454;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-if="pasYz.rule_c"
+                          style="background-color: green;width: 40px;height: 8px;margin-right: 3px;"></div>
+                        <div v-else style="border:1px solid#FF5454;width: 40px;height: 8px;margin-right: 3px;"></div>
+                      </div>
+                      <span v-if="pasYz.level==1||pasYz.level==0" style="color: #FF5454;">低</span>
+                      <span v-else-if="pasYz.level==2" style="color: orange;">中</span>
+                      <span v-else-if="pasYz.level==3" style="color: green;">高</span>
+                    </div>
+                    <div>
+                      <div style="display: flex;align-items: center;">
+                        <CheckCircleFilled v-if="pasYz.rule_a"
+                          style="font-size: 10px;color: green;margin-right: 5px;" />
+                        <CloseCircleFilled v-else style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+                        <span>8-20位</span>
+                      </div>
+                      <div style="display: flex;align-items: center;">
+                        <CheckCircleFilled v-if="pasYz.rule_b"
+                          style="font-size: 10px;color: green;margin-right: 5px;" />
+                        <CloseCircleFilled v-else style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+                        <span>只能包含大小写字母、数字以及符号(不包含空格)</span>
+                      </div>
+                      <div style="display: flex;align-items: center;">
+                        <CheckCircleFilled v-if="pasYz.rule_c"
+                          style="font-size: 10px;color: green;margin-right: 5px;" />
+                        <CloseCircleFilled v-else style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+                        <span>大写字母/小写字母/数组/符号字少包含三种</span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <a-input-password v-model:value="login_state.loginData.password" @change="pasChange"
+                  :placeholder="global.findLanguage('设置密码')" size="large" />
+              </a-popover>
             </a-form-item>
             <a-form-item>
               <div style="background-color: #fff;display: flex;">
@@ -550,18 +736,18 @@
                 </a-input>
               </div>
             </a-form-item>
-            <a-form-item>
+            <div>
               <a-button size="large"
                 style="width: 100%;font-size: 16px !important;background-color: #FF5454;border: none;" type="primary"
                 @click="ljkd">{{
                 global.findLanguage('立即开店') }}</a-button>
-            </a-form-item>
-            <a-form-item>
-              <span style="float: left;margin-top: 3px">
+            </div>
+            <div>
+              <span style="float: left;margin-top: 10px;">
                 <span style="color: #999999;">已有账号？</span>
                 <span @click="lykd" style="color: #2266AA;">立即登录</span>
               </span>
-            </a-form-item>
+            </div>
           </a-form>
         </div>
       </div>
@@ -630,8 +816,9 @@
 
   .login-form {
     z-index: 2;
-    width: 380px;
-    height: 380px;
+    width: 340px;
+    min-height: 340px;
+    max-height: 400px;
     position: absolute;
     top: 22vh;
     right: 20vw;

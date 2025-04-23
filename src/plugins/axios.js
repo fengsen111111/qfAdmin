@@ -142,11 +142,14 @@ export function post(url, params = {}, global, loading = true, rsa_status = true
                 resolve(response);
             })
             .catch((error) => {
-                handleError(error);
+                if(url=='factory_system/Base/login'){
+                    reject(error)
+                }else{
+                    handleError(error);
+                }
             });
         if (loading) handleLoading(global);
-    }).catch((e) => {
-    });
+    })
 }
 
 //上传文件
