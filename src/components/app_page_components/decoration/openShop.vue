@@ -338,6 +338,9 @@
 				drFwb.value = res
 			})
 	}
+
+	const shopType = ref(false)//商户类型 本地  
+
 </script>
 
 <template>
@@ -346,7 +349,7 @@
 		<div>
 			<div style="background-color: #323242;height: 8vh;display: flex;">
 				<div
-					style="padding: 20px;height: 100%;width: 70vw;margin: 0 auto;display: flex;justify-content: space-between;align-items: center;">
+					style="padding: 20px;height: 100%;width: 67vw;margin: 0 auto;display: flex;justify-content: space-between;align-items: center;">
 					<div style="display: flex;">
 						<img :src="global.adminLogo" alt="" style="width: auto;height: 45px;border-radius: 5px">
 						<span style="font-size: 28px;margin-left: 5px;color: #fff;font-weight: bold;">{{global.appName}}
@@ -357,8 +360,56 @@
 					</div>
 				</div>
 			</div>
+			<!-- 选择类型 -->
+			<div style="display: flex;background: #f5f5f5;height: 92vh;color: #00000099;width: 100%">
+				<div style="overflow: auto;height: 100%;width: 100%">
+					<div style="font-size: 30px;text-align: center;font-weight: bold;color: #fff;width: 100%;
+					background-image: url('https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/setting/2025423/49s45fl2dh6w7juja6ulkr5thnenwprf.jpg');
+					background-size: 100% 100%;padding-top: 40px;height: 200px;">
+						请选择您的店铺类型
+					</div>
+					<div style="border-radius: 5px;width: 67vw;padding: 0px 20px;margin: 0 auto;
+					position: relative; top: -91px;
+					">
+						<div style="background-color: #fff;width: 411px;border-top: 1px solid #1890FF;padding: 20px;">
+							<div style="color: #407CFF;font-size: 18px;">普通入驻</div>
+							<div>针对本地商家和网店商家</div>
+						</div>
+						<!-- 分类 -->
+						<div style="background-color: #fff;padding: 20px;">
+							<div style="display: flex;align-items: baseline;">
+								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
+								<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
+							</div>
+							<div
+								style="border: 1px solid #e5e5e5;display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio v-model:checked="shopType"></a-radio>
+								<div style="margin-left: 10px;">
+									<div>个人店</div>
+									<div>无营业执照，想以个人身份开店</div>
+								</div>
+							</div>
+							<div
+								style="border: 1px solid #e5e5e5;display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio v-model:checked="shopType"></a-radio>
+								<div style="margin-left: 10px;">
+									<div>个体工商户</div>
+									<div>有营业执照，想以个体工商户身份开店</div>
+								</div>
+							</div>
+
+							<div style="text-align: center;margin-top: 60px;margin-bottom: 70px;">
+								<a-button @click="_submitEntryApply" type="primary" style="font-size: 15px !important;"
+									size="large">下一步</a-button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<!-- 填写店铺信息 -->
 			<div style="display: flex;background: #f5f5f5;height: 92vh;">
-				<div style="padding: 20px;overflow: auto;height: 100%;width: 70vw;margin: 0 auto;">
+				<div style="padding: 20px;overflow: auto;height: 100%;width: 67vw;margin: 0 auto;">
 					<div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div>
 					<a-row>
 						<a-col :xl="24" :xxl="14">
