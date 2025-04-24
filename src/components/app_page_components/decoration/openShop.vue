@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -23,7 +23,7 @@
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
 	const name = ref('')// 用户姓名  
-	const mobile = ref('')// 手机号  
+	const mobile = ref('')// 手机号   
 	const admin_login_password = ref('')//后台登录密码  
 	const address = ref('')//店铺地址  
 	const location = ref('')//店铺地址坐标   
@@ -199,12 +199,20 @@
 	}
 	//  身份证 回调
 	function completeSfz(response) {
-		id_card_images.value.push(response.url)
+		id_card_images.value[0] = response.url
+	}
+	// 身份证上传  2
+	function uploadSfzTwo(options) {
+		global.file.uploadFile(global, options.file, 'image', 'idImg', true, completeSfzTwo)
+	}
+	//  身份证 回调  2
+	function completeSfzTwo(response) {
+		id_card_images.value[1] = response.url
 	}
 	// 删除身份证
 	function delImgSfz(index) {
 		console.log('删除身份证');
-		id_card_images.value.splice(index, 1)
+		id_card_images.value[index] = ''
 	}
 
 	// 营业执照上传
@@ -255,10 +263,14 @@
 			message.error('请检查身份证照片信息')
 			return false
 		}
-		if (!license_image.value) {
-			message.error('请上传营业执照')
-			return false
+		// 本地商家需要营业执照
+		if (type.value == 'a') {
+			if (!license_image.value) {
+				message.error('请上传营业执照')
+				return false
+			}
 		}
+
 		if (!name.value) {
 			message.error('请输入负责人姓名')
 			return false
@@ -308,17 +320,19 @@
 			.then((res) => {
 				// spinning.value = false
 				console.log('申请入驻', res);
-				global.Modal.confirm({
-					title: global.findLanguage(
-						"保存成功，点击确定返回上一页！"
-					),
-					okText: global.findLanguage("确定"),
-					cancelText: global.findLanguage("取消"),
-					okType: "primary",
-					onOk: function () {
-						handUrl('/login')
-					},
-				});
+				resule_vis.value = true
+				// global.Modal.confirm({
+				// 	title: global.findLanguage(
+				// 		"保存成功，点击确定返回上一页！"
+				// 	),
+				// 	okText: global.findLanguage("确定"),
+				// 	cancelText: global.findLanguage("取消"),
+				// 	okType: "primary",
+				// 	onOk: function () {
+				// 		handUrl('/login')
+				// 	},
+				// });
+
 			})
 	}
 
@@ -339,8 +353,39 @@
 			})
 	}
 
-	const shopType = ref(false)//商户类型 本地  
+	const shopTypeWd = ref(false)//商户类型 a本地商家 b网店商家   
+	const shopTypeBd = ref(false)//商户类型 a本地商家 b网店商家   
 
+	const buzhou_type = ref(1)//1选择类型 2填写信息
+	// 下一步
+	function toxyb() {
+		// 切换店铺信息页面
+		if (shopTypeWd.value || shopTypeBd.value) {
+			type.value = shopTypeWd.value ? 'b' : 'a'
+			buzhou_type.value = 2
+		} else {
+			message.error('请先选择类型')
+		}
+	}
+
+	const errMsg = ref('')//错误信息
+
+	const resule_vis = ref(false)//提交结果弹框
+
+	// 提交后弹窗确定 前往首页
+	function toHome() {
+		console.log('等待数据');
+		// 账号密码登陆
+		global.axios.post('factory_system/Base/login', {
+			account: mobile.value,
+			password: admin_login_password.value
+		}, global)
+			.then(res => {
+				console.log('登陆成功');
+				localStorage.setItem('Authorization', res.token);
+				global.router.push("/")
+			})
+	}
 </script>
 
 <template>
@@ -355,13 +400,17 @@
 						<span style="font-size: 28px;margin-left: 5px;color: #fff;font-weight: bold;">{{global.appName}}
 						</span>
 					</div>
-					<div @click="handUrl('/login')" style="color: #fff;">
+					<!-- <div @click="handUrl('/login')" style="color: #fff;">
 						返回登录
+					</div> -->
+					<div @click="handUrl('/login')" style="color: #fff;">
+						返回首页(等待接口)
 					</div>
 				</div>
 			</div>
 			<!-- 选择类型 -->
-			<div style="display: flex;background: #f5f5f5;height: 92vh;color: #00000099;width: 100%">
+			<div v-if="buzhou_type==1"
+				style="display: flex;background: #f5f5f5;height: 92vh;color: #00000099;width: 100%">
 				<div style="overflow: auto;height: 100%;width: 100%">
 					<div style="font-size: 30px;text-align: center;font-weight: bold;color: #fff;width: 100%;
 					background-image: url('https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/setting/2025423/49s45fl2dh6w7juja6ulkr5thnenwprf.jpg');
@@ -371,7 +420,8 @@
 					<div style="border-radius: 5px;width: 67vw;padding: 0px 20px;margin: 0 auto;
 					position: relative; top: -91px;
 					">
-						<div style="background-color: #fff;width: 411px;border-top: 1px solid #1890FF;padding: 20px;">
+						<div
+							style="background-color: #fff;width: 411px;border-top: 1px solid #1890FF;padding: 20px;border-radius: 10px 10px 0px 0px;">
 							<div style="color: #407CFF;font-size: 18px;">普通入驻</div>
 							<div>针对本地商家和网店商家</div>
 						</div>
@@ -381,58 +431,66 @@
 								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 								<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
 							</div>
-							<div
-								style="border: 1px solid #e5e5e5;display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio v-model:checked="shopType"></a-radio>
+							<div @click="()=>{shopTypeWd=true;shopTypeBd=false}"
+								:style="{ 'border': shopTypeWd ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio v-model:checked="shopTypeWd"
+									@change="shopTypeBd=shopTypeWd?false:true"></a-radio>
 								<div style="margin-left: 10px;">
-									<div>个人店</div>
+									<div>网店商家</div>
 									<div>无营业执照，想以个人身份开店</div>
 								</div>
 							</div>
-							<div
-								style="border: 1px solid #e5e5e5;display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio v-model:checked="shopType"></a-radio>
+							<div @click="()=>{shopTypeBd=true;shopTypeWd=false}"
+								:style="{ 'border': shopTypeBd ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio v-model:checked="shopTypeBd"
+									@change="shopTypeWd=shopTypeBd?false:true"></a-radio>
 								<div style="margin-left: 10px;">
-									<div>个体工商户</div>
+									<div>本地商家</div>
 									<div>有营业执照，想以个体工商户身份开店</div>
 								</div>
 							</div>
 
 							<div style="text-align: center;margin-top: 60px;margin-bottom: 70px;">
-								<a-button @click="_submitEntryApply" type="primary" style="font-size: 15px !important;"
-									size="large">下一步</a-button>
+								<a-button @click="toxyb" type="primary"
+									style="font-size: 15px !important;padding: 8px 40px;" size="large">下一步</a-button>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
 			<!-- 填写店铺信息 -->
-			<div style="display: flex;background: #f5f5f5;height: 92vh;">
+			<div v-else-if="buzhou_type==2" style="display: flex;background: #f5f5f5;height: 92vh;">
 				<div style="padding: 20px;overflow: auto;height: 100%;width: 67vw;margin: 0 auto;">
 					<div style="font-size: 18px;margin-bottom: 20px;">店铺信息</div>
 					<a-row>
-						<a-col :xl="24" :xxl="14">
+						<a-col :xl="24" :xxl="15">
 							<div
 								style="background-color: #fff;padding: 20px;border: 2px solid #f5f5f5;border-radius: 5px;">
 								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">店铺基本信息
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 100px;align-items: center;">
+								<div
+									style="display: flex;margin: 15px 0px 15px 100px;align-items: center;position: relative;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>店铺名称</span>
 									</div>
 									<a-input v-model:value="store_name" style="margin-left: 10px;width: 300px;"
 										show-count :maxlength="30" />
+									<div style="position: absolute;top: 35px;left:72px;color: red;font-size: 10px;">
+										店铺名已被使用(等待接口)</div>
 									<a-popover title="规范" placement="rightTop">
 										<template #content>
 											<div>不得与已经开通的店铺名称重复</div>
 											<div>不得包含容易造成消费者混淆的信息:包含知名人士、地名的品牌</div>
 										</template>
-										<div style="color: #1890FF;margin-left: 10px;white-space:nowrap;">查看规范</div>
+										<div
+											style="color: #1890FF;margin-left: 10px;white-space:nowrap;cursor: pointer;">
+											查看规范</div>
 									</a-popover>
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 100px;">
+								<div style="display: flex;margin: 25px 0px 10px 100px;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>门店logo</span>
@@ -440,14 +498,14 @@
 									<div style="margin-left: 10px;display: flex;">
 										<div v-if="logo"
 											style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
-											<a-image :width="100" :src="logo" :preview="{ src: logo }" />
+											<a-image :width="90" :src="logo" :preview="{ src: logo }" />
 											<div @click="delImgLogo()" class="imgClose" style="margin-left: 10px;">
 												<CloseCircleOutlined />
 											</div>
 										</div>
 										<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
 											<div
-												style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
+												style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;border-radius: 4px;margin-right: 10px;text-align: center;">
 												<PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
 											</div>
 										</a-upload>
@@ -456,18 +514,18 @@
 								<!--  -->
 								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 100px">
+								<div style="display: flex;margin: 10px 0px 15px 100px">
 									<div style="display: flex;">
 										<span style="color: red;">*</span>
 										<span>商家类型</span>
 									</div>
 									<div style="margin-left: 10px;">
 										<a-radio-group v-model:value="type" name="radioGroup">
-											<a-radio value="b">网店商家</a-radio>
-											<a-radio value="a">本地商家</a-radio>
+											<a-radio value="b" v-if="type=='b'">网店商家</a-radio>
+											<a-radio value="a" v-else-if="type=='a'">本地商家</a-radio>
 										</a-radio-group>
 									</div>
-									<a-popover title="规范" placement="rightTop">
+									<a-popover v-if="type=='a'" title="规范" placement="rightTop">
 										<template #content>
 											<div>商家类型为本地商家需要录入详细地址</div>
 											<div>商家类型为本地商家需要录入具体定位</div>
@@ -476,19 +534,28 @@
 									</a-popover>
 								</div>
 								<!-- 本地商家 -->
-								<div v-if="type=='a'">
-									<div style="display: flex;margin: 20px 0px 20px 105px;align-items: center;">
+								<div v-if="type=='a'" style="cursor: pointer;">
+									<div style="display: flex;margin: 15px 0px 15px 105px;align-items: center;">
 										<div style="display: flex;white-space:nowrap;">
 											<span>详细地址</span>
 										</div>
 										<a-input v-model:value="address" style="margin-left: 10px;width: 300px;" />
 									</div>
-									<div style="display: flex;margin: 20px 0px 20px 133px;align-items: center;">
+									<div style="display: flex;margin: 15px 0px 15px 133px;align-items: center;">
 										<div style="display: flex;white-space:nowrap;">
 											<span>坐标</span>
 										</div>
-										<a-button type="primary" @click="isMap = true"
-											style="margin-left: 10px;">打开</a-button>
+										<!-- <a-button type="primary" @click="isMap = true"
+											style="margin-left: 10px;">打开</a-button> -->
+
+										<div @click="isMap = true" style="margin-left: 10px;">{{location}}</div>
+										<a-popover v-if="type=='a'" title="提示" placement="rightTop">
+											<template #content>
+												<div>点击经纬度选择您的店铺地址</div>
+											</template>
+											<span style="color: #1890FF;margin-left: 10px;"
+												@click="isMap = true">点击选择</span>
+										</a-popover>
 										<a-modal v-model:visible="isMap" :centered="true" :closable="false"
 											:footer="null" :keyboard="false" :maskClosable="false"
 											width="650px">搜索<input id="keyword"
@@ -508,7 +575,7 @@
 										</a-modal>
 									</div>
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 100px;">
+								<div style="display: flex;margin: 15px 0px 15px 100px;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>身份证像</span>
@@ -516,24 +583,50 @@
 									<div>
 										<div style="display: flex;">
 											<div style="margin-left: 10px;display: flex;">
-												<div style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
-													v-for="(item,index) in id_card_images" :key="index">
-													<a-image :width="90" :src="item" :preview="{ src: item }" />
-													<div @click="delImgSfz(index)" class="imgClose"
+												<div v-if="id_card_images[0]"
+													style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;">
+													<a-image :width="90" :src="id_card_images[0]"
+														:preview="{ src: item }" />
+													<div @click="delImgSfz(0)" class="imgClose"
 														style="margin-left: 10px;">
 														<CloseCircleOutlined />
 													</div>
 												</div>
-												<a-upload v-if="id_card_images.length<2" :customRequest="uploadSfz"
-													:file-list="[]" list-type="text">
+												<a-upload v-else :customRequest="uploadSfz" :file-list="[]"
+													list-type="text">
 													<div
-														style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
-														<PlusOutlined
-															style="font-size: 30px;color: #999999;margin-top: 35%;" />
+														style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;margin-right: 10px;text-align: center;border-radius: 4px;">
+														<div style="height: 15px;"></div>
+														<img src="/public/resource/image/sfzzm.png"
+															style="width: 60px;height: 40px;" alt="">
+														<div style="color: #999999;font-size: 10px;margin-top: 5px;">
+															上传人面像</div>
 													</div>
 												</a-upload>
 											</div>
-											<div style="display: flex;margin-left: 20px;">
+											<div style="margin-left: 10px;display: flex;">
+												<div v-if="id_card_images[1]"
+													style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;">
+													<a-image :width="90" :src="id_card_images[1]"
+														:preview="{ src: item }" />
+													<div @click="delImgSfz(1)" class="imgClose"
+														style="margin-left: 10px;">
+														<CloseCircleOutlined />
+													</div>
+												</div>
+												<a-upload v-else :customRequest="uploadSfzTwo" :file-list="[]"
+													list-type="text">
+													<div
+														style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;margin-right: 10px;text-align: center;border-radius: 4px;">
+														<div style="height: 15px;"></div>
+														<img src="/public/resource/image/sfzfm.png"
+															style="width: 60px;height: 40px;" alt="">
+														<div style="color: #999999;font-size: 10px;margin-top: 5px;">
+															上传国徽像</div>
+													</div>
+												</a-upload>
+											</div>
+											<div v-if="type=='a'" style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>
 													<span>营业执照</span>
@@ -541,7 +634,7 @@
 												<div style="margin-left: 10px;display: flex;">
 													<div v-if="license_image"
 														style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
-														<a-image :width="100" :src="license_image"
+														<a-image :width="90" :src="license_image"
 															:preview="{ src: license_image }" />
 														<div @click="delImgYyzz()" class="imgClose"
 															style="margin-left: 10px;">
@@ -551,9 +644,13 @@
 													<a-upload v-else :customRequest="uploadYyzz" :file-list="[]"
 														list-type="text">
 														<div
-															style="width: 100px;height: 100px;border: 1px solid #f5f5f5;margin-right: 10px;text-align: center;">
-															<PlusOutlined
-																style="font-size: 30px;color: #999999;margin-top: 35%;" />
+															style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;border-radius: 4px;margin-right: 10px;text-align: center;">
+															<div style="height: 15px;"></div>
+															<img src="/public/resource/image/yyzz.png"
+																style="width: 60px;height: 40px;" alt="">
+															<div
+																style="color: #999999;font-size: 10px;margin-top: 5px;">
+																营业执照</div>
 														</div>
 													</a-upload>
 												</div>
@@ -561,28 +658,87 @@
 										</div>
 									</div>
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 100px;align-items: center;">
+
+								<div style="display: flex;margin-left: 171px;margin-top: 10px;">
+									<div style="background-color: #f7f7f7;">
+										<div style="padding: 10px;">请核对身份信息，若信息不符合，可手动修改（等待ocr服务）</div>
+										<div style="height: 1px;background-color: #d1d0cf;"></div>
+										<div style="padding: 10px;">
+											<div style="display: flex;align-items: center;">
+												<div style="display: flex;justify-content: space-between;width: 5vw;">
+													<div></div>
+													<div style="display: flex;">
+														<span style="color: red;">*</span>
+														<span>姓名</span>
+													</div>
+												</div>
+												<a-input v-model:value="name" style="width: 200px;margin-left: 20px;"
+													placeholder="请输入姓名" />
+											</div>
+											<div style="display: flex;align-items: center;margin-top: 10px;">
+												<div style="display: flex;justify-content: space-between;width: 5vw;">
+													<div></div>
+													<div style="display: flex;">
+														<span style="color: red;">*</span>
+														<span>身份证号</span>
+													</div>
+												</div>
+												<a-input v-model:value="id_card_number"
+													style="width: 200px;margin-left: 20px;" placeholder="请输入身份证号" />
+											</div>
+											<div style="display: flex;align-items: center;margin-top: 10px;">
+												<div style="display: flex;justify-content: space-between;width: 5vw;">
+													<div></div>
+													<div style="display: flex;">
+														<span style="color: red;">*</span>
+														<span>身份证有效期</span>
+													</div>
+												</div>
+												<div>
+													<a-range-picker v-model:value="value1"
+														style="width: 200px;margin-left: 20px;" />
+												</div>
+												<div style="display: flex;align-items: center;margin-left: 10px;">
+													<!-- <a-checkbox v-model:checked="isCq">长期</a-checkbox> -->
+													<a-popover title="规范" placement="rightTop">
+														<template #content>
+															<div>请按照身份证准确填写「姓名、身份证号」，核实确认无错别字。</div>
+															<div>请按照身份证准确填写「身份证有效期」，不可延长有效期。</div>
+															<!-- <div>有效期非“长期”的身份证不可勾选"长期”。</div> -->
+														</template>
+														<div
+															style="color: #1890FF;margin-left: 10px;white-space:nowrap;">
+															查看规范</div>
+													</a-popover>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+
+								<!-- <div style="display: flex;margin: 15px 0px 15px 100px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>身份证号</span>
 									</div>
 									<a-input v-model:value="id_card_number" style="margin-left: 10px;width: 300px;" />
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 87px;align-items: center;">
+								<div style="display: flex;margin: 15px 0px 15px 87px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>负责人姓名</span>
 									</div>
 									<a-input v-model:value="name" style="margin-left: 10px;width: 300px;" />
-								</div>
-								<div style="display: flex;margin: 20px 0px 20px 44px;align-items: center;">
+								</div> -->
+								<div style="display: flex;margin: 15px 0px 15px 44px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>移动端绑定手机号</span>
 									</div>
 									<a-input v-model:value="mobile" style="margin-left: 10px;width: 300px;" />
 								</div>
-								<div style="display: flex;margin: 20px 0px 20px 72px;align-items: center;">
+								<div style="display: flex;margin: 15px 0px 15px 72px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
 										<span>后台登录密码</span>
@@ -590,7 +746,7 @@
 									<a-input v-model:value="admin_login_password"
 										style="margin-left: 10px;width: 300px;" />
 								</div>
-								<div style="text-align: center;margin-bottom: 20px;display: flex;">
+								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
 									<div style="display: flex;margin: 0 auto;">
 										<a-checkbox v-model:checked="xygx"></a-checkbox>
 										<div style="display: flex;margin-left: 5px;">
@@ -612,19 +768,70 @@
 								</a-drawer>
 								<div v-if="check_remark" style="text-align: center;color: red;margin-bottom: 20px;">
 									被拒绝原因：{{check_remark}}</div>
+
 								<!-- 提交 -->
-								<div style="text-align: center;">
+								<div
+									style="text-align: center;display: flex;justify-content: space-between;align-items: center;cursor: pointer;">
+									<div @click="buzhou_type=1" style="color: #1890FF;">
+										<LeftOutlined style="color: #1890FF;" />上一步
+									</div>
 									<a-button @click="_submitEntryApply" type="primary"
-										style="font-size: 15px !important;" size="large">提交</a-button>
+										style="font-size: 15px !important;padding: 8px 40px;" size="large">提交</a-button>
+									<div></div>
 								</div>
+								<!-- <div @click="resule_vis=true">入驻成功</div> -->
+								<!-- 入驻成功弹框 -->
+								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px">
+									<div style="">
+										<div style="display: flex;">
+											<div style="margin: 0 auto;display: flex;align-items: center;">
+												<SafetyCertificateFilled
+													style="color: #83e930ce; font-size: 20px;margin-right: 5px;" />
+												<div style="font-size: 20px;">您已实名认证成功</div>
+											</div>
+										</div>
+										<a-alert message="您离开店成功还差一步,请点击确认提交" type="warning" show-icon
+											style="padding: 5px 10px !important;margin-top: 10px;" />
+										<div style="display: flex;margin-top: 10px;">
+											<div style="width: 180px;text-align: right;">店铺类型： </div>
+											<div>{{type=='a'?'实体店铺':'个人店铺'}}</div>
+										</div>
+										<div style="display: flex;margin-top: 20px;">
+											<span style="width: 180px;text-align: right;">店铺名称： </span>
+											<div>
+												<div>{{store_name}}</div>
+												<div style="font-size: 10px;">店铺审核后,您需要发起申请才可以修改店铺名</div>
+											</div>
+										</div>
+										<div style="display: flex;margin-top: 20px;">
+											<span style="width: 180px;text-align: right;">主营类目： </span>
+											<div>
+												<div>普通商品</div>
+												<div style="font-size: 10px;">您没有销量以前,主营类目都可以修改</div>
+											</div>
+										</div>
+										<div style="display: flex;margin-top: 20px;">
+											<span style="width: 180px;text-align: right;">入住人姓名： </span>
+											<div>
+												<div>{{name}}</div>
+											</div>
+										</div>
+										<div style="display: flex;margin-top: 20px;">
+											<span style="width: 180px;text-align: right;">入住人身份证号： </span>
+											<div>
+												<div>{{id_card_number}}</div>
+											</div>
+										</div>
+									</div>
+								</a-modal>
 							</div>
 						</a-col>
-						<a-col :xl="10" :xxl="8">
+						<a-col :xl="10" :xxl="7">
 							<div
 								style="margin-top: 20px;margin-left: 20px;border: 2px solid #f5f5f5;border-radius: 5px;background-color: #fff;">
 								<div
 									style="display:flex;background-color:#f7f8fa;font-size: 16px;padding: 10px 20px;align-items: center;">
-									<InfoCircleOutlined style="color: #1890FF;font-size: 14px;" />
+									<ExclamationCircleFilled style="color: #1890FF;font-size: 14px;" />
 									<div style="margin-left: 10px;">身份证像</div>
 								</div>
 								<div style="padding: 20px;">
@@ -636,7 +843,12 @@
 										<!-- <div>4.请按照身份证准确填写「身份证有效期」，不可延长有效期，有效期非“长期”的身份证不可勾选"长期”。</div> -->
 									</div>
 									<div style="font-size: 16px;margin: 10px 0px;">示例图</div>
-									<div style="padding: 20px;">
+									<div>
+										<img style="width: 100%;"
+											src="https://mms-static.pddpic.com/mallcenter/static/media/idCardImage.7257d73d.png?imageView2/2/w/1700/q/85/format/webp"
+											alt="">
+									</div>
+									<!-- <div style="padding: 20px;">
 										<div style="display: flex;">
 											<img style="width: 180px;object-fit: contain;border-radius: 5px;"
 												src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/202535/ceoe98ri2u3wjmcejvothruie3dkirih.jpg"
@@ -644,21 +856,21 @@
 											<div style="margin: 0 10px;">
 												<div
 													style="display: flex;align-items: center;font-size: 14px;margin-top: 8px;">
-													<CheckCircleOutlined style="color: #4DB23F;" />
+													<CheckCircleFilled style="color: #4DB23F;" />
 													<div style="margin-left: 5px;white-space:nowrap">四角完整</div>
 												</div>
 												<div
 													style="display: flex;align-items: center;font-size: 14px;margin: 15px 0px;">
-													<CheckCircleOutlined style="color: #4DB23F;" />
+													<CheckCircleFilled style="color: #4DB23F;" />
 													<div style="margin-left: 5px;white-space:nowrap">亮度均匀</div>
 												</div>
 												<div style="display: flex;align-items: center;font-size: 14px;">
-													<CheckCircleOutlined style="color: #4DB23F;" />
+													<CheckCircleFilled style="color: #4DB23F;" />
 													<div style="margin-left: 5px;white-space:nowrap">照片清晰</div>
 												</div>
 											</div>
 										</div>
-									</div>
+									</div> -->
 								</div>
 							</div>
 						</a-col>
