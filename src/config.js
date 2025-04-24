@@ -23,8 +23,12 @@ import EditCarriagePage from '@/components/app_page_components/decoration/shippi
 import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
 import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
 
+import myInfo from '@/components/app_page_components/decoration/myInfo.vue'//我的店铺信息
+
 export const allPageComponents = {
-    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,StatisticsPage,publishPage,AddStorePage,shopOut,goodsPage,EditCarriagePage,newShop,AddNewGoodsPage
+    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,
+    StatisticsPage,publishPage,AddStorePage,shopOut,goodsPage,
+    EditCarriagePage,newShop,AddNewGoodsPage,myInfo
 }
 
 // 项目名称：快鹿送酒

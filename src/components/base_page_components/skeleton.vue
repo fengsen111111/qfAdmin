@@ -1,7 +1,7 @@
 <script setup>
   import { ExclamationCircleOutlined, ContainerOutlined, BellOutlined, MailOutlined, MessageOutlined } from "@ant-design/icons-vue";
   import md5 from "js-md5";
-  import { createVNode, inject, onBeforeMount, onMounted, reactive,ref  } from "vue";
+  import { createVNode, inject, onBeforeMount, onMounted, reactive, ref } from "vue";
   import { allPageComponents } from "../../config";
   import { message } from 'ant-design-vue';
   import CustomerPageVis from '@/components/app_page_components/decoration/customer_service_vis.vue'
@@ -30,28 +30,28 @@
       skeleton_state.admin = res.admin;
       skeleton_state.admin.portrait = res.admin.portrait ? res.admin.portrait : "/resource/image/head_img.png";
       global.adminMsg = skeleton_state.admin
-      // res.menu.push({
-      //   icon: "",
-      //   label: "新开发页面",
-      //   order: "1",
-      //   page_id: "0",
-      //   pid: "706154120674803772",
-      //   type: "publishPage",
-      //   url: "",
-      //   value: "723777073939746104",
-      //   children: [
-      //     {
-      //       icon: "",
-      //       label: "运费模板(开发中)",
-      //       order: "1",
-      //       page_id: "0",
-      //       pid: "706154120674803773",
-      //       type: "shippingTemplates",
-      //       url: "",
-      //       value: "333333",
-      //     }
-      //   ]
-      // })
+      res.menu.push({
+        icon: "",
+        label: "我的店铺",
+        order: "1",
+        page_id: "0",
+        pid: "706154120674803772",
+        type: "publishPage",
+        url: "",
+        value: "723777073939746104",
+        children: [
+          {
+            icon: "",
+            label: "店铺信息",
+            order: "1",
+            page_id: "0",
+            pid: "706154120674803773",
+            type: "myInfo",
+            url: "",
+            value: "333333",
+          }
+        ]
+      })
       //初始化tabMenu为未选中
       skeleton_state.menuData = res.menu;
       //循环三次，给每个菜单页面设置page_key以及checked = false
@@ -82,6 +82,20 @@
       { value: -1, label: "首页", type: "IndexPage", page_key: "index_page" },
       true
     );
+    openPage({
+      checked: true,
+      checked_status: true,
+      open_status: true,
+      icon: "",
+      label: "店铺信息",
+      order: "1",
+      page_id: "0",
+      pid: "706154120674803773",
+      type: "myInfo",
+      url: "",
+      value: "333333",
+      page_key: "e06ac6e73a5db3b8f010acb4213123213",
+    }, true)
   });
 
   //注销
@@ -349,11 +363,11 @@
   const msgType = ref('1')//消息类型
   // 点击消息,点击站内信 1消息2站内信
   function openVis(type) {
-    msgType.value = type+''
+    msgType.value = type + ''
     msgVisible.value = true
-    if(type==1){
+    if (type == 1) {
       console.log('点击消息');
-    }else{
+    } else {
       console.log('点击站内信');
     }
   }
@@ -535,31 +549,41 @@
         <!-- 聊天弹框 -->
         <a-modal v-model:visible="serVis" width="1000px" :footer="null">
           <div v-if="serVis">
-           <CustomerPageVis :pageData="{}" />
+            <CustomerPageVis :pageData="{}" />
           </div>
         </a-modal>
         <!-- 消息站内信弹框 -->
         <a-modal v-model:visible="msgVisible" width="600px" :footer="null">
-          <div >
+          <div>
             <a-tabs v-model:activeKey="msgType">
               <a-tab-pane key="1" tab="消息盒子">
                 <div style="display: flex;">
                   <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;">
-                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知</div>
-                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">物流售后</div>
-                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">账户资金</div>
-                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
-                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺营销</div>
-                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商品动态</div>
-                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广</div>
-                    <div @click="editMsgKey(8)" :class="msgKey=='8'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规</div>
-                    <div @click="editMsgKey(9)" :class="msgKey=='9'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
-                    <div @click="editMsgKey(10)" :class="msgKey=='10'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">买菜通知</div>
+                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知</div>
+                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">物流售后</div>
+                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">账户资金</div>
+                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
+                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺营销</div>
+                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商品动态</div>
+                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广</div>
+                    <div @click="editMsgKey(8)" :class="msgKey=='8'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规</div>
+                    <div @click="editMsgKey(9)" :class="msgKey=='9'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
+                    <div @click="editMsgKey(10)" :class="msgKey=='10'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">买菜通知</div>
                   </div>
                   <div style="width: 80%;">
                     <div v-if="msgKey==2">
                       <div style="padding: 5px 20px;">
-                        <div  style="color: #666666;">
+                        <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
                             <div style="font-weight: bold;">拼多多新手入驻攻略，必看！</div>
                             <div>13:57</div>
@@ -576,13 +600,20 @@
               <a-tab-pane key="2" tab="站内信" force-render>
                 <div style="display: flex;">
                   <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;">
-                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺动态</div>
-                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">平台动态</div>
-                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">规则更新</div>
-                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规通知</div>
-                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">营销推广</div>
-                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">重要通知</div>
-                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''" style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
+                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺动态</div>
+                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">平台动态</div>
+                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">规则更新</div>
+                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规通知</div>
+                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">营销推广</div>
+                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">重要通知</div>
+                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
                   </div>
                   <div style="width: 80%; margin-top: 10%;">
                     <a-empty />
@@ -590,7 +621,8 @@
                 </div>
               </a-tab-pane>
             </a-tabs>
-            <div style="margin-left: 20%;border-top: 1px solid #e8e8e8;margin-top: 10px;padding-top: 8px;display: flex;justify-content: space-between;align-items: center;">
+            <div
+              style="margin-left: 20%;border-top: 1px solid #e8e8e8;margin-top: 10px;padding-top: 8px;display: flex;justify-content: space-between;align-items: center;">
               <a-button>全部标记已读</a-button>
               <div>共有 1 条</div>
             </div>
@@ -609,10 +641,11 @@
 
 <style lang="less" scoped>
   /* 消息选中样式 */
-  .checkKey{
+  .checkKey {
     background-color: #f0f7ff;
     color: #407cff;
   }
+
   .ant-layout {
     .tab-menu {
       flex: none !important;
