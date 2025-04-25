@@ -79,7 +79,7 @@
 		</div>
 		<!-- <div>审核中状态</div> -->
 		<div v-if="shType==1">
-			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;">
+			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 				<div style="display: flex;align-items: center;">
 					<ClockCircleFilled style="color: orange;font-size: 16px;" />
 					<div style="margin-left: 5px;font-size: 16px;">店铺信息审核中，预计在<span
@@ -131,8 +131,8 @@
 		<!-- <div>审核通过</div> -->
 		<div v-else>
 			<a-alert message="重要提示：店铺名称、店铺logo会直接展示给买家，请认真填写。" type="warning" show-icon
-				style="margin: 10px 0px;padding: 5px 10px !important;margin-top: 10px;" />
-			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;">
+				style="margin: 10px 0px;padding: 5px 10px !important;margin-top: 10px;border-radius: 4px;" />
+			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 				<div style="font-size: 16px;">基础信息</div>
 				<div style="display: flex;margin-top: 20px;">
 					<div style="width: 200px;color: #999999;text-align: right;">店铺编号</div>
@@ -222,7 +222,7 @@
 					</a-modal>
 				</div>
 			</div>
-			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;">
+			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 				<div style="font-size: 16px;">联系方式</div>
 				<div style="display: flex;margin-top: 20px;">
 					<div style="width: 200px;color: #999999;text-align: right;">入住人姓名</div>
