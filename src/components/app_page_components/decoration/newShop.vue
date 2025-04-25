@@ -320,7 +320,7 @@
 <template>
   <!--搜索-->
   <a-spin :spinning="spinning">
-    <div v-if="typeVis==1" style="padding: 20px;overflow: auto;height: 100%;">
+    <div v-if="typeVis==1" style="padding:0px 10px;overflow: auto;height: 100%;">
       <div style="display: flex;align-items: center;margin-bottom: 20px;">
         <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
           style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
@@ -402,7 +402,7 @@
         <a-button @click="handFb" type="primary">确认发布该类商品</a-button>
       </div>
     </div>
-    <div v-else style="padding: 20px;overflow: auto;height: 100%;">
+    <div v-else style="padding: 0px 10px;overflow: auto;height: 100%;">
       <publishPage :pageData="pageData" @closeChildPageTwo="closeChildPageTwo" @closeChildPage="closeChildPage" @editType="editType"
         @openChildPage="openChildPage" />
     </div>

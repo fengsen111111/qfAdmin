@@ -641,6 +641,7 @@
               <span style="color: #1890FF;margin-left: 10px;">去缴纳</span>
             </div>
           </div>
+          <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
           <!-- 高度没分类加 +7%  没缴纳金额+ 6%  height: 85%;             是编辑                            缴费-->
           <div style="overflow: auto;width: 100%;" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
