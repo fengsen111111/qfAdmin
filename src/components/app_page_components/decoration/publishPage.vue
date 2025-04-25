@@ -950,6 +950,47 @@
                 <div style="margin-left: 5px;">规格与库存</div>
               </div>
               <div>
+                <div style="display: flex;margin-top: 20px;margin-left: 35px;">
+                  <div style="display: flex;">
+                    <div style="color: red;">*</div>
+                    <div>商品规格</div>
+                  </div>
+                  <div style="margin-left: 20px;width: 90%;">
+                    <div style="background-color: #f7f8fa;padding: 20px;border-radius: 5px;">
+                      <div>最多添加2个商品规格类型</div>
+                      <div v-for="item in [1,2]" :key="item" style="width: 100%;margin-top: 10px;background-color: #fff;margin-bottom: 20px;">
+                        <div style="padding: 10px;display: flex;justify-content: space-between;width: 100%;border-bottom: 1px solid #999999;">
+                          <!-- v-model:value="item.value" -->
+                          <a-select style="width: 200px;" placeholder="请选择">
+                            <a-select-option value="固定值1">固定值1</a-select-option>
+                            <a-select-option value="固定值2">固定值2</a-select-option>
+                            <a-select-option value="固定值3">固定值3</a-select-option>
+                          </a-select>
+                          <div style="cursor: pointer;color: #1890FF;">
+                            <span>下移</span>
+                            <span style="color: #999999;margin: 0 10px;">|</span>
+                            <span>删除规格类型</span>
+                          </div>
+                        </div>
+                        <div style="padding: 10px;display: grid;grid-template-columns: repeat(4, minmax(0, 1fr))">
+                          <template v-for="item in [1,2]" :key="item">
+                            <div style="display: flex;align-items: center;position: relative;">
+                              <a-input placeholder="请输入规格名称" style="width: 200px;" />
+                              <div style="color: #1890FF; margin-left: 10px;">删除</div>
+                              <div v-if="item%2==0" style="position: absolute;left: 170px;top:0px;font-size: 10px;color: #fff;background-color: #f97425;padding: 0px 5px;border-radius: 0px 4px 0px 4px;">
+                                定制
+                              </div>
+                            </div>
+                          </template>
+                        </div>
+                        <div style="padding: 0px 10px 10px 10px;display: flex;color: #1890FF;">
+                          <div style="margin-right: 20px;">开始排序</div>
+                          <div>添加定制规格</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div style="display: flex;margin-top: 20px;margin-left: 20px;">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
