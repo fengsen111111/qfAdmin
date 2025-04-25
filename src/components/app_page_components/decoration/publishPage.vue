@@ -5,7 +5,7 @@
   import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
 
-  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo","editType"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType"]);
   const global = inject("global").value;
   import dayjs from 'dayjs';
 
@@ -27,56 +27,53 @@
     name: '',//商品名
     store_id: '',//门店ID    
     cover_image: '',//封面图   
-    images: [
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png',
-      // 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025219/gg18q1kw4mis6i77msqtb1nqbh3sso1r.png'
-    ],//相册  
+    images: [],//相册  
     detail: '',//详情 富文本  
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
-    status: false,//启用状态 Y上架 N下架    
+    status: true,//启用状态 Y上架 N下架    
     attributes: [
-      // {
-      //   key: '产地',
-      //   value: '四川'
-      // }
+      {
+        key: '固定属性1',
+        value: '',
+        type: 'select',
+        is_del: false
+      },
+      {
+        key: '固定属性2',
+        value: '',
+        type: 'input',
+        is_del: false
+      }
     ],//商品属性  
     services: [
-      // {
-      //   key: '全网低价',
-      //   value: '多平台对比，优惠力度最大'
-      // },
-      // {
-      //   key: '热销爆款',
-      //   value: '热门商品，大家都在买'
-      // }
+      {
+        key: '全网低价',
+        value: '多平台对比，优惠力度最大'
+      },
+      {
+        key: '热销爆款',
+        value: '热门商品，大家都在买'
+      }
     ],//商品服务  
     goods_sizes: [
-      // {
-      //   id: '',//
-      //   name: '',//名称  
-      //   stock: '',//库存
-      //   old_price: '',//原价
-      //   price: '',//价格
-      //   uper_status: false,//是否需要推荐官推荐
-      //   commission: '',//佣金
-      //   status: false,//启用状态
-      //   order: '',//排序  
-      // }
+      {
+        id: '',//
+        name: '',//名称  
+        stock: '',//库存
+        old_price: '',//原价
+        price: '',//价格
+        uper_status: false,//是否需要推荐官推荐
+        commission: '',//佣金
+        status: false,//启用状态
+        order: '',//排序  
+      }
     ],//商品规格  post_params
-    goods_type: '',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
-    is_used: '',//是否二手 Y是 N不是  
-    is_customized: '',//是否定制 Y是 N不是  
-    is_plan_salled: '',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
-    need_send_time: '',//承诺发货时间 a当日发货 b24小时 c48小时  
+    goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
+    is_used: 'N',//是否二手 Y是 N不是  
+    is_customized: 'N',//是否定制 Y是 N不是  
+    is_plan_salled: 'a',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
+    need_send_time: 'a',//承诺发货时间 a当日发货 b24小时 c48小时  
     carriage_id: '',//运费模板ID 
 
     power_level_id: '',//曝光等级id
@@ -113,9 +110,7 @@
         del_pp_text.value = true
       }
     }, 2000);
-
   });
-
 
   // 删除服务
   function delFw(index) {
@@ -190,7 +185,6 @@
     },
   })
 
-
   function setRangePicker(time1, time2) {
     // 支持秒级时间戳（自动转毫秒）
     const toDayjs = (val) => {
@@ -244,6 +238,8 @@
     post_params.type_id = props.pageData.data.typeId
   }
 
+  //固定属性
+
   const activeKey = ref(['1', '2']);
 
   const visibleSx = ref(false)
@@ -257,7 +253,9 @@
     }
     post_params.attributes.push({
       key: SxName.value,
-      value: ''
+      value: '',
+      type: 'input',
+      is_del: true
     })
     SxName.value = ''
     visibleSx.value = false
@@ -442,19 +440,53 @@
           component_state.myValue = ''
           post_params.brand_id = ''
           post_params.status = false
-          post_params.attributes = []
-          post_params.services = []
-          post_params.goods_sizes = []
+          post_params.attributes = [
+            {
+              key: '固定属性1',
+              value: '',
+              type: 'select',
+              is_del: false
+            },
+            {
+              key: '固定属性2',
+              value: '',
+              type: 'input',
+              is_del: false
+            }
+          ]
+          post_params.services = [
+            {
+              key: '全网低价',
+              value: '多平台对比，优惠力度最大'
+            },
+            {
+              key: '热销爆款',
+              value: '热门商品，大家都在买'
+            }
+          ]
+          post_params.goods_sizes = [
+            {
+              id: '',//
+              name: '',//名称  
+              stock: '',//库存
+              old_price: '',//原价
+              price: '',//价格
+              uper_status: false,//是否需要推荐官推荐
+              commission: '',//佣金
+              status: false,//启用状态
+              order: '',//排序  
+            }
+          ]
           post_params.carriage_id = ''
           post_params.power_level_id = ''
           post_params.power_start_time = ''
           post_params.power_end_time = ''
           timeStaEnd.value = []
-          post_params.goods_type = ''
-          post_params.is_used = ''
-          post_params.is_customized = ''
-          post_params.is_plan_salled = ''
-          post_params.need_send_time = ''
+          post_params.goods_type = 'a'
+          post_params.is_used = 'N'
+          post_params.is_customized = 'N'
+          post_params.is_plan_salled = 'a'
+          post_params.need_send_time = 'a'
         }
         loading()//加载
       },
@@ -545,7 +577,15 @@
             }),
           }
         })
-        console.log('allYfmb', allYfmb.value);
+        console.log('所有运费模板', allYfmb.value);
+        // 有数据，编辑数据
+        if (props.pageData.data.id) {
+        } else {
+          // 新增默认第一个模板
+          if (allYfmb.value.length > 0) {
+            post_params.carriage_id = allYfmb.value[0].id
+          }
+        }
       });
   }
 
@@ -565,11 +605,32 @@
 
   const timeStaEnd = ref()//曝光日期
 
-  function editType(){
+  function editType() {
     console.log('修改分类');
     emit("editType");
   }
 
+  // 承诺
+  const cn_value = ref([])
+  // 我勾选的承诺
+  const wgxdcn = ref([])
+  const cnOption = [
+    {
+      label: '7天无理由退货此承诺对现货生效，部分定制不适用该承诺',
+      value: '7天无理由退货此承诺对现货生效，部分定制不适用该承诺',
+      text: '商家再买家到货后7天内承诺，若买家有任何不满意，可无理由退货。'
+    },
+    {
+      label: '假一赔十',
+      value: '假一赔十',
+      text: '若商家违规销售《圈风平台合作协议》规定的"严重问题产品”，商家同意平台有权依据《圈风平台合作协议》、《圈风假货处理规则》及其他相关规定采取违规处理措施，包括但不限于限制商家店铺资金提现、按照"假一赔十"的标准自商家*拼单要求店铺资金中扣除相应款项。'
+    },
+  ]
+  // 承诺变化了
+  function cncChange() {
+    console.log('承诺变化了', cn_value.value);
+    wgxdcn.value = cnOption.filter(item => cn_value.value.includes(item.value));
+  }
 </script>
 
 <template>
@@ -620,6 +681,13 @@
                 </div>
                 <div style="margin-left: 5px;color: black;">请按要求填写商品信息，上传商品图片（注意轮播图上传事项）</div>
               </div>
+              <!-- 承诺 -->
+              <div style="color: #00000099;">
+                <div v-for="(item,cn_index) in wgxdcn" :key="cn_index">
+                  <div style="margin: 10px 0px 5px 0px;">{{item.label}}</div>
+                  <div>{{item.text}}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -643,7 +711,8 @@
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
           <!-- 高度没分类加 +7%  没缴纳金额+ 6%  height: 85%;             是编辑                            缴费-->
-          <div style="overflow: auto;width: 100%;" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
+          <div style="overflow: auto;width: 100%;"
+            :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
             <div style="padding: 20px;border: 1px solid #f5f5f5;width: 100%;border-radius: 4px;">
               <div style="display: flex;font-size: 16px;">
@@ -666,6 +735,11 @@
                         <div
                           style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
                           v-for="(item,index) in post_params.images" :key="index">
+                          <div
+                            style="background-color: #1890FF;color: #fff;font-size: 12px;position: absolute;top: 0px;left: 0px;z-index: 999;padding: 0px 5px;border-radius: 4px 0px 4px 0px;"
+                            v-if="index==0">
+                            主轮播图
+                          </div>
                           <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
                           <a-image :width="90" :src="item" :preview="{ src: item }" />
                           <div @click="delImgLb(index)" class="imgClose" style="margin-left: 10px;">
@@ -715,13 +789,21 @@
                   </div>
                 </div>
                 <div style="margin-top: 20px;margin-left: 34px;align-items: center;">
-                  <div style="display: flex;align-items: center;">
+                  <div style="display: flex;">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
                       <div>商品标题</div>
                     </div>
-                    <a-input type="text" v-model:value="post_params.name" style="margin-left: 20px;width: 79.5%;"
-                      placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                    <div style="margin-left: 20px;width: 90%;">
+                      <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;"
+                        placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                      <div style="margin-top: 10px;color: #999999;">
+                        <span style="border-bottom: 1px dashed #999999;">热搜词推荐</span>:
+                        <span @click="post_params.name=post_params.name+item"
+                          style="background-color: #f0f7ff;color: #4874dd;padding: 0 5px;border-radius: 4px;margin-right: 5px;"
+                          v-for="item in ['防爆','可拆洗','充电']" :key="item">{{item}}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div style="margin-top: 20px;margin-left: 20px;align-items: center;">
@@ -811,9 +893,21 @@
                             <template v-for="(item,index) in post_params.attributes" :key="index">
                               <div style="display: flex;align-items: center;margin: 10px 0px;">
                                 <div style="width: 30%;text-align: right;">{{item.key}}</div>
-                                <a-input type="text" v-model:value="item.value" style="width: 55%;margin-left: 20px;"
-                                  placeholder="请输入具体属性值" />
-                                <CloseCircleOutlined @click="delSx(index)" style="margin-left: 10px;" />
+                                <template v-if="item.type=='input'">
+                                  <a-input type="text" v-model:value="item.value" style="width: 55%;margin-left: 20px;"
+                                    placeholder="请输入具体属性值" />
+                                </template>
+                                <template v-else-if="item.type=='select'">
+                                  <a-select v-model:value="item.value" style="width: 55%;margin-left: 20px;"
+                                    placeholder="请选择">
+                                    <a-select-option value="固定值1">固定值1</a-select-option>
+                                    <a-select-option value="固定值2">固定值2</a-select-option>
+                                    <a-select-option value="固定值3">固定值3</a-select-option>
+                                  </a-select>
+                                </template>
+                                <!-- 是否可删除 -->
+                                <CloseCircleOutlined v-if="item.is_del" @click="delSx(index)"
+                                  style="margin-left: 10px;" />
                               </div>
                             </template>
                           </div>
@@ -1121,16 +1215,16 @@
                       placeholder="请输入曝光量" />
                   </div>
                 </div>
-                <!-- <div style="display: flex;margin-top: 20px;margin-left: 68px;">
-      <div style="display: flex;">
-        <div style="color: red;">*</div>
-        <div>承诺</div>
-      </div>
-      <div style="margin-left: 20px;">
-        <div>承诺是否是商家服务？？？？</div>
-        <a-checkbox-group style="display: grid;" :options="['7天无理由退货 该类商品，必须支持无理由退货','假一赔十']" />
-      </div>
-    </div> -->
+                <div style="display: flex;margin-top: 20px;margin-left: 68px;">
+                  <div style="display: flex;">
+                    <div style="color: red;">*</div>
+                    <div>承诺</div>
+                  </div>
+                  <div style="margin-left: 20px;">
+                    <a-checkbox-group style="display: grid;" v-model:value="cn_value" :options="cnOption"
+                      @change="cncChange" />
+                  </div>
+                </div>
                 <div style="display: flex;margin-top: 20px;margin-left: 47px;">
                   <div>商品服务</div>
                   <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">

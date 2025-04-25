@@ -4,8 +4,16 @@ import ObsClient from "esdk-obs-browserjs/src/obs";
 import {saveAs} from "file-saver";
 import {APPConfig} from "../config";
 import * as qiniu from 'qiniu-js'
+import { message } from 'ant-design-vue';
 
 function uploadFile(global, file, fileType = "image", folder, loading, action = null) {
+    console.log('图片数据',global, file, fileType = "image", folder, loading, action = null);
+    if(fileType=='image'){
+        // file.size>1024*3
+        if(file.size>3*1024*1024){
+            message.warning('上传图片大小不能超过3MB')
+        }
+    }
     let formData = new FormData();
     formData.append("file_type", fileType);
     formData.append("folder", folder);
