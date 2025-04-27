@@ -229,39 +229,18 @@
           Object.assign(post_params, res.goods_datas);
           // 曝光时间单独更行
           setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
-          // 设置商品规格的值
-          shopGuige.value = [
-            {
-              labelValue: 'name',
-              labelOption: [
-                { label: '名称', value: 'name' },
-                { label: '库存', value: 'stock' },
-                // { label: '排序', value: 'order' },
-              ],
-              value: res.goods_datas.goods_sizes.map((item)=>{
-                return {
-                  label: item.name,
-                  isCustom: false
-                }
-              }),
-              isSort: false,//开始排序
-            },
-            {
-              labelValue: 'stock',
-              labelOption: [
-                { label: '名称', value: 'name' },
-                { label: '库存', value: 'stock' },
-                // { label: '排序', value: 'order' },
-              ],
-              value: res.goods_datas.goods_sizes.map((item)=>{
-                return {
-                  label: item.stock,
-                  isCustom: false
-                }
-              }),
-              isSort: false,//开始排序
-            }
-          ]
+          shopGuige.value[0].value = []
+          shopGuige.value[1].value = []
+          res.goods_datas.goods_sizes.map((item,index)=>{
+            shopGuige.value[0].value.push({
+              label: item.name,
+              isCustom:false
+            })
+            shopGuige.value[1].value.push({
+              label:item.stock,
+              isCustom:false
+            })
+          })
         }
       })
   }
@@ -522,33 +501,6 @@
           post_params.is_customized = 'N'
           post_params.is_plan_salled = 'a'
           post_params.need_send_time = 'a'
-          shopGuige.value = [
-            {
-              labelValue: 'name',
-              labelOption: [
-                { label: '名称', value: 'name' },
-                { label: '库存', value: 'stock' },
-                // { label: '排序', value: 'order' },
-              ],
-              value: [
-                { label: '', isCustom: false },
-                { label: '', isCustom: false },
-              ],
-              isSort: false,//开始排序
-            },
-            {
-              labelValue: 'stock',
-              labelOption: [
-                { label: '名称', value: 'name' },
-                { label: '库存', value: 'stock' },
-                // { label: '排序', value: 'order' },
-              ],
-              value: [
-                { label: '', isCustom: false },
-              ],
-              isSort: false,//开始排序
-            }
-          ]
         }
         loading()//加载
       },
@@ -791,7 +743,7 @@
   watch(
     shopGuige.value,
     (newVal, oldVal) => {
-      // console.log('商品规格变化', newVal, shopGuige.value)
+      console.log('商品规格变化', newVal, shopGuige.value)
       zztext()
     },
     { deep: true }
