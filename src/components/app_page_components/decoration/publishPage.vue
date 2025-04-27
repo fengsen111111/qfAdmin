@@ -4,6 +4,7 @@
   import { TableComponents } from "../../table_components/table";
   import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
+  import Draggable from 'vuedraggable';//排序插件
 
   let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType"]);
   const global = inject("global").value;
@@ -67,7 +68,7 @@
         commission: '',//佣金
         status: false,//启用状态
         order: '',//排序  
-      }
+      },
     ],//商品规格  post_params
     goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
     is_used: 'N',//是否二手 Y是 N不是  
@@ -141,6 +142,7 @@
       status: false,//启用状态
       order: '',//排序  
     })
+    zztext()
   }
   // 删除规格
   function delGG(index) {
@@ -227,6 +229,39 @@
           Object.assign(post_params, res.goods_datas);
           // 曝光时间单独更行
           setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
+          // 设置商品规格的值
+          shopGuige.value = [
+            {
+              labelValue: 'name',
+              labelOption: [
+                { label: '名称', value: 'name' },
+                { label: '库存', value: 'stock' },
+                // { label: '排序', value: 'order' },
+              ],
+              value: res.goods_datas.goods_sizes.map((item)=>{
+                return {
+                  label: item.name,
+                  isCustom: false
+                }
+              }),
+              isSort: false,//开始排序
+            },
+            {
+              labelValue: 'stock',
+              labelOption: [
+                { label: '名称', value: 'name' },
+                { label: '库存', value: 'stock' },
+                // { label: '排序', value: 'order' },
+              ],
+              value: res.goods_datas.goods_sizes.map((item)=>{
+                return {
+                  label: item.stock,
+                  isCustom: false
+                }
+              }),
+              isSort: false,//开始排序
+            }
+          ]
         }
       })
   }
@@ -475,7 +510,7 @@
               commission: '',//佣金
               status: false,//启用状态
               order: '',//排序  
-            }
+            },
           ]
           post_params.carriage_id = ''
           post_params.power_level_id = ''
@@ -487,6 +522,33 @@
           post_params.is_customized = 'N'
           post_params.is_plan_salled = 'a'
           post_params.need_send_time = 'a'
+          shopGuige.value = [
+            {
+              labelValue: 'name',
+              labelOption: [
+                { label: '名称', value: 'name' },
+                { label: '库存', value: 'stock' },
+                // { label: '排序', value: 'order' },
+              ],
+              value: [
+                { label: '', isCustom: false },
+                { label: '', isCustom: false },
+              ],
+              isSort: false,//开始排序
+            },
+            {
+              labelValue: 'stock',
+              labelOption: [
+                { label: '名称', value: 'name' },
+                { label: '库存', value: 'stock' },
+                // { label: '排序', value: 'order' },
+              ],
+              value: [
+                { label: '', isCustom: false },
+              ],
+              isSort: false,//开始排序
+            }
+          ]
         }
         loading()//加载
       },
@@ -631,6 +693,109 @@
     console.log('承诺变化了', cn_value.value);
     wgxdcn.value = cnOption.filter(item => cn_value.value.includes(item.value));
   }
+
+
+  // 商品规格
+  const shopGuige = ref([
+    {
+      labelValue: 'name',
+      labelOption: [
+        { label: '名称', value: 'name' },
+        { label: '库存', value: 'stock' },
+        // { label: '排序', value: 'order' },
+      ],
+      value: [
+        { label: '', isCustom: false },
+        { label: '', isCustom: false },
+      ],
+      isSort: false,//开始排序
+    },
+    {
+      labelValue: 'stock',
+      labelOption: [
+        { label: '名称', value: 'name' },
+        { label: '库存', value: 'stock' },
+        // { label: '排序', value: 'order' },
+      ],
+      value: [
+        { label: '', isCustom: false },
+      ],
+      isSort: false,//开始排序
+    }
+  ])
+
+  // 删除
+  function removeItem(index, val_index) {
+    shopGuige.value[index].value.splice(val_index, 1)
+  }
+
+  // 添加定制规格
+  function addDzgg(index) {
+    shopGuige.value[index].value.push({
+      label: '定制',
+      isCustom: true
+    })
+  }
+  // 添加规格
+  function addgg(index) {
+    shopGuige.value[index].value.push({
+      label: '',
+      isCustom: false
+    })
+  }
+  // 上移下移动
+  function downUp(index) {
+    if (index == 0) {
+      // 下移
+      const item = shopGuige.value[index]
+      shopGuige.value.splice(index, 1)
+      shopGuige.value.splice(index + 1, 0, item)
+    } else {
+      // 上移
+      const item = shopGuige.value[index]
+      shopGuige.value.splice(index, 1)
+      shopGuige.value.splice(index - 1, 0, item)
+    }
+  }
+
+  // 表格内容组装
+  function zztext() {
+    shopGuige.value.map((item, index) => {
+      console.log('item.labelValue', item.labelValue);
+      console.log('item.value', item.value);
+      if (item.labelValue == 'name') {
+        // 名称
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.name = item.value[iss_index] ? item.value[iss_index].label : iss.name
+          })
+        }
+      } else if (item.labelValue == 'stock') {
+        // 库存
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.stock = item.value[iss_index] ? item.value[iss_index].label : iss.stock
+          })
+        }
+      } else if (item.labelValue == 'order') {
+        //排序
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.order = item.value[iss_index] ? item.value[iss_index].label : iss.order
+          })
+        }
+      }
+    })
+  }
+  // 监听商品规格变化
+  watch(
+    shopGuige.value,
+    (newVal, oldVal) => {
+      // console.log('商品规格变化', newVal, shopGuige.value)
+      zztext()
+    },
+    { deep: true }
+  )
 </script>
 
 <template>
@@ -950,42 +1115,71 @@
                 <div style="margin-left: 5px;">规格与库存</div>
               </div>
               <div>
-                <div style="display: flex;margin-top: 20px;margin-left: 35px;">
+                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
                   <div style="display: flex;">
-                    <div style="color: red;">*</div>
+                    <!-- <div style="color: red;">*</div> -->
                     <div>商品规格</div>
                   </div>
                   <div style="margin-left: 20px;width: 90%;">
                     <div style="background-color: #f7f8fa;padding: 20px;border-radius: 5px;">
                       <div>最多添加2个商品规格类型</div>
-                      <div v-for="item in [1,2]" :key="item" style="width: 100%;margin-top: 10px;background-color: #fff;margin-bottom: 20px;">
-                        <div style="padding: 10px;display: flex;justify-content: space-between;width: 100%;border-bottom: 1px solid #999999;">
+                      <div v-for="(item,index) in shopGuige" :key="index"
+                        style="width: 100%;margin-top: 10px;background-color: #fff;margin-bottom: 20px;">
+                        <div
+                          style="padding: 10px;display: flex;justify-content: space-between;width: 100%;border-bottom: 1px solid #999999;">
                           <!-- v-model:value="item.value" -->
-                          <a-select style="width: 200px;" placeholder="请选择">
-                            <a-select-option value="固定值1">固定值1</a-select-option>
-                            <a-select-option value="固定值2">固定值2</a-select-option>
-                            <a-select-option value="固定值3">固定值3</a-select-option>
+                          <a-select v-model:value="item.labelValue" style="width: 200px;" placeholder="请选择">
+                            <a-select-option :key="index+iss.value" :value="iss.value"
+                              v-for="iss in item.labelOption">{{iss.label}}</a-select-option>
                           </a-select>
                           <div style="cursor: pointer;color: #1890FF;">
-                            <span>下移</span>
+                            <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
                             <span style="color: #999999;margin: 0 10px;">|</span>
-                            <span>删除规格类型</span>
+                            <span @click="()=>{shopGuige[index].labelValue='';shopGuige[index].value=[]}">删除规格类型</span>
                           </div>
                         </div>
-                        <div style="padding: 10px;display: grid;grid-template-columns: repeat(4, minmax(0, 1fr))">
-                          <template v-for="item in [1,2]" :key="item">
-                            <div style="display: flex;align-items: center;position: relative;">
-                              <a-input placeholder="请输入规格名称" style="width: 200px;" />
-                              <div style="color: #1890FF; margin-left: 10px;">删除</div>
-                              <div v-if="item%2==0" style="position: absolute;left: 170px;top:0px;font-size: 10px;color: #fff;background-color: #f97425;padding: 0px 5px;border-radius: 0px 4px 0px 4px;">
+                        <!-- 是否点击了开始排序 -->
+                        <div v-if="item.isSort" style="padding: 10px;">
+                          <Draggable v-model="item.value" item-key="label" :component-data="{
+                            style: {
+                              display: 'grid',
+                              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+                              gap: '10px'
+                            }
+                          }">
+                            <template #item="{ element, val_index }">
+                              <div style="display: flex; align-items: center; position: relative;margin-bottom: 10px;">
+                                <a-input v-model:value="element.label" placeholder="请输入规格名称" style="width: 200px;" />
+                                <div @click="removeItem(index,val_index)"
+                                  style="color: #1890FF; margin-left: 10px; cursor: pointer;">删除</div>
+                                <div v-if="element.isCustom"
+                                  style="position: absolute; left: 170px; top: 0px; font-size: 10px; color: #fff; background-color: #f97425; padding: 0px 5px; border-radius: 0px 4px 0px 4px;">
+                                  定制
+                                </div>
+                              </div>
+                            </template>
+                          </Draggable>
+                        </div>
+                        <div v-else
+                          style="padding: 10px;display: grid;grid-template-columns: repeat(4, minmax(0, 1fr))">
+                          <template v-for="(xx,xx_index) in item.value" :key="xx_index">
+                            <div style="display: flex;align-items: center;position: relative;margin-bottom: 10px;">
+                              <a-input placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
+                              <div @click="removeItem(index,xx_index)" style="color: #1890FF; margin-left: 10px;">删除
+                              </div>
+                              <div v-if="xx.isCustom"
+                                style="position: absolute;left: 170px;top:0px;font-size: 10px;color: #fff;background-color: #f97425;padding: 0px 5px;border-radius: 0px 4px 0px 4px;">
                                 定制
                               </div>
                             </div>
                           </template>
                         </div>
                         <div style="padding: 0px 10px 10px 10px;display: flex;color: #1890FF;">
-                          <div style="margin-right: 20px;">开始排序</div>
-                          <div>添加定制规格</div>
+                          <div @click="()=>{shopGuige[index].isSort = !shopGuige[index].isSort}"
+                            style="margin-right: 20px;">{{ shopGuige[index].isSort?'确定':'开始排序'}}</div>
+                          <div @click="addgg(index)" style="margin-right: 20px;">添加规格</div>
+                          <div @click="addDzgg(index)" v-if="item.labelValue=='name'" style="margin-right: 20px;">添加定制规格
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1011,20 +1205,88 @@
                             <div style="color: #999999;">操作</div>
                           </th>
                           <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">名称</div>
+                            <template v-if="shopGuige[0].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
                               </div>
-                            </div>
+                            </template>
+                            <template v-else-if="shopGuige[0].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else-if="shopGuige[1].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else-if="shopGuige[1].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else>
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
+                              </div>
+                            </template>
                           </th>
                           <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">库存</div>
+                            <template v-if="shopGuige[1].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
                               </div>
-                            </div>
+                            </template>
+                            <template v-else-if="shopGuige[1].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else-if="shopGuige[0].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else-if="shopGuige[0].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
+                              </div>
+                            </template>
+                            <template v-else>
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                </div>
+                              </div>
+                            </template>
                           </th>
                           <th>
                             <div style="display: flex;">
@@ -1066,10 +1328,38 @@
                                 <div style="color: red;margin-top: 5px;" @click="delGG(index)">删除</div>
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                <template v-if="shopGuige[0].labelValue=='name'">
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else-if="shopGuige[0].labelValue=='stock'">
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
+                                <template v-else-if="shopGuige[1].labelValue=='name'">
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
+                                <template v-else-if="shopGuige[1].labelValue=='stock'">
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else>
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                <template v-if="shopGuige[1].labelValue=='name'">
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else-if="shopGuige[1].labelValue=='stock'">
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
+                                <template v-else-if="shopGuige[0].labelValue=='name'">
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else-if="shopGuige[0].labelValue=='stock'">
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
+                                <template v-else>
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
                               </td>
                               <td>
                                 <a-input type="text" v-model:value="item.old_price" placeholder="请输入原价" />
