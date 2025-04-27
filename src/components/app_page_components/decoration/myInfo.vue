@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { ClockCircleFilled, DownOutlined,CloseCircleOutlined,PlusOutlined } from "@ant-design/icons-vue";
+	import { ClockCircleFilled, DownOutlined, CloseCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -27,11 +27,13 @@
 				console.log('店铺数据', res.list[0]);
 				shopObj.value = res.list[0]
 				logo.value = shopObj.value.logo
+				// a待审核 b 已通过 c已拒绝
+				shType.value = res.list[0].check_status
 			})
 	}
 	_shopInfo()
 
-	const shType = ref(1)
+	const shType = ref('a')//a待审核 b 已通过 c已拒绝
 
 	// 前往学习中心
 	function toXXzx() {
@@ -50,7 +52,7 @@
 	const visible_logo = ref(false)//logo修改规则开关
 	const visible_shop_name = ref(false)//店铺名字修改开关
 
-    const logo = ref('https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025425/16tmf4tq815658ti3u1nnsb8gg812aie.jpg')//店铺logo
+	const logo = ref('https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025425/16tmf4tq815658ti3u1nnsb8gg812aie.jpg')//店铺logo
 	// 删除logo
 	function delImgLogo() {
 		console.log('删除logo');
@@ -74,22 +76,25 @@
 			店铺信息
 		</div>
 		<div style="display: flex;">
-			审核状态：<div @click="shType=1">审核中</div>
-			<div @click="shType=2" style="margin-left:20px">通过</div>
+			审核状态：<div @click="shType='a'">审核中</div>
+			<div @click="shType='b'" style="margin-left:20px">通过</div>
 		</div>
 		<!-- <div>审核中状态</div> -->
-		<div v-if="shType==1">
+		<div v-if="shType=='a'||shType=='c'">
 			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 				<div style="display: flex;align-items: center;">
 					<ClockCircleFilled style="color: orange;font-size: 16px;" />
-					<div style="margin-left: 5px;font-size: 16px;">店铺信息审核中，预计在<span
+					<div v-if="shType=='a'" style="margin-left: 5px;font-size: 16px;">店铺信息审核中，预计在<span
 							style="color: orange;font-weight: bold;">2-3个工作日</span>审核完成</div>
+					<div v-if="shType=='c'" style="margin-left: 5px;font-size: 16px;">店铺信息审核失败，<span
+							style="color: red;font-weight: bold;">拒绝入驻：拒绝原因（没返回字段给我）</span></div>
 				</div>
 				<div style="font-size: 12px;">
 					<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
 					<div style="margin-top: 15px;display: flex;align-items: center;">
 						<span>审核进度：</span>
-						<div style="width: 200px;height: 12px;border-radius: 20px;background-color: #0c96f1;"></div>
+						<div v-if="shType=='a'" style="width: 200px;height: 12px;border-radius: 20px;background-color: #0c96f1;"></div>
+						<div v-if="shType=='c'" style="width: 200px;height: 12px;border-radius: 20px;background-color: #ff0000;"></div>
 					</div>
 					<div style="display: flex;margin-top: 15px;">
 						<div>店铺信息：</div>
@@ -137,7 +142,8 @@
 				<div style="display: flex;margin-top: 20px;">
 					<div style="width: 200px;color: #999999;text-align: right;">店铺编号</div>
 					<div style="margin-left: 20px;">{{shopObj.id}}</div>
-					<div @click="copyCode(shopObj.id)" style="margin-left: 20px;color: #2266aa;cursor: pointer;">复制</div>
+					<div @click="copyCode(shopObj.id)" style="margin-left: 20px;color: #2266aa;cursor: pointer;">复制
+					</div>
 				</div>
 				<div style="display: flex;margin-top: 20px;">
 					<div style="width: 200px;color: #999999;text-align: right;">店铺名称</div>
@@ -259,6 +265,7 @@
 		color: black;
 		/* 可调为背景同色来“隐藏” */
 	}
+
 	.imgClose {
 		width: 15px;
 		height: 15px;

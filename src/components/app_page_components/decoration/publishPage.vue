@@ -748,6 +748,16 @@
     },
     { deep: true }
   )
+  // 当前商家店铺信息
+  function _getStoreInfo(){
+      global.axios
+      .post('decoration/Store/getStoreInfo', {}, global)
+      .then((res) => {
+        console.log('店铺信息',res);
+      })
+  }
+  _getStoreInfo()
+
 </script>
 
 <template>
@@ -1281,36 +1291,46 @@
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
+                                   {{item.name}}
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
+                                   {{item.stock}}
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
+                                  {{item.stock}}
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
+                                  {{item.name}}
                                 </template>
                                 <template v-else>
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
+                                  {{item.name}}
                                 </template>
                               </td>
                               <td>
                                 <template v-if="shopGuige[1].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
+                                  {{item.name}}
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
+                                  {{item.stock}}
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
+                                  {{item.name}}
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
+                                  {{item.stock}}
                                 </template>
                                 <template v-else>
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
+                                  {{item.stock}}
                                 </template>
                               </td>
                               <td>
