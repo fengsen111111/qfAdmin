@@ -120,6 +120,9 @@
 								<a-menu-item>
 									<span style="font-size: 12px;color: #40a9ff;">取消入驻</span>
 								</a-menu-item>
+								<a-menu-item v-if="shType=='c'">
+									<span style="font-size: 12px;color: #40a9ff;">重新入驻</span>
+								</a-menu-item>
 							</a-menu>
 						</template>
 					</a-dropdown>
