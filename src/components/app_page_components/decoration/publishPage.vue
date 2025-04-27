@@ -1291,46 +1291,36 @@
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
-                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
-                                   {{item.name}}
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
-                                   {{item.stock}}
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='name'">
-                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
-                                  {{item.stock}}
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
-                                  {{item.name}}
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else>
-                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
-                                  {{item.name}}
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                               </td>
                               <td>
                                 <template v-if="shopGuige[1].labelValue=='name'">
-                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
-                                  {{item.name}}
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
-                                  {{item.stock}}
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='name'">
-                                  <!-- <a-input type="text" v-model:value="item.name" placeholder="请输入名称" /> -->
-                                  {{item.name}}
+                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
-                                  {{item.stock}}
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                                 <template v-else>
-                                  <!-- <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" /> -->
-                                  {{item.stock}}
+                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>

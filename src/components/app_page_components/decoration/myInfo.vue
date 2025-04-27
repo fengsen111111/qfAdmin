@@ -29,15 +29,27 @@
 				logo.value = shopObj.value.logo
 				// a待审核 b 已通过 c已拒绝
 				shType.value = res.list[0].check_status
+				if (shType.value == 'c') {
+					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+						mobile: shopObj.value.mobile,
+					}, global).then(res => {
+						console.log('商家入驻信息', res);
+						check_remark.value = res.check_remark
+					})
+				}
 			})
 	}
 	_shopInfo()
 
 	const shType = ref('a')//a待审核 b 已通过 c已拒绝
-
+    const check_remark = ref('')//拒绝原因
 	// 前往学习中心
 	function toXXzx() {
 		global.router.push('/ruleCenter?title=学习中心')
+	}
+	// 重新入驻
+	function cxrz() {
+		global.router.push('/openShop?type=' + shopObj.value.type+'&mobile='+shopObj.value.mobile+'&password='+shopObj.value.password)
 	}
 
 	// 复制店铺编号
@@ -75,10 +87,10 @@
 		<div style="font-size: 18px;">
 			店铺信息
 		</div>
-		<div style="display: flex;">
+		<!-- <div style="display: flex;">
 			审核状态：<div @click="shType='a'">审核中</div>
 			<div @click="shType='b'" style="margin-left:20px">通过</div>
-		</div>
+		</div> -->
 		<!-- <div>审核中状态</div> -->
 		<div v-if="shType=='a'||shType=='c'">
 			<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
@@ -87,14 +99,16 @@
 					<div v-if="shType=='a'" style="margin-left: 5px;font-size: 16px;">店铺信息审核中，预计在<span
 							style="color: orange;font-weight: bold;">2-3个工作日</span>审核完成</div>
 					<div v-if="shType=='c'" style="margin-left: 5px;font-size: 16px;">店铺信息审核失败，<span
-							style="color: red;font-weight: bold;">拒绝入驻：拒绝原因（没返回字段给我）</span></div>
+							style="color: red;font-weight: bold;">拒绝入驻原因：{{check_remark}}</span></div>
 				</div>
 				<div style="font-size: 12px;">
 					<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
 					<div style="margin-top: 15px;display: flex;align-items: center;">
 						<span>审核进度：</span>
-						<div v-if="shType=='a'" style="width: 200px;height: 12px;border-radius: 20px;background-color: #0c96f1;"></div>
-						<div v-if="shType=='c'" style="width: 200px;height: 12px;border-radius: 20px;background-color: #ff0000;"></div>
+						<div v-if="shType=='a'"
+							style="width: 200px;height: 12px;border-radius: 20px;background-color: #0c96f1;"></div>
+						<div v-if="shType=='c'"
+							style="width: 200px;height: 12px;border-radius: 20px;background-color: #ff0000;"></div>
 					</div>
 					<div style="display: flex;margin-top: 15px;">
 						<div>店铺信息：</div>
@@ -121,7 +135,7 @@
 									<span style="font-size: 12px;color: #40a9ff;">取消入驻</span>
 								</a-menu-item>
 								<a-menu-item v-if="shType=='c'">
-									<span style="font-size: 12px;color: #40a9ff;">重新入驻</span>
+									<span @click="cxrz" style="font-size: 12px;color: #40a9ff;">重新入驻</span>
 								</a-menu-item>
 							</a-menu>
 						</template>

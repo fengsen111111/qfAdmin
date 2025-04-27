@@ -53,7 +53,7 @@
 				id_card_number.value = res.id_card_number
 				name.value = res.name
 				mobile.value = res.mobile
-				admin_login_password.value = res.admin_login_password
+				admin_login_password.value = res.password
 				address.value = res.address
 				location.value = res.location
 				check_remark.value = res.check_remark
@@ -295,9 +295,17 @@
 				return false
 			}
 		}
-		if (!admin_login_password.value) {
-			message.error('请输入后台登陆密码')
+		// if (!admin_login_password.value) {
+		// 	message.error('请输入后台登陆密码')
+		// 	return false
+		// } 
+		const result = validatePassword(admin_login_password.value)
+		if (!result.valid) {
+			console.log('密码不合法：', result.msg, pasYz.value);
+			message.error('密码不合法')
 			return false
+		} else {
+			console.log('通过校验');
 		}
 		// spinning.value = true
 		global.axios
@@ -354,9 +362,16 @@
 	}
 
 	const shopTypeWd = ref(false)//商户类型 a本地商家 b网店商家   
-	const shopTypeBd = ref(false)//商户类型 a本地商家 b网店商家   
-
+	const shopTypeBd = ref(false)//商户类型 a本地商家 b网店商家  
 	const buzhou_type = ref(1)//1选择类型 2填写信息
+
+	if (route.query.type == 'a') {
+		shopTypeWd.value = true
+		buzhou_type.value = 2
+	} else if (route.query.type == 'b') {
+		shopTypeBd.value = true
+		buzhou_type.value = 2
+	}
 	// 下一步
 	function toxyb() {
 		// 切换店铺信息页面
@@ -385,6 +400,64 @@
 				localStorage.setItem('Authorization', res.token);
 				global.router.push("/")
 			})
+	}
+
+
+	let pasYz = ref({
+		rule_a: false,//规则1
+		rule_b: false,//规则2
+		rule_c: false,//规则3
+		level: 0//安全等级
+	})//密码验证情况
+	// 密码变化
+	function pasChange() {
+		const result = validatePassword(admin_login_password.value)
+		if (!result.valid) {
+			console.log('密码不合法：', result.msg, pasYz.value);
+		} else {
+			console.log('通过校验');
+		}
+	}
+	// 校验密码
+	function validatePassword(pwd) {
+		let passedCount = 0; // 统计通过的规则数
+		// 1. 长度校验
+		if (pwd.length >= 8 && pwd.length <= 20) {
+			pasYz.value.rule_a = true;
+			passedCount++;
+		} else {
+			pasYz.value.rule_a = false;
+		}
+		// 2. 字符合法性（不含空格、中文）
+		const allowedChars = /^[A-Za-z0-9~!@#$%^&*()_+\-=`[\]{}|;:'",.<>/?]+$/;
+		if (allowedChars.test(pwd)) {
+			pasYz.value.rule_b = true;
+			passedCount++;
+		} else {
+			pasYz.value.rule_b = false;
+		}
+		// 3. 至少包含三种类型字符
+		let count = 0;
+		if (/[A-Z]/.test(pwd)) count++;       // 大写
+		if (/[a-z]/.test(pwd)) count++;       // 小写
+		if (/[0-9]/.test(pwd)) count++;       // 数字
+		// 只计算“合法符号”
+		const symbolRegex = /[~!@#$%^&*()_+\-=`[\]{}|;:'",.<>/?]/;
+		if (symbolRegex.test(pwd)) count++; // 合法符号
+		if (count >= 3) {
+			pasYz.value.rule_c = true;
+			passedCount++;
+		} else {
+			pasYz.value.rule_c = false;
+		}
+		// 设置最终安全等级
+		pasYz.value.level = passedCount;
+		// 返回最终结果
+		if (passedCount === 3) {
+			return { valid: true, msg: '密码合法' };
+		} else {
+			return { valid: false, msg: '密码未满足所有规则' };
+		}
 	}
 </script>
 
@@ -738,14 +811,98 @@
 									</div>
 									<a-input v-model:value="mobile" style="margin-left: 10px;width: 300px;" />
 								</div>
-								<div style="display: flex;margin: 15px 0px 15px 72px;align-items: center;">
-									<div style="display: flex;white-space:nowrap;">
-										<span style="color: red;">*</span>
-										<span>后台登录密码</span>
+								<a-popover placement="leftTop">
+									<template #content>
+										<div style="font-size: 12px;">
+											<div style="display: flex;align-items: center;">
+												安全程度：
+												<!-- 密码安全度中级单独判断 -->
+												<div v-if="pasYz.level==2"
+													style="margin-left: 3px;display: flex;margin-top: 2px;">
+													<div v-if="pasYz.rule_a"
+														style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-if="pasYz.rule_b"
+														style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="border:1px solid orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-if="pasYz.rule_c"
+														style="background-color: orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="border:1px solid orange;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+												</div>
+												<!-- 密码安全度 低 或  高 -->
+												<div v-else style="margin-left: 3px;display: flex;margin-top: 2px;">
+													<div v-if="pasYz.rule_a"
+														style="background-color: green;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<!-- 规则2 或者规则3 满足一个就是框 -->
+													<div v-else-if="pasYz.rule_b||pasYz.rule_c"
+														style="border: 1px solid #FF5454;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="background-color: #FF5454;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-if="pasYz.rule_b"
+														style="background-color: green;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="border:1px solid#FF5454;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-if="pasYz.rule_c"
+														style="background-color: green;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+													<div v-else
+														style="border:1px solid#FF5454;width: 40px;height: 8px;margin-right: 3px;">
+													</div>
+												</div>
+												<span v-if="pasYz.level==1||pasYz.level==0"
+													style="color: #FF5454;">低</span>
+												<span v-else-if="pasYz.level==2" style="color: orange;">中</span>
+												<span v-else-if="pasYz.level==3" style="color: green;">高</span>
+											</div>
+											<div>
+												<div style="display: flex;align-items: center;">
+													<CheckCircleFilled v-if="pasYz.rule_a"
+														style="font-size: 10px;color: green;margin-right: 5px;" />
+													<CloseCircleFilled v-else
+														style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+													<span>8-20位</span>
+												</div>
+												<div style="display: flex;align-items: center;">
+													<CheckCircleFilled v-if="pasYz.rule_b"
+														style="font-size: 10px;color: green;margin-right: 5px;" />
+													<CloseCircleFilled v-else
+														style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+													<span>只能包含大小写字母、数字以及符号(不包含空格)</span>
+												</div>
+												<div style="display: flex;align-items: center;">
+													<CheckCircleFilled v-if="pasYz.rule_c"
+														style="font-size: 10px;color: green;margin-right: 5px;" />
+													<CloseCircleFilled v-else
+														style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
+													<span>大写字母/小写字母/数组/符号字少包含三种</span>
+												</div>
+											</div>
+										</div>
+									</template>
+									<div style="display: flex;margin: 15px 0px 15px 72px;align-items: center;">
+										<div style="display: flex;white-space:nowrap;">
+											<span style="color: red;">*</span>
+											<span>后台登录密码</span>
+										</div>
+										<a-input v-model:value="admin_login_password" @change="pasChange"
+											style="margin-left: 10px;width: 300px;" />
 									</div>
-									<a-input v-model:value="admin_login_password"
-										style="margin-left: 10px;width: 300px;" />
-								</div>
+								</a-popover>
+
 								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
 									<div style="display: flex;margin: 0 auto;">
 										<a-checkbox v-model:checked="xygx"></a-checkbox>
