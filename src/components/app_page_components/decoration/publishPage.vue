@@ -1448,7 +1448,7 @@
                             </div>
                             <div v-else>未设置</div>
                           </div>
-                          <div style="margin-top: 10px;">不包邮配送地区：
+                          <div style="margin-top: 10px;margin-left: 28px;">不配送地区：
                             <span v-for="(iss,index_unsupport) in item.unsupport" :key="index_unsupport">
                               {{iss.label}}
                               <span>{{index_unsupport+1==item.unsupport.length?'。':'、'}}</span>
