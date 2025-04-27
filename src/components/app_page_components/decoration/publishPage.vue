@@ -231,14 +231,14 @@
           setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
           shopGuige.value[0].value = []
           shopGuige.value[1].value = []
-          res.goods_datas.goods_sizes.map((item,index)=>{
+          res.goods_datas.goods_sizes.map((item, index) => {
             shopGuige.value[0].value.push({
               label: item.name,
-              isCustom:false
+              isCustom: false
             })
             shopGuige.value[1].value.push({
-              label:item.stock,
-              isCustom:false
+              label: item.stock,
+              isCustom: false
             })
           })
         }
@@ -389,6 +389,14 @@
   }
   // 提交商品数据
   function tjShopData() {
+    check_status = ref('')//a待审核 b 已通过 c已拒绝
+    if (check_status.value == 'b') {
+      console.log('店铺通过审核');
+    } else {
+      message.warning('通过店铺初审后才能发布商品')
+      return false
+    }
+
     if (timeStaEnd.value) {
       post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf()) / 1000
       post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf()) / 1000
@@ -658,7 +666,6 @@
       ],
       value: [
         { label: '', isCustom: false },
-        { label: '', isCustom: false },
       ],
       isSort: false,//开始排序
     },
@@ -719,21 +726,21 @@
         // 名称
         if (item.value.length > 0) {
           post_params.goods_sizes.map((iss, iss_index) => {
-            iss.name = item.value[iss_index] ? item.value[iss_index].label : iss.name
+            iss.name = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.name : iss.name
           })
         }
       } else if (item.labelValue == 'stock') {
         // 库存
         if (item.value.length > 0) {
           post_params.goods_sizes.map((iss, iss_index) => {
-            iss.stock = item.value[iss_index] ? item.value[iss_index].label : iss.stock
+            iss.stock = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.stock : iss.stock
           })
         }
       } else if (item.labelValue == 'order') {
         //排序
         if (item.value.length > 0) {
           post_params.goods_sizes.map((iss, iss_index) => {
-            iss.order = item.value[iss_index] ? item.value[iss_index].label : iss.order
+            iss.order = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.order : iss.order
           })
         }
       }
@@ -748,15 +755,40 @@
     },
     { deep: true }
   )
+
+  // 当前商家审核状态
+  const check_status = ref('')//a待审核 b 已通过 c已拒绝
   // 当前商家店铺信息
-  function _getStoreInfo(){
-      global.axios
-      .post('decoration/Store/getStoreInfo', {}, global)
-      .then((res) => {
-        console.log('店铺信息',res);
+  function _shopInfo() {
+    console.log('店铺信息');
+    global.axios.post('decoration/Store/findTableRecords', {
+      currentPage: 1,
+      pageSize: 20
+    }, global)
+      .then(res => {
+        console.log('店铺数据', res.list[0]);
+        // a待审核 b 已通过 c已拒绝
+        check_status.value = res.list[0].check_status
       })
   }
-  _getStoreInfo()
+
+  const pay_info = ref('')//分类保证金支付地址
+  // 当前分类保证金缴纳情况
+  function payTypePrices() {
+    global.axios
+      .post('decoration/Store/payTypePrices', {
+        goods_type_ids: [],
+        trade_type: 'A_NATIVE',
+      }, global)
+      .then((res) => {
+        console.log('结果', res);
+        if (res.pay_info) {
+          pay_info.value = res.pay_info
+        } else {
+          console.log('已缴纳');
+        }
+      })
+  }
 
 </script>
 
@@ -829,7 +861,7 @@
               <span @click="editType()" style="color: #1890FF;margin-left: 10px;">修改分类</span>
             </div>
             <!-- 没给钱才有 -->
-            <div
+            <div v-if="pay_info"
               style="display: flex;border: 1px solid #ffdaa3;border-radius: 3px;padding:5px 10px;align-items: center;background-color: #fff6e6;">
               <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
               <span>类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元 </span>
@@ -1084,7 +1116,7 @@
                   </div>
                   <div style="margin-left: 20px;width: 90%;">
                     <div style="background-color: #f7f8fa;padding: 20px;border-radius: 5px;">
-                      <div>最多添加2个商品规格类型</div>
+                      <div>最多配置2个商品规格类型</div>
                       <div v-for="(item,index) in shopGuige" :key="index"
                         style="width: 100%;margin-top: 10px;background-color: #fff;margin-bottom: 20px;">
                         <div
