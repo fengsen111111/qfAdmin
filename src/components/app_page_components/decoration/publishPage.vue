@@ -1,8 +1,6 @@
 <script setup>
   import { inject, onBeforeMount, reactive, ref, getCurrentInstance, watch } from "vue";
-  import { FormComponents } from "../../form_components/form";
-  import { TableComponents } from "../../table_components/table";
-  import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined,ExclamationCircleFilled } from "@ant-design/icons-vue";
+  import { RightOutlined, InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined, ExclamationCircleFilled } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
   import Draggable from 'vuedraggable';//排序插件
 
@@ -10,26 +8,13 @@
   const global = inject("global").value;
   import dayjs from 'dayjs';
 
-  import Editor from '@tinymce/tinymce-vue'
-  import 'tinymce/tinymce'
-  import 'tinymce/themes/silver/theme'
-  import 'tinymce/icons/default'
-  import 'tinymce/models/dom'
-
-  import 'tinymce/plugins/image' // 插入上传图片插件
-  import 'tinymce/plugins/media' // 插入视频插件
-  import 'tinymce/plugins/table' // 插入表格插件
-  import 'tinymce/plugins/lists' // 列表插件
-  import 'tinymce/plugins/link' //  链接插件
-  import 'tinymce/plugins/wordcount' // 字数统计插件
-
   const post_params = reactive({
     id: '',//商品ID 修改时必传  
     name: '',//商品名
     store_id: '',//门店ID    
     cover_image: '',//封面图   
-    images: [],//相册  
-    detail: '',//详情 富文本  
+    images: [],//相册   
+    detail: [],//详情 富文本  
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
     status: true,//启用状态 Y上架 N下架    
@@ -149,44 +134,6 @@
     post_params.goods_sizes.splice(index, 1)
   }
 
-  const component_state = reactive({
-    isCollapse: false,
-    myValue: post_params.detail,
-    init: {
-      promotion: false,
-      language_url: `/tinymce/langs/zh_CN.js`,
-      language: 'zh_CN',
-      selector: "#init",
-      skin_url: `/tinymce/skins/ui/oxide`,
-      content_css: `/tinymce/skins/content/default/content.css`,
-      height: '30vh',
-      plugins: 'lists image media table wordcount link',
-      toolbar: false,
-      branding: false,
-      menubar: true,
-      paste_data_images: false, // 允许粘贴图像
-      paste_as_text: true,  // 纯文本粘贴，避免额外格式
-      images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
-        global.file.uploadFile(global, blobInfo.blob(), 'rich_text_file', 'rich_text_file', true, resolve)
-      }),
-      file_picker_types: 'media',
-      video_template_callback: function (data) {
-        return '<span class="mce-preview-object mce-object-video" contenteditable="false" data-mce-object="video" data-mce-p-allowfullscreen="allowfullscreen" data-mce-p-frameborder="no" data-mce-p-scrolling="no" data-mce-p-src=' + data.source + ' data-mce-p-width=' + data.width + ' data-mce-p-height=' + data.height + ' data-mce-p-controls="controls" data-mce-html="%20"> <video width=' + data.width + ' height=' + data.height + ' controls="controls"> <source src=' + data.source + ' type=' + data.sourcemime + '></source> </video> </span>';
-      },
-      file_picker_callback: (callback, value, meta) => {
-        let input = document.createElement('input');//创建一个隐藏的input
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'video/*');
-        input.onchange = function () {
-          let fileObj = this.files[0];//选取第一个文件
-          global.file.uploadFile(global, fileObj, 'rich_text_file', 'rich_text_file', true, callback);
-        };
-        //触发点击
-        input.click();
-      },
-    },
-  })
-
   function setRangePicker(time1, time2) {
     // 支持秒级时间戳（自动转毫秒）
     const toDayjs = (val) => {
@@ -220,13 +167,16 @@
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
-          component_state.myValue = res.goods_datas.detail
           res.goods_datas.goods_sizes.map((item) => {
             item.status = item.status == 'Y' ? true : false
             item.uper_status = item.uper_status == 'Y' ? true : false
           })
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
+          // 服务单独更新
+          cn_value.value = res.goods_datas.services.map((item)=>{
+            return item.key
+          })
           // 曝光时间单独更行
           setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
           shopGuige.value[0].value = []
@@ -251,11 +201,7 @@
     // 没有id就是新增商品
     post_params.type_id = props.pageData.data.typeId
   }
-
   //固定属性
-
-  const activeKey = ref(['1', '2']);
-
   const visibleSx = ref(false)
   const SxName = ref('')//添加的属性名
   // 添加属性
@@ -273,23 +219,6 @@
     })
     SxName.value = ''
     visibleSx.value = false
-  }
-
-  const FwName = ref('')//服务添加内容
-  const visibleFw = ref(false)//服务弹框开关
-  // 添加服务
-  function addFw() {
-    console.log('name', FwName.value);
-    if (!FwName.value) {
-      message.error('请填写服务')
-      return false
-    }
-    post_params.services.push({
-      key: FwName.value,
-      value: ''
-    })
-    FwName.value = ''
-    visibleFw.value = false
   }
 
   // 上传封面
@@ -397,7 +326,7 @@
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
-    if(pay_info.value){
+    if (pay_info.value) {
       pay_info_Vis.value = true
       return false
     }
@@ -410,7 +339,6 @@
       console.log('新增不要曝光量字段');
       delete post_params.power
     }
-    post_params.detail = component_state.myValue
     post_params.status = post_params.status ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
@@ -422,6 +350,12 @@
     } else {
       // 没得值说明没动
     }
+    post_params.services = wgxdcn.value.map((item)=>{
+      return {
+        key: item.label,
+        value: item.value
+      }
+    })
     loading()
     console.log('post_params', post_params);
     global.axios
@@ -462,8 +396,7 @@
           post_params.name = ''
           post_params.cover_image = ''
           post_params.images = []
-          post_params.detail = ''
-          component_state.myValue = ''
+          post_params.detail = []
           post_params.brand_id = ''
           post_params.status = false
           post_params.attributes = [
@@ -636,7 +569,7 @@
     emit("editType");
   }
 
-  // 承诺
+  // 承诺 
   const cn_value = ref(['假一赔十'])
   // 我勾选的承诺
   const wgxdcn = ref([])
@@ -775,7 +708,7 @@
         check_status.value = res.list[0].check_status
       })
   }
-
+  _shopInfo()
   const pay_info = ref('')//分类保证金支付地址
   // 当前分类保证金缴纳情况
   function payTypePrices() {
@@ -794,8 +727,55 @@
       })
   }
   payTypePrices()
-  
- const pay_info_Vis = ref(false)//是否显示提示充值弹框
+
+  const pay_info_Vis = ref(false)//是否显示提示充值弹框
+
+  // 
+  function uploadAll(options) {
+    uploadQueue.push(options);
+    if (!isUploading) {
+      processQueue_two();
+    }
+  }
+  async function processQueue_two() {
+    isUploading = true;
+    while (uploadQueue.length > 0) {
+      const currentOptions = uploadQueue.shift(); // 从队列中删除第一个文件
+      try {
+        // 等待当前文件上传
+        await uploadFileWrapperTwo(global, currentOptions.file, 'image', 'shopImg', true, completeList);
+        console.log('上传成功');
+      } catch (error) {
+        console.log('上传失败');
+      }
+    }
+    isUploading = false; // 队列处理完成时重置标志
+  }
+  function uploadFileWrapperTwo(global, file, type, category, flag, callback) {
+    return new Promise((resolve, reject) => {
+      global.file.uploadFile(global, file, type, category, flag, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+        completeDetails(err)
+      });
+    });
+  }
+
+  // 详情图回调
+  function completeDetails(response) {
+    if(post_params.detail){
+      post_params.detail = post_params.detail
+    }else{
+      post_params.detail = []
+    }
+    post_params.detail.push(response.url)
+  }
+  // 删除详情图片
+  function delImgXq(index) {
+    post_params.detail.splice(index, 1)
+  }
+
+  const isYl = ref(false)//是否预览
 </script>
 
 <template>
@@ -876,7 +856,8 @@
             <div v-if="pay_info"
               style="display: flex;border: 1px solid rgb(255, 218, 163);border-radius: 3px;padding:5px 10px;align-items: center;background-color: #FFF6E6;">
               <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
-              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span style="color: #1890FF;margin-left: 10px;">去缴纳</span>
+              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span
+                style="color: #1890FF;margin-left: 10px;">去缴纳</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
@@ -916,9 +897,8 @@
                                 主轮播图
                               </div>
                               <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
-                              <div @click="delImgLb(index)" class="imgClose"
-                                style="position: absolute; top: -8px; right: -8px;">
-                                <CloseCircleOutlined style="font-size: 20px; color: red;" />
+                              <div @click="delImgLb(index)" class="imgClose">
+                                <CloseCircleOutlined />
                               </div>
                             </div>
                           </template>
@@ -934,7 +914,6 @@
                           </a-upload>
                         </div>
                       </div>
-
                     </div>
                   </div>
                 </div>
@@ -1101,8 +1080,151 @@
                     <div style="display: flex;">
                       <div>商品详情</div>
                       <div style="margin-left:20px;width: 80%;">
-                        <editor id="init" v-model="component_state.myValue" :init="component_state.init">
-                        </editor>
+                        <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情 <span
+                            style="cursor: pointer;color: #407cff;">查看教程</span></div>
+                        <div style="display: flex;margin-top: 10px;">
+                          <div style="border: 1px solid #f5f5f5;width: 375px;">
+                            <div
+                              style="padding: 10px;display: flex;justify-content: space-between;border-bottom: 1px solid #f5f5f5;">
+                              <span>页面预览</span>
+                              <span @click="()=>{isYl=!isYl}" style="color: #407cff;">{{isYl?'关闭':'预览'}}</span>
+                            </div>
+                            <div style="height: 500px;overflow: auto;">
+                              <div v-if="!isYl">
+                                <a-empty style="margin-top: 130px;" description="暂未编辑商品详情" />
+                                <div style="text-align: center;margin-top: -15px;">编辑商品详情，提升商品转化率</div>
+                              </div>
+                              <div v-else>
+                                <img :src="post_params.images[0]" style="width: 100%;height: 360px;" alt="">
+                                <div style="padding: 10px;width: 100%;">
+                                  <div style="display: flex;">
+                                    <img :src="img" style="width: 60px;height: 60px;margin-right: 10px;"
+                                      v-for="img in post_params.images" :key="img" alt="">
+                                  </div>
+                                  <div
+                                    style="display: flex;margin-top:10px;width: 100%;align-items: center;justify-content: space-between;">
+                                    <div style="color: #ff0000;font-weight: bold;font-size: 26px;">
+                                      ￥{{post_params.goods_sizes[0].price}}</div>
+                                    <div style="color: #333333;">规格：{{post_params.goods_sizes[0].name}}</div>
+                                  </div>
+                                  <div style="font-weight: bold;">{{post_params.name}}</div>
+                                  <div style="display: flex;margin: 10px 0px">
+                                    <div v-if="post_params.goods_type=='a'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      普通商品</div>
+                                    <div v-if="post_params.goods_type=='b'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      海外进口</div>
+                                    <div v-if="post_params.goods_type=='c'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      海外CC个人行邮</div>
+                                    <div v-if="post_params.is_used=='Y'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      二手</div>
+                                    <div v-if="post_params.is_customized=='Y'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      定制</div>
+                                    <div v-if="post_params.is_plan_salled=='a'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      非预售
+                                    </div>
+                                    <div v-if="post_params.is_plan_salled=='b'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      定时预售
+                                    </div>
+                                    <div v-if="post_params.is_plan_salled=='c'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      时段预售
+                                    </div>
+                                    <div v-if="post_params.is_plan_salled=='d'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      规格预售
+                                    </div>
+                                    <div v-if="post_params.need_send_time=='a'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      当日发货
+                                    </div>
+                                    <div v-if="post_params.need_send_time=='b'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      24小时
+                                    </div>
+                                    <div v-if="post_params.need_send_time=='c'"
+                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                      48小时
+                                    </div>
+                                  </div>
+                                  <div style="display: flex;">
+                                    <div style="display: flex;">
+                                      <div style="color: #fff;background-color: #FA6C2F;padding: 0px 8px;">销量</div>
+                                      <div style="color: #FA6C2F;border:1px solid #FA6C2F;padding: 0px 8px;">0</div>
+                                    </div>
+                                    <div style="display: flex;margin-left: 10px;">
+                                      <div style="color: #fff;background-color: #36A9FC;padding: 0px 8px;">库存</div>
+                                      <div style="color: #36A9FC;border:1px solid #36A9FC;padding: 0px 8px;">
+                                        {{post_params.goods_sizes[0].stock}}</div>
+                                    </div>
+                                  </div>
+                                  <div style="margin: 10px 0px;">
+                                    <div v-for="item in cn_value" :key="item"
+                                      style="display: flex;justify-content: space-between;align-items: center;">
+                                      <div style="color: #666666;">{{item}}</div>
+                                      <RightOutlined />
+                                    </div>
+                                  </div>
+                                  <div style="font-weight: bold;">商品详情</div>
+                                  <div style="background-color: #f5f5f5;padding: 10px;margin: 10px 0px;"
+                                    v-if="post_params.attributes.length>0">
+                                    <div v-for="item in post_params.attributes" :key="item.key"
+                                      style="display: flex;justify-content: space-between;">
+                                      <div style="color: #999999;">{{item.key}}</div>
+                                      <div>{{item.value}}</div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <img :src="img" v-for="img in post_params.detail" :key="img" style="width: 100%;"
+                                      alt="">
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <div
+                              style="border: 1px solid #f5f5f5;padding: 20px;display: flex;align-items: center;justify-content: space-between;width: 28vw;margin-left: 10px;">
+                              <div>
+                                <div style="display: flex;">
+                                  <div>快速编辑</div>
+                                  <div>已上传<span style="color: #f97425;">{{post_params.detail.length}}</span>/50张</div>
+                                </div>
+                                <div>仅支持上传图片，拖拽可调整顺序</div>
+                              </div>
+
+                              <a-upload :customRequest="uploadAll" :multiple="true" :file-list="[]" list-type="text">
+                                <div
+                                  style="padding: 2px 10px;border: 1px solid #407cff;border-radius: 4px;color: #407cff;">
+                                  本地上传</div>
+                              </a-upload>
+                            </div>
+                            <div
+                              style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;margin-left: 10px;padding: 10px;width: 28vw;">
+                              <Draggable v-model="post_params.detail" item-key="index" :component-data="{
+                                style: {
+                                  display: 'contents' // 重点！！让 Draggable 自己不占布局
+                                }
+                              }" :animation="200">
+                                <template #item="{ element, index }">
+                                  <div
+                                    style="position: relative; border-radius: 4px; overflow: hidden; display: flex; height: 90px; width: 90px;">
+                                    <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
+                                    <div @click="delImgXq(index)" class="imgClose">
+                                      <CloseCircleOutlined />
+                                    </div>
+                                  </div>
+                                </template>
+                              </Draggable>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1533,7 +1655,7 @@
                     支付成功减库存
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 13px;">
+                <div v-show="false" style="display: flex;margin-top: 20px;margin-left: 13px;">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>商品曝光等级</div>
@@ -1545,7 +1667,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div v-show="false" style="display: flex;margin-top: 20px;margin-left: 40px;">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>曝光时间</div>
@@ -1554,7 +1676,7 @@
                     <a-range-picker v-model:value="timeStaEnd" show-time />
                   </div>
                 </div>
-                <div v-if="props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
+                <div v-show="false" v-if="props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
                   <div style="display: flex;align-items: center;">
                     <div style="display: flex;">
                       <div>曝光量</div>
@@ -1573,37 +1695,6 @@
                       @change="cncChange" />
                   </div>
                 </div>
-                <!-- <div style="display: flex;margin-top: 20px;margin-left: 47px;">
-                  <div>商品服务</div>
-                  <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">
-                    <div style="padding:10px 20px;display: flex;justify-content: space-between;">
-                      <div style="color: #999999;width: 80%;">请准确填写包含的服务内容，错误填写可能面不必要麻烦</div>
-                      <div style="display: flex;">
-                        <div>没有合适服务？</div>
-                        <div @click="()=>{visibleFw=true}" style="color: #407cff;">点击添加</div>
-                      </div>
-                    </div>
-                    <div style="background-color: #999999;height: 1px;width: 100%;"></div>
-                    <div
-                      style="padding:10px 20px;display: flex;justify-content: space-between;background-color: #f7f8fa;">
-                      <div style="width: 100%;">
-                        <div>
-                          <template v-if="post_params.services.length==0">
-                            <a-empty />
-                          </template>
-                          <template v-for="(item,index) in post_params.services" :key="index">
-                            <div style="display: flex;align-items: center;margin: 10px 0px;">
-                              <div style="width: 13%;text-align: right;">{{item.key}}</div>
-                              <a-input type="text" v-model:value="item.value" style="width: 75%;margin-left: 20px;"
-                                placeholder='请输入服务描述信息' />
-                              <CloseCircleOutlined @click="delFw(index)" style="margin-left: 10px;" />
-                            </div>
-                          </template>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
               </div>
               <div @click="()=>ser_sqJbxx=!ser_sqJbxx"
                 style="display: flex;align-items: center;margin-left: 77px;margin-top: 10px;color: #407cff;">
@@ -1612,23 +1703,15 @@
                 <DownCircleOutlined v-else style="color: #407cff;font-size: 14px;" />
               </div>
             </div>
-            <!-- 添加服务 -->
-            <a-modal v-model:visible="visibleFw" title="添加服务" @ok="addFw">
-              <div>
-                <div style="display: flex;align-items: center;">
-                  <div>名称</div>
-                  <a-input type="text" v-model:value="FwName" style="margin-left: 20px;width: 80%;"
-                    placeholder="请填写名称" />
-                </div>
-              </div>
-            </a-modal>
+            
             <div style="padding: 20px;margin-top: 20px;border: 1px solid #f5f5f5;width: 100%;text-align: center;">
               <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
             </div>
             <!-- 需提示缴纳保证金 -->
             <a-modal v-model:visible="pay_info_Vis" :footer="null" style="position: relative;">
               <div>
-                <div style="padding: 5px;background-color: #fff;position: absolute;left: 45%;border-radius: 50%;width: 50px;height: 50px;top: -26px;">
+                <div
+                  style="padding: 5px;background-color: #fff;position: absolute;left: 45%;border-radius: 50%;width: 50px;height: 50px;top: -26px;">
                   <ExclamationCircleFilled style="color: #ff7300;font-size: 40px;" />
                 </div>
                 <div style="text-align: center;margin-top: 20px;line-height: 30px;">
@@ -1636,8 +1719,12 @@
                 </div>
                 <div style="display: flex;margin-top: 20px;">
                   <div style="display: flex;margin: 0 auto;">
-                    <div style="color: #fff;background-color: #1890FF;margin-right: 10px;padding: 2px 10px; border-radius: 4px;">充值保证金</div>
-                    <div @click="pay_info_Vis=false" style="color: #00000099;padding: 2px 10px; border-radius: 4px;border: 1px solid #00000099;">暂不充值</div>
+                    <div
+                      style="color: #fff;background-color: #1890FF;margin-right: 10px;padding: 2px 10px; border-radius: 4px;">
+                      充值保证金</div>
+                    <div @click="pay_info_Vis=false"
+                      style="color: #00000099;padding: 2px 10px; border-radius: 4px;border: 1px solid #00000099;">暂不充值
+                    </div>
                   </div>
                 </div>
               </div>

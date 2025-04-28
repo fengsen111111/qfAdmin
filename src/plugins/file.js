@@ -7,7 +7,6 @@ import * as qiniu from 'qiniu-js'
 import { message } from 'ant-design-vue';
 
 function uploadFile(global, file, fileType = "image", folder, loading, action = null) {
-    console.log('图片数据',global, file, fileType = "image", folder, loading, action = null);
     if(fileType=='image'){
         // file.size>1024*3
         if(file.size>3*1024*1024){

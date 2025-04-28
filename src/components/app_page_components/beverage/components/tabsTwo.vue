@@ -104,8 +104,6 @@
 			global.file.uploadFile(global, file, type, category, flag, (err, result) => {
 				if (err) reject(err);
 				else resolve(result);
-				// console.log('err',err);
-				// console.log('result',result);
 				completeList(err)
 			});
 		});
