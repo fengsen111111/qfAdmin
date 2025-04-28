@@ -1,23 +1,36 @@
-import {defineConfig} from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import styleImport from 'vite-plugin-style-import'
+import path from 'path'
 
 export default defineConfig({
   resolve: {
-    alias: [{find: '@', replacement: require('path').resolve(__dirname, 'src')}],
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
   plugins: [
     vue(),
     styleImport({
-      libs: [{
-        libraryName: 'ant-design-vue',
-        esModule: true,
-        resolveStyle: (name) => {
-          return `ant-design-vue/es/${name}/style/css`;
-        },
-      }]
+      libs: [
+        {
+          libraryName: 'ant-design-vue',
+          esModule: true,
+          resolveStyle: (name) => {
+            return `ant-design-vue/es/${name}/style/css`;
+          },
+        }
+      ]
     })
   ],
+  server: {
+    proxy: {
+      // 这里设置反向代理
+      '/api/kuaidi': {
+        target: 'http://poll.kuaidi100.com',  // 目标服务器地址
+        changeOrigin: true,                   // 开启代理
+        rewrite: (path) => path.replace(/^\/api\/kuaidi/, '/eorderapi.do'),  // 重写请求路径
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {
