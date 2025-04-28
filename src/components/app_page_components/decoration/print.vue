@@ -16,9 +16,9 @@
         message.value = ''
 
         const paramObj = {
-            type:10,//	业务类型，默认为10
+            type: 10,//	业务类型，默认为10
             partnerId: 'J00868317776', // 电子面单客户账户或月结账号，需贵司向当地快递公司网点申请（参考电子面单申请指南）； 是否必填该属性，
-            partnerKey:'St0Hu2j9',//电子面单账户密码
+            partnerKey: 'St0Hu2j9',//电子面单账户密码
             recManName: '张三',
             recManMobile: '13900000000', // 注意是字符串
             recManPrintAddr: '北京市海淀区长春桥路',
@@ -58,6 +58,22 @@
             loading.value = false
         }
     }
+    let myUrl = 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/202541/uw5h8uj4cuwrtqbg51jj14jtd1p7dt2f.png'
+
+    function dy() {
+        const printWindow = window.open('', '_blank')
+        printWindow.document.write(`
+        <html>
+            <head>
+                <title>打印图片</title>
+            </head>
+            <body style="margin:0;padding:0;">
+                <img src="${myUrl}" style="width:100%;" onload="window.print();window.close();" />
+            </body>
+        </html>
+    `)
+        printWindow.document.close()
+    }
 </script>
 
 <template>
@@ -72,6 +88,7 @@
         </div>
 
         <p>{{ message }}</p>
+        <div @click="dy">打印</div>
     </div>
 </template>
 

@@ -2,7 +2,7 @@
   import { inject, onBeforeMount, reactive, ref, getCurrentInstance, watch } from "vue";
   import { FormComponents } from "../../form_components/form";
   import { TableComponents } from "../../table_components/table";
-  import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons-vue";
+  import { InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined,ExclamationCircleFilled } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
   import Draggable from 'vuedraggable';//排序插件
 
@@ -99,7 +99,7 @@
     del_pp_text.value = false
     console.log('brand_id 品牌变化:', newVal);
     setTimeout(() => {
-      const exists = ppList.some(item => item.value == newVal);
+      const exists = ppList.value.some(item => item.value == newVal);
       if (exists) {
         bfb.value = 50
         if (post_params.type_id) {
@@ -389,14 +389,18 @@
   }
   // 提交商品数据
   function tjShopData() {
-    check_status = ref('')//a待审核 b 已通过 c已拒绝
+    console.log('提交');
+    //a待审核 b 已通过 c已拒绝
     if (check_status.value == 'b') {
       console.log('店铺通过审核');
     } else {
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
-
+    if(pay_info.value){
+      pay_info_Vis.value = true
+      return false
+    }
     if (timeStaEnd.value) {
       post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf()) / 1000
       post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf()) / 1000
@@ -633,7 +637,7 @@
   }
 
   // 承诺
-  const cn_value = ref([])
+  const cn_value = ref(['假一赔十'])
   // 我勾选的承诺
   const wgxdcn = ref([])
   const cnOption = [
@@ -653,7 +657,7 @@
     console.log('承诺变化了', cn_value.value);
     wgxdcn.value = cnOption.filter(item => cn_value.value.includes(item.value));
   }
-
+  cncChange()
 
   // 商品规格
   const shopGuige = ref([
@@ -777,7 +781,7 @@
   function payTypePrices() {
     global.axios
       .post('decoration/Store/payTypePrices', {
-        goods_type_ids: [],
+        goods_type_ids: [post_params.type_id],
         trade_type: 'A_NATIVE',
       }, global)
       .then((res) => {
@@ -789,7 +793,9 @@
         }
       })
   }
-
+  payTypePrices()
+  
+ const pay_info_Vis = ref(false)//是否显示提示充值弹框
 </script>
 
 <template>
@@ -861,11 +867,16 @@
               <span @click="editType()" style="color: #1890FF;margin-left: 10px;">修改分类</span>
             </div>
             <!-- 没给钱才有 -->
-            <div v-if="pay_info"
+            <!-- <div v-if="pay_info"
               style="display: flex;border: 1px solid #ffdaa3;border-radius: 3px;padding:5px 10px;align-items: center;background-color: #fff6e6;">
               <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
               <span>类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元 </span>
               <span style="color: #1890FF;margin-left: 10px;">去缴纳</span>
+            </div> -->
+            <div v-if="pay_info"
+              style="display: flex;border: 1px solid rgb(255, 218, 163);border-radius: 3px;padding:5px 10px;align-items: center;background-color: #FFF6E6;">
+              <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
+              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span style="color: #1890FF;margin-left: 10px;">去缴纳</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
@@ -890,28 +901,40 @@
                       <div style="color: #999999;">
                         图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                       </div>
-                      <div style="margin-top: 5px;display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));">
-                        <div
-                          style="position: relative;margin-right: 10px;border-radius: 4px;overflow: hidden;display: flex;height: 90px;width: 90px;"
-                          v-for="(item,index) in post_params.images" :key="index">
-                          <div
-                            style="background-color: #1890FF;color: #fff;font-size: 12px;position: absolute;top: 0px;left: 0px;z-index: 999;padding: 0px 5px;border-radius: 4px 0px 4px 0px;"
-                            v-if="index==0">
-                            主轮播图
-                          </div>
-                          <!-- <img :src="item" style="width: 100px;height: 100px;margin-right: 10px;border-radius: 4px;" alt=""> -->
-                          <a-image :width="90" :src="item" :preview="{ src: item }" />
-                          <div @click="delImgLb(index)" class="imgClose" style="margin-left: 10px;">
-                            <CloseCircleOutlined />
-                          </div>
+                      <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;">
+                        <Draggable v-model="post_params.images" item-key="index" :component-data="{
+                            style: {
+                              display: 'contents' // 重点！！让 Draggable 自己不占布局
+                            }
+                          }" :animation="200">
+                          <template #item="{ element, index }">
+                            <div
+                              style="position: relative; border-radius: 4px; overflow: hidden; display: flex; height: 90px; width: 90px;">
+                              <div
+                                style="background-color: #1890FF; color: #fff; font-size: 12px; position: absolute; top: 0px; left: 0px; z-index: 999; padding: 0px 5px; border-radius: 4px 0px 4px 0px;"
+                                v-if="index == 0">
+                                主轮播图
+                              </div>
+                              <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
+                              <div @click="delImgLb(index)" class="imgClose"
+                                style="position: absolute; top: -8px; right: -8px;">
+                                <CloseCircleOutlined style="font-size: 20px; color: red;" />
+                              </div>
+                            </div>
+                          </template>
+                        </Draggable>
+
+                        <div>
+                          <a-upload v-if="post_params.images.length < 10" :customRequest="upload" :multiple="true"
+                            :file-list="[]" list-type="picture-card"
+                            style="width: 90px; height: 90px;border-radius: 4px;">
+                            <div style="text-align: center;">
+                              <PlusOutlined style="font-size: 30px; color: #999999;" />
+                            </div>
+                          </a-upload>
                         </div>
-                        <a-upload v-if="post_params.images.length<10" :customRequest="upload" :multiple="true"
-                          :file-list="[]" list-type="picture-card">
-                          <div style="text-align: center;">
-                            <PlusOutlined style="font-size: 30px;color: #999999;" />
-                          </div>
-                        </a-upload>
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -969,10 +992,10 @@
                   <div style="display: flex;align-items: center;">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
-                      <div>上下架商品</div>
+                      <div>提交不上架</div>
                     </div>
                     <div style="margin-left: 20px;">
-                      <a-switch v-model:checked="post_params.status" checked-children="上架" un-checked-children="下架" />
+                      <a-switch v-model:checked="post_params.status" un-checked-children="否" checked-children="是" />
                     </div>
                   </div>
                 </div>
@@ -1550,7 +1573,7 @@
                       @change="cncChange" />
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 47px;">
+                <!-- <div style="display: flex;margin-top: 20px;margin-left: 47px;">
                   <div>商品服务</div>
                   <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">
                     <div style="padding:10px 20px;display: flex;justify-content: space-between;">
@@ -1580,7 +1603,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </div>
               <div @click="()=>ser_sqJbxx=!ser_sqJbxx"
                 style="display: flex;align-items: center;margin-left: 77px;margin-top: 10px;color: #407cff;">
@@ -1602,6 +1625,23 @@
             <div style="padding: 20px;margin-top: 20px;border: 1px solid #f5f5f5;width: 100%;text-align: center;">
               <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
             </div>
+            <!-- 需提示缴纳保证金 -->
+            <a-modal v-model:visible="pay_info_Vis" :footer="null" style="position: relative;">
+              <div>
+                <div style="padding: 5px;background-color: #fff;position: absolute;left: 45%;border-radius: 50%;width: 50px;height: 50px;top: -26px;">
+                  <ExclamationCircleFilled style="color: #ff7300;font-size: 40px;" />
+                </div>
+                <div style="text-align: center;margin-top: 20px;line-height: 30px;">
+                  类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元
+                </div>
+                <div style="display: flex;margin-top: 20px;">
+                  <div style="display: flex;margin: 0 auto;">
+                    <div style="color: #fff;background-color: #1890FF;margin-right: 10px;padding: 2px 10px; border-radius: 4px;">充值保证金</div>
+                    <div @click="pay_info_Vis=false" style="color: #00000099;padding: 2px 10px; border-radius: 4px;border: 1px solid #00000099;">暂不充值</div>
+                  </div>
+                </div>
+              </div>
+            </a-modal>
             <!-- 留底高 -->
             <div style="height: 100px;"></div>
           </div>
