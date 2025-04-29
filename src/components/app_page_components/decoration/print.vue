@@ -200,7 +200,7 @@
 <template>
     <div>
         <button @click="handleGetOrderImage" :disabled="loading">
-            {{ loading ? '请求中...' : '获取电子面单图片' }}
+            {{ loading ? '请求中...' : '打印' }}
         </button>
         <div v-show="false">
             <!-- 电子面单展示区域 -->

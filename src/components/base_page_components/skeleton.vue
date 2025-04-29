@@ -49,6 +49,16 @@
             type: "myInfo",
             url: "",
             value: "333333",
+          },
+          {
+            icon: "",
+            label: "地址管理",
+            order: "2",
+            page_id: "0",
+            pid: "7061541206748037734",
+            type: "addressManage",
+            url: "",
+            value: "333334",
           }
         ]
       })
