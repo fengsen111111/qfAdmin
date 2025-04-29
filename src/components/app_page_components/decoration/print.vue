@@ -38,7 +38,7 @@
         printWindow.document.write(`
         <html>
             <head>
-                <title>打印电子面单</title>
+                <title>电子面单</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -47,7 +47,8 @@
                         background-color: #fff;
                     }
                     .print-container {
-                        padding: 20px;
+                        max-width:340px;
+                        margin:80px 0px;
                     }
                 </style>
             </head>
@@ -94,33 +95,25 @@
             loading.value = false
         }
     }
+    const barcode = ref()
+    const barcodeTwo = ref()
 
     function generateBarcode(kuaidinum) {
         nextTick(() => {
-            const barcodeElement = document.getElementById("barcode")
-            if (barcodeElement) {
-                JsBarcode(barcodeElement, kuaidinum, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 40,
-                    displayValue: true,
-                    fontSize: 16
-                });
-            } else {
-                console.error("Barcode element not found")
-            }
-            const barcodeRig = document.getElementById("barcodeRig")
-            if (barcodeRig) {
-                JsBarcode(barcodeRig, kuaidinum, {
-                    format: "CODE128",
-                    width: 2,
-                    height: 40,
-                    displayValue: true,
-                    fontSize: 16
-                });
-            } else {
-                console.error("Barcode element not found")
-            }
+            JsBarcode(barcode.value, kuaidinum, {
+                format: "CODE128",  // 常用条形码格式
+                lineColor: "#000",
+                width: 1.5,
+                height: 40,
+                displayValue: true  // 显示订单号文本
+            })
+            JsBarcode(barcodeTwo.value, kuaidinum, {
+                format: "CODE128",  // 常用条形码格式
+                lineColor: "#000",
+                width: 1.8,
+                height: 30,
+                displayValue: true  // 显示订单号文本
+            })
         });
     }
 
@@ -150,7 +143,7 @@
         <button @click="handleGetOrderImage" :disabled="loading">
             {{ loading ? '请求中...' : '获取电子面单图片' }}
         </button>
-        <div>
+        <div v-show="false">
             <!-- 电子面单展示区域 -->
             <div id="electronicWaybill">
                 <div style="border: 1px solid black;">
@@ -160,33 +153,41 @@
                     </div>
                     <div style="display: flex;">
                         <div>
-                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 0px 10px;">
-                                <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas>
+                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 5px 10px;">
+                                <!-- <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas> -->
+                                <svg ref="barcode"></svg>
                             </div>
-                            <div style="display: flex;border-bottom: 1px dashed black;height: 125px;">
-                                <div style="font-size: 24px;padding: 20px;">收</div>
-                                <div style="padding: 10px;width: 100%;">
+                            <div
+                                style="display: flex;border-bottom: 1px dashed black;height: 125px;align-items: center;">
+                                <div style="font-size: 24px;padding: 10px;">收</div>
+                                <div style="padding: 10px;">
                                     <div style="display: flex;justify-content: space-between;">
                                         <div>{{paramObj.recMan.name}}</div>
                                         <div>{{paramObj.recMan.mobile}}</div>
                                     </div>
-                                    <div style="width: 240px;">{{paramObj.recMan.printAddr}}</div>
+                                    <div>{{paramObj.recMan.printAddr}}</div>
                                 </div>
                             </div>
                             <div style="display: flex;">
-                                <div style="font-size: 24px;padding: 20px;">寄</div>
-                                <div style="padding: 10px;width: 100%;">
-                                    <div style="display: flex;justify-content: space-between;">
+                                <div style="font-size: 24px;padding: 10px;">寄</div>
+                                <div style="padding: 10px;">
+                                    <div style="display: flex;justify-content: space-between;align-items: center;">
                                         <div>{{paramObj.sendMan.name}}</div>
                                         <div>{{paramObj.sendMan.mobile}}</div>
                                     </div>
-                                    <div style="width: 240px;">{{paramObj.sendMan.printAddr}}</div>
+                                    <div>{{paramObj.sendMan.printAddr}}</div>
                                 </div>
                             </div>
                         </div>
-                        <div style="border-left: 1px solid black;width: 120px;height: 320px;padding: 5px;">
-                            <div style="transform: rotate(90deg)">
-                                <canvas id="barcodeRig" style="text-align:center;margin-top:20px;"></canvas>
+                        <div style="display: flex; border-left: 1px solid black;">
+                            <!-- 右边栏，保持flex布局，占据固定宽度，和左边高度一样 -->
+                            <div
+                                style="flex-shrink: 0; width: 120px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <!-- 旋转的条形码内部绝对定位，不打乱布局 -->
+                                <div
+                                    style="position: absolute; top: 50%; left: 32%; transform: translate(-50%, -50%) rotate(90deg);">
+                                    <svg ref="barcodeTwo"></svg>
+                                </div>
                             </div>
                         </div>
                     </div>
