@@ -6,14 +6,6 @@
 
     import { getLodop } from './LodopFuncs.js'
 
-    const intervalId = setInterval(() => {
-        if (window.LODOP && typeof window.LODOP !== 'undefined') {
-            console.log('lodop已安装');
-            clearInterval(intervalId); // 停止定时器
-        } else {
-            console.log('lodop未安装');
-        }
-    }, 2000);
     // Lodop 实例
     let LODOP = null
 
@@ -31,15 +23,20 @@
                 <title>电子面单</title>
                 <style>
                     body {
+                        font-family: Arial, sans-serif;
                         margin: 0;
                         padding: 0;
                         background-color: #fff;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
                     }
                     .print-container {
-                        max-width:360px;
-                        padding-top:60px;
+                        max-width:340px;
+                        margin:80px 0px;
+                        word-wrap: break-word; /* 确保长单词自动换行 */
+                        word-break: break-all; /* 强制单词在任何地方断开 */
                     } 
+                    p, div, span { 
+                        overflow-wrap: break-word; /* 防止长文本溢出 */
+                    }
                 </style>
             </head>
             <body>
@@ -48,12 +45,10 @@
                 </div>
             </body>
         </html>`
-        LODOP.PRINT_INITA('')  // 打印初始化
-        LODOP.SET_PRINT_PAGESIZE(1, 1050, 1300, 'mm')  // 设置纸张大小
-        LODOP.SET_SHOW_MODE('NP_NO_RESULT', true)  // 设置显示模式
-        LODOP.ADD_PRINT_HTML('0', '0', '100%', '100%', html)
-        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        LODOP.PRINT()// 直接打印
+        LODOP.PRINT_INIT("")
+        LODOP.ADD_PRINT_HTML(0, 0, '100%', '100%', html)
+        // LODOP.PRINT()// 直接打印
+        LODOP.PREVIEW()//打印预览
     }
 
     // 页面挂载后初始化 Lodop
@@ -81,7 +76,7 @@
         sendMan: {
             name: '张三',
             mobile: '13900000000', // 注意是字符串
-            printAddr: '北京市海淀区长北京市海淀区长春', // 注意是字符串
+            printAddr: '北京市海淀区长北京市海淀区长春桥路春桥路北京市海淀区长春桥路', // 注意是字符串
         },
         cargo: '350ml苏打水 原味-恒大 604334534554345*24',
         count: 1,
@@ -107,7 +102,7 @@
                     }
                     .print-container {
                         max-width:340px;
-                        margin:10px 0px;
+                        margin:80px 0px;
                     }
                 </style>
             </head>
@@ -162,15 +157,15 @@
             JsBarcode(barcode.value, kuaidinum, {
                 format: "CODE128",  // 常用条形码格式
                 lineColor: "#000",
-                width: 1.6,
-                height: 30,
+                width: 1.5,
+                height: 40,
                 displayValue: true  // 显示订单号文本
             })
             JsBarcode(barcodeTwo.value, kuaidinum, {
                 format: "CODE128",  // 常用条形码格式
                 lineColor: "#000",
-                width: 1.5,
-                height: 40,
+                width: 1.8,
+                height: 30,
                 displayValue: true  // 显示订单号文本
             })
         });
@@ -212,18 +207,19 @@
                     </div>
                     <div style="display: flex;">
                         <div>
-                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 0px;">
+                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 5px 10px;">
                                 <!-- <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas> -->
                                 <svg ref="barcode"></svg>
                             </div>
-                            <div style="display: flex;border-bottom: 1px dashed black;align-items: center;">
+                            <div
+                                style="display: flex;border-bottom: 1px dashed black;height: 125px;align-items: center;">
                                 <div style="font-size: 24px;padding: 10px;">收</div>
                                 <div style="padding: 10px;">
                                     <div style="display: flex;justify-content: space-between;">
                                         <div>{{paramObj.recMan.name}}</div>
                                         <div>{{paramObj.recMan.mobile}}</div>
                                     </div>
-                                    <div style="max-width: 194px;">{{paramObj.recMan.printAddr}}</div>
+                                    <div>{{paramObj.recMan.printAddr}}</div>
                                 </div>
                             </div>
                             <div style="display: flex;align-items: center;">
@@ -233,7 +229,7 @@
                                         <div>{{paramObj.sendMan.name}}</div>
                                         <div>{{paramObj.sendMan.mobile}}</div>
                                     </div>
-                                    <div style="max-width: 194px;">{{paramObj.sendMan.printAddr}}</div>
+                                    <div>{{paramObj.sendMan.printAddr}}</div>
                                 </div>
                             </div>
                         </div>
@@ -243,7 +239,7 @@
                                 style="flex-shrink: 0; width: 120px; display: flex; align-items: center; justify-content: center; position: relative;">
                                 <!-- 旋转的条形码内部绝对定位，不打乱布局 -->
                                 <div
-                                    style="position: absolute; top: 50%; left: 40%; transform: translate(-50%, -50%) rotate(90deg);">
+                                    style="position: absolute; top: 50%; left: 32%; transform: translate(-50%, -50%) rotate(90deg);">
                                     <svg ref="barcodeTwo"></svg>
                                 </div>
                             </div>
