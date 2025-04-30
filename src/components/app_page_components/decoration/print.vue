@@ -6,12 +6,15 @@
     import { ExclamationCircleFilled, CheckCircleFilled, } from "@ant-design/icons-vue";
 
     import { getLodop } from './LodopFuncs.js'
-
+    let LODOP = null // Lodop 实例
     const azqk = ref('')//
     const printerList = ref([]) //所有可用打印机
     const intervalId = setInterval(() => {
-        if (window.LODOP && typeof window.LODOP !== 'undefined') {
-            console.log('lodop已安装');
+        console.log('LODOP',LODOP);
+        if (!LODOP) {
+            azqk.value = 'lodop未安装'
+            LODOP = getLodop()
+        } else {
             azqk.value = 'lodop已安装'
             const count = LODOP.GET_PRINTER_COUNT()
             for (let i = 0; i < count; i++) {
@@ -19,36 +22,25 @@
             }
             console.log('所有可用打印机', printerList.value);
             clearInterval(intervalId); // 停止定时器
-        } else {
-            azqk.value = 'lodop未安装'
-            console.log('lodop未安装');
         }
-    }, 2000);
-    // Lodop 实例
-    let LODOP = null
-    // 
+    }, 5000);
+   
     function selChange(value) {
         console.log('value', value);
     }
-
     // 刷新
     function sure() {
-        if (window.LODOP && typeof window.LODOP !== 'undefined') {
+        if (!LODOP) { 
+            azqk.value = 'lodop未安装'
+            console.log('lodop未安装');
+            LODOP = getLodop()
+        } else {
             console.log('lodop已安装');
             azqk.value = 'lodop已安装'
             clearInterval(intervalId); // 停止定时器
-        } else {
-            azqk.value = 'lodop未安装'
-            console.log('lodop未安装');
         }
     }
 
-    // 初始化 Lodop
-    function initLodop() {
-        setTimeout(() => {
-            LODOP = getLodop()//调用getLodop获取LODOP对象
-        }, 2000);
-    }
     function dy() {
         const printContent = document.getElementById('electronicWaybill').innerHTML;
         let html = `
@@ -121,10 +113,7 @@
     }
 
 
-    // 页面挂载后初始化 Lodop
-    onMounted(() => {
-        initLodop()
-    })
+
 
     const loading = ref(false)
     const imgUrl = ref('')
