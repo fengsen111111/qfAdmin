@@ -157,35 +157,6 @@
     const handleGetOrderImage = async () => {
         dy()
         return false
-        const printContent = document.getElementById('electronicWaybill').innerHTML;
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-        <html>
-            <head>
-                <title>电子面单</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
-                    }
-                    .print-container {
-                        max-width:340px;
-                        margin:10px 0px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    ${printContent}
-                </div>
-            </body>
-        </html>
-    `);
-        printWindow.document.close();
-        printWindow.print();
-        return false
         loading.value = true
         message.value = ''
 
