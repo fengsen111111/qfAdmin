@@ -92,20 +92,32 @@
       { value: -1, label: "首页", type: "IndexPage", page_key: "index_page" },
       true
     );
-    openPage({
-      checked: true,
-      checked_status: true,
-      open_status: true,
-      icon: "",
-      label: "店铺信息",
-      order: "1",
-      page_id: "0",
-      pid: "706154120674803773",
-      type: "myInfo",
-      url: "",
-      value: "333333",
-      page_key: "e06ac6e73a5db3b8f010acb4213123213",
-    }, true)
+    console.log('global.adminMsg.id', global.adminMsg.id);
+    setTimeout(() => {
+      global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+        console.log('自己商家id', res_one.joiner_sign);
+        if (res_one.joiner_sign == global.adminMsg.id) {
+          console.log('平台');
+        } else {
+          console.log('商家');
+          openPage({
+            checked: true,
+            checked_status: true,
+            open_status: true,
+            icon: "",
+            label: "店铺信息",
+            order: "1",
+            page_id: "0",
+            pid: "706154120674803773",
+            type: "myInfo",
+            url: "",
+            value: "333333",
+            page_key: "e06ac6e73a5db3b8f010acb4213123213",
+          }, true)
+        }
+      })
+    }, 1000);
+
   });
 
   //注销

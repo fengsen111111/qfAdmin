@@ -29,16 +29,6 @@
     // 
     function selChange(value) {
         console.log('value', value);
-        if (LODOP) {
-            LODOP.PRINT_INITA('')  // 打印初始化
-            LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-            LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
-            // LODOP.SET_SHOW_MODE('NP_NO_RESULT', true)  // 设置显示模式
-            LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', '<h1>111</h1>')
-            LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        } else {
-            console.warn('LODOP 未初始化，无法设置打印机')
-        }
     }
 
     // 刷新
