@@ -89,7 +89,7 @@
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
         LODOP.PRINT()// 直接打印
         visPrint.value = false//关闭打印弹窗
         ksDy.value = true//打开打印提示框
