@@ -18,7 +18,6 @@
                 printerList.value.push(LODOP.GET_PRINTER_NAME(i))
             }
             console.log('所有可用打印机', printerList.value);
-
             clearInterval(intervalId); // 停止定时器
         } else {
             azqk.value = 'lodop未安装'
@@ -27,6 +26,20 @@
     }, 2000);
     // Lodop 实例
     let LODOP = null
+    // 
+    function selChange(value) {
+        console.log('value', value);
+        if (LODOP) {
+            LODOP.PRINT_INITA('')  // 打印初始化
+            LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+            LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
+            // LODOP.SET_SHOW_MODE('NP_NO_RESULT', true)  // 设置显示模式
+            LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', '<h1>111</h1>')
+            LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        } else {
+            console.warn('LODOP 未初始化，无法设置打印机')
+        }
+    }
 
     // 刷新
     function sure() {
@@ -75,7 +88,6 @@
         // LODOP.SET_PRINTER_INDEX("HPRT N31BT");//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
-        // LODOP.SET_SHOW_MODE('NP_NO_RESULT', true)  // 设置显示模式
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
         LODOP.PREVIEW() // 预览（预览页面可以进行下载）
         LODOP.PRINT()// 直接打印
@@ -111,10 +123,9 @@
             </body>
         </html>`
         LODOP.PRINT_INITA('')  // 打印初始化
-        // LODOP.SET_PRINTER_INDEX("HPRT N31BT");//按名称指定打印机
+        // LODOP.SET_PRINTER_INDEX("Microsoft XPS Document Writer");//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
-        // LODOP.SET_SHOW_MODE('NP_NO_RESULT', true)  // 设置显示模式
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
         LODOP.PREVIEW() // 预览（预览页面可以进行下载）
     }
@@ -399,21 +410,21 @@
                         <div style="width: 100px;">面单余额</div>
                         <div>33</div>
                     </div>
-                    <!-- <div style="display: flex;align-items: center;margin-top: 10px;">
+                    <div style="display: flex;align-items: center;margin-top: 10px;">
                         <div style="width: 100px;">选择打印机</div>
                         <div>
                             <a-select ref="select" v-model:value="zddyj" placeholder="请选择打印机"
-                                style="width: 200px;margin-right: 10px;">
+                                style="width: 200px;margin-right: 10px;" @change="selChange">
                                 <a-select-option :value="item" v-for="item in printerList"
                                     :key="item">{{item}}</a-select-option>
                             </a-select>
                         </div>
                         <div @click="yldyj">关于打印设置</div>
-                    </div> -->
-                    <div style="display: flex;align-items: center;margin-top: 10px;">
+                    </div>
+                    <!-- <div style="display: flex;align-items: center;margin-top: 10px;">
                         <div style="width: 100px;">设置打印机</div>
                         <div @click="yldyj">点击进行打印设置</div>
-                    </div>
+                    </div> -->
                     <table class="table_two" style="margin-top: 10px;">
                         <tr style="white-space:nowrap">
                             <th scope="col">收件人</th>
