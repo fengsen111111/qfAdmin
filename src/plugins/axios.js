@@ -141,10 +141,11 @@ export function post(url, params = {}, global, loading = true, rsa_status = true
                 if (action) action(response_result);
                 resolve(response);
             })
-            .catch((error) => {
-                if(url=='factory_system/Base/login'){
+            .catch((error) => {  //登陆                         //店铺名称查询
+                if (url == 'factory_system/Base/login' || url == 'decoration/Store/checkStoreName') {
+                    // console.log('error',error);
                     reject(error)
-                }else{
+                } else {
                     handleError(error);
                 }
             });

@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined,CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -22,6 +22,7 @@
 	const id_card_images = ref([])// 身份证照片  
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
+	const id_card_times = ref([])//身份有效时间
 	const name = ref('')// 用户姓名  
 	const mobile = ref('')// 手机号   
 	const admin_login_password = ref('')//后台登录密码  
@@ -51,6 +52,7 @@
 				id_card_images.value = res.id_card_images ? res.id_card_images : []
 				license_image.value = res.license_image
 				id_card_number.value = res.id_card_number
+				id_card_times.value = res.id_card_times
 				name.value = res.name
 				mobile.value = res.mobile
 				admin_login_password.value = res.password
@@ -253,7 +255,12 @@
 		}
 		if (!store_name.value) {
 			message.error('请输入店铺名称')
+			msgValue.value = '店铺名称不可为空'
 			return false
+		} else {
+			if (msgValue.value) {
+				return false
+			}
 		}
 		if (!logo.value) {
 			message.error('请上传门店logo')
@@ -284,6 +291,10 @@
 				message.error('身份证格式错误')
 				return false
 			}
+		}
+		if(!id_card_times.value){
+			message.error('请选择身份证有效期')
+			return false
 		}
 		if (!mobile.value) {
 			message.error('请输入手机号')
@@ -317,6 +328,7 @@
 				"name": name.value,
 				"mobile": mobile.value,
 				"id_card_number": id_card_number.value,
+				"id_card_times":id_card_times.value,
 				"id_card_images": id_card_images.value,
 				"store_name": store_name.value,
 				"license_image": license_image.value,
@@ -459,6 +471,22 @@
 			return { valid: false, msg: '密码未满足所有规则' };
 		}
 	}
+	const msgValue = ref('')
+	// 店铺名称变化
+	function nameChange() {
+		console.log('名称变化', store_name.value);
+		global.axios.post('decoration/Store/checkStoreName', {
+			store_name: store_name.value,
+		}, global)
+			.then(res => {
+				console.log('名称是否重复', res);
+				msgValue.value = ''//不重复就清空
+			})
+			.catch(error => {
+				console.log('error', error);
+				msgValue.value = error.message
+			})
+	}
 </script>
 
 <template>
@@ -549,10 +577,10 @@
 										<span style="color: red;">*</span>
 										<span>店铺名称</span>
 									</div>
-									<a-input v-model:value="store_name" style="margin-left: 10px;width: 300px;"
-										show-count :maxlength="30" />
+									<a-input @change="nameChange" v-model:value="store_name"
+										style="margin-left: 10px;width: 300px;" show-count :maxlength="30" />
 									<div style="position: absolute;top: 35px;left:72px;color: red;font-size: 10px;">
-										店铺名已被使用(等待接口)</div>
+										{{msgValue}}</div>
 									<a-popover title="规范" placement="rightTop">
 										<template #content>
 											<div>不得与已经开通的店铺名称重复</div>
@@ -745,7 +773,7 @@
 														<span>姓名</span>
 													</div>
 												</div>
-												<a-input v-model:value="name" style="width: 200px;margin-left: 20px;"
+												<a-input v-model:value="name" style="width: 220px;margin-left: 20px;"
 													placeholder="请输入姓名" />
 											</div>
 											<div style="display: flex;align-items: center;margin-top: 10px;">
@@ -757,7 +785,7 @@
 													</div>
 												</div>
 												<a-input v-model:value="id_card_number"
-													style="width: 200px;margin-left: 20px;" placeholder="请输入身份证号" />
+													style="width: 220px;margin-left: 20px;" placeholder="请输入身份证号" />
 											</div>
 											<div style="display: flex;align-items: center;margin-top: 10px;">
 												<div style="display: flex;justify-content: space-between;width: 5vw;">
@@ -768,8 +796,8 @@
 													</div>
 												</div>
 												<div>
-													<a-range-picker v-model:value="value1"
-														style="width: 200px;margin-left: 20px;" />
+													<a-range-picker v-model:value="id_card_times" :format="'YYYY/MM/DD'" :value-format="'YYYY/MM/DD'"
+														style="width: 220px;margin-left: 20px;" />
 												</div>
 												<div style="display: flex;align-items: center;margin-left: 10px;">
 													<!-- <a-checkbox v-model:checked="isCq">长期</a-checkbox> -->
