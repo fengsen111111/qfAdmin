@@ -322,7 +322,7 @@
   <a-spin :spinning="spinning">
     <div v-if="typeVis==1" class="a1">
       <div class="a2">
-        <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class" class="a3"
+        <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class a3" 
           @click="closeChildPage(pageData.page_key)">&#xe6d2;
         </a-button>
         <div style="font-size: 18px;">发布新商品</div>
@@ -336,7 +336,7 @@
         <div v-if="arrType.length>0" style="margin-bottom: 10px;">
           <div style="margin-bottom: 10px;">最近使用的分类</div>
           <div>
-            <span @click="cliHcType(item)" v-for="item in arrType" :key="item" class="hover" class="a7">{{item}}</span>
+            <span @click="cliHcType(item)" v-for="item in arrType" :key="item" class="hover a7">{{item}}</span>
           </div>
         </div>
         <div class="a8">
