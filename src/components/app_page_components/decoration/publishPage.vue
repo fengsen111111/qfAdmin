@@ -174,7 +174,7 @@
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
           // 服务单独更新
-          cn_value.value = res.goods_datas.services.map((item)=>{
+          cn_value.value = res.goods_datas.services.map((item) => {
             return item.key
           })
           // 曝光时间单独更行
@@ -350,7 +350,7 @@
     } else {
       // 没得值说明没动
     }
-    post_params.services = wgxdcn.value.map((item)=>{
+    post_params.services = wgxdcn.value.map((item) => {
       return {
         key: item.label,
         value: item.value
@@ -763,9 +763,9 @@
 
   // 详情图回调
   function completeDetails(response) {
-    if(post_params.detail){
+    if (post_params.detail) {
       post_params.detail = post_params.detail
-    }else{
+    } else {
       post_params.detail = []
     }
     post_params.detail.push(response.url)
@@ -783,9 +783,8 @@
   <div>
     <a-spin :spinning="spinning">
       <div class="wcdiv">
-        <div style="display: flex;align-items: center;">
-          <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
-            style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+        <div class="a1">
+          <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="a2 iconfont button-class"
             @click="closeChildPage(pageData.page_key)">&#xe6d2;
           </a-button>
           <div class="spbj">商品编辑
@@ -796,35 +795,34 @@
           <div class="cz" @click="reset">重置</div>
         </div>
       </div>
-      <div style="display: flex;justify-content: space-between;cursor: pointer;">
+      <div class="a3">
         <div style="width: 15%;">
-          <div style="border: 1px solid #eff0f4;border-radius: 5px;overflow: hidden;">
-            <div style="background-color: #ff7300;color: #fff;text-align: center;padding: 10px 20px;">
+          <div class="a4">
+            <div class="a5">
               商品填写建议
             </div>
-            <div style="padding: 10px;display: flex;">
+            <div class="a6">
               <div>属性</div>
-              <div style="color: #ff7300;margin-left: 20px;">填写属性，获取流量</div>
+              <div class="a7">填写属性，获取流量</div>
             </div>
           </div>
 
-          <div style="border: 1px solid #eff0f4;margin-top: 20px;border-radius: 5px;overflow: hidden;">
-            <div style="background-color: #407cff;color: #fff;text-align: center;padding: 10px 20px;">
+          <div class="a8">
+            <div class="a9">
               发布助手
             </div>
-            <div style="padding: 10px;color: #999999;">
+            <div class="a10">
               <div>商品轮播图</div>
               <div>a.尺寸宽高需要均大于480px</div>
               <div>b.大小3M以内</div>
               <div>c.数量限制在10张以内</div>
               <div>d.图片格式仅支持JPG,PNG格式</div>
               <div>e.批量上传时，图片须等宽高且不小于480px</div>
-              <div
-                style="display: flex;padding: 10px;border: 1px solid #ffecc8;background-color: #fff6e6;border-radius: 5px;">
+              <div class="a11">
                 <div>
-                  <InfoCircleOutlined style="color: #ff7300;font-size: 14px;" />
+                  <InfoCircleOutlined class="a12" />
                 </div>
-                <div style="margin-left: 5px;color: black;">请按要求填写商品信息，上传商品图片（注意轮播图上传事项）</div>
+                <div class="a13">请按要求填写商品信息，上传商品图片（注意轮播图上传事项）</div>
               </div>
               <!-- 承诺 -->
               <div style="color: #00000099;">
@@ -837,42 +835,38 @@
           </div>
         </div>
         <!-- 商品信息等 -->
-        <div style="width: 84%;height: 84vh;">
+        <div class="a14">
           <div style="margin-bottom: 10px;">
             <!-- 新增才有 有id就是编辑-->
-            <div v-if="!props.pageData.data.id"
-              style="border-radius: 4px;padding:  10px 60px;border: 1px solid #f5f5f5;width: 100%;display: flex;margin-bottom: 10px;">
+            <div v-if="!props.pageData.data.id" class="a15">
               <span>商品分类</span>
               <span style="margin-left: 20px;">{{props.pageData.data.typeName}}</span>
-              <span @click="editType()" style="color: #1890FF;margin-left: 10px;">修改分类</span>
+              <span @click="editType()" class="a16">修改分类</span>
             </div>
             <!-- 没给钱才有 -->
             <!-- <div v-if="pay_info"
-              style="display: flex;border: 1px solid #ffdaa3;border-radius: 3px;padding:5px 10px;align-items: center;background-color: #fff6e6;">
-              <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
+              class="a17">
+              <ExclamationCircleOutlined class="a18" />
               <span>类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元 </span>
-              <span style="color: #1890FF;margin-left: 10px;">去缴纳</span>
+              <span class="a19">去缴纳</span>
             </div> -->
-            <div v-if="pay_info"
-              style="display: flex;border: 1px solid rgb(255, 218, 163);border-radius: 3px;padding:5px 10px;align-items: center;background-color: #FFF6E6;">
-              <ExclamationCircleOutlined style="color: #ff7300;margin-right: 10px;" />
-              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span
-                style="color: #1890FF;margin-left: 10px;">去缴纳</span>
+            <div v-if="pay_info" class="a20">
+              <ExclamationCircleOutlined class="a21" />
+              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span class="a22">去缴纳</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
           <!-- 高度没分类加 +7%  没缴纳金额+ 6%  height: 85%;             是编辑                            缴费-->
-          <div style="overflow: auto;width: 100%;"
-            :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
+          <div class="a23" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
-            <div style="padding: 20px;border: 1px solid #f5f5f5;width: 100%;border-radius: 4px;">
-              <div style="display: flex;font-size: 16px;">
+            <div class="a24">
+              <div class="a25">
                 <div style="color: #407cff;">1</div>
                 <div style="margin-left: 5px;">基本信息</div>
               </div>
               <div v-show="!sqJbxx">
                 <div>
-                  <div style="display: flex;margin-top: 20px;margin-left: 20px;">
+                  <div class="a26">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
                       <div>商品轮播图</div>
@@ -882,18 +876,15 @@
                       <div style="color: #999999;">
                         图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.images.length}}/10张。
                       </div>
-                      <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;">
+                      <div class="a27">
                         <Draggable v-model="post_params.images" item-key="index" :component-data="{
                             style: {
                               display: 'contents' // 重点！！让 Draggable 自己不占布局
                             }
                           }" :animation="200">
                           <template #item="{ element, index }">
-                            <div
-                              style="position: relative; border-radius: 4px; overflow: hidden; display: flex; height: 90px; width: 90px;">
-                              <div
-                                style="background-color: #1890FF; color: #fff; font-size: 12px; position: absolute; top: 0px; left: 0px; z-index: 999; padding: 0px 5px; border-radius: 4px 0px 4px 0px;"
-                                v-if="index == 0">
+                            <div class="a28">
+                              <div class="a29" v-if="index == 0">
                                 主轮播图
                               </div>
                               <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
@@ -906,10 +897,9 @@
 
                         <div>
                           <a-upload v-if="post_params.images.length < 10" :customRequest="upload" :multiple="true"
-                            :file-list="[]" list-type="picture-card"
-                            style="width: 90px; height: 90px;border-radius: 4px;">
+                            :file-list="[]" list-type="picture-card" class="a30">
                             <div style="text-align: center;">
-                              <PlusOutlined style="font-size: 30px; color: #999999;" />
+                              <PlusOutlined class="a31" />
                             </div>
                           </a-upload>
                         </div>
@@ -918,7 +908,7 @@
                   </div>
                 </div>
                 <div>
-                  <div style="display: flex;margin-top: 20px;margin-left: 20px;">
+                  <div class="a32">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
                       <div>商品封面图</div>
@@ -928,9 +918,8 @@
                       <div style="color: #999999;">
                         图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.cover_image?1:0}}/1张。
                       </div>
-                      <div style="margin-top: 5px;display: flex;">
-                        <div v-if="post_params.cover_image"
-                          style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+                      <div class="a33">
+                        <div v-if="post_params.cover_image" class="a34">
                           <a-image :width="90" :src="post_params.cover_image"
                             :preview="{ src: post_params.cover_image }" />
                           <div @click="delImgFm()" class="imgClose" style="margin-left: 10px;">
@@ -940,8 +929,8 @@
                         <div v-else>
                           <a-upload :customRequest="uploadFm" :multiple="false" :file-list="[]"
                             list-type="picture-card">
-                            <div style="width: 90px;height: 88px;border: 1px solid #f5f5f5;text-align: center;">
-                              <PlusOutlined style="font-size: 30px;color: #999999;margin-top: 30%;" />
+                            <div class="a35">
+                              <PlusOutlined class="a36" />
                             </div>
                           </a-upload>
                         </div>
@@ -949,26 +938,25 @@
                     </div>
                   </div>
                 </div>
-                <div style="margin-top: 20px;margin-left: 34px;align-items: center;">
+                <div class="a37">
                   <div style="display: flex;">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
                       <div>商品标题</div>
                     </div>
-                    <div style="margin-left: 20px;width: 90%;">
+                    <div class="a38">
                       <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;"
                         placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
-                      <div style="margin-top: 10px;color: #999999;">
-                        <span style="border-bottom: 1px dashed #999999;">热搜词推荐</span>:
-                        <span @click="post_params.name=post_params.name+item"
-                          style="background-color: #f0f7ff;color: #4874dd;padding: 0 5px;border-radius: 4px;margin-right: 5px;"
+                      <div class="a39">
+                        <span class="a40">热搜词推荐</span>:
+                        <span @click="post_params.name=post_params.name+item" class="a41"
                           v-for="item in ['防爆','可拆洗','充电']" :key="item">{{item}}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div style="margin-top: 20px;margin-left: 20px;align-items: center;">
-                  <div style="display: flex;align-items: center;">
+                <div class="a42">
+                  <div class="a43">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
                       <div>提交不上架</div>
@@ -978,11 +966,11 @@
                     </div>
                   </div>
                 </div>
-                <div style="margin-top: 20px;margin-left: 40px;">
+                <div class="a44">
                   <div style="display: flex;">
                     <div>商品属性</div>
-                    <div style="margin-left: 20px;background-color: #f7f8fa;border-radius: 5px;width: 80%;">
-                      <div style="padding:10px 20px;display: flex;justify-content: space-between;">
+                    <div class="a45">
+                      <div class="a46">
                         <div style="display: flex;">
                           <div style="display: flex;">
                             <div>填写率</div>
@@ -990,9 +978,9 @@
                               <a-progress type="circle" :percent="bfb" :width="16" :strokeWidth="8" :format="() => null"
                                 trailColor="#999999" strokeColor="#ff7300" />
                             </div>
-                            <div style="color: #ff7300;margin-left: 5px;">{{bfb?bfb+'%':''}}</div>
+                            <div class="a47">{{bfb?bfb+'%':''}}</div>
                           </div>
-                          <div style="margin-left: 20px;color: #999999;width: 60%;">
+                          <div class="a48">
                             请准确填写属性，有利于商品在搜索和推荐中露出，错误填写可能面临商品下架或流量流失
                           </div>
                         </div>
@@ -1001,20 +989,19 @@
                           <div @click="()=>{visibleSx=true}" style="color: #407cff;">点击添加</div>
                         </div>
                       </div>
-                      <div style="background-color: #999999;height: 1px;width: 100%;"></div>
-                      <div
-                        style="padding:10px 20px;display: flex;justify-content: space-between;background-color: #f7f8fa;">
+                      <div class="a49"></div>
+                      <div class="a50">
                         <div style="width: 45%;">
                           <div>
-                            <div style="display: flex;margin: 10px 0px;">
-                              <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
+                            <div class="a51">
+                              <div class="a52">
                                 <div></div>
-                                <div style="display: flex;margin-top: 10px;">
+                                <div class="a53">
                                   <div style="color: red;">*</div>
                                   <div>分类</div>
                                 </div>
                               </div>
-                              <div style="margin-left: 20px; width: 200px;">
+                              <div class="a54">
                                 <a-tree-select v-model:value="post_params.type_id" disabled labelInValue
                                   style="width: 100%;" placeholder="请选择商品分类" :tree-data="spflList" :field-names="{
                       children: 'children',
@@ -1027,8 +1014,8 @@
                             </div>
                           </div>
                           <div>
-                            <div style="display: flex;margin: 10px 0px;">
-                              <div style="width: 30%;text-align: right;display: flex;justify-content: space-between;">
+                            <div class="a55">
+                              <div class="a56">
                                 <div></div>
                                 <div style="display: flex;">
                                   <div style="color: red;">*</div>
@@ -1036,13 +1023,12 @@
                                 </div>
                               </div>
                               <div>
-                                <a-select ref="select" v-model:value="post_params.brand_id"
-                                  style="width: 200px;margin-left: 20px;" placeholder="请选择品牌">
+                                <a-select ref="select" v-model:value="post_params.brand_id" class="a57"
+                                  placeholder="请选择品牌">
                                   <a-select-option :value="item.value" v-for="item in ppList"
                                     :key="item.value">{{item.label}}</a-select-option>
                                 </a-select>
-                                <span v-if="del_pp_text"
-                                  style="color: #ff0000;padding-left: 20px;font-size: 12px;">品牌已被删除，请重新选择</span>
+                                <span v-if="del_pp_text" class="a58">品牌已被删除，请重新选择</span>
                                 <!-- <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span
                         style="color: #ff7300;">点击申请</span></div> -->
                               </div>
@@ -1052,15 +1038,13 @@
                         <div style="width: 45%;">
                           <div>
                             <template v-for="(item,index) in post_params.attributes" :key="index">
-                              <div style="display: flex;align-items: center;margin: 10px 0px;">
-                                <div style="width: 30%;text-align: right;">{{item.key}}</div>
+                              <div class="a59">
+                                <div class="a60">{{item.key}}</div>
                                 <template v-if="item.type=='input'">
-                                  <a-input type="text" v-model:value="item.value" style="width: 55%;margin-left: 20px;"
-                                    placeholder="请输入具体属性值" />
+                                  <a-input type="text" v-model:value="item.value" class="a61" placeholder="请输入具体属性值" />
                                 </template>
                                 <template v-else-if="item.type=='select'">
-                                  <a-select v-model:value="item.value" style="width: 55%;margin-left: 20px;"
-                                    placeholder="请选择">
+                                  <a-select v-model:value="item.value" class="a62" placeholder="请选择">
                                     <a-select-option value="固定值1">固定值1</a-select-option>
                                     <a-select-option value="固定值2">固定值2</a-select-option>
                                     <a-select-option value="固定值3">固定值3</a-select-option>
@@ -1079,103 +1063,84 @@
                   <div style="margin-top: 20px;">
                     <div style="display: flex;">
                       <div>商品详情</div>
-                      <div style="margin-left:20px;width: 80%;">
-                        <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情 <span
-                            style="cursor: pointer;color: #407cff;">查看教程</span></div>
-                        <div style="display: flex;margin-top: 10px;">
-                          <div style="border: 1px solid #f5f5f5;width: 375px;">
-                            <div
-                              style="padding: 10px;display: flex;justify-content: space-between;border-bottom: 1px solid #f5f5f5;">
+                      <div class="a63">
+                        <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情 <span class="a64">查看教程</span></div>
+                        <div class="a65">
+                          <div class="a66">
+                            <div class="a67">
                               <span>页面预览</span>
                               <span @click="()=>{isYl=!isYl}" style="color: #407cff;">{{isYl?'关闭':'预览'}}</span>
                             </div>
-                            <div style="height: 500px;overflow: auto;">
+                            <div class="a68">
                               <div v-if="!isYl">
                                 <a-empty style="margin-top: 130px;" description="暂未编辑商品详情" />
-                                <div style="text-align: center;margin-top: -15px;">编辑商品详情，提升商品转化率</div>
+                                <div class="a69">编辑商品详情，提升商品转化率</div>
                               </div>
                               <div v-else>
-                                <img :src="post_params.images[0]" style="width: 100%;height: 360px;" alt="">
-                                <div style="padding: 10px;width: 100%;">
+                                <img :src="post_params.images[0]" class="a70" alt="">
+                                <div class="a71">
                                   <div style="display: flex;">
-                                    <img :src="img" style="width: 60px;height: 60px;margin-right: 10px;"
-                                      v-for="img in post_params.images" :key="img" alt="">
+                                    <img :src="img" class="a72" v-for="img in post_params.images" :key="img" alt="">
                                   </div>
-                                  <div
-                                    style="display: flex;margin-top:10px;width: 100%;align-items: center;justify-content: space-between;">
-                                    <div style="color: #ff0000;font-weight: bold;font-size: 26px;">
+                                  <div class="a73">
+                                    <div class="a74">
                                       ￥{{post_params.goods_sizes[0].price}}</div>
                                     <div style="color: #333333;">规格：{{post_params.goods_sizes[0].name}}</div>
                                   </div>
                                   <div style="font-weight: bold;">{{post_params.name}}</div>
-                                  <div style="display: flex;margin: 10px 0px">
-                                    <div v-if="post_params.goods_type=='a'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                  <div class="a75">
+                                    <div v-if="post_params.goods_type=='a'" class="a76">
                                       普通商品</div>
-                                    <div v-if="post_params.goods_type=='b'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.goods_type=='b'" class="a76">
                                       海外进口</div>
-                                    <div v-if="post_params.goods_type=='c'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.goods_type=='c'" class="a76">
                                       海外CC个人行邮</div>
-                                    <div v-if="post_params.is_used=='Y'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_used=='Y'" class="a76">
                                       二手</div>
-                                    <div v-if="post_params.is_customized=='Y'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_customized=='Y'" class="a76">
                                       定制</div>
-                                    <div v-if="post_params.is_plan_salled=='a'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_plan_salled=='a'" class="a76">
                                       非预售
                                     </div>
-                                    <div v-if="post_params.is_plan_salled=='b'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_plan_salled=='b'" class="a76">
                                       定时预售
                                     </div>
-                                    <div v-if="post_params.is_plan_salled=='c'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_plan_salled=='c'" class="a76">
                                       时段预售
                                     </div>
-                                    <div v-if="post_params.is_plan_salled=='d'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.is_plan_salled=='d'" class="a76">
                                       规格预售
                                     </div>
-                                    <div v-if="post_params.need_send_time=='a'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.need_send_time=='a'" class="a76">
                                       当日发货
                                     </div>
-                                    <div v-if="post_params.need_send_time=='b'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.need_send_time=='b'" class="a76">
                                       24小时
                                     </div>
-                                    <div v-if="post_params.need_send_time=='c'"
-                                      style="margin-right: 5px;padding: 2px 5px;border-radius: 2px;border: 1px solid #4DB23F;color: #4DB23F;">
+                                    <div v-if="post_params.need_send_time=='c'" class="a76">
                                       48小时
                                     </div>
                                   </div>
                                   <div style="display: flex;">
                                     <div style="display: flex;">
-                                      <div style="color: #fff;background-color: #FA6C2F;padding: 0px 8px;">销量</div>
-                                      <div style="color: #FA6C2F;border:1px solid #FA6C2F;padding: 0px 8px;">0</div>
+                                      <div class="a77">销量</div>
+                                      <div class="a78">0</div>
                                     </div>
-                                    <div style="display: flex;margin-left: 10px;">
-                                      <div style="color: #fff;background-color: #36A9FC;padding: 0px 8px;">库存</div>
-                                      <div style="color: #36A9FC;border:1px solid #36A9FC;padding: 0px 8px;">
+                                    <div class="a79">
+                                      <div class="a80">库存</div>
+                                      <div class="a81">
                                         {{post_params.goods_sizes[0].stock}}</div>
                                     </div>
                                   </div>
                                   <div style="margin: 10px 0px;">
-                                    <div v-for="item in cn_value" :key="item"
-                                      style="display: flex;justify-content: space-between;align-items: center;">
+                                    <div v-for="item in cn_value" :key="item" class="a82">
                                       <div style="color: #666666;">{{item}}</div>
                                       <RightOutlined />
                                     </div>
                                   </div>
                                   <div style="font-weight: bold;">商品详情</div>
-                                  <div style="background-color: #f5f5f5;padding: 10px;margin: 10px 0px;"
-                                    v-if="post_params.attributes.length>0">
-                                    <div v-for="item in post_params.attributes" :key="item.key"
-                                      style="display: flex;justify-content: space-between;">
+                                  <div class="a83" v-if="post_params.attributes.length>0">
+                                    <div v-for="item in post_params.attributes" :key="item.key" class="a84">
                                       <div style="color: #999999;">{{item.key}}</div>
                                       <div>{{item.value}}</div>
                                     </div>
@@ -1189,8 +1154,7 @@
                             </div>
                           </div>
                           <div>
-                            <div
-                              style="border: 1px solid #f5f5f5;padding: 20px;display: flex;align-items: center;justify-content: space-between;width: 28vw;margin-left: 10px;">
+                            <div class="a85">
                               <div>
                                 <div style="display: flex;">
                                   <div>快速编辑</div>
@@ -1200,21 +1164,18 @@
                               </div>
 
                               <a-upload :customRequest="uploadAll" :multiple="true" :file-list="[]" list-type="text">
-                                <div
-                                  style="padding: 2px 10px;border: 1px solid #407cff;border-radius: 4px;color: #407cff;">
+                                <div class="a86">
                                   本地上传</div>
                               </a-upload>
                             </div>
-                            <div
-                              style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 10px;margin-left: 10px;padding: 10px;width: 28vw;">
+                            <div class="a87">
                               <Draggable v-model="post_params.detail" item-key="index" :component-data="{
                                 style: {
                                   display: 'contents' // 重点！！让 Draggable 自己不占布局
                                 }
                               }" :animation="200">
                                 <template #item="{ element, index }">
-                                  <div
-                                    style="position: relative; border-radius: 4px; overflow: hidden; display: flex; height: 90px; width: 90px;">
+                                  <div class="a88">
                                     <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
                                     <div @click="delImgXq(index)" class="imgClose">
                                       <CloseCircleOutlined />
@@ -1230,11 +1191,10 @@
                   </div>
                 </div>
               </div>
-              <div @click="()=>{sqJbxx=!sqJbxx}"
-                style="display: flex;align-items: center;margin-left: 77px;margin-top: 10px;color: #407cff;">
+              <div @click="()=>{sqJbxx=!sqJbxx}" class="a89">
                 <div style="margin-right: 5px;">{{sqJbxx?'展开':'收起'}}</div>
-                <UpCircleOutlined v-if="!sqJbxx" style="color: #407cff;font-size: 14px;" />
-                <DownCircleOutlined v-else style="color: #407cff;font-size: 14px;" />
+                <UpCircleOutlined v-if="!sqJbxx" class="a90" />
+                <DownCircleOutlined v-else class="a90" />
               </div>
             </div>
             <!-- 添加属性 -->
@@ -1242,38 +1202,35 @@
               <div>
                 <div style="display: flex;align-items: center;">
                   <div>名称</div>
-                  <a-input type="text" v-model:value="SxName" style="margin-left: 20px;width: 80%;"
-                    placeholder="请填写名称" />
+                  <a-input type="text" v-model:value="SxName" class="a91" placeholder="请填写名称" />
                 </div>
               </div>
             </a-modal>
             <!-- 规格与库存 -->
-            <div style="padding: 20px;margin-top: 20px;border: 1px solid #f5f5f5;width: 100%;border-radius: 4px;">
-              <div style="display: flex;font-size: 16px;">
+            <div class="a92">
+              <div class="a93">
                 <div style="color: #407cff;">2</div>
                 <div style="margin-left: 5px;">规格与库存</div>
               </div>
               <div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="a94">
                   <div style="display: flex;">
                     <!-- <div style="color: red;">*</div> -->
                     <div>商品规格</div>
                   </div>
-                  <div style="margin-left: 20px;width: 90%;">
-                    <div style="background-color: #f7f8fa;padding: 20px;border-radius: 5px;">
+                  <div class="a95">
+                    <div class="a96">
                       <div>最多配置2个商品规格类型</div>
-                      <div v-for="(item,index) in shopGuige" :key="index"
-                        style="width: 100%;margin-top: 10px;background-color: #fff;margin-bottom: 20px;">
-                        <div
-                          style="padding: 10px;display: flex;justify-content: space-between;width: 100%;border-bottom: 1px solid #999999;">
+                      <div v-for="(item,index) in shopGuige" :key="index" class="a97">
+                        <div class="a98">
                           <!-- v-model:value="item.value" -->
                           <a-select v-model:value="item.labelValue" style="width: 200px;" placeholder="请选择">
                             <a-select-option :key="index+iss.value" :value="iss.value"
                               v-for="iss in item.labelOption">{{iss.label}}</a-select-option>
                           </a-select>
-                          <div style="cursor: pointer;color: #1890FF;">
+                          <div class="a99">
                             <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
-                            <span style="color: #999999;margin: 0 10px;">|</span>
+                            <span class="a100">|</span>
                             <span @click="()=>{shopGuige[index].labelValue='';shopGuige[index].value=[]}">删除规格类型</span>
                           </div>
                         </div>
@@ -1287,33 +1244,29 @@
                             }
                           }">
                             <template #item="{ element, val_index }">
-                              <div style="display: flex; align-items: center; position: relative;margin-bottom: 10px;">
+                              <div class="b1">
                                 <a-input v-model:value="element.label" placeholder="请输入规格名称" style="width: 200px;" />
-                                <div @click="removeItem(index,val_index)"
-                                  style="color: #1890FF; margin-left: 10px; cursor: pointer;">删除</div>
-                                <div v-if="element.isCustom"
-                                  style="position: absolute; left: 170px; top: 0px; font-size: 10px; color: #fff; background-color: #f97425; padding: 0px 5px; border-radius: 0px 4px 0px 4px;">
+                                <div @click="removeItem(index,val_index)" class="b2">删除</div>
+                                <div v-if="element.isCustom" class="b3">
                                   定制
                                 </div>
                               </div>
                             </template>
                           </Draggable>
                         </div>
-                        <div v-else
-                          style="padding: 10px;display: grid;grid-template-columns: repeat(4, minmax(0, 1fr))">
+                        <div v-else class="b4">
                           <template v-for="(xx,xx_index) in item.value" :key="xx_index">
-                            <div style="display: flex;align-items: center;position: relative;margin-bottom: 10px;">
+                            <div class="b5">
                               <a-input placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
-                              <div @click="removeItem(index,xx_index)" style="color: #1890FF; margin-left: 10px;">删除
+                              <div @click="removeItem(index,xx_index)" class="b6">删除
                               </div>
-                              <div v-if="xx.isCustom"
-                                style="position: absolute;left: 170px;top:0px;font-size: 10px;color: #fff;background-color: #f97425;padding: 0px 5px;border-radius: 0px 4px 0px 4px;">
+                              <div v-if="xx.isCustom" class="b7">
                                 定制
                               </div>
                             </div>
                           </template>
                         </div>
-                        <div style="padding: 0px 10px 10px 10px;display: flex;color: #1890FF;">
+                        <div class="b8">
                           <div @click="()=>{shopGuige[index].isSort = !shopGuige[index].isSort}"
                             style="margin-right: 20px;">{{ shopGuige[index].isSort?'确定':'开始排序'}}</div>
                           <div @click="addgg(index)" style="margin-right: 20px;">添加规格</div>
@@ -1324,22 +1277,21 @@
                     </div>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 20px;">
+                <div class="b9">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>价格及库存</div>
                   </div>
-                  <div style="margin-left: 20px;width: 90%;">
-                    <div style="background-color: #f7f8fa;padding: 20px;border-radius: 5px;">
-                      <div style="display: flex;justify-content: space-between;">
+                  <div class="b10">
+                    <div class="b11">
+                      <div class="b12">
                         <div>
                           <div style="color: #ff7300;">请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规</div>
                         </div>
                         <div style="color: #407cff;" @click="addGG">添加规格</div>
                       </div>
-                      <table
-                        style="border-collapse: collapse; width: 100%;margin-top: 10px;border: 1px solid #f0f2f5;letter-spacing: 1px;text-align: center;">
-                        <tr style="display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));text-align: center;">
+                      <table class="b13">
+                        <tr class="b14">
                           <th>
                             <div style="color: #999999;">操作</div>
                           </th>
@@ -1461,10 +1413,9 @@
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr
-                              style="display: grid;grid-template-columns: repeat(9, minmax(0, 1fr));text-align: center;background-color: #fff;">
+                            <tr class="b15">
                               <td>
-                                <div style="color: red;margin-top: 5px;" @click="delGG(index)">删除</div>
+                                <div class="b16" @click="delGG(index)">删除</div>
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
@@ -1529,13 +1480,13 @@
               </div>
             </div>
             <!-- 服务与承诺 -->
-            <div style="padding: 20px;margin-top: 20px;border: 1px solid #f5f5f5;width: 100%;border-radius: 4px;">
-              <div style="display: flex;font-size: 16px;">
+            <div class="b17">
+              <div class="b18">
                 <div style="color: #407cff;">3</div>
                 <div style="margin-left: 5px;">商品服务</div>
               </div>
               <div v-show="!ser_sqJbxx">
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>商品类型</div>
@@ -1548,7 +1499,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>是否二手</div>
@@ -1560,7 +1511,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>是否定制</div>
@@ -1572,7 +1523,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>是否预售</div>
@@ -1586,7 +1537,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 18px;">
+                <div class="b20">
                   <div style="display: flex;">
                     <div>承诺发货时间</div>
                   </div>
@@ -1600,20 +1551,20 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>运费模板</div>
                   </div>
-                  <div style="margin-left: 20px;width: 80%;">
+                  <div class="b21">
                     <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
                       <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
                       <!-- <a-radio value="2">其它模板</a-radio> -->
                     </a-radio-group>
                     <template v-for="item in allYfmb" :key="item.id">
                       <template v-if="item.id == post_params.carriage_id">
-                        <div style="background-color: #f7f8fa;color: #999999;padding: 20px;margin-top: 10px;">
-                          <div style="padding-left: 14px;display: flex;">
+                        <div class="b22">
+                          <div class="b23">
                             <span>包邮配送地区：</span>
                             <span style="width: 80%;">
                               <span v-for="(iss,index_bydq) in item.bydq" :key="index_bydq">
@@ -1622,7 +1573,7 @@
                               </span>
                             </span>
                           </div>
-                          <div style="display: flex;margin-top: 10px;">
+                          <div class="b24">
                             <span>不包邮配送地区：</span>
                             <div v-if="item.price_city.length>0">
                               <div v-for="(iss,index_sity) in item.price_city" :key="iss.index_sity">
@@ -1635,7 +1586,7 @@
                             </div>
                             <div v-else>未设置</div>
                           </div>
-                          <div style="margin-top: 10px;margin-left: 28px;">不配送地区：
+                          <div class="b25">不配送地区：
                             <span v-for="(iss,index_unsupport) in item.unsupport" :key="index_unsupport">
                               {{iss.label}}
                               <span>{{index_unsupport+1==item.unsupport.length?'。':'、'}}</span>
@@ -1647,7 +1598,7 @@
                     </template>
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 47px;">
+                <div class="b26">
                   <div style="display: flex;">
                     <div>库存计件</div>
                   </div>
@@ -1655,7 +1606,7 @@
                     支付成功减库存
                   </div>
                 </div>
-                <div v-show="false" style="display: flex;margin-top: 20px;margin-left: 13px;">
+                <div v-show="false" class="b27">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>商品曝光等级</div>
@@ -1667,7 +1618,7 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div v-show="false" style="display: flex;margin-top: 20px;margin-left: 40px;">
+                <div v-show="false" class="b28">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>曝光时间</div>
@@ -1676,16 +1627,15 @@
                     <a-range-picker v-model:value="timeStaEnd" show-time />
                   </div>
                 </div>
-                <div v-show="false" v-if="props.pageData.data.id" style="margin-top: 20px;margin-left: 60px;align-items: center;">
-                  <div style="display: flex;align-items: center;">
+                <div v-show="false" v-if="props.pageData.data.id" class="b29">
+                  <div class="b30">
                     <div style="display: flex;">
                       <div>曝光量</div>
                     </div>
-                    <a-input-number :min="0" v-model:value="post_params.power" style="margin-left: 20px;width: 412px;"
-                      placeholder="请输入曝光量" />
+                    <a-input-number :min="0" v-model:value="post_params.power" class="b31" placeholder="请输入曝光量" />
                   </div>
                 </div>
-                <div style="display: flex;margin-top: 20px;margin-left: 68px;">
+                <div class="b32">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>承诺</div>
@@ -1696,34 +1646,30 @@
                   </div>
                 </div>
               </div>
-              <div @click="()=>ser_sqJbxx=!ser_sqJbxx"
-                style="display: flex;align-items: center;margin-left: 77px;margin-top: 10px;color: #407cff;">
+              <div @click="()=>ser_sqJbxx=!ser_sqJbxx" class="b33">
                 <div style="margin-right: 5px;">{{ser_sqJbxx?'展开':'收起'}}</div>
-                <UpCircleOutlined v-if="!ser_sqJbxx" style="color: #407cff;font-size: 14px;" />
-                <DownCircleOutlined v-else style="color: #407cff;font-size: 14px;" />
+                <UpCircleOutlined v-if="!ser_sqJbxx" class="b34" />
+                <DownCircleOutlined v-else class="b34" />
               </div>
             </div>
-            
-            <div style="padding: 20px;margin-top: 20px;border: 1px solid #f5f5f5;width: 100%;text-align: center;">
+
+            <div class="b35">
               <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
             </div>
             <!-- 需提示缴纳保证金 -->
             <a-modal v-model:visible="pay_info_Vis" :footer="null" style="position: relative;">
               <div>
-                <div
-                  style="padding: 5px;background-color: #fff;position: absolute;left: 45%;border-radius: 50%;width: 50px;height: 50px;top: -26px;">
-                  <ExclamationCircleFilled style="color: #ff7300;font-size: 40px;" />
+                <div class="b36">
+                  <ExclamationCircleFilled class="b38" />
                 </div>
-                <div style="text-align: center;margin-top: 20px;line-height: 30px;">
+                <div class="b37">
                   类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元
                 </div>
-                <div style="display: flex;margin-top: 20px;">
-                  <div style="display: flex;margin: 0 auto;">
-                    <div
-                      style="color: #fff;background-color: #1890FF;margin-right: 10px;padding: 2px 10px; border-radius: 4px;">
+                <div class="b39">
+                  <div class="b40">
+                    <div class="b41">
                       充值保证金</div>
-                    <div @click="pay_info_Vis=false"
-                      style="color: #00000099;padding: 2px 10px; border-radius: 4px;border: 1px solid #00000099;">暂不充值
+                    <div @click="pay_info_Vis=false" class="b42">暂不充值
                     </div>
                   </div>
                 </div>
@@ -1790,5 +1736,883 @@
     color: white;
     padding: 5px 20px;
     border-radius: 5px;
+  }
+
+  .a1 {
+    display: flex;
+    align-items: center;
+  }
+
+  .a2 {
+    font-size: 18px !important;
+    padding: 0 10px;
+    float: left;
+    margin-right: 20px;
+  }
+
+  .a3 {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .a4 {
+    border: 1px solid #eff0f4;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .a5 {
+    background-color: #ff7300;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+  }
+
+  .a6 {
+    padding: 10px;
+    display: flex;
+  }
+
+  .a7 {
+    color: #ff7300;
+    margin-left: 20px;
+  }
+
+  .a8 {
+    border: 1px solid #eff0f4;
+    margin-top: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .a9 {
+    background-color: #407cff;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+  }
+
+  .a10 {
+    padding: 10px;
+    color: #999999;
+  }
+
+  .a11 {
+    display: flex;
+    padding: 10px;
+    border: 1px solid #ffecc8;
+    background-color: #fff6e6;
+    border-radius: 5px;
+  }
+
+  .a12 {
+    color: #ff7300;
+    font-size: 14px;
+  }
+
+  .a13 {
+    margin-left: 5px;
+    color: black;
+  }
+
+  .a14 {
+    width: 84%;
+    height: 84vh;
+  }
+
+  .a15 {
+    border-radius: 4px;
+    padding: 10px 60px;
+    border: 1px solid #f5f5f5;
+    width: 100%;
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .a16 {
+    color: #1890FF;
+    margin-left: 10px;
+  }
+
+  .a17 {
+    display: flex;
+    border: 1px solid #ffdaa3;
+    border-radius: 3px;
+    padding: 5px 10px;
+    align-items: center;
+    background-color: #fff6e6;
+  }
+
+  .a18 {
+    color: #ff7300;
+    margin-right: 10px;
+  }
+
+  .a19 {
+    color: #1890FF;
+    margin-left: 10px;
+  }
+
+  .a20 {
+    display: flex;
+    border: 1px solid rgb(255, 218, 163);
+    border-radius: 3px;
+    padding: 5px 10px;
+    align-items: center;
+    background-color: #FFF6E6;
+  }
+
+  .a21 {
+    color: #ff7300;
+    margin-right: 10px;
+  }
+
+  .a22 {
+    color: #1890FF;
+    margin-left: 10px;
+  }
+
+  .a23 {
+    overflow: auto;
+    width: 100%;
+  }
+
+  .a24 {
+    padding: 20px;
+    border: 1px solid #f5f5f5;
+    width: 100%;
+    border-radius: 4px;
+  }
+
+  .a25 {
+    display: flex;
+    font-size: 16px;
+  }
+
+  .a26 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+
+  .a27 {
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .a28 {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    height: 90px;
+    width: 90px;
+  }
+
+  .a29 {
+    background-color: #1890FF;
+    color: #fff;
+    font-size: 12px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
+    padding: 0px 5px;
+    border-radius: 4px 0px 4px 0px;
+  }
+
+  .a30 {
+    width: 90px;
+    height: 90px;
+    border-radius: 4px;
+  }
+
+  .a31 {
+    font-size: 30px;
+    color: #999999;
+  }
+
+  .a32 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+
+  .a33 {
+    margin-top: 5px;
+    display: flex;
+  }
+
+  .a34 {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .a35 {
+    width: 90px;
+    height: 88px;
+    border: 1px solid #f5f5f5;
+    text-align: center;
+  }
+
+  .a36 {
+    font-size: 30px;
+    color: #999999;
+    margin-top: 30%;
+  }
+
+  .a37 {
+    margin-top: 20px;
+    margin-left: 34px;
+    align-items: center;
+  }
+
+  .a38 {
+    margin-left: 20px;
+    width: 90%;
+  }
+
+  .a39 {
+    margin-top: 10px;
+    color: #999999;
+  }
+
+  .a40 {
+    border-bottom: 1px dashed #999999;
+  }
+
+  .a41 {
+    background-color: #f0f7ff;
+    color: #4874dd;
+    padding: 0 5px;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+
+  .a42 {
+    margin-top: 20px;
+    margin-left: 20px;
+    align-items: center;
+  }
+
+  .a43 {
+    display: flex;
+    align-items: center;
+  }
+
+  .a44 {
+    margin-top: 20px;
+    margin-left: 40px;
+  }
+
+  .a45 {
+    margin-left: 20px;
+    background-color: #f7f8fa;
+    border-radius: 5px;
+    width: 80%;
+  }
+
+  .a46 {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .a47 {
+    color: #ff7300;
+    margin-left: 5px;
+  }
+
+  .a48 {
+    margin-left: 20px;
+    color: #999999;
+    width: 60%;
+  }
+
+  .a49 {
+    background-color: #999999;
+    height: 1px;
+    width: 100%;
+  }
+
+  .a50 {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #f7f8fa;
+  }
+
+  .a51 {
+    display: flex;
+    margin: 10px 0px;
+  }
+
+  .a52 {
+    width: 30%;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .a53 {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .a54 {
+    margin-left: 20px;
+    width: 200px;
+  }
+
+  .a55 {
+    display: flex;
+    margin: 10px 0px;
+  }
+
+  .a56 {
+    width: 30%;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .a57 {
+    width: 200px;
+    margin-left: 20px;
+  }
+
+  .a58 {
+    color: #ff0000;
+    padding-left: 20px;
+    font-size: 12px;
+  }
+
+  .a59 {
+    display: flex;
+    align-items: center;
+    margin: 10px 0px;
+  }
+
+  .a60 {
+    width: 30%;
+    text-align: right;
+  }
+
+  .a61 {
+    width: 55%;
+    margin-left: 20px;
+  }
+
+  .a62 {
+    width: 55%;
+    margin-left: 20px;
+  }
+
+  .a63 {
+    margin-left: 20px;
+    width: 80%;
+  }
+
+  .a64 {
+    cursor: pointer;
+    color: #407cff;
+  }
+
+  .a65 {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .a66 {
+    border: 1px solid #f5f5f5;
+    width: 375px;
+  }
+
+  .a67 {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f5f5f5;
+  }
+
+  .a68 {
+    height: 500px;
+    overflow: auto;
+  }
+
+  .a69 {
+    text-align: center;
+    margin-top: -15px;
+  }
+
+  .a70 {
+    width: 100%;
+    height: 360px;
+  }
+
+  .a71 {
+    padding: 10px;
+    width: 100%;
+  }
+
+  .a72 {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+  }
+
+  .a73 {
+    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .a74 {
+    color: #ff0000;
+    font-weight: bold;
+    font-size: 26px;
+  }
+
+  .a75 {
+    display: flex;
+    margin: 10px 0px
+  }
+
+  .a76 {
+    margin-right: 5px;
+    padding: 2px 5px;
+    border-radius: 2px;
+    border: 1px solid #4DB23F;
+    color: #4DB23F;
+  }
+
+  .a77 {
+    color: #fff;
+    background-color: #FA6C2F;
+    padding: 0px 8px;
+  }
+
+  .a78 {
+    color: #FA6C2F;
+    border: 1px solid #FA6C2F;
+    padding: 0px 8px;
+  }
+
+  .a79 {
+    display: flex;
+    margin-left: 10px;
+  }
+
+  .a80 {
+    color: #fff;
+    background-color: #36A9FC;
+    padding: 0px 8px;
+  }
+
+  .a81 {
+    color: #36A9FC;
+    border: 1px solid #36A9FC;
+    padding: 0px 8px;
+  }
+
+  .a82 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .a83 {
+    background-color: #f5f5f5;
+    padding: 10px;
+    margin: 10px 0px;
+  }
+
+  .a84 {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .a85 {
+    border: 1px solid #f5f5f5;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 28vw;
+    margin-left: 10px;
+  }
+
+  .a86 {
+    padding: 2px 10px;
+    border: 1px solid #407cff;
+    border-radius: 4px;
+    color: #407cff;
+  }
+
+  .a87 {
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: 10px;
+    padding: 10px;
+    width: 28vw;
+  }
+
+  .a88 {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    height: 90px;
+    width: 90px;
+  }
+
+  .a89 {
+    display: flex;
+    align-items: center;
+    margin-left: 77px;
+    margin-top: 10px;
+    color: #407cff;
+  }
+
+  .a90 {
+    color: #407cff;
+    font-size: 14px;
+  }
+
+  .a91 {
+    margin-left: 20px;
+    width: 80%;
+  }
+
+  .a92 {
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #f5f5f5;
+    width: 100%;
+    border-radius: 4px;
+  }
+
+  .a93 {
+    display: flex;
+    font-size: 16px;
+  }
+
+  .a94 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 40px;
+  }
+
+  .a95 {
+    margin-left: 20px;
+    width: 90%;
+  }
+
+  .a96 {
+    background-color: #f7f8fa;
+    padding: 20px;
+    border-radius: 5px;
+  }
+
+  .a97 {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #fff;
+    margin-bottom: 20px;
+  }
+
+  .a98 {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-bottom: 1px solid #999999;
+  }
+
+  .a99 {
+    cursor: pointer;
+    color: #1890FF;
+  }
+
+  .a100 {
+    color: #999999;
+    margin: 0 10px;
+  }
+
+  .b1 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .b2 {
+    color: #1890FF;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .b3 {
+    position: absolute;
+    left: 170px;
+    top: 0px;
+    font-size: 10px;
+    color: #fff;
+    background-color: #f97425;
+    padding: 0px 5px;
+    border-radius: 0px 4px 0px 4px;
+  }
+
+  .b4 {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr))
+  }
+
+  .b5 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .b6 {
+    color: #1890FF;
+    margin-left: 10px;
+  }
+
+  .b7 {
+    position: absolute;
+    left: 170px;
+    top: 0px;
+    font-size: 10px;
+    color: #fff;
+    background-color: #f97425;
+    padding: 0px 5px;
+    border-radius: 0px 4px 0px 4px;
+  }
+
+  .b8 {
+    padding: 0px 10px 10px 10px;
+    display: flex;
+    color: #1890FF;
+  }
+
+  .b9 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+  }
+
+  .b10 {
+    margin-left: 20px;
+    width: 90%;
+  }
+
+  .b11 {
+    background-color: #f7f8fa;
+    padding: 20px;
+    border-radius: 5px;
+  }
+
+  .b12 {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .b13 {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #f0f2f5;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .b14 {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    text-align: center;
+  }
+
+  .b15 {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    text-align: center;
+    background-color: #fff;
+  }
+
+  .b16 {
+    color: red;
+    margin-top: 5px;
+  }
+
+  .b17 {
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #f5f5f5;
+    width: 100%;
+    border-radius: 4px;
+  }
+
+  .b18 {
+    display: flex;
+    font-size: 16px;
+  }
+
+  .b19 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 40px;
+  }
+
+  .b20 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 18px;
+  }
+
+  .b21 {
+    margin-left: 20px;
+    width: 80%;
+  }
+
+  .b22 {
+    background-color: #f7f8fa;
+    color: #999999;
+    padding: 20px;
+    margin-top: 10px;
+  }
+
+  .b23 {
+    padding-left: 14px;
+    display: flex;
+  }
+
+  .b24 {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .b25 {
+    margin-top: 10px;
+    margin-left: 28px;
+  }
+
+  .b26 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 47px;
+  }
+
+  .b27 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 13px;
+  }
+
+  .b28 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 40px;
+  }
+
+  .b29 {
+    margin-top: 20px;
+    margin-left: 60px;
+    align-items: center;
+  }
+
+  .b30 {
+    display: flex;
+    align-items: center;
+  }
+
+  .b31 {
+    margin-left: 20px;
+    width: 412px;
+  }
+
+  .b32 {
+    display: flex;
+    margin-top: 20px;
+    margin-left: 68px;
+  }
+
+  .b33 {
+    display: flex;
+    align-items: center;
+    margin-left: 77px;
+    margin-top: 10px;
+    color: #407cff;
+  }
+
+  .b34 {
+    color: #407cff;
+    font-size: 14px;
+  }
+
+  .b35 {
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #f5f5f5;
+    width: 100%;
+    text-align: center;
+  }
+
+  .b36 {
+    padding: 5px;
+    background-color: #fff;
+    position: absolute;
+    left: 45%;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    top: -26px;
+  }
+
+  .b37 {
+    text-align: center;
+    margin-top: 20px;
+    line-height: 30px;
+  }
+
+  .b38 {
+    color: #ff7300;
+    font-size: 40px;
+  }
+
+  .b39 {
+    display: flex;
+    margin-top: 20px;
+  }
+
+  .b40 {
+    display: flex;
+    margin: 0 auto;
+  }
+
+  .b41 {
+    color: #fff;
+    background-color: #1890FF;
+    margin-right: 10px;
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+
+  .b42 {
+    color: #00000099;
+    padding: 2px 10px;
+    border-radius: 4px;
+    border: 1px solid #00000099;
   }
 </style>
