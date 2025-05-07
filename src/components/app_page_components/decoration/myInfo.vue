@@ -1030,6 +1030,7 @@
 		justify-content: space-between;
 		align-items: center;
 		margin: 15px 0px;
+		padding: 0px 60px;
 	}
 
 	.a55 {

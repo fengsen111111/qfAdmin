@@ -30,15 +30,17 @@
     }
     // 刷新
     function sure() {
-        if (!LODOP) { 
-            azqk.value = 'lodop未安装'
-            console.log('lodop未安装');
-            LODOP = getLodop()
-        } else {
-            console.log('lodop已安装');
-            azqk.value = 'lodop已安装'
-            clearInterval(intervalId); // 停止定时器
-        }
+        window.location.reload();
+        // if (!LODOP) { 
+        //     azqk.value = 'lodop未安装'
+        //     console.log('lodop未安装');
+        //     clearInterval(intervalId); // 停止定时器
+        //     LODOP = getLodop()
+        // } else {
+        //     console.log('lodop已安装');
+        //     azqk.value = 'lodop已安装'
+        //     clearInterval(intervalId); // 停止定时器
+        // }
     }
 
     function dy() {
@@ -259,6 +261,10 @@
         },
         spin: true,
     });
+    // 跳转下载打印组件
+    function andyzj(){
+        window.open('http://www.c-lodop.com/download.html', '_blank')
+    }
 </script>
 
 <template>
@@ -266,7 +272,7 @@
         <!-- <button @click="handleGetOrderImage" :disabled="loading">
             {{ loading ? '请求中...' : '打印' }}
         </button> -->
-        <button @click="visible=true">打印快递单</button>
+        <button @click="visible=true">打印</button>
         <!--  -->
         <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">
             <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
@@ -323,7 +329,7 @@
                                     未设置
                                 </div>
                             </div>
-                            <div style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
+                            <div @click="andyzj" style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
                                 安装打印组件</div>
                         </div>
                     </div>
@@ -336,7 +342,7 @@
                                 去打单发货</div>
                         </div>
                         <div v-else @click="sure()"
-                            style="background-color: #5779d2;color: #fff;border-radius: 4px;padding: 2px 15px;">刷新</div>
+                            style="background-color: #5779d2;color: #fff;border-radius: 4px;padding: 2px 15px;">刷新网页</div>
                         <div @click="visJc=false"
                             style="border-radius: 4px;padding: 2px 15px;margin-left: 10px;border: 1px solid #d4d4d7;">
                             稍后再说</div>

@@ -45,6 +45,7 @@
 </template>
 
 <style lang="less">
+  
   /* //全局样式// */
   html,
   body {

@@ -121,9 +121,9 @@ function getLodop(oOBJECT, oEMBED) {
                 LODOP = window.getCLodop();
             } catch (err) {}
             if (!LODOP && LoadJsState !== "complete") {
-                if (!LoadJsState)
-                    alert("未曾加载Lodop主JS文件，请先调用loadCLodop过程."); else
-                    alert("网页还没下载完毕，请稍等一下再操作.");
+                // if (!LoadJsState)
+                //     alert("未曾加载Lodop主JS文件，请先调用loadCLodop过程."); else
+                //     alert("网页还没下载完毕，请稍等一下再操作.");
                 return;
             }
             var strAlertMessage;
@@ -134,7 +134,7 @@ function getLodop(oOBJECT, oEMBED) {
                     strAlertMessage = strLodop7Install_ARM;
                 else
                     strAlertMessage = strCLodopInstallA + (CLodopIsLocal ? strCLodopInstallB : "");
-                document.body.innerHTML = strAlertMessage + strInstallOK + document.body.innerHTML;
+                // document.body.innerHTML = strAlertMessage + strInstallOK + document.body.innerHTML;
                 return;
             } else {
                 if (isLinuxX86 && LODOP.CVERSION < "7.1.0.1")
@@ -144,8 +144,8 @@ function getLodop(oOBJECT, oEMBED) {
                 else if (CLODOP.CVERSION < "6.6.2.3")
                     strAlertMessage = strCLodopUpdate;
 
-                if (strAlertMessage)
-                    document.body.innerHTML = strAlertMessage + strInstallOK + document.body.innerHTML;
+                // if (strAlertMessage)
+                //     document.body.innerHTML = strAlertMessage + strInstallOK + document.body.innerHTML;
             }
         } else {
             //==如果页面有Lodop插件就直接使用,否则新建:==
@@ -169,11 +169,11 @@ function getLodop(oOBJECT, oEMBED) {
                 LODOP = CreatedOKLodopObject;
             //==Lodop插件未安装时提示下载地址:==
             if ((!LODOP) || (!LODOP.VERSION)) {
-                document.body.innerHTML = (isWinIE64 ? strLodop64Install : strLodopInstall) + strInstallOK + document.body.innerHTML;
+                // document.body.innerHTML = (isWinIE64 ? strLodop64Install : strLodopInstall) + strInstallOK + document.body.innerHTML;
                 return LODOP;
             }
             if (LODOP.VERSION < "6.2.2.6") {
-                document.body.innerHTML = (isWinIE64 ? strLodop64Update : strLodopUpdate) + strInstallOK + document.body.innerHTML;
+                // document.body.innerHTML = (isWinIE64 ? strLodop64Update : strLodopUpdate) + strInstallOK + document.body.innerHTML;
             }
         }
         //===如下空白位置适合调用统一功能(如注册语句、语言选择等):=======================

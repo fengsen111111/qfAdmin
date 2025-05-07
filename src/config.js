@@ -12,24 +12,26 @@ import TablePage from '@/components/app_page_components/decoration/table.vue'
 import FormPage from '@/components/app_page_components/beverage/form.vue'
 import DetailPage from '@/components/base_page_components/detail.vue'
 import StatisticsPage from '@/components/app_page_components/decoration/statistics.vue'
-import goodsPage from '@/components/app_page_components/decoration/publishPage.vue'//发布商品
+import goodsPage from '@/components/app_page_components/decoration/publishPage.vue'//编辑商品
 
-import CustomerPage from '@/components/app_page_components/decoration/customer_service.vue'
 import IndexPage from '@/components/base_page_components/index.vue' //项目首页，可以采用通用也可以使用个性化
-import publishPage from '@/components/app_page_components/decoration/publishPage.vue'//发布商品
+import publishPage from '@/components/app_page_components/decoration/publishPage.vue'//编辑商品
 import AddStorePage from '@/components/app_page_components/decoration/shopInfo.vue'//店铺信息
 import shopOut from '@/components/app_page_components/decoration/shopOut.vue'//商家退店
 import EditCarriagePage from '@/components/app_page_components/decoration/shippingTemplates.vue'//运费模板
-import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
+// import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
 import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
 
 import myInfo from '@/components/app_page_components/decoration/myInfo.vue'//我的店铺信息
 import addressManage from '@/components/app_page_components/decoration/addressManage.vue'//地址管理
 
 export const allPageComponents = {
-    TablePage, FormPage, DetailPage, CustomerPage, IndexPage,
-    StatisticsPage,publishPage,AddStorePage,shopOut,goodsPage,
-    EditCarriagePage,newShop,AddNewGoodsPage,myInfo,addressManage
+    TablePage, FormPage, DetailPage, IndexPage,
+    StatisticsPage,publishPage,AddStorePage,shopOut,
+    goodsPage,
+    EditCarriagePage,
+    // newShop,
+    AddNewGoodsPage,myInfo,addressManage
 }
 
 // 项目名称：快鹿送酒
