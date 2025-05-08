@@ -173,7 +173,7 @@
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
     <div v-if="type=='平台'">
-      <div style="overflow: auto;height: 86vh;">
+      <div style="overflow: auto;height: 90vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
             <div >
@@ -252,7 +252,7 @@
                 <div class="a44">
                   <div class="a45">
                     <img src="../../../public/resource/image/home/icon7.png"
-                      style="width: 24px;height: 24px;position: relative;top:0px;left: 3px;" alt="">
+                      style="width: 24px;height: 24px;position: relative;top:0px;left: 1px;" alt="">
                   </div>
                   <div>
                     <div>平台收取总服务费</div>
@@ -309,7 +309,7 @@
                   </div>
                   <div>
                     <div>社区总视频数</div>
-                    <div class="a47">{{Number(106.54).toLocaleString()}}万</div>
+                    <div class="a47">{{Number(106.54).toLocaleString()}}</div>
                   </div>
                 </div>
               </div>
@@ -324,12 +324,12 @@
                     <b>总用户数：{{Number(931991991).toLocaleString()}}</b>
                   </div>
                 </div>
-                <div style="width: 100%;">
+                <div style="width: 100%;height: 324px;position: relative;">
                   <div ref="chartRef" class="a56"></div>
                 </div>
               </div>
-              <div style="height: 10px;background-color: #f5f5f5;position: relative;top: -7vh;"></div>
-              <div style="position: relative;top: -7vh;">
+              <div style="height: 10px;background-color: #f5f5f5;"></div>
+              <div style="">
                 <div class="a54">
                   <div>
                     <b>月营业额数据</b>
@@ -338,12 +338,12 @@
                   <div>
                   </div>
                 </div>
-                <div style="width: 100%;">
+                <div style="width: 100%;height: 324px;position: relative;">
                   <div ref="chartRefTwo" class="a56"></div>
                 </div>
               </div>
-              <div style="height: 10px;background-color: #f5f5f5;position: relative;top: -14vh;"></div>
-              <div style="display: flex;justify-content: space-between;position: relative;top: -14vh;">
+              <div style="height: 10px;background-color: #f5f5f5;"></div>
+              <div style="display: flex;justify-content: space-between;">
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
                     <div style="font-size: 17px;"><b>商品营业额Top10</b></div>
@@ -384,7 +384,7 @@
           </a-col>
           <a-col :lg="10" :xl="6">
             <!-- right -->
-            <div style="background-color: #f5f5f5;padding: 10px;">
+            <div style="background-color: #f5f5f5;padding: 0px 10px;">
               <div style="padding: 20px;background-color: #fff;">
                 <div style="display: flex;justify-content: space-between;">
                   <div style="font-size: 17px;"><b>工作台</b></div>
@@ -517,7 +517,7 @@
   .a56 {
     width: 76vw;
     height: 400px;
-    position: relative;
+    position: absolute;
     left: -4vw;
     top: -5vh;
   }
@@ -551,7 +551,7 @@
     border-radius: 4px;
     padding: 10px 20px;
     background-color: #fff;
-    margin-top: 10px;
+    margin-top: 12px;
   }
 
   .a59 {
