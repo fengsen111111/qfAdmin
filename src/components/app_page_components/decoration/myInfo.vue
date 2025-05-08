@@ -284,6 +284,15 @@
 		if (el) el.remove();
 	}
 
+	const is_ptsj = ref('商家')
+	function getCustomerRoomList() {
+		// 获取自己的角色ID和聊天状态
+		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+			console.log('自己商家id和禁言状态', res_one);
+			is_ptsj.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+		})
+	}
+	getCustomerRoomList()
 </script>
 
 <template>
@@ -362,7 +371,7 @@
 						<div class="a19" :class="titleType=='店铺数据'?'a18Check':''" @click="titleType='店铺数据'">店铺数据</div>
 						<div class="a20" :class="titleType=='资金日志'?'a18Check':''" @click="titleType='资金日志'">资金日志</div>
 					</div>
-					<div class="a21">
+					<div class="a21" v-if="is_ptsj=='平台'">
 						<div>店铺详情页</div>
 						<div class="a22">
 							返回</div>
@@ -585,13 +594,13 @@
 							</div>
 						</div>
 						<div style="display: flex;">
-							<!-- <div class="a68">
+							<div class="a68" v-if="is_ptsj=='平台'">
 								<div style="margin-right: 20px;">
 									<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 								</div>
 								<div class="a70">{{Number(2131312321).toLocaleString()}}</div>
-							</div> -->
-							<div style="display: flex;">
+							</div>
+							<div v-else style="display: flex;">
 								<div class="a71">
 									<div style="display: flex;">
 										<div class="a68">
@@ -1147,7 +1156,7 @@
 	}
 
 	.a71 {
-		margin: 20px 0px 20px 80px
+		margin: 20px 0px 20px 180px
 	}
 
 	.a72 {
