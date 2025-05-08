@@ -1,9 +1,12 @@
 <script setup>
-  import { ref, watch } from 'vue'
-  import { AuditOutlined, ContainerOutlined,ApartmentOutlined,CrownOutlined,InsertRowLeftOutlined, ShopOutlined,TeamOutlined
-    ,DeleteRowOutlined,BankOutlined,FileProtectOutlined
+  import { ref, watch, inject } from 'vue'
+  import {
+    AuditOutlined, ContainerOutlined, ApartmentOutlined, CrownOutlined, InsertRowLeftOutlined, ShopOutlined, TeamOutlined
+    , DeleteRowOutlined, BankOutlined, FileProtectOutlined
   } from "@ant-design/icons-vue";
   import * as echarts from 'echarts'
+
+  const global = inject('global').value
 
   let props = defineProps(["pageData"])
   const pageData = props.pageData
@@ -146,13 +149,26 @@
     });
   }, 1000);
 
+  const store_id = ref('')
+  function getCustomerRoomList() {
+    // 获取自己的角色ID和聊天状态
+    global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+      console.log('自己商家id和禁言状态', res_one);
+      store_id.value = res_one.joiner_sign
+      type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+    })
+  }
+  getCustomerRoomList()
+
 </script>
 <template>
   <div>
-    <div style="display: flex;">
+    <!-- <div style="display: flex;">
       <div @click="type='商家'">商家</div>
       <div @click="type='平台'">平台</div>
-    </div>
+    </div> -->
+    <!-- <div>自己商家id：{{store_id}}</div>
+    <div>平台id：{{global.adminMsg.id}}</div> -->
     <div v-if="type=='商家'">
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
@@ -171,7 +187,8 @@
                 style="display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));border-bottom: 1px solid #f5f5f5;">
                 <div class="a44">
                   <div class="a45">
-                    <img src="../../../public/resource/image/home/home1.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                    <img src="../../../public/resource/image/home/home1.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
                   </div>
                   <div>
                     <div>总营业额</div>
@@ -180,7 +197,8 @@
                 </div>
                 <div class="a44">
                   <div class="a45">
-                    <img src="../../../public/resource/image/home/icon2.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                    <img src="../../../public/resource/image/home/icon2.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 
                   </div>
                   <div>
@@ -190,7 +208,8 @@
                 </div>
                 <div class="a44">
                   <div class="a45">
-                    <img src="../../../public/resource/image/home/icon3.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                    <img src="../../../public/resource/image/home/icon3.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 
                   </div>
                   <div>
@@ -200,7 +219,8 @@
                 </div>
                 <div class="a44">
                   <div class="a45">
-                    <img src="../../../public/resource/image/home/icon4.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                    <img src="../../../public/resource/image/home/icon4.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 
                   </div>
                   <div>
@@ -210,83 +230,91 @@
                 </div>
               </div>
               <div
-              style="display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));border-bottom: 1px solid #f5f5f5;">
-              <div class="a44">
-                <div class="a45">
-                  <img src="../../../public/resource/image/home/icon5.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                style="display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));border-bottom: 1px solid #f5f5f5;">
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon5.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                  </div>
+                  <div>
+                    <div>商家总数</div>
+                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                  </div>
                 </div>
-                <div>
-                  <div>商家总数</div>
-                  <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon6.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                  </div>
+                  <div>
+                    <div>商品总数</div>
+                    <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                  </div>
+                </div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon7.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;left: 3px;" alt="">
+                  </div>
+                  <div>
+                    <div>平台收取总服务费</div>
+                    <div class="a47">{{Number(213).toLocaleString()}}</div>
+                  </div>
+                </div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon8.png"
+                      style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+                  </div>
+                  <div>
+                    <div>今日平台服务费</div>
+                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                  </div>
                 </div>
               </div>
-              <div class="a44">
-                <div class="a45">
-                  <img src="../../../public/resource/image/home/icon6.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
+              <div
+                style="display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));border-bottom: 1px solid #f5f5f5;">
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon9.png"
+                      style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
+                  </div>
+                  <div>
+                    <div>今日新增用户数</div>
+                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                  </div>
                 </div>
-                <div>
-                  <div>商品总数</div>
-                  <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/iocn10.png"
+                      style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
+                  </div>
+                  <div>
+                    <div>本月新增用户数</div>
+                    <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                  </div>
+                </div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon11.png"
+                      style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
+                  </div>
+                  <div>
+                    <div>社区总文章数</div>
+                    <div class="a47">{{Number(213).toLocaleString()}}</div>
+                  </div>
+                </div>
+                <div class="a44">
+                  <div class="a45">
+                    <img src="../../../public/resource/image/home/icon12.png"
+                      style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
+                  </div>
+                  <div>
+                    <div>社区总视频数</div>
+                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                  </div>
                 </div>
               </div>
-              <div class="a44">
-                <div class="a45">
-                  <img src="../../../public/resource/image/home/icon7.png" style="width: 24px;height: 24px;position: relative;top:0px;left: 3px;" alt="">
-                </div>
-                <div>
-                  <div>平台收取总服务费</div>
-                  <div class="a47">{{Number(213).toLocaleString()}}</div>
-                </div>
-              </div>
-              <div class="a44">
-                <div class="a45">
-                  <img src="../../../public/resource/image/home/icon8.png" style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
-                </div>
-                <div>
-                  <div>今日平台服务费</div>
-                  <div class="a47">{{Number(21313).toLocaleString()}}</div>
-                </div>
-              </div>
-            </div>
-            <div
-            style="display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));border-bottom: 1px solid #f5f5f5;">
-            <div class="a44">
-              <div class="a45">
-                <img src="../../../public/resource/image/home/icon9.png" style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
-              </div>
-              <div>
-                <div>今日新增用户数</div>
-                <div class="a47">{{Number(21313).toLocaleString()}}</div>
-              </div>
-            </div>
-            <div class="a44">
-              <div class="a45">
-                <img src="../../../public/resource/image/home/iocn10.png" style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
-              </div>
-              <div>
-                <div>本月新增用户数</div>
-                <div class="a47">{{Number(2131).toLocaleString()}}</div>
-              </div>
-            </div>
-            <div class="a44">
-              <div class="a45">
-                <img src="../../../public/resource/image/home/icon11.png" style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
-              </div>
-              <div>
-                <div>社区总文章数</div>
-                <div class="a47">{{Number(213).toLocaleString()}}</div>
-              </div>
-            </div>
-            <div class="a44">
-              <div class="a45">
-                <img src="../../../public/resource/image/home/icon12.png" style="width: 24px;height: 24px;position: relative;top:-2px;" alt="">
-              </div>
-              <div>
-                <div>社区总视频数</div>
-                <div class="a47">{{Number(21313).toLocaleString()}}</div>
-              </div>
-            </div>
-          </div>
               <!-- 用户新增数据 -->
               <div>
                 <div class="a54">
