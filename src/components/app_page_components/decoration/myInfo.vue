@@ -17,23 +17,31 @@
 	// 店铺信息
 	function _shopInfo() {
 		console.log('店铺信息');
-		// decoration/Store/webGetStoreInfo
-		global.axios.post('decoration/Store/findTableRecords', {}, global)
-			.then(res => {
-				console.log('店铺数据', res.list);
-				shopObj.value = res.list[0]
-				logo.value = shopObj.value.logo
-				// a待审核 b 已通过 c已拒绝
-				shType.value = res.list[0].check_status
-				if (shType.value == 'c') {
-					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
-						mobile: shopObj.value.mobile,
-					}, global).then(res => {
-						console.log('商家入驻信息', res);
-						check_remark.value = res.check_remark
-					})
-				}
-			})
+		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+			console.log('自己的商家id', res_one);
+			global.axios.post('decoration/Store/webGetStoreInfo', {
+				store_id: res_one.joiner_sign
+			}, global)
+				.then(res => {
+					console.log('店铺数据', res);
+					shopObj.value = res
+					logo.value = res.logo
+					// a待审核 b 已通过 c已拒绝
+					shType.value = res.check_status
+					if (shType.value == 'b') {
+						getGoodsTypeList()
+					}
+					if (shType.value == 'c') {
+						global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+							mobile: shopObj.value.mobile,
+						}, global).then(res => {
+							console.log('商家入驻信息', res);
+							check_remark.value = res.check_remark
+						})
+					}
+				})
+		})
+		// 
 	}
 	_shopInfo()
 
@@ -60,7 +68,7 @@
 	const visible_logo = ref(false)//logo修改规则开关
 	const visible_shop_name = ref(false)//店铺名字修改开关
 
-	const logo = ref('https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025425/16tmf4tq815658ti3u1nnsb8gg812aie.jpg')//店铺logo
+	const logo = ref('')//店铺logo
 	// 删除logo
 	function delImgLogo() {
 		console.log('删除logo');
@@ -98,7 +106,7 @@
 	}
 
 	const infoArr = ref([
-		{ key: 'user_id', name: '店铺编号' },
+		{ key: 'id', name: '店铺编号' },
 		{ key: 'create_time', name: '开店时间' },
 		{ key: 'mobile', name: '手机号' },
 		{ key: 'store_name', name: '店铺名称' },
@@ -120,7 +128,10 @@
 				renderTable(flattened);
 			});
 	}
-	getGoodsTypeList()
+	// 已通过
+	if (shType.value == 'b') {
+	  getGoodsTypeList()
+	}
 
 	// 平铺多级结构为数组路径
 	function flattenCategories(list, path = [], result = []) {
@@ -153,7 +164,6 @@
 				}
 			});
 		});
-
 		return rowspanMap;
 	}
 
@@ -194,7 +204,7 @@
 	// 分页
 	const current = ref(1)
 
-	const titleType = ref('店铺数据')
+	const titleType = ref('店铺信息')
 
 	// 图表
 	const chartRef = ref(null)
@@ -268,17 +278,23 @@
 		}
 	});
 
+	// 删除温馨提示
+	function closeWarning() {
+		const el = document.querySelector('.a73');
+		if (el) el.remove();
+	}
+
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
 
-		<div style="display: flex;">
+		<!-- <div style="display: flex;">
 			审核状态：<div @click="shType='a'">审核中</div>
 			<div @click="shType='b'" style="margin-left:20px">通过</div>
 			<div @click="shType='c'" style="margin-left:20px">拒绝</div>
-		</div>
+		</div> -->
 		<!-- <div>审核中状态</div> -->
 		<div v-if="shType=='a'||shType=='c'">
 			<div style="font-size: 18px;">
@@ -354,7 +370,7 @@
 				</div>
 				<!-- 店铺信息 -->
 				<div v-if="titleType=='店铺信息'">
-					<div class="a23">店铺信息</div>
+					<div class="a23" style="margin-top: 10px;">店铺信息</div>
 					<div class="a24">
 						<div class="a25">
 							<template v-for="item in infoArr" :key="item">
@@ -367,20 +383,20 @@
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
 								</div>
 							</template>
-							<div class="a30">
+							<!-- <div class="a30">
 								<div class="a31">店铺主体:
 								</div>
 								<div class="a32" v-if="shopObj.license_image">
-									四川某某科技有限责任公司
+									<img :src="shopObj.license_image[0]" alt="" class="a36">
 								</div>
-							</div>
+							</div> -->
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺地址:</div>
-								<div class="a35"></div>
+								<div class="a35">{{shopObj.address}}</div>
 							</div>
 						</div>
-						<div style="text-align: center;" v-if="shopObj.license_image">
-							<img :src="shopObj.license_image[0]" alt="" class="a36">
+						<div style="text-align: center;" v-if="shopObj.logo">
+							<img :src="shopObj.logo" alt="" class="a36">
 							<div class="a37">店铺logo</div>
 						</div>
 					</div>
@@ -420,7 +436,7 @@
 									</div>
 									<div>
 										<div>商品总数</div>
-										<div class="a47">174</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -429,7 +445,7 @@
 									</div>
 									<div>
 										<div>今日营业额</div>
-										<div class="a47">174</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -438,7 +454,7 @@
 									</div>
 									<div>
 										<div>本月营业额</div>
-										<div class="a47">174</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a52">
@@ -447,7 +463,7 @@
 									</div>
 									<div>
 										<div>押金余额</div>
-										<div class="a47">174</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 							</div>
@@ -457,8 +473,8 @@
 										<AuditOutlined class="a46" />
 									</div>
 									<div>
-										<div>商品总数</div>
-										<div class="a47">174</div>
+										<div>总订单数</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -466,8 +482,8 @@
 										<AuditOutlined class="a46" />
 									</div>
 									<div>
-										<div>今日营业额</div>
-										<div class="a47">174</div>
+										<div>今日订单数</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -475,8 +491,8 @@
 										<AuditOutlined class="a46" />
 									</div>
 									<div>
-										<div>本月营业额</div>
-										<div class="a47">174</div>
+										<div>本月订单数</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a52">
@@ -484,8 +500,8 @@
 										<AuditOutlined class="a46" />
 									</div>
 									<div>
-										<div>押金余额</div>
-										<div class="a47">174</div>
+										<div>曝光量余额</div>
+										<div class="a47">{{Number(21313).toLocaleString()}}</div>
 									</div>
 								</div>
 							</div>
@@ -495,7 +511,7 @@
 									<span class="a55">（本年）</span>
 								</div>
 								<div>
-									<b>总营业额：12321123</b>
+									<b>总营业额：{{Number(21313).toLocaleString()}}</b>
 								</div>
 							</div>
 							<div style="width: 100%;">
@@ -512,10 +528,10 @@
 								</div>
 								<div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
 									<div style="display: flex;">
-										<div>NO.{{item}}</div>
-										<div style="margin-left: 10px;">商家沙琪玛</div>
+										<div style="width: 30px;">NO.{{item}}</div>
+										<div style="margin-left: 20px;">商家沙琪玛</div>
 									</div>
-									<div>9822,11万</div>
+									<div>{{Number(21313).toLocaleString()}}万</div>
 								</div>
 							</div>
 							<div class="a62"></div>
@@ -545,27 +561,27 @@
 							<div style="display: flex;">
 								<div class="a67">总货款：
 								</div>
-								<div>2131312321</div>
+								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">可提现货款：
 								</div>
-								<div>2131312321</div>
+								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">待结算货款：
 								</div>
-								<div>2131312321</div>
+								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">已提现货款：
 								</div>
-								<div>2131312321</div>
+								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">已结算货款：
 								</div>
-								<div>2131312321</div>
+								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
 						</div>
 						<div style="display: flex;">
@@ -573,7 +589,7 @@
 								<div style="margin-right: 20px;">
 									<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 								</div>
-								<div class="a70">123121</div>
+								<div class="a70">{{Number(2131312321).toLocaleString()}}</div>
 							</div> -->
 							<div style="display: flex;">
 								<div class="a71">
@@ -582,7 +598,7 @@
 											<div style="margin-right: 20px;">
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
-											<div class="a72">123121</div>
+											<div class="a72">{{Number(2131312321).toLocaleString()}}</div>
 										</div>
 										<div class="a73">
 											<div class="a74">
@@ -590,14 +606,14 @@
 													<ExclamationCircleOutlined class="a76" />
 													<div>温馨提示</div>
 												</div>
-												<CloseOutlined />
+												<CloseOutlined @click="closeWarning" />
 											</div>
 											<div>当前押金过低请前往充值！</div>
 										</div>
 									</div>
 									<div style="color: #ff0000;">当货款余额充足时，押金不足时将使用货款自动补齐押金.</div>
 								</div>
-								<div style="padding: 20px;">
+								<div style="padding: 20px;cursor: pointer;">
 									<div class="a77">充值</div>
 									<div class="a78">提现</div>
 								</div>
@@ -651,7 +667,7 @@
 						<div v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item" class="a89">
 							<div>QW12313123123</div>
 							<div>订单收款</div>
-							<div>2131.11</div>
+							<div>{{Number(2131312321).toLocaleString()}}</div>
 							<div>2001-11-11 12:12:12</div>
 						</div>
 						<div class="a90">
@@ -865,7 +881,7 @@
 
 	.a24 {
 		display: flex;
-		font-size: 14px;
+		font-size: 17px;
 		align-items: center;
 	}
 

@@ -393,7 +393,7 @@
       }
     })
     console.log('post_params', post_params);
-    const requiredFields = ['name', 'store_id', 'cover_image','images','brand_id','carriage_id']; //需要检索的字段
+    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
       // console.error('表单未填写完整');
       message.error('表单未填写完整')
@@ -615,27 +615,37 @@
   }
 
   // 承诺 
-  const cn_value = ref(['假一赔十'])
+  const cn_value = ref([])
   // 我勾选的承诺
   const wgxdcn = ref([])
-  const cnOption = [
-    {
-      label: '7天无理由退货此承诺对现货生效，部分定制不适用该承诺',
-      value: '7天无理由退货此承诺对现货生效，部分定制不适用该承诺',
-      text: '商家再买家到货后7天内承诺，若买家有任何不满意，可无理由退货。'
-    },
-    {
-      label: '假一赔十',
-      value: '假一赔十',
-      text: '若商家违规销售《圈风平台合作协议》规定的"严重问题产品”，商家同意平台有权依据《圈风平台合作协议》、《圈风假货处理规则》及其他相关规定采取违规处理措施，包括但不限于限制商家店铺资金提现、按照"假一赔十"的标准自商家*拼单要求店铺资金中扣除相应款项。'
-    },
-  ]
+  const cnOption = ref([])
+  // 商品可用服务
+  function getGoodsServiceList() {
+    global.axios
+      .post('decoration/GoodsService/getGoodsServiceList', {
+      }, global)
+      .then((res) => {
+        console.log('商品可用服务', res.list);
+        cnOption.value = []
+        res.list.map((item) => {
+          cnOption.value.push({
+            label: item.name,
+            value: item.name,
+            text: item.introduce
+          })
+        })
+        cn_value.value[0] = cn_value.value[0]?cn_value.value[0]:res.list[0].name
+        cncChange()
+      });
+  }
+  getGoodsServiceList()
+
+
   // 承诺变化了
   function cncChange() {
     // console.log('承诺变化了', cn_value.value);
-    wgxdcn.value = cnOption.filter(item => cn_value.value.includes(item.value));
+    wgxdcn.value = cnOption.value.filter(item => cn_value.value.includes(item.value));
   }
-  cncChange()
 
   // 商品规格
   const shopGuige = ref([
@@ -763,7 +773,7 @@
         trade_type: 'A_NATIVE',
       }, global)
       .then((res) => {
-        console.log('结果', res);
+        console.log('分类保证金缴纳情况', res);
         if (res.pay_info) {
           pay_info.value = res.pay_info
         } else {
@@ -828,6 +838,7 @@
       .post('decoration/Setting/getBaseTypes', {}, global)
       .then((res) => {
         console.log('商品热门词', res.goods_hot_words);
+        sprmc.value = res.goods_hot_words
       })
   }
   sprmcList()
@@ -1004,8 +1015,8 @@
                         placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
                       <div class="a39">
                         <span class="a40">热搜词推荐</span>:
-                        <span @click="post_params.name=post_params.name+item" class="a41"
-                          v-for="item in sprmc" :key="item">{{item}}</span>
+                        <span @click="post_params.name=post_params.name+item" class="a41" v-for="item in sprmc"
+                          :key="item">{{item}}</span>
                       </div>
                     </div>
                   </div>
