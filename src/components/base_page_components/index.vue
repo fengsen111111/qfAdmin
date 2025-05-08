@@ -176,7 +176,7 @@
       <div style="overflow: auto;height: 86vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
-            <div style="overflow: auto;height: 86vh;">
+            <div style="">
               <div style="display: flex;align-items: center;padding: 20px;font-size: 20px;font-weight: bold;">
                 <img src="../../../public/resource/image/pps.png" style="width: 25px;height: 25px;margin-right: 10px;"
                   alt="">
@@ -386,7 +386,7 @@
           </a-col>
           <a-col :lg="10" :xl="6">
             <!-- right -->
-            <div style="background-color: #f5f5f5;padding: 10px;overflow: auto;height: 86vh;">
+            <div style="background-color: #f5f5f5;padding: 10px;">
               <div style="padding: 20px;background-color: #fff;">
                 <div style="display: flex;justify-content: space-between;">
                   <div style="font-size: 17px;"><b>工作台</b></div>
