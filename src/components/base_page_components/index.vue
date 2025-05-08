@@ -134,7 +134,7 @@
               { offset: 0, color: '#e3f0ff' },
               { offset: 1, color: '#fff' }
             ])
-          }
+          },
         }
       ],
     }
@@ -176,7 +176,7 @@
       <div style="overflow: auto;height: 86vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
-            <div style="">
+            <div >
               <div style="display: flex;align-items: center;padding: 20px;font-size: 20px;font-weight: bold;">
                 <img src="../../../public/resource/image/pps.png" style="width: 25px;height: 25px;margin-right: 10px;"
                   alt="">
@@ -199,7 +199,6 @@
                   <div class="a45">
                     <img src="../../../public/resource/image/home/icon2.png"
                       style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
-
                   </div>
                   <div>
                     <div>今日营业额</div>
@@ -210,7 +209,6 @@
                   <div class="a45">
                     <img src="../../../public/resource/image/home/icon3.png"
                       style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
-
                   </div>
                   <div>
                     <div>本月营业额</div>
@@ -311,7 +309,7 @@
                   </div>
                   <div>
                     <div>社区总视频数</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(106.54).toLocaleString()}}万</div>
                   </div>
                 </div>
               </div>
@@ -322,16 +320,16 @@
                     <b>用户新增数据</b>
                     <span class="a55">（本年）</span>
                   </div>
-                  <div>
-                    <b>总用户数：{{Number(213131).toLocaleString()}}</b>
+                  <div style="margin-right: 100px;">
+                    <b>总用户数：{{Number(931991991).toLocaleString()}}</b>
                   </div>
                 </div>
                 <div style="width: 100%;">
                   <div ref="chartRef" class="a56"></div>
                 </div>
               </div>
-              <div style="height: 10px;background-color: #f5f5f5;"></div>
-              <div>
+              <div style="height: 10px;background-color: #f5f5f5;position: relative;top: -7vh;"></div>
+              <div style="position: relative;top: -7vh;">
                 <div class="a54">
                   <div>
                     <b>月营业额数据</b>
@@ -344,8 +342,8 @@
                   <div ref="chartRefTwo" class="a56"></div>
                 </div>
               </div>
-              <div style="height: 10px;background-color: #f5f5f5;"></div>
-              <div style="display: flex;justify-content: space-between;">
+              <div style="height: 10px;background-color: #f5f5f5;position: relative;top: -14vh;"></div>
+              <div style="display: flex;justify-content: space-between;position: relative;top: -14vh;">
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
                     <div style="font-size: 17px;"><b>商品营业额Top10</b></div>
@@ -393,41 +391,41 @@
                   <div class="a60">管理</div>
                 </div>
                 <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ContainerOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">运营管理</div>
+                    <div style="margin-top: 12px;">运营管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ApartmentOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">流水管理</div>
+                    <div style="margin-top: 12px;">流水管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <CrownOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">社区管理</div>
+                    <div style="margin-top: 12px;">社区管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <InsertRowLeftOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">商城管理</div>
+                    <div style="margin-top: 12px;">商城管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ShopOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">商家管理</div>
+                    <div style="margin-top: 12px;">商家管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <TeamOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">用户管理</div>
+                    <div style="margin-top: 12px;">用户管理</div>
                   </div>
                 </div>
                 <div style="height: 1px;background-color: #E6e9f0;margin: 10px 0px;"></div>
@@ -435,23 +433,23 @@
                   <div style="font-size: 17px;"><b>代办事项</b></div>
                 </div>
                 <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <DeleteRowOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">退店申请</div>
+                    <div style="margin-top: 12px;">退店申请</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <BankOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">聊天投诉</div>
+                    <div style="margin-top: 12px;">聊天投诉</div>
                   </div>
-                  <div style="text-align: center;margin-top: 20px;">
+                  <div style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <FileProtectOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
-                    <div style="margin-top: 10px;">社区审核</div>
+                    <div style="margin-top: 12px;">社区审核</div>
                   </div>
                 </div>
               </div>
@@ -507,17 +505,21 @@
     justify-content: space-between;
     align-items: center;
     margin: 15px 0px;
-    padding: 0px 60px;
+    padding: 0px 20px;
+    font-size: 17px;
   }
 
   .a55 {
     color: #999999;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .a56 {
-    width: 100%;
+    width: 76vw;
     height: 400px;
+    position: relative;
+    left: -4vw;
+    top: -5vh;
   }
 
   .a44 {
@@ -525,7 +527,7 @@
     padding: 20px;
     align-items: center;
     border-right: 1px solid #f5f5f5;
-    margin-left: 20px;
+    margin-left: 3vw;
   }
 
   .a45 {

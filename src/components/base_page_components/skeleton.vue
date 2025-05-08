@@ -539,7 +539,8 @@
       </a-layout-header>
 
       <a-layout-content>
-        <div v-for="page in skeleton_state.openedPages" :key="page.page_key" v-show="page.open_status" class="content">
+        <div v-for="page in skeleton_state.openedPages" :key="page.page_key" v-show="page.open_status"
+          :class="page.type=='IndexPage'?'contentZdy':'content'">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
               @openChildPage="openChildPage" @goLookTD="goLookTD" />
@@ -873,6 +874,30 @@
             bottom: 24px;
           }
         }
+      }
+    }
+  }
+
+  .contentZdy {
+    /* padding: 14px 14px 0 14px; */
+    width: calc(100% - 14px);
+    background-color: white;
+    height: calc(100vh - 80px);
+    margin: 7px;
+    border-radius: 3px;
+
+    .ant-layout-content {
+      height: auto;
+
+      /* //height: calc(100vh - 150px); */
+      .ant-layout-footer {
+        padding: 0;
+        width: 35%;
+        background-color: white;
+        font-size: 14px;
+        color: #515a6e;
+        position: absolute;
+        bottom: 24px;
       }
     }
   }
