@@ -10,7 +10,7 @@
     const azqk = ref('')//
     const printerList = ref([]) //所有可用打印机
     const intervalId = setInterval(() => {
-        console.log('LODOP',LODOP);
+        // console.log('LODOP',LODOP);
         if (!LODOP) {
             azqk.value = 'lodop未安装'
             LODOP = getLodop()
@@ -20,7 +20,7 @@
             for (let i = 0; i < count; i++) {
                 printerList.value.push(LODOP.GET_PRINTER_NAME(i))
             }
-            console.log('所有可用打印机', printerList.value);
+            // console.log('所有可用打印机', printerList.value);
             clearInterval(intervalId); // 停止定时器
         }
     }, 5000);

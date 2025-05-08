@@ -19,28 +19,28 @@
     brand_id: '',//商品品牌ID   
     status: true,//启用状态 Y上架 N下架    
     attributes: [
-      {
-        key: '固定属性1',
-        value: '',
-        type: 'select',
-        is_del: false
-      },
-      {
-        key: '固定属性2',
-        value: '',
-        type: 'input',
-        is_del: false
-      }
+      // {
+      //   key: '固定属性1',
+      //   value: '',
+      //   type: 'select',
+      //   is_del: false
+      // },
+      // {
+      //   key: '固定属性2',
+      //   value: '',
+      //   type: 'input',
+      //   is_del: false
+      // }
     ],//商品属性  
     services: [
-      {
-        key: '全网低价',
-        value: '多平台对比，优惠力度最大'
-      },
-      {
-        key: '热销爆款',
-        value: '热门商品，大家都在买'
-      }
+      // {
+      //   key: '全网低价',
+      //   value: '多平台对比，优惠力度最大'
+      // },
+      // {
+      //   key: '热销爆款',
+      //   value: '热门商品，大家都在买'
+      // }
     ],//商品服务  
     goods_sizes: [
       {
@@ -71,7 +71,7 @@
   const bfb = ref(0)//填写进度
 
   watch(() => post_params.type_id, (newVal, oldVal) => {
-    console.log('type_id 分类变化:', newVal);
+    // console.log('type_id 分类变化:', newVal);
     bfb.value = 50
     if (post_params.brand_id) {
       bfb.value = 100
@@ -155,7 +155,7 @@
 
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
-  console.log('props数据', props.pageData.data);
+  // console.log('props数据', props.pageData.data);
   // 查看当前数据
   function lookData() {
     global.axios
@@ -177,6 +177,7 @@
           cn_value.value = res.goods_datas.services.map((item) => {
             return item.key
           })
+          cncChange()//更新左边显示
           // 曝光时间单独更行
           setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
           shopGuige.value[0].value = []
@@ -196,7 +197,9 @@
   }
   // 有数据，编辑数据
   if (props.pageData.data.id) {
-    lookData()
+    setTimeout(() => {
+      lookData()
+    }, 1000);
   } else {
     // 没有id就是新增商品
     post_params.type_id = props.pageData.data.typeId
@@ -292,9 +295,42 @@
         // store_id: post_params.store_id
       }, global)
       .then((res) => {
-        console.log('商品分类列表', res.list);
+        // console.log('商品分类列表', res.list, post_params.type_id);
         spflList.value = res.list
+        // 根据分类id找到对应分类，并设置固定属性，只有新增
+        let result = findItemById(res.list, post_params.type_id)
+        // console.log('找到对应项', result.default_attributes);
+        post_params.attributes = []
+        result.default_attributes.map((item) => {
+          post_params.attributes.push({
+            key: item.key,
+            value: '',
+            type: 'select',
+            is_del: false,
+            option: item.values
+          })
+        })
+        if (props.pageData.data.id) {
+          // 编辑页面赋值
+          setTimeout(() => {
+
+          }, 1000);
+        }
       });
+  }
+  function findItemById(list, targetId) {
+    for (const item of list) {
+      if (item.id === targetId) {
+        return item;
+      }
+      if (item.children && item.children.length > 0) {
+        const found = findItemById(item.children, targetId);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null; // 如果没找到，返回 null
   }
   const ppList = ref([])//品牌列表
   // 商品品牌列表
@@ -356,8 +392,15 @@
         value: item.value
       }
     })
-    loading()
     console.log('post_params', post_params);
+    const requiredFields = ['name', 'store_id', 'cover_image','images','brand_id','carriage_id']; //需要检索的字段
+    if (!validatePostParams(post_params, requiredFields)) {
+      // console.error('表单未填写完整');
+      message.error('表单未填写完整')
+      return false
+    }
+    return false
+    loading()
     global.axios
       .post('decoration/Goods/webAddGoods', post_params, global)
       .then((res) => {
@@ -382,6 +425,19 @@
       });
   }
 
+
+  // 检索字段填写情况
+  function validatePostParams(post_params, requiredFields = []) {
+    for (const field of requiredFields) {
+      const value = post_params[field];
+      if (value === undefined || value === null || value === '') {
+        console.warn(`字段 ${field} 是必填项`);
+        return false;
+      }
+    }
+    return true;
+  }
+
   function reset() {
     global.Modal.confirm({
       title: global.findLanguage("该操作会导致未保存的数据丢失，请谨慎操作！"),
@@ -399,29 +455,18 @@
           post_params.detail = []
           post_params.brand_id = ''
           post_params.status = false
-          post_params.attributes = [
-            {
-              key: '固定属性1',
-              value: '',
-              type: 'select',
-              is_del: false
-            },
-            {
-              key: '固定属性2',
-              value: '',
-              type: 'input',
-              is_del: false
-            }
-          ]
+          // 重新赋值属性 
+          getGoodsTypeList()
+
           post_params.services = [
-            {
-              key: '全网低价',
-              value: '多平台对比，优惠力度最大'
-            },
-            {
-              key: '热销爆款',
-              value: '热门商品，大家都在买'
-            }
+            // {
+            //   key: '全网低价',
+            //   value: '多平台对比，优惠力度最大'
+            // },
+            // {
+            //   key: '热销爆款',
+            //   value: '热门商品，大家都在买'
+            // }
           ]
           post_params.goods_sizes = [
             {
@@ -536,7 +581,7 @@
             }),
           }
         })
-        console.log('所有运费模板', allYfmb.value);
+        // console.log('所有运费模板', allYfmb.value);
         // 有数据，编辑数据
         if (props.pageData.data.id) {
         } else {
@@ -556,7 +601,7 @@
         type: 'goods'
       }, global)
       .then((res) => {
-        console.log('曝光等级列表', res);
+        // console.log('曝光等级列表', res);
         bgdjList.value = res.list
       });
   }
@@ -587,7 +632,7 @@
   ]
   // 承诺变化了
   function cncChange() {
-    console.log('承诺变化了', cn_value.value);
+    // console.log('承诺变化了', cn_value.value);
     wgxdcn.value = cnOption.filter(item => cn_value.value.includes(item.value));
   }
   cncChange()
@@ -697,13 +742,13 @@
   const check_status = ref('')//a待审核 b 已通过 c已拒绝
   // 当前商家店铺信息
   function _shopInfo() {
-    console.log('店铺信息');
+    // console.log('店铺信息');
     global.axios.post('decoration/Store/findTableRecords', {
       currentPage: 1,
       pageSize: 20
     }, global)
       .then(res => {
-        console.log('店铺数据', res.list[0]);
+        // console.log('店铺数据', res.list[0]);
         // a待审核 b 已通过 c已拒绝
         check_status.value = res.list[0].check_status
       })
@@ -776,6 +821,16 @@
   }
 
   const isYl = ref(false)//是否预览
+
+  const sprmc = ref([])//商品热门词
+  function sprmcList() {
+    global.axios
+      .post('decoration/Setting/getBaseTypes', {}, global)
+      .then((res) => {
+        console.log('商品热门词', res.goods_hot_words);
+      })
+  }
+  sprmcList()
 </script>
 
 <template>
@@ -950,7 +1005,7 @@
                       <div class="a39">
                         <span class="a40">热搜词推荐</span>:
                         <span @click="post_params.name=post_params.name+item" class="a41"
-                          v-for="item in ['防爆','可拆洗','充电']" :key="item">{{item}}</span>
+                          v-for="item in sprmc" :key="item">{{item}}</span>
                       </div>
                     </div>
                   </div>
@@ -1045,9 +1100,8 @@
                                 </template>
                                 <template v-else-if="item.type=='select'">
                                   <a-select v-model:value="item.value" class="a62" placeholder="请选择">
-                                    <a-select-option value="固定值1">固定值1</a-select-option>
-                                    <a-select-option value="固定值2">固定值2</a-select-option>
-                                    <a-select-option value="固定值3">固定值3</a-select-option>
+                                    <a-select-option :value="iss" v-for="iss in item.option"
+                                      :key="iss">{{iss}}</a-select-option>
                                   </a-select>
                                 </template>
                                 <!-- 是否可删除 -->
@@ -1064,7 +1118,9 @@
                     <div style="display: flex;">
                       <div>商品详情</div>
                       <div class="a63">
-                        <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情 <span class="a64">查看教程</span></div>
+                        <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情
+                          <!-- <span class="a64">查看教程</span> -->
+                        </div>
                         <div class="a65">
                           <div class="a66">
                             <div class="a67">
@@ -1666,7 +1722,7 @@
                   类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元
                 </div>
                 <div class="b39">
-                  <div class="b40">
+                  <div class="b40" style="cursor: pointer;">
                     <div class="b41">
                       充值保证金</div>
                     <div @click="pay_info_Vis=false" class="b42">暂不充值
