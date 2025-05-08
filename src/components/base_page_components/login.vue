@@ -90,6 +90,7 @@
       global.axios.post('factory_system/Base/login', login_state.loginData, global)
         .then(res => {
           if (res) {
+            window.removeEventListener('keydown', handleKeydown);//卸载监听
             localStorage.setItem('Authorization', res.token);
             errorMsg.value = '' //清空报错信息
             if (login_state.holdLogin) {
