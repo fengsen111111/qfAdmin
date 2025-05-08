@@ -130,7 +130,7 @@
 	}
 	// 已通过
 	if (shType.value == 'b') {
-	  getGoodsTypeList()
+		getGoodsTypeList()
 	}
 
 	// 平铺多级结构为数组路径
@@ -510,7 +510,7 @@
 									<b>营业额数据</b>
 									<span class="a55">（本年）</span>
 								</div>
-								<div>
+								<div style="margin-right: 100px;">
 									<b>总营业额：{{Number(21313).toLocaleString()}}</b>
 								</div>
 							</div>
@@ -1045,18 +1045,22 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: 15px 0px;
-		padding: 0px 60px;
+		margin: 20px 0px;
+		padding: 0px 20px;
+		font-size: 17px;
 	}
 
 	.a55 {
 		color: #999999;
-		font-size: 12px;
+		font-size: 14px;
 	}
 
 	.a56 {
-		width: 100%;
+		width: 76vw;
 		height: 400px;
+		position: relative;
+		left: -4vw;
+		top: -5vh;
 	}
 
 	.a57 {
