@@ -64,7 +64,7 @@
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="display: flex;">
-				<div style="width: 45%;padding: 10px;">
+				<div style="width: 35%;padding: 10px 30px;">
 					<div style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 						订单日志</div>
 					<div style="padding: 20px;">
@@ -114,7 +114,7 @@
 					</div>
 				</div>
 				<div style="width: 8px;background-color: #f5f5f5;"></div>
-				<div style="width: 55%;padding: 10px;">
+				<div style="width: 65%;padding: 10px 30px;">
 					<div style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">订单信息</div>
 					<div style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
 						<div style="display: flex;color: #4e5969;">
@@ -206,7 +206,7 @@
 
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
-			<div style="padding: 10px;">
+			<div style="padding: 10px 30px;">
 				<div style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;">商品明细</div>
 				<div style="margin-top: 10px;">
 					<div class="a88" style="text-align: center;">
