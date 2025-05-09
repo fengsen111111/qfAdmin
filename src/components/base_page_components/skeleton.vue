@@ -59,6 +59,16 @@
             type: "addressManage",
             url: "",
             value: "333334",
+          },
+          {
+            icon: "",
+            label: "用户详情",
+            order: "3",
+            page_id: "0",
+            pid: "7061541206748037735",
+            type: "userDetails",
+            url: "",
+            value: "333335",
           }
         ]
       })
