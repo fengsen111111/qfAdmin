@@ -634,7 +634,8 @@
 						<div class="a81">
 							<div>订单编号</div>
 							<div>
-								<a-input placeholder="请输入订单编号" class="a82"></a-input>
+								<a-input placeholder="请输入订单编号" class="a82"
+									style="border:none;border-radius: 4px;"></a-input>
 							</div>
 						</div>
 						<div class="a81">
@@ -651,7 +652,8 @@
 						<div class="a81">
 							<div>流水时间</div>
 							<div>
-								<a-range-picker v-model:value="value1" class="a82" />
+								<a-range-picker v-model:value="value1" class="a82"
+									style="border:none;border-radius: 4px;" />
 							</div>
 						</div>
 						<div class="a84">
@@ -694,8 +696,11 @@
 </template>
 
 <style lang="less" scoped>
+
 	::v-deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
 		background-color: #f7f8f9;
+		border: none;
+		border-radius: 4px;
 	}
 
 	.table {

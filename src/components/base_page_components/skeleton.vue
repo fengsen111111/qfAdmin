@@ -69,6 +69,16 @@
             type: "userDetails",
             url: "",
             value: "333335",
+          },
+          {
+            icon: "",
+            label: "订单详情",
+            order: "4",
+            page_id: "0",
+            pid: "7061541206748037736",
+            type: "orderDetails",
+            url: "",
+            value: "333336",
           }
         ]
       })
@@ -550,7 +560,7 @@
 
       <a-layout-content>
         <div v-for="page in skeleton_state.openedPages" :key="page.page_key" v-show="page.open_status"
-          :class="page.type=='IndexPage'?'contentZdy':'content'">
+          :class="page.type=='IndexPage'||page.type=='orderDetails'?'contentZdy':'content'">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
               @openChildPage="openChildPage" @goLookTD="goLookTD" />

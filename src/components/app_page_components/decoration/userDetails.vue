@@ -171,13 +171,13 @@
 					<div class="a81">
 						<div>订单编号</div>
 						<div>
-							<a-input placeholder="请输入订单编号" class="a82"></a-input>
+							<a-input placeholder="请输入订单编号" class="a82" style="border:none;border-radius: 4px;"></a-input>
 						</div>
 					</div>
 					<div class="a81">
 						<div>订单状态</div>
 						<div>
-							<a-select ref="select" v-model:value="value1" class="a83">
+							<a-select ref="select" v-model:value="value1" class="a83" >
 								<a-select-option value="jack">Jack</a-select-option>
 								<a-select-option value="lucy">Lucy</a-select-option>
 								<a-select-option value="disabled" disabled>Disabled</a-select-option>
@@ -188,7 +188,7 @@
 					<div class="a81">
 						<div>流水时间</div>
 						<div>
-							<a-range-picker v-model:value="value1" class="a82" />
+							<a-range-picker v-model:value="value1" class="a82" style="border:none;border-radius: 4px;" />
 						</div>
 					</div>
 					<div class="a84">
@@ -203,7 +203,7 @@
 					</div>
 				</div>
 				<div class="a87"></div>
-				 <div style="font-weight: bold;">
+				 <div style="">
 					<div class="a88">
 						<div class="w5_100">操作</div>
 						<div class="w10_100">订单编号</div>
@@ -260,6 +260,8 @@
 	}
 	::v-deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
 		background-color: #f7f8f9;
+		border:none;
+		border-radius: 4px;
 	}
 	.a21 {
 		display: flex;
@@ -364,6 +366,7 @@
 		display: flex;
 		background-color: #f2f3f5;
 		text-align: left;
+		font-weight: bold;
 	}
 
 	.a89 {
