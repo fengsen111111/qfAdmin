@@ -25,7 +25,7 @@ import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop
 import myInfo from '@/components/app_page_components/decoration/myInfo.vue'//我的店铺信息
 import addressManage from '@/components/app_page_components/decoration/addressManage.vue'//地址管理
 import userDetails from '@/components/app_page_components/decoration/userDetails.vue'//用户详情
-import orderDetails from '@/components/app_page_components/decoration/userDetails.vue'//订单详情
+import orderDetails from '@/components/app_page_components/decoration/orderDetails.vue'//订单详情
 
 export const allPageComponents = {
     TablePage, FormPage, DetailPage, IndexPage,

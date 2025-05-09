@@ -57,7 +57,7 @@
 						</div>
 					</div>
 					<div class="a21">
-						<div>店铺详情页</div>
+						<div style="font-size: 17px;font-weight: bold;">用户详情页</div>
 						<div class="a22">返回</div>
 					</div>
 				</div>
