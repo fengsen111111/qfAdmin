@@ -293,6 +293,129 @@
 		})
 	}
 	getCustomerRoomList()
+
+	// 商家汇付sta
+	const treeData = ref([])
+	function getAreas() {
+		global.axios
+			.post('factory_system/Base/getAreas', {}, global)
+			.then((res) => {
+				treeData.value = res.areas
+			});
+	}
+	getAreas()
+
+	const hf_vis = ref(false)
+	const formState = reactive({
+		reg_name: '', //企业名称 
+		license_code: '',//营业执照编号
+		license_begin_date: '',//营业执照有效期起始日期
+		license_validity_type: '0',//营业执照有效期  1长期有效  0非长期有效
+		license_end_date: '',//营业执照有效期结束日期 非长期有效必填 
+		// reg_prov_id: '',//注册地址(省)
+		// reg_area_id: '',//注册地址(市)
+		// reg_district_id: '',//注册地址(区)
+		regAddress: '',//注册地址
+		reg_detail: '',//注册地址(详细信息) 
+		legal_name: '',//法人姓名
+		legal_cert_np: '',//法人身份证号码
+		legal_cert_begin_date: '',//身份证有效期开始时间  
+		legal_cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
+		legal_cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
+		contract_name: '',//联系人姓名 
+		contract_mobile: '',//联系人手机号  
+	});
+	const formRef = ref();//表单绑定
+	// 提交汇付
+	function handHfOk() {
+		console.log('汇付点击确定');
+		formRef.value
+			.validateFields()
+			.then(values => {
+				console.log('验证成功', values);
+				// 执行提交逻辑
+				let params = values
+				params.reg_prov_id = params.regAddress[0]
+				params.reg_area_id = params.regAddress[1]
+				params.reg_district_id = params.regAddress[2]
+				delete params.regAddress //删除注册地址，这个是自己的字段
+				console.log('处理后的params', params);
+				return false
+				global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
+					console.log('res汇付开通结果', res);
+				})
+			})
+			.catch(err => {
+				console.log('验证失败', err);
+			});
+	}
+	// 商家汇付end
+
+	// 商家银行卡sta
+	const bankCodes = [
+		{ value: '01040000', text: "中国银行" },
+		{ value: '01030000', text: "中国农业银行" },
+		{ value: '01020000', text: "中国工商银行" },
+		{ value: '01050000', text: "中国建设银行" },
+		{ value: '03010000', text: "交通银行" },
+		{ value: '04030000', text: "中国邮政储蓄银行" },
+		{ value: '03040000', text: "华夏银行" },
+		{ value: '03080000', text: "招商银行" },
+		{ value: '03100000', text: "上海浦东发展银行" },
+		{ value: '03160000', text: "浙商银行" },
+		{ value: '03060000', text: "广发银行" },
+		{ value: '03130012', text: "天津银行" },
+		{ value: '31346100', text: "济宁银行" },
+		{ value: '03050000', text: "中国民生银行" },
+	]
+	const bank_vis = ref(false)
+	const formStateBank = reactive({
+		type: 'store', //store商家 user用户 
+		card_name: '',//卡户名
+		card_no: '',//卡号 商家对公，个人对私
+		regAddress: '',//银行所在地址
+		// prov_id: '',//银行所在(省)
+		// area_id: '',//银行所在(市)
+		bank_code: '',//银行号 商家绑定对公银行卡时必填
+		branch_code: '',//支行联行号 商家绑定对公银行卡时必填
+		cert_no: '',//持卡人身份证号码 用户绑定对私银行卡时必填 
+		legal_cert_validity_type: '0',//持卡人身份证有效期  1长期有效  0非长期有效；用户绑定对私银行卡时必填
+		legal_cert_begin_date: '',//持卡人身份证有效期开始时间 用户绑定对私银行卡时必填
+		legal_cert_end_date: '',//持卡人身份证有效期结束时间 非长期有效必填；用户绑定对私银行卡时必填  
+	});
+	const formRefBank = ref();//表单绑定
+	// 提交商家银行卡
+	function handBankOk() {
+		console.log('商家银行卡点击确定');
+		formRefBank.value
+			.validateFields()
+			.then(values => {
+				console.log('验证成功', values);
+				// 执行提交逻辑
+				let params = values
+				params.prov_id = params.regAddress[0]
+				params.reg_area_id = params.regAddress[1]
+				delete params.regAddress //删除注册地址，这个是自己的字段
+				console.log('处理后的params', params);
+				return false
+				global.axios.post('decoration/Setting/bindHBank', params, global, true).then((res) => {
+					console.log('res绑定商家提现银行卡', res);
+				})
+			})
+			.catch(err => {
+				console.log('验证失败', err);
+			});
+	}
+	function xzlhh() {
+		const link = document.createElement('a');
+		link.href =
+			'https://cloudpnrcdn.oss-cn-shanghai.aliyuncs.com/opps/api/prod/download_file/bank/%E9%93%B6%E8%A1%8C%E6%94%AF%E8%A1%8C%E7%BC%96%E7%A0%81.xlsx';
+		link.download = '银行支行编码.xlsx';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+	// 商家银行卡end
 </script>
 
 <template>
@@ -392,16 +515,30 @@
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
 								</div>
 							</template>
-							<!-- <div class="a30">
-								<div class="a31">店铺主体:
-								</div>
-								<div class="a32" v-if="shopObj.license_image">
-									<img :src="shopObj.license_image[0]" alt="" class="a36">
-								</div>
-							</div> -->
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
+							</div>
+							<div v-if="shopObj.type=='a'" class="a33">
+								<div class="a34">店铺主体:</div>
+								<div class="a35"><img :src="shopObj.logo" alt="" class="a36"></div>
+							</div>
+							<div class="a33">
+								<div class="a34">商家汇付:</div>
+								<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+									style="cursor: pointer;color: #0c96f1;">点击开通</div>
+								<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+									style="cursor: pointer;color: #0c96f1;">已开通</div>
+								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+							</div>
+							<div class="a33">
+								<div class="a34">商家提现银行卡:</div>
+								<div class="a35" v-if="shopObj.open_h_store_account=='c'" @click="bank_vis= true"
+									style="cursor: pointer;color: #0c96f1;">点击绑定</div>
+								<div class="a35" v-else-if="shopObj.open_h_store_account=='d'"
+									style="cursor: pointer;color: #0c96f1;">已绑定</div>
+								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+									审核中</div>
 							</div>
 						</div>
 						<div style="text-align: center;" v-if="shopObj.logo">
@@ -409,6 +546,190 @@
 							<div class="a37">店铺logo</div>
 						</div>
 					</div>
+					<!-- 开通汇付 -->
+					<a-modal v-model:visible="hf_vis" title="开通商家汇付" width="1000px" @ok="handHfOk">
+						<div>
+							<a-form :model="formState" ref="formRef" name="basic" :label-col="{ span: 10 }"
+								:wrapper-col="{ span: 14 }">
+								<a-row>
+									<a-col :span="12">
+										<a-form-item label="企业名称" name="reg_name"
+											:rules="[{ required: true, message: '请输入企业名称' }]">
+											<a-input v-model:value="formState.reg_name" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="营业执照编号" name="license_code"
+											:rules="[{ required: true, message: '请输入营业执照编号' }]">
+											<a-input v-model:value="formState.license_code" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="营业执照有效期" name="license_validity_type"
+											:rules="[{ required: true, message: '请输入营业执照有效期' }]">
+											<a-radio-group v-model:value="formState.license_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
+											:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
+											<a-date-picker v-model:value="formState.license_begin_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="营业执照有效期结束日期" name="license_end_date">
+											<a-date-picker v-model:value="formState.license_end_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="注册地址" name="regAddress"
+											:rules="[{ required: true, message: '请输入注册地址' }]">
+											<a-cascader v-model:value="formState.regAddress" :options="treeData"
+												placeholder="请输入注册地址" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="注册地址(详细信息)" name="reg_detail"
+											:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
+											<a-input v-model:value="formState.reg_detail" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="法人姓名" name="legal_name"
+											:rules="[{ required: true, message: '请输入法人姓名' }]">
+											<a-input v-model:value="formState.legal_name" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="法人身份证号码" name="legal_cert_np"
+											:rules="[{ required: true, message: '请输入法人身份证号码' }]">
+											<a-input v-model:value="formState.legal_cert_np" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+											:rules="[{ required: true, message: '请输入身份证有效期' }]">
+											<a-radio-group v-model:value="formState.legal_cert_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+											<a-date-picker v-model:value="formState.legal_cert_begin_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+											<a-date-picker v-model:value="formState.legal_cert_end_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="联系人姓名" name="contract_name"
+											:rules="[{ required: true, message: '请输入联系人姓名' }]">
+											<a-input v-model:value="formState.contract_name" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="联系人手机号" name="contract_mobile"
+											:rules="[{ required: true, message: '请输入联系人手机号' }]">
+											<a-input v-model:value="formState.contract_mobile" />
+										</a-form-item>
+									</a-col>
+								</a-row>
+							</a-form>
+						</div>
+					</a-modal>
+					<!-- 绑定商家银行卡 -->
+					<a-modal v-model:visible="bank_vis" title="绑定商家提现银行卡" width="1000px" @ok="handBankOk">
+						<div>
+							<a-form :model="formStateBank" ref="formRef" name="basic" :label-col="{ span: 10 }"
+								:wrapper-col="{ span: 14 }">
+								<a-row>
+									<a-col :span="12">
+										<a-form-item label="卡户名" name="card_name"
+											:rules="[{ required: true, message: '请输入卡户名' }]">
+											<a-input v-model:value="formStateBank.card_name" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="商家对公卡号" name="card_no"
+											:rules="[{ required: true, message: '请输入商家对公卡号' }]">
+											<a-input v-model:value="formStateBank.card_no" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="银行所在地址" name="regAddress"
+											:rules="[{ required: true, message: '请输入银行所在地址' }]">
+											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
+												placeholder="请输入银行所在地址" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="银行号" name="bank_code"
+											:rules="[{ required: true, message: '请输入银行号' }]">
+											<a-select ref="select" v-model:value="formStateBank.bank_code"
+												style="width: 100%">
+												<a-select-option :value="item.value" v-for="item in bankCodes"
+													:key="item.value">{{item.text}}</a-select-option>
+											</a-select>
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="支行联行号" name="branch_code"
+											:rules="[{ required: true, message: '请输入支行联行号' }]">
+											<div style="display: flex;align-items: center;">
+												<a-input v-model:value="formStateBank.branch_code" />
+												<div @click="xzlhh()"
+													style="margin-left: 10px;color: #0c96f1;white-space: nowrap;cursor: pointer;">
+													查询</div>
+											</div>
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="持卡人身份证号码" name="cert_no"
+											:rules="[{ required: true, message: '请输入持卡人身份证号码' }]">
+											<a-input v-model:value="formStateBank.cert_no" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+											:rules="[{ required: true, message: '请输入身份证有效期' }]">
+											<a-radio-group v-model:value="formStateBank.legal_cert_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+											<a-date-picker v-model:value="formStateBank.legal_cert_begin_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+									<a-col :span="12">
+										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+											<a-date-picker v-model:value="formStateBank.legal_cert_end_date"
+												style="width: 100%;" />
+										</a-form-item>
+									</a-col>
+								</a-row>
+							</a-form>
+						</div>
+					</a-modal>
 					<div class="a38">认证商品类目</div>
 					<div style="margin-top: 20px;">
 						<div>
@@ -641,7 +962,7 @@
 						<div class="a81">
 							<div>流水类型</div>
 							<div>
-								<a-select ref="select" v-model:value="value1" class="a83">
+								<a-select ref="select" v-model:value="value1" class="a83 custom-select-wrapper">
 									<a-select-option value="jack">Jack</a-select-option>
 									<a-select-option value="lucy">Lucy</a-select-option>
 									<a-select-option value="disabled" disabled>Disabled</a-select-option>
@@ -696,8 +1017,7 @@
 </template>
 
 <style lang="less" scoped>
-
-	::v-deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
+	::v-deep(.custom-select-wrapper.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
 		background-color: #f7f8f9;
 		border: none;
 		border-radius: 4px;
@@ -895,7 +1215,7 @@
 
 	.a24 {
 		display: flex;
-		font-size: 17px;
+		/* font-size: 17px; */
 		align-items: center;
 	}
 
@@ -907,10 +1227,10 @@
 	}
 
 	.a26 {
-		width: 100px;
+		width: 120px;
 		color: #666666;
 		text-align: right;
-		font-weight: bold;
+		/* font-weight: bold; */
 	}
 
 	.a27 {
@@ -919,12 +1239,12 @@
 	}
 
 	.a28 {
-		font-weight: bold;
+		/* font-weight: bold; */
 		margin-left: 30px;
 	}
 
 	.a29 {
-		font-weight: bold;
+		/* font-weight: bold; */
 		margin-left: 30px;
 	}
 
@@ -947,18 +1267,18 @@
 
 	.a33 {
 		display: flex;
-		margin-top: 10px;
-		font-weight: bold;
+		margin-top: 5px;
+		/* font-weight: bold; */
 	}
 
 	.a34 {
-		width: 100px;
+		width: 120px;
 		color: #666666;
 		text-align: right;
 	}
 
 	.a35 {
-		font-weight: bold;
+		/* font-weight: bold; */
 		margin-left: 30px;
 	}
 
