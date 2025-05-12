@@ -1230,8 +1230,14 @@
                                     </div>
                                   </div>
                                   <div>
-                                    <img :src="img" v-for="img in post_params.detail" :key="img" style="width: 100%;"
+                                    <div v-if="post_params.detail.length>0">
+                                      <img :src="img" v-for="img in post_params.detail" :key="img" style="width: 100%;"
                                       alt="">
+                                    </div>
+                                    <div v-else>
+                                      <img :src="img" v-for="img in post_params.images" :key="img" style="width: 100%;"
+                                      alt="">
+                                    </div>
                                   </div>
                                 </div>
                               </div>
