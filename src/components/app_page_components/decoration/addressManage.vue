@@ -12,11 +12,23 @@
 	const pageData = props.pageData;
 	const global = inject("global").value;
 
+	// console.log('pageData',pageData);
+	function lookData() {
+		global.axios
+			.post('decoration/StoreAddress/getStoreAddressList', {}, global)
+			.then((res) => {
+				console.log('当前数据', res);
+			});
+	}
+	lookData()
+
+
+
 	// -------------------电子面单
 	const fh_vis = ref(false)//电子面单发货地址新增编辑
 	const formState = reactive({
-		address: '',
-		addressDeta: '',
+		xx1: '',
+		xx2: '',
 	});
 	const formRef = ref(null);
 	// 弹框确认按钮
@@ -24,22 +36,37 @@
 		try {
 			const values = await formRef.value.validateFields();
 			console.log('Success:', values);
+			// console.log('查询出的obj', findPathById(treeData.value, values.address[2]));
+			return false
+			global.axios
+				.post('decoration/StoreAddress/editStoreAddress', {
+					id: '',//ID  修改时必传  
+					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
+					sender_name: '',//发货人
+					sender_mobile: '',//发货电话
+					address: values.xx2,//发货地址
+					type: 'a',//类型  a发货地址  b退货地址
+					status: 'Y',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
+				}, global)
+				.then((res) => {
+					console.log('新增结果', res);
+				});
 		} catch (errorInfo) {
 			console.log('Failed:', errorInfo);
 		}
 	}
-	function delAddress(item){
+	function delAddress(item) {
 		global.Modal.confirm({
-          title: global.findLanguage(
-            "确定要删除吗？"
-          ),
-          okText: global.findLanguage("确定"),
-          cancelText: global.findLanguage("取消"),
-          okType: "primary",
-          onOk: function () {
-            console.log('确定');
-          },
-        });
+			title: global.findLanguage(
+				"确定要删除吗？"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				console.log('确定');
+			},
+		});
 	}
 	// -------------------end电子面单
 	// -------------------退货地址
@@ -60,18 +87,18 @@
 			console.log('Failed:', errorInfo);
 		}
 	}
-	function delTh(item){
+	function delTh(item) {
 		global.Modal.confirm({
-          title: global.findLanguage(
-            "确定要删除吗？"
-          ),
-          okText: global.findLanguage("确定"),
-          cancelText: global.findLanguage("取消"),
-          okType: "primary",
-          onOk: function () {
-            console.log('确定');
-          },
-        });
+			title: global.findLanguage(
+				"确定要删除吗？"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				console.log('确定');
+			},
+		});
 	}
 	// -------------------end退货地址
 	const treeData = ref([])
@@ -83,7 +110,20 @@
 			});
 	}
 	getAreas()
-
+	// 查询对应地区的1、2、3级路径（如省、市、区）
+	function findPathById(data, targetId, path = []) {
+		for (const item of data) {
+			const newPath = [...path, item]; // 当前路径增加当前节点
+			if (item.id === targetId) {
+				return newPath;
+			}
+			if (item.children) {
+				const found = findPathById(item.children, targetId, newPath);
+				if (found) return found;
+			}
+		}
+		return null;
+	}
 </script>
 
 <template>
@@ -105,7 +145,7 @@
 					<tr>
 						<td>中国 福建省福州市鼓楼区</td>
 						<td>撒大苏打撒</td>
-						<td style="color: #0c96f1;display: flex;align-items: center;">
+						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
 							<div @click="delAddress('1')">删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
 							<div>编辑</div>
@@ -125,11 +165,11 @@
 				<a-modal v-model:visible="fh_vis" title="电子面单发货地址" @ok="handleOk">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 						:wrapper-col="{ span: 16 }">
-						<a-form-item label="选择地区" name="address" :rules="[{ required: true, message: '请选择地区!' }]">
-							<a-cascader v-model:value="formState.address" :options="treeData" placeholder="请选择地区" />
+						<a-form-item label="选择地区" name="xx1" :rules="[{ required: true, message: '请选择地区!' }]">
+							<a-cascader v-model:value="formState.xx1" :options="treeData" placeholder="请选择地区" />
 						</a-form-item>
-						<a-form-item label="详细地址" name="addressDeta" :rules="[{ required: true, message: '请填写详细地址!' }]">
-							<a-input v-model:value="formState.addressDeta" placeholder="请填写详细地址"  />
+						<a-form-item label="详细地址" name="xx2" :rules="[{ required: true, message: '请填写详细地址!' }]">
+							<a-input v-model:value="formState.xx2" placeholder="请填写详细地址" />
 						</a-form-item>
 					</a-form>
 				</a-modal>
@@ -166,7 +206,7 @@
 						<td>18481020570</td>
 						<td>中国 福建省福州市鼓楼区</td>
 						<td>撒大苏打撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒</td>
-						<td style="color: #0c96f1;display: flex;align-items: center;">
+						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
 							<div>删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
 							<div>编辑</div>

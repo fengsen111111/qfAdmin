@@ -652,7 +652,6 @@
           // 没有id就是新增商品
           cn_value.value[0] = cn_value.value[0] ? cn_value.value[0] : res.list[0].name
         }
-        
         cncChange()
       });
   }
