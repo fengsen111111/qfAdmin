@@ -20,8 +20,8 @@
   })
 
   // 定位到当前位置新增代码  =======》开始
-  let lng_dq = 104.066285//经度
-  let lat_dq = 30.573532//纬度
+  let lng_dq = ''//经度
+  let lat_dq = ''//纬度
   if (window.navigator.geolocation) {
     window.navigator.geolocation.getCurrentPosition(
       function (position) {
@@ -33,17 +33,12 @@
           const hxzb = bd09ToGcj02(lng_dq, lat_dq)
           component_state.lng = hxzb.gcj_lon
           component_state.lat = hxzb.gcj_lat
+          change()
         }
       },
       function (error) {
         // alert(`获取位置失败: ${error.message}`)
-        if (props.structure.value.length > 1) {
-          console.log('有值，不管');
-        } else {
-          console.log('lng_dq', lng_dq, lat_dq);
-          component_state.lng = lng_dq
-          component_state.lat = lat_dq
-        }
+        console.log('props.structure.value',props.structure.value);
       },
       {
         enableHighAccuracy: true
@@ -152,7 +147,7 @@
   }
 
   function addMarker(Lng, Lat) {
-    console.log('经纬度', Lng, Lat);
+    // console.log('经纬度', Lng, Lat);
     clearMarker()
     let marker = new AMap.Marker({
       icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",

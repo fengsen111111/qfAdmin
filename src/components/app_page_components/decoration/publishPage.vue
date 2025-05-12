@@ -174,8 +174,13 @@
           // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
           // 服务单独更新
-          cn_value.value = res.goods_datas.services.map((item) => {
-            return item.key
+          // cn_value.value = res.goods_datas.services.map((item) => {
+          //   return item.key
+          // })
+          // }
+          let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
+          arrSer.map((item) => {
+            cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
           // 曝光时间单独更行
@@ -386,11 +391,17 @@
     } else {
       // 没得值说明没动
     }
-    post_params.services = wgxdcn.value.map((item) => {
-      return {
-        key: item.label,
-        value: item.value
-      }
+    // service_ids:[],//服务数组
+    post_params.service_ids = []
+    // post_params.services = 
+    delete post_params.services
+    wgxdcn.value.map((item) => {
+      // console.log('item',item);
+      post_params.service_ids.push(item.id)
+      // return {
+      //   key: item.label,
+      //   value: item.value
+      // }
     })
     console.log('post_params', post_params);
     const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
@@ -399,7 +410,6 @@
       message.error('表单未填写完整')
       return false
     }
-    return false
     loading()
     global.axios
       .post('decoration/Goods/webAddGoods', post_params, global)
@@ -631,10 +641,18 @@
           cnOption.value.push({
             label: item.name,
             value: item.name,
-            text: item.introduce
+            text: item.introduce,
+            id: item.id
           })
         })
-        cn_value.value[0] = cn_value.value[0]?cn_value.value[0]:res.list[0].name
+        // 有数据，编辑数据
+        if (props.pageData.data.id) {
+          console.log('编辑不赋值');
+        } else {
+          // 没有id就是新增商品
+          cn_value.value[0] = cn_value.value[0] ? cn_value.value[0] : res.list[0].name
+        }
+        
         cncChange()
       });
   }
