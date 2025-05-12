@@ -432,6 +432,29 @@
   }
   import Print from '@/components/app_page_components/decoration/print.vue'
 
+  function djtzmk(str, strTwo, strThree) {
+    console.log('点击跳转对应模块', str,strTwo, strThree, skeleton_state.menuData);
+    skeleton_state.menuData.map((item) => {
+      if (item.label == str) {
+        item.children.map((iss) => {
+          if (iss.label == strTwo) {
+            if(strThree){
+              iss.children.map((xx)=>{
+                if(xx.label == strThree){
+                  console.log('xx',xx);
+                  openPage(xx, true);
+                }
+              })
+            }else{
+              console.log('iss',iss);
+              openPage(iss, true);
+            }
+          }
+        })
+      }
+
+    })
+  }
 </script>
 
 <template>
@@ -563,7 +586,7 @@
           :class="page.type=='IndexPage'||page.type=='orderDetails'?'contentZdy':'content'">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
-              @openChildPage="openChildPage" @goLookTD="goLookTD" />
+              @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" />
           </keep-alive>
         </div>
       </a-layout-content>

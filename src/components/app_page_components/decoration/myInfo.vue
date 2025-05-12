@@ -285,10 +285,12 @@
 	}
 
 	const is_ptsj = ref('商家')
+	const store_id = ref('')//商家id
 	function getCustomerRoomList() {
 		// 获取自己的角色ID和聊天状态
 		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
 			console.log('自己商家id和禁言状态', res_one);
+			store_id.value = res_one.joiner_sign
 			is_ptsj.value = res_one.joiner_sign == 1 ? "平台" : '商家'
 		})
 	}
@@ -416,12 +418,64 @@
 		document.body.removeChild(link);
 	}
 	// 商家银行卡end
+
+	import QRCode from 'qrcode';
+	const isPay = ref(false)//支付弹窗
+	const qrCodeData = ref('')//支付二维码
+	// 支付保证金
+	function payBzj() {
+		if (timer.value) {
+			clearInterval(timer.value);
+			timer.value = null;
+			totalSeconds.value = 5 * 60; // 5 分钟
+			minute.value = '05';
+			second.value = '00';
+		}
+		global.axios
+			.post('decoration/Store/createStoreEnsureMoney', {
+				store_id: store_id.value,
+				trade_type: 'A_NATIVE',
+				password: ''
+			}, global)
+			.then((res) => {
+				console.log('结果', res);
+				if (res.pay_info) {
+					QRCode.toDataURL(res.pay_info)
+						.then((url) => {
+							console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+							qrCodeData.value = url
+						})
+						.catch((err) => {
+							console.error('生成二维码失败', err);
+						});
+					isPay.value = true
+					timer.value = setInterval(updateTime, 1000);
+				}
+			})
+	}
+	let timer = ref(null);
+	const totalSeconds = ref(5 * 60); // 5 分钟
+	const minute = ref('05');
+	const second = ref('00');
+	// 支付倒计时
+	const updateTime = () => {
+		const mins = Math.floor(totalSeconds.value / 60);
+		const secs = totalSeconds.value % 60;
+		minute.value = String(mins).padStart(2, '0');
+		second.value = String(secs).padStart(2, '0');
+		if (totalSeconds.value > 0) {
+			totalSeconds.value--;
+		} else {
+			clearInterval(timer.value);
+			// 倒计时结束后的处理逻辑
+			console.log('倒计时结束');
+		}
+	};
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
-
 		<!-- <div style="display: flex;">
 			审核状态：<div @click="shType='a'">审核中</div>
 			<div @click="shType='b'" style="margin-left:20px">通过</div>
@@ -762,7 +816,8 @@
 							<div class="a43">
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/home1.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>商品总数</div>
@@ -771,7 +826,8 @@
 								</div>
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon2.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>今日营业额</div>
@@ -780,7 +836,8 @@
 								</div>
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon3.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>本月营业额</div>
@@ -789,7 +846,8 @@
 								</div>
 								<div class="a52">
 									<div class="a53">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon4.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>押金余额</div>
@@ -800,7 +858,8 @@
 							<div class="a43">
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon5.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>总订单数</div>
@@ -809,7 +868,8 @@
 								</div>
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon6.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>今日订单数</div>
@@ -818,7 +878,8 @@
 								</div>
 								<div class="a44">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon7.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>本月订单数</div>
@@ -827,7 +888,8 @@
 								</div>
 								<div class="a52">
 									<div class="a45">
-										<AuditOutlined class="a46" />
+										<img src="../../../../public/resource/image/home/icon8.png"
+											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>曝光量余额</div>
@@ -928,7 +990,9 @@
 											<div style="margin-right: 20px;">
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
-											<div class="a72">{{Number(2131312321).toLocaleString()}}</div>
+											<!-- <div class="a72">{{Number(2131312321).toLocaleString()}}</div> -->
+											<div @click="payBzj()"
+												style="font-size: 25px;color: #0c96f1;cursor: pointer;">缴纳保证金</div>
 										</div>
 										<div class="a73">
 											<div class="a74">
@@ -1013,10 +1077,207 @@
 				</div>
 			</div>
 		</div>
+		<!-- 支付弹框 -->
+		<a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
+			cancel-text="放弃" :maskClosable="false">
+			<div class="container">
+				<div class="pcHeader">
+					<img class="logoImg"
+						src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025421/tjgvd9d3mr771js7f2o6hqqjsegs2p9b.png"
+						alt="Logo" title="Logo" />
+					<div class="headerTitle">收银台</div>
+				</div>
+				<div class="price">
+					<span class="priceUnit">¥</span>
+					<span class="priceNumber">11</span>
+				</div>
+				<div class="payTimeRemaining">
+					<span class="payTxt">支付剩余时间</span>
+					<span class="time">
+						<!-- <span class="timeItem" id="pay_minute">05</span><span class="timeSplit">:</span><span
+							class="timeItem" id="pay_second">00</span> -->
+						<span class="time">
+							<span class="timeItem">{{ minute }}</span>
+							<span class="timeSplit">:</span>
+							<span class="timeItem">{{ second }}</span>
+						</span>
+					</span>
+				</div>
+				<div class="payType">
+					<ul class="payTab">
+						<li class="payItem activePayItem" style="--theme: #0B5AFE" data-type="alipay">
+							<img class="payIcon"
+								src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025421/1lbj3114n1mkb3mt71ak14ajhv5gc5nh.png" />
+							<span class=" payTitle">支付宝</span>
+						</li>
+					</ul>
+					<div class="payContent">
+						<img :src="qrCodeData" alt="支付二维码" />
+						<div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</a-modal>
 	</div>
 </template>
 
 <style lang="less" scoped>
+	/*  */
+	.container {
+		width: 100%;
+		max-width: 1080px;
+		height: 100%;
+		max-height: 720px;
+		position: relative;
+		text-align: center;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 14px;
+	}
+
+	.pcHeader {
+		margin-left: 24px;
+		align-items: center;
+		display: flex;
+		flex-direction: row;
+	}
+
+	.logoImg {
+		object-fit: contain;
+		height: 30px;
+		margin-right: 10px;
+		max-width: 160px;
+	}
+
+	.headerTitle {
+		font-size: 18px;
+		font-weight: 500;
+		color: #050505;
+	}
+
+	.price {
+		font-size: 30px;
+		font-weight: 700;
+		margin-bottom: 10px;
+		font-family: DINAlternate, DINAlternate-Bold;
+		color: #333333;
+	}
+
+	.priceUnit {
+		font-size: 20px;
+		font-weight: 400;
+		margin-right: 4px;
+	}
+
+	.priceNumber {
+		font-size: 24px;
+		font-weight: 500;
+		margin-left: 4px;
+	}
+
+	.payTimeRemaining {
+		margin-bottom: 6px;
+	}
+
+	.payTxt {
+		color: #999;
+		margin-right: 11px;
+	}
+
+	.time {
+		font-weight: 400;
+		font-size: 14px;
+		color: #000000;
+	}
+
+	.timeItem {
+		background: rgba(0, 0, 0, 0.04);
+		border-radius: 2px;
+		padding: 2px;
+	}
+
+	.timeSplit {
+		margin: 0 4px;
+	}
+
+	.payTab {
+		margin-top: 20px;
+		display: flex;
+		border-bottom: 1px solid #e9e6e6;
+	}
+
+	.payItem {
+		padding: 10px 20px;
+		background: #ffffff;
+		font-size: 14px;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		position: relative;
+		margin-right: 20px;
+		box-sizing: border-box;
+	}
+
+	.payItem:last-of-type {
+		margin-right: 0;
+	}
+
+	.payIcon {
+		height: 20px;
+		object-fit: contain;
+		margin-right: 10px;
+	}
+
+	.activePayItem {
+		border-radius: 6px 6px 0px 0px;
+		border: 1px solid #e9e6e6;
+		border-bottom: none;
+	}
+
+	.payItem:first-of-type::after {
+		position: absolute;
+		content: '推荐';
+		right: -18px;
+		top: -11px;
+		width: 36px;
+		height: 22px;
+		text-align: center;
+		line-height: 22px;
+		border-radius: 10px 0 10px 0;
+		background: #E74E4E;
+		color: #ffffff;
+		z-index: 999;
+		font-size: 12px;
+	}
+
+	.activePayItem::before {
+		position: absolute;
+		content: '';
+		right: 0;
+		bottom: -1px;
+		width: 100%;
+		height: 3px;
+		background: #ffffff;
+		z-index: 999;
+	}
+
+	.payContent {
+		display: flex;
+		width: 100%;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.conetentTxt {
+		text-align: center;
+		font-weight: 400;
+		color: #000000;
+		/* margin-bottom: 55px; */
+	}
+
+	/*  */
 	::v-deep(.custom-select-wrapper.ant-select:not(.ant-select-customize-input) .ant-select-selector) {
 		background-color: #f7f8f9;
 		border: none;
@@ -1481,7 +1742,7 @@
 	}
 
 	.a71 {
-		margin: 20px 0px 20px 180px
+		margin: 20px 0px 20px 5vw
 	}
 
 	.a72 {

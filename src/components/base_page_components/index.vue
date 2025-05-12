@@ -11,7 +11,7 @@
   let props = defineProps(["pageData"])
   const pageData = props.pageData
 
-  let emit = defineEmits(["openChildPage", "closeChildPage"])
+  let emit = defineEmits(["openChildPage", "closeChildPage","djtzmk"])
 
   function openChildPage(pageData) {
     emit('openChildPage', pageData)
@@ -160,6 +160,12 @@
   }
   getCustomerRoomList()
 
+  // 跳转对应模块
+  function handTz(str,strTwo,strThree) {
+    // console.log('str', str);
+    emit('djtzmk', str,strTwo,strThree)
+  }
+
 </script>
 <template>
   <div>
@@ -176,7 +182,7 @@
       <div style="overflow: auto;height: 90vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
-            <div >
+            <div>
               <div style="display: flex;align-items: center;padding: 20px;font-size: 20px;font-weight: bold;">
                 <img src="../../../public/resource/image/pps.png" style="width: 25px;height: 25px;margin-right: 10px;"
                   alt="">
@@ -391,37 +397,37 @@
                   <div class="a60">管理</div>
                 </div>
                 <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('运营管理','设置','基本配置')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ContainerOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">运营管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('流水管理','流水管理')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ApartmentOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">流水管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('社区管理','话题管理')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <CrownOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">社区管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('购物商城','商品管理')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <InsertRowLeftOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">商城管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('用户管理','商家管理')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ShopOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">商家管理</div>
                   </div>
-                  <div style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('用户管理','用户管理')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <TeamOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
@@ -432,20 +438,20 @@
                 <div style="display: flex;justify-content: space-between;">
                   <div style="font-size: 17px;"><b>代办事项</b></div>
                 </div>
-                <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
-                  <div style="text-align: center;margin-top: 38px;">
+                <div  style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
+                  <div @click="handTz('用户管理','退店申请')" style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <DeleteRowOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">退店申请</div>
                   </div>
-                  <div style="text-align: center;margin-top: 38px;">
+                  <div @click="handTz('聊天管理','聊天投诉')" style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <BankOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
                     <div style="margin-top: 12px;">聊天投诉</div>
                   </div>
-                  <div style="text-align: center;margin-top: 38px;">
+                  <div @click="handTz('社区管理','文章管理')" style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <FileProtectOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
