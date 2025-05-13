@@ -13,14 +13,37 @@
 	const global = inject("global").value;
 
 	// console.log('pageData',pageData);
+	const store_id = ref('')
+	function getCustomerRoomList() {
+		// 获取自己的角色ID和聊天状态
+		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+			console.log('自己商家id和禁言状态', res_one);
+			store_id.value = res_one.joiner_sign
+			lookData()
+		})
+	}
+	getCustomerRoomList()
+
+	const dzmdfhdz = ref([])//电子面单发货地址
+	const thdz = ref([])//退货地址
 	function lookData() {
 		global.axios
-			.post('decoration/StoreAddress/getStoreAddressList', {}, global)
+			.post('decoration/StoreAddress/getStoreAddressList', {
+				store_id: store_id.value
+			}, global)
 			.then((res) => {
-				console.log('当前数据', res);
+				// console.log('当前数据', res.list);
+				dzmdfhdz.value = []
+				thdz.value = []
+				res.list.map((item) => {
+					if (item.type == 'a') {
+						dzmdfhdz.value.push(item)
+					} else {
+						thdz.value.push(item)
+					}
+				})
 			});
 	}
-	lookData()
 
 
 
@@ -50,12 +73,16 @@
 				}, global)
 				.then((res) => {
 					console.log('新增结果', res);
+					message.success('操作成功')
+					fh_vis.value = false
+					lookData()
 				});
 		} catch (errorInfo) {
 			console.log('Failed:', errorInfo);
 		}
 	}
 	function delAddress(item) {
+		let obj = item
 		global.Modal.confirm({
 			title: global.findLanguage(
 				"确定要删除吗？"
@@ -65,6 +92,15 @@
 			okType: "primary",
 			onOk: function () {
 				console.log('确定');
+				global.axios
+					.post('decoration/StoreAddress/editStoreAddress', {
+						id: obj.id,//ID  修改时必传  
+						delete_status: 'Y',//Y 已删除  N未删除(删除时传这个id和这个参数)  
+					}, global)
+					.then((res) => {
+						message.success('删除成功')
+						lookData()
+					});
 			},
 		});
 	}
@@ -83,11 +119,28 @@
 		try {
 			const values = await formRefTh.value.validateFields();
 			console.log('Success:', values);
+			global.axios
+				.post('decoration/StoreAddress/editStoreAddress', {
+					id: '',//ID  修改时必传  
+					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
+					sender_name: values.key1,//发货人
+					sender_mobile: values.key2,//发货电话
+					address: values.key4,//发货地址
+					type: 'b',//类型  a发货地址  b退货地址
+					status: 'Y',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
+				}, global)
+				.then((res) => {
+					console.log('新增结果', res);
+					message.success('操作成功')
+					fh_visTh.value = false
+					lookData()
+				});
 		} catch (errorInfo) {
 			console.log('Failed:', errorInfo);
 		}
 	}
 	function delTh(item) {
+		let obj = item
 		global.Modal.confirm({
 			title: global.findLanguage(
 				"确定要删除吗？"
@@ -97,6 +150,15 @@
 			okType: "primary",
 			onOk: function () {
 				console.log('确定');
+				global.axios
+					.post('decoration/StoreAddress/editStoreAddress', {
+						id: obj.id,//ID  修改时必传  
+						delete_status: 'Y',//Y 已删除  N未删除(删除时传这个id和这个参数)  
+					}, global)
+					.then((res) => {
+						message.success('删除成功')
+						lookData()
+					});
 			},
 		});
 	}
@@ -142,20 +204,11 @@
 						<th scope="col">详细地址</th>
 						<th scope="col">编辑</th>
 					</tr>
-					<tr>
+					<tr v-for="item in dzmdfhdz" :key="item.id">
 						<td>中国 福建省福州市鼓楼区</td>
-						<td>撒大苏打撒</td>
+						<td>{{item.address}}</td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
-							<div @click="delAddress('1')">删除</div>
-							<div style="color: #666666;margin: 0 5px;">|</div>
-							<div>编辑</div>
-						</td>
-					</tr>
-					<tr>
-						<td>中国 福建省福州市鼓楼区</td>
-						<td>撒大苏打撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒</td>
-						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
-							<div @click="delAddress('2')">删除</div>
+							<div @click="delAddress(item)">删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
 							<div>编辑</div>
 						</td>
@@ -190,24 +243,13 @@
 						<th scope="col">详细地址</th>
 						<th scope="col">编辑</th>
 					</tr>
-					<tr>
-						<td>张三</td>
-						<td>18481020570</td>
+					<tr v-for="item in thdz" :key="item.id">
+						<td>{{item.sender_name}}</td>
+						<td>{{item.sender_mobile}}</td>
 						<td>中国 福建省福州市鼓楼区</td>
-						<td>撒大苏打撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒</td>
+						<td>{{item.address}}</td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
-							<div @click="delTh('1')">删除</div>
-							<div style="color: #666666;margin: 0 5px;">|</div>
-							<div>编辑</div>
-						</td>
-					</tr>
-					<tr>
-						<td>张三</td>
-						<td>18481020570</td>
-						<td>中国 福建省福州市鼓楼区</td>
-						<td>撒大苏打撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒大苏打撒撒</td>
-						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
-							<div>删除</div>
+							<div @click="delTh(item)">删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
 							<div>编辑</div>
 						</td>
@@ -227,7 +269,7 @@
 							<a-cascader v-model:value="formStateTh.key3" :options="treeData" placeholder="请选择地区" />
 						</a-form-item>
 						<a-form-item label="详细地址" name="key4" :rules="[{ required: true, message: '请填写详细地址!' }]">
-							<a-input v-model:value="formState.key4" placeholder="请填写详细地址" />
+							<a-input v-model:value="formStateTh.key4" placeholder="请填写详细地址" />
 						</a-form-item>
 					</a-form>
 				</a-modal>
