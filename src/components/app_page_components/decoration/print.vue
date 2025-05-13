@@ -1,11 +1,41 @@
 <script setup>
-    import { ref, watchEffect, nextTick, onMounted, reactive } from 'vue'
+    import { ref, watchEffect, nextTick, onMounted, reactive, inject } from 'vue'
     import axios from 'axios'
     import md5 from 'blueimp-md5'
     import JsBarcode from 'jsbarcode'
     import { ExclamationCircleFilled, CheckCircleFilled, } from "@ant-design/icons-vue";
+    const global = inject("global").value;
+    let emit = defineEmits(["djtzmk"])
+    // 跳转对应模块
+    function handTz(str,strTwo,strThree) {
+        visJc.value = false
+        emit('djtzmk', str,strTwo,strThree)
+    }
+    // 所有可用地址
+    const addressList = ref([])
+    function getStoreAddressList() {
+        global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+            // console.log('自己商家id和禁言状态', res_one);
+            global.axios
+                .post('decoration/StoreAddress/getStoreAddressList', {
+                    store_id: res_one.joiner_sign
+                }, global)
+                .then((res) => {
+                    // console.log('当前数据', res.list);
+                    res.list.map((item) => {
+                        item.status = item.status == 'Y' ? true : false
+                        if (item.type == 'a') {
+                            addressList.value.push(item)
+                        }
+                    })
+                });
+        })
+
+    }
+    getStoreAddressList()
 
     import { getLodop } from './LodopFuncs.js'
+
     let LODOP = null // Lodop 实例
     const azqk = ref('')//
     const printerList = ref([]) //所有可用打印机
@@ -24,7 +54,7 @@
             clearInterval(intervalId); // 停止定时器
         }
     }, 5000);
-   
+
     function selChange(value) {
         console.log('value', value);
     }
@@ -262,7 +292,7 @@
         spin: true,
     });
     // 跳转下载打印组件
-    function andyzj(){
+    function andyzj() {
         window.open('http://www.c-lodop.com/download.html', '_blank')
     }
 </script>
@@ -278,8 +308,7 @@
             <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-form-item label="发货地址" name="key1" :rules="[{ required: true, message: '请选择发货地址!' }]">
                     <a-select ref="select" v-model:value="form.key1" placeholder="请选择发货地址">
-                        <a-select-option value="1">安徽省滁州市天长市天长市科创园</a-select-option>
-                        <a-select-option value="2">四川省成雕塑王企鹅王企鹅</a-select-option>
+                        <a-select-option :value="item.id" v-for="item in addressList" :key="item.id">{{item.address}}</a-select-option>
                     </a-select>
                 </a-form-item>
             </a-form>
@@ -296,11 +325,15 @@
                         style="display: flex;justify-content: space-between;border-bottom: 1px solid #e0e0e0;padding-bottom: 10px;">
                         <div>
                             <div style="font-weight: bold;">发货地址设置</div>
-                            <div style="color: #666666;font-size: 12px;">共2条发货地址</div>
+                            <div style="color: #666666;font-size: 12px;">共{{addressList.length}}条发货地址</div>
                         </div>
-                        <div style="display: flex;align-items: center;color: #15b464;">
+                        <div v-if="addressList.length>0" style="display: flex;align-items: center;color: #15b464;">
                             <CheckCircleFilled style="color: #15b464;margin-right: 5px;" />
                             已设置
+                        </div>
+                        <div @click="handTz('快递物流','商家地址')" v-else style="display: flex;align-items: center;color: #fb8015;cursor: pointer;">
+                            <ExclamationCircleFilled style="color: #fb8015;margin-right: 5px;" />
+                            去设置
                         </div>
                     </div>
                     <div style="display: flex;justify-content: space-between;padding-top: 10px;align-items: center;">
@@ -329,7 +362,8 @@
                                     未设置
                                 </div>
                             </div>
-                            <div @click="andyzj" style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
+                            <div @click="andyzj"
+                                style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
                                 安装打印组件</div>
                         </div>
                     </div>
@@ -342,7 +376,8 @@
                                 去打单发货</div>
                         </div>
                         <div v-else @click="sure()"
-                            style="background-color: #5779d2;color: #fff;border-radius: 4px;padding: 2px 15px;">刷新网页</div>
+                            style="background-color: #5779d2;color: #fff;border-radius: 4px;padding: 2px 15px;">刷新网页
+                        </div>
                         <div @click="visJc=false"
                             style="border-radius: 4px;padding: 2px 15px;margin-left: 10px;border: 1px solid #d4d4d7;">
                             稍后再说</div>
