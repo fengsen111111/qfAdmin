@@ -36,6 +36,7 @@
 				dzmdfhdz.value = []
 				thdz.value = []
 				res.list.map((item) => {
+					item.status = item.status=='Y'?true:false
 					if (item.type == 'a') {
 						dzmdfhdz.value.push(item)
 					} else {
@@ -53,17 +54,23 @@
 		xx1: '',
 		xx2: '',
 	});
+	const dzmd_obj = {}
 	const formRef = ref(null);
+	// 编辑
+	function editFhdz(item){
+		dzmd_obj.value = item
+		formState.xx1 = ''
+		formState.xx2 = item.address
+		fh_vis.value = true
+	}
 	// 弹框确认按钮
 	async function handleOk() {
 		try {
 			const values = await formRef.value.validateFields();
 			console.log('Success:', values);
-			// console.log('查询出的obj', findPathById(treeData.value, values.address[2]));
-			// return false
 			global.axios
 				.post('decoration/StoreAddress/editStoreAddress', {
-					id: '',//ID  修改时必传  
+					id: dzmd_obj.value.id,//ID  修改时必传  
 					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
 					sender_name: '',//发货人
 					sender_mobile: '',//发货电话
@@ -75,6 +82,7 @@
 					console.log('新增结果', res);
 					message.success('操作成功')
 					fh_vis.value = false
+					dzmd_obj.value = {}
 					lookData()
 				});
 		} catch (errorInfo) {
@@ -104,16 +112,39 @@
 			},
 		});
 	}
+	// 修改状态
+	function onChange(item){
+		// console.log('item',item);
+		global.axios
+				.post('decoration/StoreAddress/editStoreAddress', {
+					id: item.id,//ID  修改时必传  
+					status: item.status?'Y':'N',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
+				}, global)
+				.then((res) => {
+					message.success('操作成功')
+					lookData()
+				});
+	}
 	// -------------------end电子面单
 	// -------------------退货地址
 	const fh_visTh = ref(false)//退货地址新增编辑
 	const formStateTh = reactive({
-		key1: '',
-		key2: '',
-		key3: '',
-		key4: '',
+		key1: '',//收件人
+		key2: '',//电话
+		key3: '',//地区
+		key4: '',//详细地址
 	});
 	const formRefTh = ref(null);
+	const thdz_obj = {}
+	// 编辑
+	function editThdz(item){
+		thdz_obj.value = item
+		formStateTh.key1 = item.sender_name
+		formStateTh.key2 = item.sender_mobile
+		formStateTh.key3 = ''
+		formStateTh.key4 = item.address
+		fh_visTh.value = true
+	}
 	// 退货地址弹框确认按钮
 	async function handleOkTh() {
 		try {
@@ -133,6 +164,7 @@
 					console.log('新增结果', res);
 					message.success('操作成功')
 					fh_visTh.value = false
+					thdz_obj.value = {}
 					lookData()
 				});
 		} catch (errorInfo) {
@@ -202,15 +234,17 @@
 					<tr class="bg83colwhite">
 						<th scope="col">所在地区</th>
 						<th scope="col">详细地址</th>
+						<th scope="col">状态</th>
 						<th scope="col">编辑</th>
 					</tr>
 					<tr v-for="item in dzmdfhdz" :key="item.id">
 						<td>中国 福建省福州市鼓楼区</td>
 						<td>{{item.address}}</td>
+						<td><a-switch v-model:checked="item.status" @change="onChange(item)" /></td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
 							<div @click="delAddress(item)">删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
-							<div>编辑</div>
+							<div @click="editFhdz(item)">编辑</div>
 						</td>
 					</tr>
 				</table>
@@ -241,6 +275,7 @@
 						<th scope="col">手机号</th>
 						<th scope="col">所在地区</th>
 						<th scope="col">详细地址</th>
+						<th scope="col">状态</th>
 						<th scope="col">编辑</th>
 					</tr>
 					<tr v-for="item in thdz" :key="item.id">
@@ -248,10 +283,11 @@
 						<td>{{item.sender_mobile}}</td>
 						<td>中国 福建省福州市鼓楼区</td>
 						<td>{{item.address}}</td>
+						<td><a-switch v-model:checked="item.status" @change="onChange(item)" /></td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
 							<div @click="delTh(item)">删除</div>
 							<div style="color: #666666;margin: 0 5px;">|</div>
-							<div>编辑</div>
+							<div @click="editThdz(item)">编辑</div>
 						</td>
 					</tr>
 				</table>
