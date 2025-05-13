@@ -403,6 +403,10 @@
       //   value: item.value
       // }
     })
+    delete post_params.power_level_id
+    delete post_params.power_start_time
+    delete post_params.power_end_time
+    delete post_params.power
     console.log('post_params', post_params);
     const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
