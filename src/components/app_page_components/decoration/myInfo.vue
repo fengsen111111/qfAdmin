@@ -6,6 +6,7 @@
 	import { ClockCircleFilled, DownOutlined, CloseCircleOutlined, PlusOutlined, ExclamationCircleOutlined, AuditOutlined, SearchOutlined, ReloadOutlined, CloseOutlined } from "@ant-design/icons-vue";
 	import { message } from 'ant-design-vue';
 	import { useRoute } from 'vue-router';
+	import dayjs from 'dayjs'
 	import * as echarts from 'echarts'
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
@@ -341,10 +342,21 @@
 				params.reg_area_id = params.regAddress[1]
 				params.reg_district_id = params.regAddress[2]
 				delete params.regAddress //删除注册地址，这个是自己的字段
+				params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
+				if (params.license_end_date) {
+					params.license_end_date = params.license_end_date.format('YYYYMMDD')
+				}
+				params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
+				if (params.legal_cert_end_date) {
+					params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
+				}
 				console.log('处理后的params', params);
-				return false
+				// return false
 				global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
 					console.log('res汇付开通结果', res);
+					message.success('操作成功')
+					hf_vis.value = false
+					_shopInfo()
 				})
 			})
 			.catch(err => {
@@ -398,10 +410,16 @@
 				params.prov_id = params.regAddress[0]
 				params.reg_area_id = params.regAddress[1]
 				delete params.regAddress //删除注册地址，这个是自己的字段
+				params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
+				if (params.legal_cert_end_date) {
+					params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
+				}
 				console.log('处理后的params', params);
-				return false
 				global.axios.post('decoration/Setting/bindHBank', params, global, true).then((res) => {
 					console.log('res绑定商家提现银行卡', res);
+					message.success('操作成功')
+					bank_vis.value = false
+					_shopInfo()
 				})
 			})
 			.catch(err => {
@@ -471,6 +489,7 @@
 			console.log('倒计时结束');
 		}
 	};
+	const dateFormat = ref('YYYY/MM/DD')
 </script>
 
 <template>
@@ -587,8 +606,9 @@
 							</div>
 							<div class="a33">
 								<div class="a34">商家提现银行卡:</div>
-								<div class="a35" v-if="shopObj.open_h_store_account=='c'" @click="bank_vis= true"
-									style="cursor: pointer;color: #0c96f1;">点击绑定</div>
+								<div class="a35"
+									v-if="shopObj.open_h_store_account=='c'||shopObj.open_h_store_account=='a'"
+									@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
 								<div class="a35" v-else-if="shopObj.open_h_store_account=='d'"
 									style="cursor: pointer;color: #0c96f1;">已绑定</div>
 								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
@@ -631,14 +651,14 @@
 									<a-col :span="12">
 										<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
 											:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
-											<a-date-picker v-model:value="formState.license_begin_date"
-												style="width: 100%;" />
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.license_begin_date" style="width: 100%;" />
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
 										<a-form-item label="营业执照有效期结束日期" name="license_end_date">
-											<a-date-picker v-model:value="formState.license_end_date"
-												style="width: 100%;" />
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.license_end_date" style="width: 100%;" />
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
@@ -679,14 +699,14 @@
 									<a-col :span="12">
 										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
 											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker v-model:value="formState.legal_cert_begin_date"
-												style="width: 100%;" />
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.legal_cert_begin_date" style="width: 100%;" />
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
 										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
-											<a-date-picker v-model:value="formState.legal_cert_end_date"
-												style="width: 100%;" />
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
@@ -708,7 +728,7 @@
 					<!-- 绑定商家银行卡 -->
 					<a-modal v-model:visible="bank_vis" title="绑定商家提现银行卡" width="1000px" @ok="handBankOk">
 						<div>
-							<a-form :model="formStateBank" ref="formRef" name="basic" :label-col="{ span: 10 }"
+							<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"
 								:wrapper-col="{ span: 14 }">
 								<a-row>
 									<a-col :span="12">
@@ -770,13 +790,15 @@
 									<a-col :span="12">
 										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
 											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker v-model:value="formStateBank.legal_cert_begin_date"
+											<a-date-picker :format="dateFormat"
+												v-model:value="formStateBank.legal_cert_begin_date"
 												style="width: 100%;" />
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
 										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
-											<a-date-picker v-model:value="formStateBank.legal_cert_end_date"
+											<a-date-picker :format="dateFormat"
+												v-model:value="formStateBank.legal_cert_end_date"
 												style="width: 100%;" />
 										</a-form-item>
 									</a-col>
