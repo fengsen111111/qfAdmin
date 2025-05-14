@@ -89,7 +89,7 @@
                     }
                     .print-container {
                         max-width:360px;
-                        padding-top:60px;
+                        padding-top:30px;
                     } 
                 </style>
             </head>
@@ -102,15 +102,15 @@
         LODOP.PRINT_INITA('')  // 打印初始化
         // LODOP.SET_PRINTER_INDEX("HPRT N31BT");//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
+        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        // LODOP.PRINT()// 直接打印
-        // visPrint.value = false//关闭打印弹窗
-        // ksDy.value = true//打开打印提示框
-        // setTimeout(() => {
-        //     ksDy.value = false//关闭打印提示框
-        // }, 3000);
+        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        LODOP.PRINT()// 直接打印
+        visPrint.value = false//关闭打印弹窗
+        ksDy.value = true//打开打印提示框
+        setTimeout(() => {
+            ksDy.value = false//关闭打印提示框
+        }, 3000);
     }
     function yldyj() {
         const printContent = document.getElementById('electronicWaybill').innerHTML;
@@ -127,7 +127,7 @@
                     }
                     .print-container {
                         max-width:360px;
-                        padding-top:60px;
+                        padding-top:30px;
                     } 
                 </style>
             </head>
@@ -140,13 +140,10 @@
         LODOP.PRINT_INITA('')  // 打印初始化
         // LODOP.SET_PRINTER_INDEX("Microsoft XPS Document Writer");//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
+        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
         LODOP.PREVIEW() // 预览（预览页面可以进行下载）
     }
-
-
-
 
     const loading = ref(false)
     const imgUrl = ref('')
@@ -227,8 +224,8 @@
             JsBarcode(barcodeTwo.value, kuaidinum, {
                 format: "CODE128",  // 常用条形码格式
                 lineColor: "#000",
-                width: 1.5,
-                height: 40,
+                width: 2,
+                height: 60,
                 displayValue: true  // 显示订单号文本
             })
         });
@@ -300,9 +297,9 @@
 
 <template>
     <div>
-        <button @click="handleGetOrderImage" :disabled="loading">
+        <!-- <button @click="handleGetOrderImage" :disabled="loading">
             {{ loading ? '请求中...' : '打印' }}
-        </button>
+        </button> -->
         <button @click="visible=true">打印</button>
         <!--  -->
         <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">
@@ -463,43 +460,43 @@
             <div id="electronicWaybill">
                 <div style="border: 1px solid black;">
                     <div
-                        style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold">
+                        style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold;padding: 10px 0px;">
                         {{ resule.data[0].bulkpen }}
                     </div>
                     <div style="display: flex;">
                         <div>
-                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 0px;">
+                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 10px 0px;">
                                 <!-- <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas> -->
                                 <svg ref="barcode"></svg>
                             </div>
-                            <div style="display: flex;border-bottom: 1px dashed black;align-items: center;">
+                            <div style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
                                 <div style="font-size: 24px;padding: 10px;">收</div>
                                 <div style="padding: 10px;">
                                     <div style="display: flex;justify-content: space-between;">
                                         <div>{{paramObj.recMan.name}}</div>
                                         <div>{{paramObj.recMan.mobile}}</div>
                                     </div>
-                                    <div style="max-width: 194px;">{{paramObj.recMan.printAddr}}</div>
+                                    <div style="max-width: 184px;">{{paramObj.recMan.printAddr}}</div>
                                 </div>
                             </div>
                             <div style="display: flex;align-items: center;">
                                 <div style="font-size: 24px;padding: 10px;">寄</div>
                                 <div style="padding: 10px;">
-                                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                                    <div style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
                                         <div>{{paramObj.sendMan.name}}</div>
                                         <div>{{paramObj.sendMan.mobile}}</div>
                                     </div>
-                                    <div style="max-width: 194px;">{{paramObj.sendMan.printAddr}}</div>
+                                    <div style="max-width: 184px;">{{paramObj.sendMan.printAddr}}</div>
                                 </div>
                             </div>
                         </div>
                         <div style="display: flex; border-left: 1px solid black;">
                             <!-- 右边栏，保持flex布局，占据固定宽度，和左边高度一样 -->
                             <div
-                                style="flex-shrink: 0; width: 120px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                style="flex-shrink: 0; width: 170px; display: flex; align-items: center; justify-content: center; position: relative;">
                                 <!-- 旋转的条形码内部绝对定位，不打乱布局 -->
                                 <div
-                                    style="position: absolute; top: 50%; left: 40%; transform: translate(-50%, -50%) rotate(90deg);">
+                                    style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%) rotate(90deg);">
                                     <svg ref="barcodeTwo"></svg>
                                 </div>
                             </div>
