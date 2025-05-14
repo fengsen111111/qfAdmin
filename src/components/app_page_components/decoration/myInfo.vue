@@ -293,9 +293,36 @@
 			console.log('自己商家id和禁言状态', res_one);
 			store_id.value = res_one.joiner_sign
 			is_ptsj.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+			if (is_ptsj.value == '商家') {
+				getGoodsSaledNumberTopList()// 获取商品销量排行列表
+				getGoodsPowerTopList()// 获取商品投流排行列表
+			}
 		})
 	}
 	getCustomerRoomList()
+
+	const spxlphlist = ref([])//商品销量排行列表
+	const sptlphlist = ref([])//商品投流排行列表
+	// 获取商品销量排行列表
+	function getGoodsSaledNumberTopList() {
+		global.axios.post('decoration/Setting/getGoodsSaledNumberTopList', {
+			currentPage: 1,
+			perPage: 10
+		}, global, true).then((res) => {
+			console.log('获取商品销量排行列表', res);
+			spxlphlist.value = res.list
+		})
+	}
+	// 获取商品投流排行列表
+	function getGoodsPowerTopList() {
+		global.axios.post('decoration/Setting/getGoodsPowerTopList', {
+			currentPage: 1,
+			perPage: 10
+		}, global, true).then((res) => {
+			console.log('获取商品投流排行列表', res);
+			sptlphlist.value = res.list
+		})
+	}
 
 	// 商家汇付sta
 	const treeData = ref([])
@@ -440,6 +467,7 @@
 	import QRCode from 'qrcode';
 	const isPay = ref(false)//支付弹窗
 	const qrCodeData = ref('')//支付二维码
+	const pay_Obj = ref({})//支付信息
 	// 支付保证金
 	function payBzj() {
 		if (timer.value) {
@@ -457,6 +485,7 @@
 			}, global)
 			.then((res) => {
 				console.log('结果', res);
+				pay_Obj.value = res
 				if (res.pay_info) {
 					QRCode.toDataURL(res.pay_info)
 						.then((url) => {
@@ -490,6 +519,30 @@
 		}
 	};
 	const dateFormat = ref('YYYY/MM/DD')
+
+	// 查询支付结果
+	function handOKCode() {
+		console.log('确定');
+		// 查询支付结果
+		global.axios
+			.post('decoration/Store/payTypePricesResult', {
+				money_log_id: pay_Obj.value.money_log_id
+			}, global)
+			.then((res) => {
+				console.log('查询支付结果', res);
+				// P支付中 S成功 F失败  
+				if (res.result == 'P') {
+					message.error('支付中')
+				} else if (res.result == 'S') {
+					message.success('支付成功')
+					isPay.value = false
+				} else if (res.result == 'F') {
+					message.error('支付失败')
+				} else {
+					message.error('未知')
+				}
+			})
+	}
 </script>
 
 <template>
@@ -592,7 +645,7 @@
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
 							</div>
-							
+
 							<div class="a33">
 								<div class="a34">商家汇付:</div>
 								<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
@@ -825,7 +878,8 @@
 							</table>
 							<div class="a39">
 								<div style="color: #666666;">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items :showSizeChanger="false" />
+								<a-pagination v-model:current="current" :total="5000" show-less-items
+									:showSizeChanger="false" />
 							</div>
 						</div>
 					</div>
@@ -942,12 +996,12 @@
 									<div style="font-size: 17px;"><b>商品销量Top10</b></div>
 									<div class="a60">查看更多</div>
 								</div>
-								<div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
+								<div class="a61" v-for="(item,index) in spxlphlist" :key="item.id">
 									<div style="display: flex;">
-										<div style="width: 30px;">NO.{{item}}</div>
-										<div style="margin-left: 20px;">商家沙琪玛</div>
+										<div style="width: 30px;">NO.{{index+1}}</div>
+										<div style="margin-left: 20px;">{{item.name}}</div>
 									</div>
-									<div>{{Number(21313).toLocaleString()}}万</div>
+									<div>{{Number(item.saled_number).toLocaleString()}}</div>
 								</div>
 							</div>
 							<div class="a62"></div>
@@ -956,11 +1010,12 @@
 									<div style="font-size: 17px;"><b>投流商品</b></div>
 									<div class="a60">查看更多</div>
 								</div>
-								<div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
-									<div>商家沙琪玛</div>
-									<div>一级投流</div>
-									<div>5000曝光量</div>
+								<div class="a61" v-for="item in sptlphlist" :key="item.id">
+									<div>{{item.name}}</div>
+									<div>{{item.power_level_name}}</div>
+									<div>{{item.power}}曝光量</div>
 								</div>
+								<a-empty v-if="sptlphlist.length==0" style="margin-top: 20%;" />
 							</div>
 						</div>
 					</div>
@@ -1014,7 +1069,8 @@
 											<div style="margin-right: 20px;">
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
-											<div v-if="shopObj.pay_deposit_money>shopObj.deposit_money" class="a72">{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+											<div v-if="shopObj.pay_deposit_money>shopObj.deposit_money" class="a72">
+												{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
 											<div v-else @click="payBzj()"
 												style="font-size: 25px;color: #0c96f1;cursor: pointer;">缴纳保证金</div>
 										</div>
@@ -1094,7 +1150,8 @@
 							<div></div>
 							<div class="a91">
 								<div class="a92">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items :showSizeChanger="false" />
+								<a-pagination v-model:current="current" :total="5000" show-less-items
+									:showSizeChanger="false" />
 							</div>
 						</div>
 					</div>
@@ -1113,7 +1170,7 @@
 				</div>
 				<div class="price">
 					<span class="priceUnit">¥</span>
-					<span class="priceNumber">11</span>
+					<span class="priceNumber">{{shopObj.deposit_money}}</span>
 				</div>
 				<div class="payTimeRemaining">
 					<span class="payTxt">支付剩余时间</span>

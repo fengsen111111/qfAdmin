@@ -50,16 +50,6 @@
             url: "",
             value: "333333",
           },
-          // {
-          //   icon: "",
-          //   label: "地址管理",
-          //   order: "2",
-          //   page_id: "0",
-          //   pid: "7061541206748037734",
-          //   type: "addressManage",
-          //   url: "",
-          //   value: "333334",
-          // },
           {
             icon: "",
             label: "用户详情",
@@ -711,6 +701,21 @@
               <a-button>全部标记已读</a-button>
               <div>共有 1 条</div>
             </div>
+          </div>
+        </a-modal>
+      </div>
+      <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+        <a-badge count="0">
+          <div @click="openSer()"
+            style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
+            <MessageOutlined style="font-size: 18px;" />
+            <br><span style="font-size: 12px;">客服</span>
+          </div>
+        </a-badge>
+        <!-- 聊天弹框 -->
+        <a-modal v-model:visible="serVis" width="1000px" :footer="null">
+          <div v-if="serVis">
+            <CustomerPageVis :pageData="{}" />
           </div>
         </a-modal>
       </div>

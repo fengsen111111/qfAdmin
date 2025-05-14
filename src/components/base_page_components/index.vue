@@ -11,7 +11,7 @@
   let props = defineProps(["pageData"])
   const pageData = props.pageData
 
-  let emit = defineEmits(["openChildPage", "closeChildPage","djtzmk"])
+  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk"])
 
   function openChildPage(pageData) {
     emit('openChildPage', pageData)
@@ -63,14 +63,14 @@
       },
       xAxis: {
         type: 'category',
-        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        data: tjzd.value.month_money_sum.keys
       },
       yAxis: {
         type: 'value'
       },
       series: [
         {
-          data: [820, 932, 901, 934, 1290, 1330, 732, 1320, 1420, 1020, 1320, 1432],
+          data: tjzd.value.month_money_sum.values,
           type: 'line',
           smooth: true,
           lineStyle: {
@@ -101,7 +101,7 @@
         trigger: 'axis',
         formatter: function (params) {
           const data = params[0];
-          return `${data.axisValue}<br/>营业额: ${data.data} 元`;
+          return `${data.axisValue}<br/>新增用户数: ${data.data} `;
         },
         axisPointer: {
           type: 'line'
@@ -109,14 +109,14 @@
       },
       xAxis: {
         type: 'category',
-        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        data: tjzd.value.month_new_user_count.keys
       },
       yAxis: {
         type: 'value'
       },
       series: [
         {
-          data: [820, 932, 901, 934, 1290, 1330, 732, 1320, 1420, 1020, 1320, 1432],
+          data: tjzd.value.month_new_user_count.values,
           type: 'line',
           smooth: true,
           lineStyle: {
@@ -156,8 +156,13 @@
       console.log('自己商家id和禁言状态', res_one);
       store_id.value = res_one.joiner_sign
       type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-      if(type.value == '平台'){
-        tamplateSta()
+      if (type.value == '平台') {
+        tamplateSta()//统计
+        getStoreMoneyTopList() // 获取商家营业额排行列表
+        getGoodsSaledNumberTopList() // 获取商品销量排行列表
+        getGoodsTypeSaledNumberTopList() // 获取商品二级分类销量排行列表
+        getArticleStarTopList() // 获取作品点赞排行列表
+        getArticleStarTopListVideo()  //获取视频点赞排行列表
       }
     })
   }
@@ -172,9 +177,66 @@
   }
 
   // 跳转对应模块
-  function handTz(str,strTwo,strThree) {
+  function handTz(str, strTwo, strThree) {
     // console.log('str', str);
-    emit('djtzmk', str,strTwo,strThree)
+    emit('djtzmk', str, strTwo, strThree)
+  }
+  const sjyyeList = ref([])
+  const spxlList = ref([])
+  const spejflxlList = ref([])
+  const zpddList = ref([])
+  const spdzList = ref([])
+  // 获取商家营业额排行列表
+  function getStoreMoneyTopList() {
+    global.axios.post('decoration/Setting/getStoreMoneyTopList', {
+      currentPage: 1,
+      perPage: 10
+    }, global, true).then((res) => {
+      console.log('商家营业额排行列表', res);
+      sjyyeList.value = res.list
+    })
+  }
+  // 获取商品销量排行列表
+  function getGoodsSaledNumberTopList() {
+    global.axios.post('decoration/Setting/getGoodsSaledNumberTopList', {
+      currentPage: 1,
+      perPage: 10
+    }, global, true).then((res) => {
+      console.log('商家销量排行列表', res);
+      spxlList.value = res.list
+    })
+  }
+  // 获取商品二级分类销量排行列表
+  function getGoodsTypeSaledNumberTopList() {
+    global.axios.post('decoration/Setting/getGoodsTypeSaledNumberTopList', {
+      currentPage: 1,
+      perPage: 10
+    }, global, true).then((res) => {
+      console.log('获取商品二级分类销量排行列表', res);
+      spejflxlList.value = res.list
+    })
+  }
+  // 获取作品点赞排行列表
+  function getArticleStarTopList() {
+    global.axios.post('decoration/Setting/getArticleStarTopList', {
+      type: 'a',
+      currentPage: 1,
+      perPage: 10
+    }, global, true).then((res) => {
+      console.log('获取作品点赞排行列表', res);
+      zpddList.value = res.list
+    })
+  }
+  // 获取视频点赞排行列表
+  function getArticleStarTopListVideo() {
+    global.axios.post('decoration/Setting/getArticleStarTopList', {
+      type: 'b',
+      currentPage: 1,
+      perPage: 10
+    }, global, true).then((res) => {
+      console.log('获取视频点赞排行列表', res);
+      spdzList.value = res.list
+    })
   }
 
 </script>
@@ -363,37 +425,45 @@
               <div style="display: flex;justify-content: space-between;">
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
-                    <div style="font-size: 17px;"><b>商品营业额Top10</b></div>
+                    <div style="font-size: 17px;"><b>社区文章点赞数量Top10</b></div>
                     <div class="a60">查看更多</div>
                   </div>
-                  <div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
-                    <div style="width: 30px;">NO.{{item}}</div>
+                  <div class="a61" v-for="(item,index) in zpddList" :key="item.id">
                     <div style="display: flex;">
-                      <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                        src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
-                        alt="">
-                      <div>创作者昵称</div>
+                      <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
+                      <div style="display: flex;">
+                        <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                          src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
+                          alt="">
+                        <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
+                      </div>
                     </div>
-                    <div>社区话题标题社区话题标题社区话题...</div>
-                    <div>{{Number(21313).toLocaleString()}}万</div>
+                    <div style="display: flex;justify-content: space-between;width: 70%;">
+                      <div v-if="item.title">{{item.title.length>24?item.title.slice(0,24)+'...':item.title}}</div>
+                      <div>{{Number(item.star_number).toLocaleString()}}</div>
+                    </div>
                   </div>
                 </div>
                 <div style="width: 10px;background-color: #f5f5f5;"></div>
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
-                    <div style="font-size: 17px;"><b>商品营业额Top10</b></div>
+                    <div style="font-size: 17px;"><b>社区视频点赞数量Top10</b></div>
                     <div class="a60">查看更多</div>
                   </div>
-                  <div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
-                    <div style="width: 30px;">NO.{{item}}</div>
+                  <div class="a61" v-for="(item,index) in spdzList" :key="item.id">
                     <div style="display: flex;">
-                      <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                        src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
-                        alt="">
-                      <div>创作者昵称</div>
+                      <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
+                      <div style="display: flex;">
+                        <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                          src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
+                          alt="">
+                        <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
+                      </div>
                     </div>
-                    <div>社区话题标题社区话题标题社区话题...</div>
-                    <div>{{Number(21313).toLocaleString()}}万</div>
+                    <div style="display: flex;justify-content: space-between;width: 70%;">
+                      <div v-if="item.title">{{item.title.length>24?item.title.slice(0,24)+'...':item.title}}</div>
+                      <div>{{Number(item.star_number).toLocaleString()}}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -449,7 +519,7 @@
                 <div style="display: flex;justify-content: space-between;">
                   <div style="font-size: 17px;"><b>代办事项</b></div>
                 </div>
-                <div  style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
+                <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
                   <div @click="handTz('用户管理','退店申请')" style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <DeleteRowOutlined style="font-size: 20px;position: relative;top: 2px;" />
@@ -472,15 +542,15 @@
               </div>
               <div class="a58">
                 <div class="a59">
-                  <div style="font-size: 17px;"><b>商品营业额Top10</b></div>
+                  <div style="font-size: 17px;"><b>商家营业额Top10</b></div>
                   <div class="a60">查看更多</div>
                 </div>
-                <div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
+                <div class="a61" v-for="(item,index) in sjyyeList" :key="item.id">
                   <div style="display: flex;">
-                    <div style="width: 30px;">NO.{{item}}</div>
-                    <div style="margin-left: 20px;">商家沙琪玛</div>
+                    <div style="width: 30px;">NO.{{index+1}}</div>
+                    <div style="margin-left: 20px;">{{item.name}}</div>
                   </div>
-                  <div>{{Number(21313).toLocaleString()}}万</div>
+                  <div>{{Number(item.order_money).toLocaleString()}}</div>
                 </div>
               </div>
               <div class="a58">
@@ -488,12 +558,12 @@
                   <div style="font-size: 17px;"><b>商品销量Top10</b></div>
                   <div class="a60">查看更多</div>
                 </div>
-                <div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
+                <div class="a61" v-for="(item,index) in spxlList" :key="item.id">
                   <div style="display: flex;">
-                    <div style="width: 30px;">NO.{{item}}</div>
-                    <div style="margin-left: 20px;">商家沙琪玛</div>
+                    <div style="width: 30px;">NO.{{index+1}}</div>
+                    <div style="margin-left: 20px;">{{item.name}}</div>
                   </div>
-                  <div>{{Number(21313).toLocaleString()}}万</div>
+                  <div>{{Number(item.saled_number).toLocaleString()}}</div>
                 </div>
               </div>
               <div class="a58">
@@ -501,12 +571,12 @@
                   <div style="font-size: 17px;"><b>二级分类销售量Top10</b></div>
                   <div class="a60">查看更多</div>
                 </div>
-                <div class="a61" v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item">
+                <div class="a61" v-for="(item,index) in spejflxlList" :key="item.id">
                   <div style="display: flex;">
-                    <div style="width: 30px;">NO.{{item}}</div>
-                    <div style="margin-left: 20px;">商家沙琪玛</div>
+                    <div style="width: 30px;">NO.{{index+1}}</div>
+                    <div style="margin-left: 20px;">{{item.name}}</div>
                   </div>
-                  <div>{{Number(21313).toLocaleString()}}万</div>
+                  <div>{{Number(item.saled_number).toLocaleString()}}</div>
                 </div>
               </div>
             </div>

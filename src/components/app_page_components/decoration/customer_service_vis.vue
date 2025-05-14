@@ -1229,7 +1229,7 @@
 
       .msg {
         width: 100%;
-        height: 80%;
+        height: 79%;
         border-bottom: 1px solid #d4d4d7;
         padding: 10px;
         padding-top: 50px;
