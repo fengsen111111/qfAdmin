@@ -252,7 +252,7 @@
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
     <div v-if="type=='平台'">
-      <div style="overflow: auto;height: 90vh;">
+      <div v-if="tjzd.all_money" style="overflow: auto;height: 90vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
             <div>
