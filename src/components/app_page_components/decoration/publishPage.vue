@@ -185,7 +185,7 @@
     }, 1000);
   } else {
     // 没有id就是新增商品
-    post_params.type_id = props.pageData.data.typeId
+    post_params.type_id = props.pageData.data.typeId[2]
   }
   //固定属性
   const visibleSx = ref(false)
@@ -368,7 +368,7 @@
       })
     if (post_params.type_id.value) {
       // 有值就重新拿
-      post_params.type_id = post_params.type_id.value
+      post_params.type_id = post_params.type_id.value.length>2?post_params.type_id.value[2]:post_params.type_id.value
     } else {
       // 没得值说明没动
     }
@@ -773,7 +773,7 @@
   function payTypePrices() {
     global.axios
       .post('decoration/Store/payTypePrices', {
-        goods_type_ids: post_params.type_id,
+        goods_type_ids: props.pageData.data.typeId,
         trade_type: 'A_NATIVE',
       }, global)
       .then((res) => {
