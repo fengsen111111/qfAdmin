@@ -434,7 +434,10 @@
           });
         } else {
           // 没有id就是新增商品
-          emit("closeChildPageTwo", pageData.page_key);
+          // emit("closeChildPageTwo", pageData.page_key);
+          setTimeout(() => {
+            emit('editType')
+          }, 2000);
         }
       });
   }

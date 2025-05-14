@@ -592,10 +592,7 @@
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
 							</div>
-							<div v-if="shopObj.type=='a'" class="a33">
-								<div class="a34">店铺主体:</div>
-								<div class="a35"><img :src="shopObj.logo" alt="" class="a36"></div>
-							</div>
+							
 							<div class="a33">
 								<div class="a34">商家汇付:</div>
 								<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
@@ -613,6 +610,10 @@
 									style="cursor: pointer;color: #0c96f1;">已绑定</div>
 								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
 									审核中</div>
+							</div>
+							<div v-if="shopObj.type=='a'" class="a33">
+								<div class="a34">店铺主体:</div>
+								<div class="a35"><img :src="shopObj.logo" alt="" class="a36"></div>
 							</div>
 						</div>
 						<div style="text-align: center;" v-if="shopObj.logo">
