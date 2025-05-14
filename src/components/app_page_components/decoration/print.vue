@@ -46,6 +46,7 @@
             LODOP = getLodop()
         } else {
             azqk.value = 'lodop已安装'
+            LODOP.SET_LICENSES("","EE0887D00FCC7D29375A695F728489A6","C94CEE276DB2187AE6B65D56B3FC2848","");
             const count = LODOP.GET_PRINTER_COUNT()
             for (let i = 0; i < count; i++) {
                 printerList.value.push(LODOP.GET_PRINTER_NAME(i))
@@ -103,13 +104,13 @@
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1030, 1200, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        LODOP.PRINT()// 直接打印
-        visPrint.value = false//关闭打印弹窗
-        ksDy.value = true//打开打印提示框
-        setTimeout(() => {
-            ksDy.value = false//关闭打印提示框
-        }, 3000);
+        LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        // LODOP.PRINT()// 直接打印
+        // visPrint.value = false//关闭打印弹窗
+        // ksDy.value = true//打开打印提示框
+        // setTimeout(() => {
+        //     ksDy.value = false//关闭打印提示框
+        // }, 3000);
     }
     function yldyj() {
         const printContent = document.getElementById('electronicWaybill').innerHTML;
@@ -299,9 +300,9 @@
 
 <template>
     <div>
-        <!-- <button @click="handleGetOrderImage" :disabled="loading">
+        <button @click="handleGetOrderImage" :disabled="loading">
             {{ loading ? '请求中...' : '打印' }}
-        </button> -->
+        </button>
         <button @click="visible=true">打印</button>
         <!--  -->
         <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">

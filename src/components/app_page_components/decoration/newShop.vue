@@ -136,10 +136,11 @@
 
   // 发布该类商品2
   function handFb() {
-    console.log('checkClassify.value.threeClassify', checkClassify.value.threeClassify);
+    console.log('checkClassify.value.threeClassify', checkClassify.value);
     console.log('pageData.data', pageData.data);
     pageData.data = pageData.data ? pageData.data : {}
-    pageData.data.typeId = checkClassify.value.threeClassify
+    // pageData.data.typeId = checkClassify.value.threeClassify
+    pageData.data.typeId = [checkClassify.value.oneClassify,checkClassify.value.twoClassify,checkClassify.value.threeClassify]
     pageData.data.typeName = selClassify.value
     let arr = selClassify.value.split(' > ')
     console.log('arr', arr, checkClassify.value.threeClassify);
@@ -152,66 +153,6 @@
     localStorage.setItem('hcspfl', JSON.stringify(arrType.value))
     typeVis.value = 2
   }
-
-  // 发布该类商品
-  // function handFb() {
-  //   global.axios
-  //     .post('decoration/Store/getStoreInfo', {}, global)
-  //     .then((res) => {
-  //       console.log('结果', res.open_h_store_account);
-  //       if (res.open_h_store_account == 'a') {
-  //         message.error('请先前往app端商家管理，开通商家汇付')
-  //       } else if (res.open_h_store_account == 'b') {
-  //         message.error('请先前往app端商家管理，绑定提现卡')
-  //       } else if (res.open_h_store_account == 'c') {
-  //         if (res.pay_deposit_money >= res.deposit_money) {
-  //           console.log('已缴纳押金');
-  //         } else {
-  //           message.error('请先前往app端商家管理，缴纳商家保证金')
-  //           return false
-  //         }
-  //         console.log('checkClassify.value.threeClassify',checkClassify.value.threeClassify);
-  //         console.log('pageData.data',pageData.data);
-  //         pageData.data = pageData.data?pageData.data:{}
-  //         pageData.data.typeId = checkClassify.value.threeClassify
-  //         let arr = selClassify.value.split(' > ')
-  //         console.log('arr', arr, checkClassify.value.threeClassify);
-  //         if (arr.length != 3) {
-  //           message.error('请选择三级分类！');
-  //           return false
-  //         }
-  //         arrType.value.unshift(selClassify.value)
-  //         arrType.value = [...new Set(arrType.value)];//数组去重
-  //         localStorage.setItem('hcspfl', JSON.stringify(arrType.value))
-  //         global.axios
-  //           .post('decoration/Store/payTypePrices', {
-  //             goods_type_ids: [checkClassify.value.threeClassify],
-  //             trade_type: 'A_NATIVE',
-  //           }, global)
-  //           .then((res) => {
-  //             console.log('结果', res);
-  //             if (res.pay_info) {
-  //               money_log_id.value = res.money_log_id
-  //               // 支付数据转二维码
-  //               QRCode.toDataURL(res.pay_info)
-  //                 .then((url) => {
-  //                   console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-  //                   qrCodeData.value = url
-  //                 })
-  //                 .catch((err) => {
-  //                   console.error('生成二维码失败', err);
-  //                 });
-  //               isPay.value = true
-  //             } else {
-  //               // message.error('未生成支付数据')
-  //               typeVis.value = 2
-  //             }
-  //           })
-  //       } else if (res.open_h_store_account == 'd') {
-  //         message.error('请耐心等待审核通过')
-  //       }
-  //     })
-  // }
   // 点击缓存的分类
   function cliHcType(str) {
     // console.log('点击缓存的分类', str);

@@ -18,30 +18,8 @@
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
     status: true,//启用状态 Y上架 N下架    
-    attributes: [
-      // {
-      //   key: '固定属性1',
-      //   value: '',
-      //   type: 'select',
-      //   is_del: false
-      // },
-      // {
-      //   key: '固定属性2',
-      //   value: '',
-      //   type: 'input',
-      //   is_del: false
-      // }
-    ],//商品属性  
-    services: [
-      // {
-      //   key: '全网低价',
-      //   value: '多平台对比，优惠力度最大'
-      // },
-      // {
-      //   key: '热销爆款',
-      //   value: '热门商品，大家都在买'
-      // }
-    ],//商品服务  
+    attributes: [],//商品属性  
+    services: [],//商品服务  
     goods_sizes: [
       {
         id: '',//
@@ -292,6 +270,7 @@
       });
   }
   getStoreID()
+
   const spflList = ref([])//商品分类列表
   // 商品分类列表
   function getGoodsTypeList() {
@@ -367,7 +346,7 @@
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
-    if (pay_info.value) {
+    if (pay_Obj.value.pay_info||shopObj.deposit_money>0) {
       pay_info_Vis.value = true
       return false
     }
@@ -774,32 +753,31 @@
 
   // 当前商家审核状态
   const check_status = ref('')//a待审核 b 已通过 c已拒绝
+  const shopObj = ref({})//商家信息
   // 当前商家店铺信息
   function _shopInfo() {
-    // console.log('店铺信息');
-    global.axios.post('decoration/Store/findTableRecords', {
-      currentPage: 1,
-      pageSize: 20
+    global.axios.post('decoration/Store/webGetStoreInfo', {
+      store_id: post_params.store_id
     }, global)
       .then(res => {
-        // console.log('店铺数据', res.list[0]);
-        // a待审核 b 已通过 c已拒绝
-        check_status.value = res.list[0].check_status
+        console.log('店铺数据', res);
+        shopObj.value = res
+        check_status.value = res.check_status// a待审核 b 已通过 c已拒绝
       })
   }
   _shopInfo()
-  const pay_info = ref('')//分类保证金支付地址
+  const pay_Obj = ref({})//分类保证金支付数据
   // 当前分类保证金缴纳情况
   function payTypePrices() {
     global.axios
       .post('decoration/Store/payTypePrices', {
-        goods_type_ids: [post_params.type_id],
+        goods_type_ids: post_params.type_id,
         trade_type: 'A_NATIVE',
       }, global)
       .then((res) => {
         console.log('分类保证金缴纳情况', res);
         if (res.pay_info) {
-          pay_info.value = res.pay_info
+          pay_Obj.value = res
         } else {
           console.log('已缴纳');
         }
@@ -934,15 +912,12 @@
               <span @click="editType()" class="a16">修改分类</span>
             </div>
             <!-- 没给钱才有 -->
-            <!-- <div v-if="pay_info"
-              class="a17">
-              <ExclamationCircleOutlined class="a18" />
-              <span>类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元 </span>
-              <span class="a19">去缴纳</span>
-            </div> -->
-            <div v-if="pay_info" class="a20">
+            <div v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="a20">
               <ExclamationCircleOutlined class="a21" />
-              类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元<span class="a22">去缴纳</span>
+              <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
+              <span
+                v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+              <span class="a22">去缴纳</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
@@ -1239,11 +1214,11 @@
                                   <div>
                                     <div v-if="post_params.detail.length>0">
                                       <img :src="img" v-for="img in post_params.detail" :key="img" style="width: 100%;"
-                                      alt="">
+                                        alt="">
                                     </div>
                                     <div v-else>
                                       <img :src="img" v-for="img in post_params.images" :key="img" style="width: 100%;"
-                                      alt="">
+                                        alt="">
                                     </div>
                                   </div>
                                 </div>
@@ -1760,7 +1735,8 @@
                   <ExclamationCircleFilled class="b38" />
                 </div>
                 <div class="b37">
-                  类目保证金20000元，结合店铺经营情况，共需20000元店铺保证金，当前保证金余额0元，还需要缴纳20000元
+                  <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
+                  <span v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">

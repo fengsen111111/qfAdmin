@@ -119,6 +119,7 @@
 				.post('decoration/StoreAddress/editStoreAddress', {
 					id: item.id,//ID  修改时必传  
 					status: item.status?'Y':'N',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
+					type:item.type
 				}, global)
 				.then((res) => {
 					message.success('操作成功')
@@ -186,6 +187,7 @@
 					.post('decoration/StoreAddress/editStoreAddress', {
 						id: obj.id,//ID  修改时必传  
 						delete_status: 'Y',//Y 已删除  N未删除(删除时传这个id和这个参数)  
+					    type:item.type
 					}, global)
 					.then((res) => {
 						message.success('删除成功')
