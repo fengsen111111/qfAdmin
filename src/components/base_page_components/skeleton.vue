@@ -433,20 +433,20 @@
   import Print from '@/components/app_page_components/decoration/print.vue'
 
   function djtzmk(str, strTwo, strThree) {
-    console.log('点击跳转对应模块', str,strTwo, strThree, skeleton_state.menuData);
+    console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
     skeleton_state.menuData.map((item) => {
       if (item.label == str) {
         item.children.map((iss) => {
           if (iss.label == strTwo) {
-            if(strThree){
-              iss.children.map((xx)=>{
-                if(xx.label == strThree){
-                  console.log('xx',xx);
+            if (strThree) {
+              iss.children.map((xx) => {
+                if (xx.label == strThree) {
+                  console.log('xx', xx);
                   openPage(xx, true);
                 }
               })
-            }else{
-              console.log('iss',iss);
+            } else {
+              console.log('iss', iss);
               openPage(iss, true);
             }
           }
@@ -455,6 +455,18 @@
 
     })
   }
+
+  const type = ref('平台')
+  const store_id = ref('')
+  function getCustomerRoomList() {
+    // 获取自己的角色ID和聊天状态
+    global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+      console.log('自己商家id和禁言状态', res_one);
+      store_id.value = res_one.joiner_sign
+      type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+    })
+  }
+  getCustomerRoomList()
 </script>
 
 <template>
@@ -591,7 +603,7 @@
         </div>
       </a-layout-content>
       <!-- 固定标 -->
-      <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+      <div v-if="type=='商家'" style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
           <div>
             <Print @djtzmk="djtzmk" />

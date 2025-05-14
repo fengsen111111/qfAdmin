@@ -346,7 +346,9 @@
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
-    if (pay_Obj.value.pay_info||shopObj.deposit_money>0) {
+    // console.log('shopObj.deposit_money',shopObj.value.deposit_money);
+    
+    if (pay_Obj.value.pay_info || shopObj.value.deposit_money > 0) {
       pay_info_Vis.value = true
       return false
     }
@@ -844,6 +846,73 @@
       })
   }
   sprmcList()
+  import QRCode from 'qrcode';
+  // 
+  const isPay = ref(false)//支付弹窗
+  let qrCodeData = ref('')//存储生成的二维码数据URL
+  let timer = ref(null);
+  const totalSeconds = ref(5 * 60); // 5 分钟
+  const minute = ref('05');
+  const second = ref('00');
+  // 支付倒计时
+  const updateTime = () => {
+    const mins = Math.floor(totalSeconds.value / 60);
+    const secs = totalSeconds.value % 60;
+    minute.value = String(mins).padStart(2, '0');
+    second.value = String(secs).padStart(2, '0');
+    if (totalSeconds.value > 0) {
+      totalSeconds.value--;
+    } else {
+      clearInterval(timer.value);
+      // 倒计时结束后的处理逻辑
+      console.log('倒计时结束');
+    }
+  };
+  // 打开弹窗
+  function handPay() {
+    if (timer.value) {
+      clearInterval(timer.value);
+      timer.value = null;
+      totalSeconds.value = 5 * 60; // 5 分钟
+      minute.value = '05';
+      second.value = '00';
+    }
+    // 支付数据转二维码
+    QRCode.toDataURL(pay_Obj.value.pay_info)
+      .then((url) => {
+        console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+        qrCodeData.value = url
+        timer.value = setInterval(updateTime, 1000);
+      })
+      .catch((err) => {
+        console.error('生成二维码失败', err);
+      });
+    isPay.value = true
+  }
+  // 查询支付结果
+  function handOKCode() {
+    console.log('确定');
+    // 查询支付结果
+    global.axios
+      .post('decoration/Store/payTypePricesResult', {
+        money_log_id: pay_Obj.value.money_log_id
+      }, global)
+      .then((res) => {
+        console.log('查询支付结果', res);
+        // P支付中 S成功 F失败  
+        if (res.result == 'P') {
+          message.error('支付中')
+        } else if (res.result == 'S') {
+          message.success('支付成功')
+          isPay.value = false
+        } else if (res.result == 'F') {
+          message.error('支付失败')
+        } else {
+          message.error('未知')
+        }
+      })
+  }
+
 </script>
 
 <template>
@@ -917,7 +986,8 @@
               <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
               <span
                 v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-              <span class="a22">去缴纳</span>
+              <span v-if="pay_Obj.pay_info" class="a22" @click="handPay()">去缴纳</span>
+              <span v-if="shopObj.deposit_money>0" class="a22">充值保证金</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
@@ -1736,7 +1806,8 @@
                 </div>
                 <div class="b37">
                   <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
-                  <span v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+                  <span
+                    v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">
@@ -1751,6 +1822,48 @@
             <!-- 留底高 -->
             <div style="height: 100px;"></div>
           </div>
+          <!-- 支付弹框 -->
+          <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
+            cancel-text="放弃" :maskClosable="false">
+            <div class="container">
+              <div class="pcHeader">
+                <img class="logoImg"
+                  src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025421/tjgvd9d3mr771js7f2o6hqqjsegs2p9b.png"
+                  alt="Logo" title="Logo" />
+                <div class="headerTitle">收银台</div>
+              </div>
+              <div class="price">
+                <span class="priceUnit">¥</span>
+                <span class="priceNumber">{{pay_Obj.trans_amt}}</span>
+              </div>
+              <div class="payTimeRemaining">
+                <span class="payTxt">支付剩余时间</span>
+                <span class="time">
+                  <!-- <span class="timeItem" id="pay_minute">05</span><span class="timeSplit">:</span><span
+            class="timeItem" id="pay_second">00</span> -->
+                  <span class="time">
+                    <span class="timeItem">{{ minute }}</span>
+                    <span class="timeSplit">:</span>
+                    <span class="timeItem">{{ second }}</span>
+                  </span>
+                </span>
+              </div>
+              <div class="payType">
+                <ul class="payTab">
+                  <li class="payItem activePayItem" style="--theme: #0B5AFE" data-type="alipay">
+                    <img class="payIcon"
+                      src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025421/1lbj3114n1mkb3mt71ak14ajhv5gc5nh.png" />
+                    <span class=" payTitle">支付宝</span>
+                  </li>
+                </ul>
+                <div class="payContent">
+                  <img :src="qrCodeData" alt="支付二维码" />
+                  <div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a-modal>
         </div>
       </div>
     </a-spin>
@@ -1759,6 +1872,160 @@
 </template>
 
 <style scoped>
+  /*  */
+  .container {
+    width: 100%;
+    max-width: 1080px;
+    height: 100%;
+    max-height: 720px;
+    position: relative;
+    text-align: center;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .pcHeader {
+    margin-left: 24px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .logoImg {
+    object-fit: contain;
+    height: 30px;
+    margin-right: 10px;
+    max-width: 160px;
+  }
+
+  .headerTitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: #050505;
+  }
+
+  .price {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-family: DINAlternate, DINAlternate-Bold;
+    color: #333333;
+  }
+
+  .priceUnit {
+    font-size: 20px;
+    font-weight: 400;
+    margin-right: 4px;
+  }
+
+  .priceNumber {
+    font-size: 24px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  .payTimeRemaining {
+    margin-bottom: 6px;
+  }
+
+  .payTxt {
+    color: #999;
+    margin-right: 11px;
+  }
+
+  .time {
+    font-weight: 400;
+    font-size: 14px;
+    color: #000000;
+  }
+
+  .timeItem {
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 2px;
+    padding: 2px;
+  }
+
+  .timeSplit {
+    margin: 0 4px;
+  }
+
+  .payTab {
+    margin-top: 20px;
+    display: flex;
+    border-bottom: 1px solid #e9e6e6;
+  }
+
+  .payItem {
+    padding: 10px 20px;
+    background: #ffffff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    margin-right: 20px;
+    box-sizing: border-box;
+  }
+
+  .payItem:last-of-type {
+    margin-right: 0;
+  }
+
+  .payIcon {
+    height: 20px;
+    object-fit: contain;
+    margin-right: 10px;
+  }
+
+  .activePayItem {
+    border-radius: 6px 6px 0px 0px;
+    border: 1px solid #e9e6e6;
+    border-bottom: none;
+  }
+
+  .payItem:first-of-type::after {
+    position: absolute;
+    content: '推荐';
+    right: -18px;
+    top: -11px;
+    width: 36px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+    border-radius: 10px 0 10px 0;
+    background: #E74E4E;
+    color: #ffffff;
+    z-index: 999;
+    font-size: 12px;
+  }
+
+  .activePayItem::before {
+    position: absolute;
+    content: '';
+    right: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 3px;
+    background: #ffffff;
+    z-index: 999;
+  }
+
+  .payContent {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .conetentTxt {
+    text-align: center;
+    font-weight: 400;
+    color: #000000;
+    /* margin-bottom: 55px; */
+  }
+
   ::v-deep(.ant-upload.ant-upload-select-picture-card) {
     width: 90px !important;
     height: 90px !important;
@@ -1944,6 +2211,7 @@
   .a22 {
     color: #1890FF;
     margin-left: 10px;
+    cursor: pointer;
   }
 
   .a23 {
