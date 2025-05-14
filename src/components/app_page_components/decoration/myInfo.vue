@@ -807,7 +807,8 @@
 						</div>
 					</a-modal>
 					<div class="a38">认证商品类目</div>
-					<div style="margin-top: 20px;">
+					<div style="margin-top: 10px;">
+						<div style="margin-bottom: 10px;cursor: pointer;"><a-button type="primary">添加分类</a-button></div>
 						<div>
 							<table class="table" border="1">
 								<thead>
@@ -823,7 +824,7 @@
 							</table>
 							<div class="a39">
 								<div style="color: #666666;">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items />
+								<a-pagination v-model:current="current" :total="5000" show-less-items :showSizeChanger="false" />
 							</div>
 						</div>
 					</div>
@@ -1012,8 +1013,8 @@
 											<div style="margin-right: 20px;">
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
-											<!-- <div class="a72">{{Number(2131312321).toLocaleString()}}</div> -->
-											<div @click="payBzj()"
+											<div v-if="shopObj.pay_deposit_money>shopObj.deposit_money" class="a72">{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+											<div v-else @click="payBzj()"
 												style="font-size: 25px;color: #0c96f1;cursor: pointer;">缴纳保证金</div>
 										</div>
 										<div class="a73">
@@ -1092,7 +1093,7 @@
 							<div></div>
 							<div class="a91">
 								<div class="a92">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items />
+								<a-pagination v-model:current="current" :total="5000" show-less-items :showSizeChanger="false" />
 							</div>
 						</div>
 					</div>

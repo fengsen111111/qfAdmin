@@ -156,9 +156,20 @@
       console.log('自己商家id和禁言状态', res_one);
       store_id.value = res_one.joiner_sign
       type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+      if(type.value == '平台'){
+        tamplateSta()
+      }
     })
   }
   getCustomerRoomList()
+
+  const tjzd = ref({})//统计字段
+  function tamplateSta() {
+    global.axios.post('decoration/Setting/tamplateSta', {}, global, true).then((res) => {
+      console.log('结果', res);
+      tjzd.value = res
+    })
+  }
 
   // 跳转对应模块
   function handTz(str,strTwo,strThree) {
@@ -198,7 +209,7 @@
                   </div>
                   <div>
                     <div>总营业额</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.all_money).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -208,7 +219,7 @@
                   </div>
                   <div>
                     <div>今日营业额</div>
-                    <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.today_money).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -218,7 +229,7 @@
                   </div>
                   <div>
                     <div>本月营业额</div>
-                    <div class="a47">{{Number(213).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.month_money).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -229,7 +240,7 @@
                   </div>
                   <div>
                     <div>平台押金</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.store_money).toLocaleString()}}</div>
                   </div>
                 </div>
               </div>
@@ -242,7 +253,7 @@
                   </div>
                   <div>
                     <div>商家总数</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.store_number).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -252,7 +263,7 @@
                   </div>
                   <div>
                     <div>商品总数</div>
-                    <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.goods_number).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -262,7 +273,7 @@
                   </div>
                   <div>
                     <div>平台收取总服务费</div>
-                    <div class="a47">{{Number(213).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.all_service_money).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -272,7 +283,7 @@
                   </div>
                   <div>
                     <div>今日平台服务费</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.today_service_money).toLocaleString()}}</div>
                   </div>
                 </div>
               </div>
@@ -285,7 +296,7 @@
                   </div>
                   <div>
                     <div>今日新增用户数</div>
-                    <div class="a47">{{Number(21313).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.today_user_number).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -295,7 +306,7 @@
                   </div>
                   <div>
                     <div>本月新增用户数</div>
-                    <div class="a47">{{Number(2131).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.month_user_number).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -305,7 +316,7 @@
                   </div>
                   <div>
                     <div>社区总文章数</div>
-                    <div class="a47">{{Number(213).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.image_number).toLocaleString()}}</div>
                   </div>
                 </div>
                 <div class="a44">
@@ -315,7 +326,7 @@
                   </div>
                   <div>
                     <div>社区总视频数</div>
-                    <div class="a47">{{Number(106.54).toLocaleString()}}</div>
+                    <div class="a47">{{Number(tjzd.video_number).toLocaleString()}}</div>
                   </div>
                 </div>
               </div>

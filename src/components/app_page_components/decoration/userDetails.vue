@@ -95,7 +95,7 @@
 						</div>
 						<div style="display: flex;">
 							<div><CloseCircleFilled style="color: #ff0000;font-size: 17px;margin-right: 10px;" /></div>
-							<div>聊天状态：</div>
+							<div>禁言状态：</div>
 							<div><a-switch v-model:checked="checkedTwo" size="small" /></div>
 						</div>
 						<div style="display: flex;">
