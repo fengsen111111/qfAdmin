@@ -347,7 +347,7 @@
       return false
     }
     // console.log('shopObj.deposit_money',shopObj.value.deposit_money);
-    
+
     if (pay_Obj.value.pay_info || shopObj.value.deposit_money > 0) {
       pay_info_Vis.value = true
       return false
@@ -368,7 +368,7 @@
       })
     if (post_params.type_id.value) {
       // 有值就重新拿
-      post_params.type_id = post_params.type_id.value.length>2?post_params.type_id.value[2]:post_params.type_id.value
+      post_params.type_id = post_params.type_id.value.length > 2 ? post_params.type_id.value[2] : post_params.type_id.value
     } else {
       // 没得值说明没动
     }
@@ -780,6 +780,7 @@
         console.log('分类保证金缴纳情况', res);
         if (res.pay_info) {
           pay_Obj.value = res
+          pay_Obj.value.trans_amt = Number(pay_Obj.value.trans_amt).toFixed(2)
         } else {
           console.log('已缴纳');
         }
@@ -913,6 +914,10 @@
       })
   }
 
+  function czbzj() {
+    console.log('跳转');
+  }
+
 </script>
 
 <template>
@@ -983,11 +988,11 @@
             <!-- 没给钱才有 -->
             <div v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="a20">
               <ExclamationCircleOutlined class="a21" />
-              <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
+              <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元。</span>
+              <span v-if="pay_Obj.pay_info" class="c22" @click="handPay()">去缴纳</span>
               <span
                 v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-              <span v-if="pay_Obj.pay_info" class="a22" @click="handPay()">去缴纳</span>
-              <span v-if="shopObj.deposit_money>0" class="a22">充值保证金</span>
+              <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">充值保证金</span>
             </div>
           </div>
           <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
@@ -1805,13 +1810,13 @@
                   <ExclamationCircleFilled class="b38" />
                 </div>
                 <div class="b37">
-                  <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元，</span>
+                  <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元。</span>
                   <span
                     v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">
-                    <div class="b41">
+                    <div class="b41" @click="czbzj">
                       充值保证金</div>
                     <div @click="pay_info_Vis=false" class="b42">暂不充值
                     </div>
@@ -2211,6 +2216,12 @@
   .a22 {
     color: #1890FF;
     margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .c22 {
+    color: #1890FF;
+    margin-right: 10px;
     cursor: pointer;
   }
 
