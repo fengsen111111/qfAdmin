@@ -11,7 +11,7 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
-	let emit = defineEmits(["openChildPage", "closeChildPage"]);
+	let emit = defineEmits(["openChildPage", "closeChildPage","djtzmk"]);
 	const global = inject("global").value;
 
 	const shopObj = ref({})//店铺信息
@@ -44,7 +44,35 @@
 		})
 		// 
 	}
-	_shopInfo()
+	function _shopInfoPc() {
+		global.axios.post('decoration/Store/webGetStoreInfo', {
+			store_id: pageData.data.id
+		}, global)
+			.then(res => {
+				console.log('店铺数据', res);
+				shopObj.value = res
+				logo.value = res.logo
+				// a待审核 b 已通过 c已拒绝
+				shType.value = res.check_status
+				if (shType.value == 'b') {
+					getGoodsTypeList()
+				}
+				if (shType.value == 'c') {
+					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+						mobile: shopObj.value.mobile,
+					}, global).then(res => {
+						console.log('商家入驻信息', res);
+						check_remark.value = res.check_remark
+					})
+				}
+			})
+	}
+	console.log('pageData', pageData.data);
+	if (pageData.data) {
+		_shopInfoPc()
+	} else {
+		_shopInfo()
+	}
 
 	const shType = ref('a')//a待审核 b 已通过 c已拒绝
 	const check_remark = ref('')//拒绝原因
@@ -549,7 +577,7 @@
 	const bgl_vis = ref(false)//曝光量充值
 	const czje = ref('')//充值金额
 	const jbpz = ref({})//基本配置
-    // 曝光量兑换比例
+	// 曝光量兑换比例
 	function getSetting() {
 		global.axios
 			.post('decoration/Setting/getSetting', {}, global)
@@ -558,21 +586,21 @@
 				jbpz.value = res
 			})
 	}
-    getSetting()
-    const cz_type = ref('')// bzj 保证金 bgl 曝光量
-    // 曝光量充值
-	function bglOk(){
-		if(!czje.value){
+	getSetting()
+	const cz_type = ref('')// bzj 保证金 bgl 曝光量
+	// 曝光量充值
+	function bglOk() {
+		if (!czje.value) {
 			message.error('请输入充值金额')
 			return false
 		}
 		cz_type.value = 'bgl'
 		global.axios
 			.post('decoration/PowerLevel/buyPower', {
-				handle_type:'store',
-				price:czje.value,
-				trade_type:'A_NATIVE',
-				password:''
+				handle_type: 'store',
+				price: czje.value,
+				trade_type: 'A_NATIVE',
+				password: ''
 			}, global)
 			.then((res) => {
 				console.log('生成曝光量支付数据', res);
@@ -591,6 +619,22 @@
 				}
 			})
 	}
+	// 返回上一页
+	function closeChildPage() {
+		global.Modal.confirm({
+			title: global.findLanguage(
+				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				// emit("closeChildPage", pageData.page_key);
+				// 返回商家列表页
+				emit("djtzmk", '用户管理','商家管理');
+			},
+		});
+	}
 </script>
 
 <template>
@@ -603,8 +647,14 @@
 		</div> -->
 		<!-- <div>审核中状态</div> -->
 		<div v-if="shType=='a'||shType=='c'">
-			<div style="font-size: 18px;">
-				店铺信息
+			<div style="display: flex;align-items: center;">
+				<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+					style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+					@click="closeChildPage()">&#xe6d2;
+				</a-button>
+				<div style="font-size: 18px;">
+					店铺信息
+				</div>
 			</div>
 			<div class="a1">
 				<div class="a2">
@@ -668,9 +718,9 @@
 						<div class="a19" :class="titleType=='店铺数据'?'a18Check':''" @click="titleType='店铺数据'">店铺数据</div>
 						<div class="a20" :class="titleType=='资金日志'?'a18Check':''" @click="titleType='资金日志'">资金日志</div>
 					</div>
-					<div class="a21" v-if="is_ptsj=='平台'">
+					<div class="a21">
 						<div>店铺详情页</div>
-						<div class="a22">
+						<div class="a22" @click="closeChildPage()">
 							返回</div>
 					</div>
 				</div>
@@ -1107,19 +1157,21 @@
 								</div>
 								<div style="display: flex;">
 									<div>{{shopObj.power}}</div>
-									<div @click="bgl_vis= true" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
+									<div @click="bgl_vis= true"
+										style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
 								</div>
 							</div>
 						</div>
-                        <!-- 充值 -->
+						<!-- 充值 -->
 						<a-modal v-model:visible="bgl_vis" title="充值" @ok="bglOk">
 							<div style="display: flex;">
 								<div style="display: flex;margin: 0 auto;">
 									<div style="margin-top: 5px;">金额：</div>
-								    <div>
+									<div>
 										<a-input prefix="￥" suffix="RMB" v-model:value="czje" style="width: 300px;" />
 										<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量</div>
-										<div style="color: #ff0000;" v-else>{{czje}}RMB={{czje*jbpz.charge_power}}曝光量</div>
+										<div style="color: #ff0000;" v-else>{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+										</div>
 									</div>
 								</div>
 							</div>
@@ -1276,6 +1328,13 @@
 </template>
 
 <style lang="less" scoped>
+	.cancel_btn {
+		font-size: 18px !important;
+		padding: 0 10px;
+		float: left;
+		margin-right: 20px;
+	}
+
 	/*  */
 	.container {
 		width: 100%;

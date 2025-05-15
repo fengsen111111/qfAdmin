@@ -411,12 +411,14 @@
             if (strThree) {
               iss.children.map((xx) => {
                 if (xx.label == strThree) {
-                  console.log('xx', xx);
+                  // console.log('xx', xx);
+                  deleteChildrenPage(xx.page_key);
                   openPage(xx, true);
                 }
               })
             } else {
-              console.log('iss', iss);
+              // console.log('iss', iss);
+              deleteChildrenPage(iss.page_key);
               openPage(iss, true);
             }
           }

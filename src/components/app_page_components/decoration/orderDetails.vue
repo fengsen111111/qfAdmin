@@ -36,6 +36,20 @@
 	const value1 = ref('')
 	const checkedOne = ref(false)
 	const checkedTwo = ref(false)
+	// 返回上一页
+	function closeChildPage() {
+		global.Modal.confirm({
+			title: global.findLanguage(
+				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+			),
+			okText: global.findLanguage("确定"),
+			cancelText: global.findLanguage("取消"),
+			okType: "primary",
+			onOk: function () {
+				emit("closeChildPage", pageData.page_key);
+			},
+		});
+	}
 </script>
 
 <template>
@@ -58,7 +72,7 @@
 					</div>
 					<div class="a21">
 						<div style="font-size: 17px;font-weight: bold;">订单详情页</div>
-						<div class="a22">返回</div>
+						<div class="a22" @click="closeChildPage()">返回</div>
 					</div>
 				</div>
 			</div>
