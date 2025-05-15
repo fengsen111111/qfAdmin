@@ -11,7 +11,7 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
-	let emit = defineEmits(["openChildPage", "closeChildPage","djtzmk"]);
+	let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk"]);
 	const global = inject("global").value;
 
 	const shopObj = ref({})//店铺信息
@@ -545,12 +545,24 @@
 			clearInterval(timer.value);
 			// 倒计时结束后的处理逻辑
 			console.log('倒计时结束');
+			qrCodeData.value = ''
+			isPay.value = false//
 		}
 	};
 	const dateFormat = ref('YYYY/MM/DD')
 
 	// 查询支付结果
 	function handOKCode() {
+		if (cz_type.value = 'bzj') {
+			// 保证金
+			_shopInfo()
+			isPay.value = false
+			bgl_vis.value = false //曝光量充值
+			message.success('支付成功')
+			return false
+		}
+
+
 		console.log('确定');
 		// 查询支付结果
 		global.axios
@@ -631,7 +643,7 @@
 			onOk: function () {
 				// emit("closeChildPage", pageData.page_key);
 				// 返回商家列表页
-				emit("djtzmk", '用户管理','商家管理');
+				emit("djtzmk", '用户管理', '商家管理');
 			},
 		});
 	}

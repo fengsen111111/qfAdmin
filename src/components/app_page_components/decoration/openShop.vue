@@ -328,7 +328,8 @@
 				"name": name.value,
 				"mobile": mobile.value,
 				"id_card_number": id_card_number.value,
-				"id_card_times":id_card_times.value,
+				// "id_card_times":id_card_times.value,
+				"id_card_times":id_card_times.value.map(date => Math.floor(new Date(date).getTime() / 1000)),
 				"id_card_images": id_card_images.value,
 				"store_name": store_name.value,
 				"license_image": license_image.value,
@@ -507,8 +508,8 @@
 					<!-- <div @click="handUrl('/login')" style="color: #fff;">
 						返回登录
 					</div> -->
-					<div @click="handUrl('/login')" style="color: #fff;">
-						返回首页(等待接口)
+					<div @click="handUrl('/')" style="color: #fff;">
+						返回首页
 					</div>
 				</div>
 			</div>

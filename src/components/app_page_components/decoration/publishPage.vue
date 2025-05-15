@@ -546,7 +546,15 @@
       .then((res) => {
         // console.log('所有模板数据', res);
         // allYfmb.value = []
-        allYfmb.value = res.list.map((item) => {
+        
+        let mbsz = []
+        res.list.map((item)=>{
+          if(item.status=='Y'){
+            mbsz.push(item)
+          }
+        })
+
+        allYfmb.value = mbsz.map((item) => {
           let arr = [] //不包邮地区
           item.price_city.map((item) => {
             arr.push(item.adcode)
@@ -1156,8 +1164,11 @@
                       <div>商品标题</div>
                     </div>
                     <div class="a38">
-                      <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;"
+                      <div style="display: flex;align-items: center;">
+                        <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;" maxlength="30"
                         placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                        <div style="margin-left: 10px;">{{post_params.name.length}}/30</div>
+                      </div>
                       <div class="a39">
                         <span class="a40">热搜词推荐</span>:
                         <span @click="post_params.name=post_params.name+item" class="a41" v-for="item in sprmc"
@@ -1775,6 +1786,7 @@
                     <div>运费模板</div>
                   </div>
                   <div class="b21">
+                    <div v-if="allYfmb.length==0">暂无启用模板！</div>
                     <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
                       <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
                       <!-- <a-radio value="2">其它模板</a-radio> -->
