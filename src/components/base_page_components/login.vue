@@ -439,6 +439,7 @@
   })//密码验证情况
   // o元开店密码变化
   function pasChange() {
+		popoverVisible.value = true
     const result = validatePassword(login_state.loginData.password)
     if (!result.valid) {
       console.log('密码不合法：', result.msg, pasYz.value);
@@ -487,6 +488,8 @@
       return { valid: false, msg: '密码未满足所有规则' };
     }
   }
+
+  const popoverVisible = ref(false)
 
 </script>
 
@@ -671,7 +674,7 @@
                 allow-clear size="large" />
             </a-form-item>
             <a-form-item>
-              <a-popover placement="leftTop">
+              <a-popover placement="leftTop" v-model:visible="popoverVisible">
                 <template #content>
                   <div style="font-size: 12px;">
                     <div style="display: flex;align-items: center;">
@@ -724,7 +727,7 @@
                         <CheckCircleFilled v-if="pasYz.rule_c"
                           style="font-size: 10px;color: green;margin-right: 5px;" />
                         <CloseCircleFilled v-else style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
-                        <span>大写字母/小写字母/数组/符号字少包含三种</span>
+                        <span>大写字母/小写字母/数组/符号至少包含三种</span>
                       </div>
                     </div>
                   </div>

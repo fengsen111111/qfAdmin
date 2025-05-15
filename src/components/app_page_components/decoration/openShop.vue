@@ -423,6 +423,7 @@
 	})//密码验证情况
 	// 密码变化
 	function pasChange() {
+		popoverVisible.value = true
 		const result = validatePassword(admin_login_password.value)
 		if (!result.valid) {
 			console.log('密码不合法：', result.msg, pasYz.value);
@@ -487,6 +488,8 @@
 				msgValue.value = error.message
 			})
 	}
+    const popoverVisible = ref(false)
+
 </script>
 
 <template>
@@ -839,7 +842,7 @@
 									</div>
 									<a-input v-model:value="mobile" style="margin-left: 10px;width: 300px;" />
 								</div>
-								<a-popover placement="leftTop">
+								<a-popover placement="leftTop" v-model:visible="popoverVisible">
 									<template #content>
 										<div style="font-size: 12px;">
 											<div style="display: flex;align-items: center;">
@@ -916,7 +919,7 @@
 														style="font-size: 10px;color: green;margin-right: 5px;" />
 													<CloseCircleFilled v-else
 														style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
-													<span>大写字母/小写字母/数组/符号字少包含三种</span>
+													<span>大写字母/小写字母/数组/符号至少包含三种</span>
 												</div>
 											</div>
 										</div>
@@ -966,7 +969,7 @@
 								</div>
 								<!-- <div @click="resule_vis=true">入驻成功</div> -->
 								<!-- 入驻成功弹框 -->
-								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px">
+								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered @cancel="handUrl('/login')" cancelText="返回登录">
 									<div style="">
 										<div style="display: flex;">
 											<div style="margin: 0 auto;display: flex;align-items: center;">

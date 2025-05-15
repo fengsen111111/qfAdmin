@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined,CheckCircleFilled,CloseCircleFilled } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -23,6 +23,7 @@
 	const id_card_images = ref([])// 身份证照片  
 	const license_image = ref('')//营业执照  
 	const id_card_number = ref('')//身份证号
+	const id_card_times = ref([])//身份有效时间
 	const name = ref('')// 用户姓名  
 	const mobile = ref('')// 手机号  
 	const admin_login_password = ref('')//后台登录密码  
@@ -377,6 +378,7 @@
 	})//密码验证情况
 	// 密码变化
 	function pasChange() {
+		popoverVisible.value = true
 		const result = validatePassword(admin_login_password.value)
 		if (!result.valid) {
 			console.log('密码不合法：', result.msg, pasYz.value);
@@ -425,7 +427,7 @@
 			return { valid: false, msg: '密码未满足所有规则' };
 		}
 	}
-
+    const popoverVisible = ref(false)
 </script>
 
 <template>
@@ -772,7 +774,7 @@
 											</div>
 											<a-input v-model:value="mobile" style="margin-left: 10px;width: 300px;" />
 										</div>
-										<a-popover placement="leftTop">
+										<a-popover placement="leftTop" v-model:visible="popoverVisible">
 											<template #content>
 												<div style="font-size: 12px;">
 													<div style="display: flex;align-items: center;">
@@ -832,7 +834,7 @@
 													</div>
 													<div>
 														<div style="display: flex;align-items: center;">
-															<CheckCircleFilled v-if="pasYz.rule_a"
+															<CheckCircleFilled v-if="pasYz.rule_a"  
 																style="font-size: 10px;color: green;margin-right: 5px;" />
 															<CloseCircleFilled v-else
 																style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
@@ -850,7 +852,7 @@
 																style="font-size: 10px;color: green;margin-right: 5px;" />
 															<CloseCircleFilled v-else
 																style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
-															<span>大写字母/小写字母/数组/符号字少包含三种</span>
+															<span>大写字母/小写字母/数组/符号至少包含三种</span>
 														</div>
 													</div>
 												</div>
@@ -903,7 +905,7 @@
 										</div>
 										<!-- <div @click="resule_vis=true">入驻成功</div> -->
 										<!-- 入驻成功弹框 -->
-										<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px">
+										<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered @cancel="toHome">
 											<div>
 												<div style="display: flex;">
 													<div style="margin: 0 auto;display: flex;align-items: center;">
