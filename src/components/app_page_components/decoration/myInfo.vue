@@ -40,6 +40,10 @@
 							check_remark.value = res.check_remark
 						})
 					}
+
+					// 生成分类表格数据
+					const flattened = flattenCategories(shopObj.value.goods_types);
+					renderTable(flattened);
 				})
 		})
 		// 
@@ -65,6 +69,10 @@
 						check_remark.value = res.check_remark
 					})
 				}
+
+				// 生成分类表格数据
+				const flattened = flattenCategories(shopObj.value.goods_types);
+				renderTable(flattened);
 			})
 	}
 	console.log('pageData', pageData.data);
@@ -152,9 +160,27 @@
 			.post('decoration/GoodsType/getGoodsTypeList', {}, global)
 			.then((res) => {
 				console.log('商品分类列表', res.list);
-				dataType.value = res.list
-				const flattened = flattenCategories(dataType.value);
-				renderTable(flattened);
+				// dataType.value = res.list
+				// const flattened = flattenCategories(dataType.value);
+				// renderTable(flattened);
+				dataType.value = res.list.map((item) => {
+					return {
+						value: item.id,
+						label: item.name,
+						children: item.children.length == 0 ? [] : item.children.map((iss) => {
+							return {
+								value: iss.id,
+								label: iss.name,
+								children: iss.children.length == 0 ? [] : iss.children.map((y) => {
+									return {
+										value: y.id,
+										label: y.name,
+									}
+								})
+							}
+						})
+					}
+				})
 			});
 	}
 	// 已通过
@@ -294,7 +320,7 @@
 	watch(() => titleType.value, (newVal, oldVal) => {
 		if (newVal == '店铺信息') {
 			setTimeout(() => {
-				const flattened = flattenCategories(dataType.value);
+				const flattened = flattenCategories(shopObj.value.goods_types);
 				renderTable(flattened);
 			}, 1000);
 		} else if (newVal == '店铺数据') {
@@ -553,17 +579,14 @@
 
 	// 查询支付结果
 	function handOKCode() {
-		if (cz_type.value = 'bzj') {
-			// 保证金
-			_shopInfo()
-			isPay.value = false
-			bgl_vis.value = false //曝光量充值
-			message.success('支付成功')
-			return false
-		}
-
-
-		console.log('确定');
+		// if (cz_type.value = 'bzj') {
+		// 	_shopInfo()
+		// 	isPay.value = false
+		// 	bgl_vis.value = false //曝光量充值
+		// 	message.success('支付成功')
+		// 	return false
+		// }
+		// console.log('确定');
 		// 查询支付结果
 		global.axios
 			.post('decoration/Store/payTypePricesResult', {
@@ -578,6 +601,7 @@
 					message.success('支付成功')
 					isPay.value = false
 					bgl_vis.value = false //曝光量充值
+					_shopInfo()
 				} else if (res.result == 'F') {
 					message.error('支付失败')
 				} else {
@@ -599,37 +623,68 @@
 			})
 	}
 	getSetting()
-	const cz_type = ref('')// bzj 保证金 bgl 曝光量
+	const cz_type = ref('')// bzj 保证金 bgl 曝光量 flbzj 分类保证金 sjcz 商家充值
 	// 曝光量充值
 	function bglOk() {
 		if (!czje.value) {
 			message.error('请输入充值金额')
 			return false
 		}
-		cz_type.value = 'bgl'
-		global.axios
-			.post('decoration/PowerLevel/buyPower', {
-				handle_type: 'store',
-				price: czje.value,
-				trade_type: 'A_NATIVE',
-				password: ''
-			}, global)
-			.then((res) => {
-				console.log('生成曝光量支付数据', res);
-				pay_Obj.value = res
-				if (res.pay_info) {
-					QRCode.toDataURL(res.pay_info)
-						.then((url) => {
-							console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-							qrCodeData.value = url
-						})
-						.catch((err) => {
-							console.error('生成二维码失败', err);
-						});
-					isPay.value = true
-					timer.value = setInterval(updateTime, 1000);
-				}
-			})
+		// 曝光量
+		if (allcz_type.value == 1) {
+			cz_type.value = 'bgl'
+			global.axios
+				.post('decoration/PowerLevel/buyPower', {
+					handle_type: 'store',
+					price: czje.value,
+					trade_type: 'A_NATIVE',
+					password: ''
+				}, global)
+				.then((res) => {
+					console.log('生成曝光量支付数据', res);
+					pay_Obj.value = res
+					if (res.pay_info) {
+						QRCode.toDataURL(res.pay_info)
+							.then((url) => {
+								console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+								qrCodeData.value = url
+							})
+							.catch((err) => {
+								console.error('生成二维码失败', err);
+							});
+						isPay.value = true
+						timer.value = setInterval(updateTime, 1000);
+					}
+				})
+		} else if (allcz_type.value == 2) {
+			// 充值
+			cz_type.value = 'sjcz'
+			global.axios
+				.post('decoration/User/charge', {
+					target_type: 'store',
+					price: czje.value,
+					trade_type: 'A_NATIVE',
+					password: ''
+				}, global)
+				.then((res) => {
+					console.log('生成商家充值支付数据', res);
+					pay_Obj.value = res
+					if (res.pay_info) {
+						QRCode.toDataURL(res.pay_info)
+							.then((url) => {
+								console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+								qrCodeData.value = url
+							})
+							.catch((err) => {
+								console.error('生成二维码失败', err);
+							});
+						isPay.value = true
+						timer.value = setInterval(updateTime, 1000);
+					}
+				})
+		} else if (allcz_type.value == 3) {
+			// 提现
+		}
 	}
 	// 返回上一页
 	function closeChildPage() {
@@ -646,6 +701,86 @@
 				emit("djtzmk", '用户管理', '商家管理');
 			},
 		});
+	}
+
+	const add_type_vis = ref(false)//添加分类弹窗
+	const typeVal = ref([])//已选分类
+
+	// 添加分类
+	function addFlbzj() {
+		add_type_vis.value = true
+	}
+	// 添加分类确定
+	function handTypeOk() {
+		console.log('121', yx_type.value);
+		let arr = []
+		yx_type.value.map((item) => {
+			arr.push(item.value)
+		})
+		global.axios
+			.post('decoration/Store/payTypePrices', {
+				goods_type_ids: arr,
+				trade_type: 'A_NATIVE',
+			}, global)
+			.then((res) => {
+				console.log('分类保证金缴纳情况', res);
+				pay_Obj.value = res
+				if (res.pay_info) {
+					pay_Obj.value.trans_amt = Number(pay_Obj.value.trans_amt).toFixed(2)
+					cz_type.value = 'flbzj'
+					if (timer.value) {
+						clearInterval(timer.value);
+						timer.value = null;
+						totalSeconds.value = 5 * 60; // 5 分钟
+						minute.value = '05';
+						second.value = '00';
+					}
+					// 支付数据转二维码
+					// console.log('分类生成', pay_Obj.value.pay_info);
+					QRCode.toDataURL(pay_Obj.value.pay_info)
+						.then((url) => {
+							console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+							qrCodeData.value = url
+							timer.value = setInterval(updateTime, 1000);
+						})
+						.catch((err) => {
+							console.error('生成二维码失败', err);
+						});
+					add_type_vis.value = false
+					isPay.value = true
+				} else {
+					// console.log('已缴纳');
+					message.success('当前分类已无需缴纳')
+				}
+			})
+	}
+	const yx_type = ref([])//已选分类数据三级
+	// 处理数剧
+	function onChange(val, label) {
+		yx_type.value = findCategoryPath(dataType.value, val);
+	}
+	function findCategoryPath(data, val, path = []) {
+		for (const category of data) {
+			if (category.value === val) {
+				return [...path, category]; // 找到目标，返回路径
+			}
+			if (category.children && category.children.length > 0) {
+				const result = findCategoryPath(category.children, val, [...path, category]);
+				if (result) return result;
+			}
+		}
+		return null; // 未找到
+	}
+	const allcz_type = ref('1')//1曝光量2商家充值3商家提现
+	function czvisopen(index) {
+		allcz_type.value = index
+		console.log('充值');
+		bgl_vis.value = true
+	}
+    // 关闭三个类型的弹框
+	function handCancel(){
+		czje.value = ''
+		bgl_vis.value = false
 	}
 </script>
 
@@ -972,7 +1107,29 @@
 					</a-modal>
 					<div class="a38">认证商品类目</div>
 					<div style="margin-top: 10px;">
-						<div style="margin-bottom: 10px;cursor: pointer;"><a-button type="primary">添加分类</a-button></div>
+						<div style="margin-bottom: 10px;cursor: pointer;">
+							<a-button type="primary" @click="addFlbzj">添加分类</a-button>
+						</div>
+						<!-- 添加分类 -->
+						<a-modal v-model:visible="add_type_vis" title="添加分类" @ok="handTypeOk">
+							<div style="display: flex;">
+								<div style="display: flex;margin: 0 auto;">
+									<div style="margin-top: 5px;">商品分类：</div>
+									<div>
+										<a-tree-select @change="onChange" v-model:value="typeVal" show-search
+											style="width: 350px;"
+											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+											placeholder="请输入关键词搜索分类" allow-clear tree-default-expand-all
+											:tree-data="dataType" tree-node-filter-prop="label">
+											<template #title="{ value: val, label }">
+												<b v-if="val === 'parent 1-1'" style="color: #08c">sss</b>
+												<template v-else>{{ label }}</template>
+											</template>
+										</a-tree-select>
+									</div>
+								</div>
+							</div>
+						</a-modal>
 						<div>
 							<table class="table" border="1">
 								<thead>
@@ -986,10 +1143,14 @@
 								<!-- 渲染数据行 -->
 								<!-- 动态插入 -->
 							</table>
-							<div class="a39">
-								<div style="color: #666666;">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items
-									:showSizeChanger="false" />
+							<div v-if="shopObj.goods_types.length==0"
+								style="border-left: 1px solid #e9e9e9;border-right: 1px solid #e9e9e9;padding: 10px;width: 80vw;">
+								<a-empty />
+							</div>
+							<div class="a39" v-if="shopObj.goods_types">
+								<div style="color: #666666;">共 {{shopObj.goods_types.length}} 项数据</div>
+								<a-pagination v-model:current="current" :total="shopObj.goods_types.length"
+									show-less-items :showSizeChanger="false" />
 							</div>
 						</div>
 					</div>
@@ -1169,20 +1330,25 @@
 								</div>
 								<div style="display: flex;">
 									<div>{{shopObj.power}}</div>
-									<div @click="bgl_vis= true"
+									<div @click="czvisopen(1)"
 										style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
 								</div>
 							</div>
 						</div>
 						<!-- 充值 -->
-						<a-modal v-model:visible="bgl_vis" title="充值" @ok="bglOk">
+						<a-modal v-model:visible="bgl_vis" :title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'" @ok="bglOk" @cancel="handCancel">
 							<div style="display: flex;">
 								<div style="display: flex;margin: 0 auto;">
 									<div style="margin-top: 5px;">金额：</div>
 									<div>
 										<a-input prefix="￥" suffix="RMB" v-model:value="czje" style="width: 300px;" />
-										<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量</div>
-										<div style="color: #ff0000;" v-else>{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+										<!-- 曝光量 -->
+										<div v-if="allcz_type==1">
+											<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量
+											</div>
+											<div style="color: #ff0000;" v-else>
+												{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+											</div>
 										</div>
 									</div>
 								</div>
@@ -1223,8 +1389,8 @@
 									<div style="color: #ff0000;">当货款余额充足时，押金不足时将使用货款自动补齐押金.</div>
 								</div>
 								<div style="padding: 20px;cursor: pointer;">
-									<div class="a77">充值</div>
-									<div class="a78">提现</div>
+									<div class="a77" @click="czvisopen(2)">充值</div>
+									<div class="a78" @click="czvisopen(3)">提现</div>
 								</div>
 							</div>
 						</div>
@@ -1307,6 +1473,7 @@
 					<span class="priceUnit">¥</span>
 					<span class="priceNumber" v-if="cz_type=='bzj'">{{shopObj.deposit_money}}</span>
 					<span class="priceNumber" v-else-if="cz_type=='bgl'">{{czje}}</span>
+					<span class="priceNumber" v-else-if="cz_type=='flbzj'">{{pay_Obj.trans_amt}}</span>
 				</div>
 				<div class="payTimeRemaining">
 					<span class="payTxt">支付剩余时间</span>
