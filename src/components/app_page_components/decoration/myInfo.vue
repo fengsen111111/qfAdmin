@@ -612,6 +612,7 @@
 
 	const bgl_vis = ref(false)//曝光量充值
 	const czje = ref('')//充值金额
+	const txpassword = ref('')//提现密码
 	const jbpz = ref({})//基本配置
 	// 曝光量兑换比例
 	function getSetting() {
@@ -683,7 +684,20 @@
 					}
 				})
 		} else if (allcz_type.value == 3) {
+			if (!txpassword.value) {
+				message.error('请输入提现密码')
+				return false
+			}
 			// 提现
+			global.axios
+				.post('decoration/Withdrawal/submitWithdrawal', {
+					handler_type: 'store',
+					money: czje.value,
+					password: txpassword.value
+				}, global)
+				.then((res) => {
+					console.log('提现结果', res);
+				})
 		}
 	}
 	// 返回上一页
@@ -777,9 +791,10 @@
 		console.log('充值');
 		bgl_vis.value = true
 	}
-    // 关闭三个类型的弹框
-	function handCancel(){
-		czje.value = ''
+	// 关闭三个类型的弹框
+	function handCancel() {
+		czje.value = '' //充值，提现金额
+		txpassword.value = ''//提现密码
 		bgl_vis.value = false
 	}
 </script>
@@ -1336,20 +1351,31 @@
 							</div>
 						</div>
 						<!-- 充值 -->
-						<a-modal v-model:visible="bgl_vis" :title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'" @ok="bglOk" @cancel="handCancel">
-							<div style="display: flex;">
-								<div style="display: flex;margin: 0 auto;">
-									<div style="margin-top: 5px;">金额：</div>
-									<div>
-										<a-input prefix="￥" suffix="RMB" v-model:value="czje" style="width: 300px;" />
-										<!-- 曝光量 -->
-										<div v-if="allcz_type==1">
-											<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量
-											</div>
-											<div style="color: #ff0000;" v-else>
-												{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+						<a-modal v-model:visible="bgl_vis"
+							:title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'" @ok="bglOk"
+							@cancel="handCancel">
+							<div>
+								<div style="display: flex;">
+									<div style="display: flex;margin: 0 auto;">
+										<div style="margin-top: 5px;">充值金额：</div>
+										<div>
+											<a-input prefix="￥" suffix="RMB" v-model:value="czje"
+												style="width: 300px;" />
+											<!-- 曝光量 -->
+											<div v-if="allcz_type==1">
+												<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量
+												</div>
+												<div style="color: #ff0000;" v-else>
+													{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+												</div>
 											</div>
 										</div>
+									</div>
+								</div>
+								<div style="display: flex;margin-top: 10px;">
+									<div v-if="allcz_type==3" style="display: flex;margin: 0 auto;">
+										<div style="margin-top: 5px;">提现密码：</div>
+										<a-input v-model:value="txpassword" style="width: 300px;" />
 									</div>
 								</div>
 							</div>
