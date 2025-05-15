@@ -4,7 +4,7 @@
   import { message } from 'ant-design-vue';
   import Draggable from 'vuedraggable';//排序插件
 
-  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType", "toShopInfo"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType","toShopInfo"]);
   const global = inject("global").value;
   import dayjs from 'dayjs';
 
@@ -267,7 +267,6 @@
         post_params.store_id = res.store_id
         getGoodsTypeList()
         getGoodsBrandList()
-        _shopInfo()
       });
   }
   getStoreID()
@@ -768,7 +767,7 @@
         check_status.value = res.check_status// a待审核 b 已通过 c已拒绝
       })
   }
-
+  _shopInfo()
   const pay_Obj = ref({})//分类保证金支付数据
   // 当前分类保证金缴纳情况
   function payTypePrices() {
@@ -779,8 +778,8 @@
       }, global)
       .then((res) => {
         console.log('分类保证金缴纳情况', res);
-        pay_Obj.value = res
         if (res.pay_info) {
+          pay_Obj.value = res
           pay_Obj.value.trans_amt = Number(pay_Obj.value.trans_amt).toFixed(2)
         } else {
           console.log('已缴纳');
@@ -856,7 +855,6 @@
   const totalSeconds = ref(5 * 60); // 5 分钟
   const minute = ref('05');
   const second = ref('00');
-  const cz_type = ref('')//dpbzj 店铺保证金  flbzj 分类保证金
   // 支付倒计时
   const updateTime = () => {
     const mins = Math.floor(totalSeconds.value / 60);
@@ -868,52 +866,33 @@
     } else {
       clearInterval(timer.value);
       // 倒计时结束后的处理逻辑
-      console.log('倒计时结束,二维码过期,清除二维码，关闭弹窗');
-      qrCodeData.value = ''
-      pay_info_Vis.value = false//
-      isPay.value = false//
+      console.log('倒计时结束');
     }
   };
   // 打开弹窗
   function handPay() {
-    pay_Obj.value = {}//清除支付数据重新生成
-    pay_info_Vis.value = false//关闭下面那个弹框
-    payTypePrices()
-    setTimeout(() => {
-      cz_type.value = 'flbzj'
-      if (timer.value) {
-        clearInterval(timer.value);
-        timer.value = null;
-        totalSeconds.value = 5 * 60; // 5 分钟
-        minute.value = '05';
-        second.value = '00';
-      }
-      // 支付数据转二维码
-      // console.log('分类生成', pay_Obj.value.pay_info);
-      QRCode.toDataURL(pay_Obj.value.pay_info)
-        .then((url) => {
-          console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-          qrCodeData.value = url
-          timer.value = setInterval(updateTime, 1000);
-        })
-        .catch((err) => {
-          console.error('生成二维码失败', err);
-        });
-      isPay.value = true
-    }, 1000);
+    if (timer.value) {
+      clearInterval(timer.value);
+      timer.value = null;
+      totalSeconds.value = 5 * 60; // 5 分钟
+      minute.value = '05';
+      second.value = '00';
+    }
+    // 支付数据转二维码
+    QRCode.toDataURL(pay_Obj.value.pay_info)
+      .then((url) => {
+        console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+        qrCodeData.value = url
+        timer.value = setInterval(updateTime, 1000);
+      })
+      .catch((err) => {
+        console.error('生成二维码失败', err);
+      });
+    isPay.value = true
   }
   // 查询支付结果
   function handOKCode() {
     console.log('确定');
-    // 支付成功后刷新缴纳状态
-    payTypePrices()
-    _shopInfo()
-    if (cz_type.value = 'dpbzj') {
-      isPay.value = false
-      pay_info_Vis.value = false
-      message.success('支付成功')
-      return false
-    }
     // 查询支付结果
     global.axios
       .post('decoration/Store/payTypePricesResult', {
@@ -927,10 +906,6 @@
         } else if (res.result == 'S') {
           message.success('支付成功')
           isPay.value = false
-          pay_info_Vis.value = false
-          // 支付成功后刷新缴纳状态
-          // payTypePrices()
-          // _shopInfo()
         } else if (res.result == 'F') {
           message.error('支付失败')
         } else {
@@ -938,46 +913,11 @@
         }
       })
   }
-  // 点击跳转店铺详情版
-  // function czbzj() {
-  //   pay_info_Vis.value = false
-  //   emit('toShopInfo')
-  // }
 
-  // 点击直接缴纳版
   function czbzj() {
-    pay_Obj.value = {}//清除支付数据重新生成
-    pay_info_Vis.value = false//关闭下面那个弹框
-    if (timer.value) {
-      clearInterval(timer.value);
-      timer.value = null;
-      totalSeconds.value = 5 * 60; // 5 分钟
-      minute.value = '05';
-      second.value = '00';
-    }
-    global.axios
-      .post('decoration/Store/createStoreEnsureMoney', {
-        store_id: post_params.store_id,
-        trade_type: 'A_NATIVE',
-        password: ''
-      }, global)
-      .then((res) => {
-        console.log('结果', res);
-        pay_Obj.value = res
-        if (res.pay_info) {
-          QRCode.toDataURL(res.pay_info)
-            .then((url) => {
-              console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-              qrCodeData.value = url
-            })
-            .catch((err) => {
-              console.error('生成二维码失败', err);
-            });
-          cz_type.value = 'dpbzj'
-          isPay.value = true
-          timer.value = setInterval(updateTime, 1000);
-        }
-      })
+    pay_info_Vis.value = false
+    // console.log('跳转');
+    emit('toShopInfo')
   }
 
 </script>
@@ -988,16 +928,9 @@
     <a-spin :spinning="spinning">
       <div class="wcdiv">
         <div class="a1">
-          <div v-if="props.pageData.data.id">
-            <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="a2 iconfont button-class"
-              @click="closeChildPage(pageData.page_key)">&#xe6d2;
-            </a-button>
-          </div>
-          <div v-else>
-            <a-button class="a2 iconfont button-class"
-              @click="editType()">&#xe6d2;
-            </a-button>
-          </div>
+          <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="a2 iconfont button-class"
+            @click="closeChildPage(pageData.page_key)">&#xe6d2;
+          </a-button>
           <div class="spbj">商品编辑
           </div>
         </div>
@@ -1058,11 +991,11 @@
             <div v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="a20">
               <ExclamationCircleOutlined class="a21" />
               <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-              <span v-if="pay_Obj.pay_info" class="c22" @click="handPay()">去缴纳</span>
+              <!-- <span v-if="pay_Obj.pay_info" class="c22" @click="handPay()">去缴纳</span> -->
               <span
                 v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-              <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
-              <!-- <span v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="c22" @click="czbzj()">去缴纳</span> -->
+              <!-- <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">充值保证金</span> -->
+              <span v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="c22" @click="czbzj()">去缴纳</span>
 
             </div>
           </div>
@@ -1875,8 +1808,8 @@
               <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
             </div>
             <!-- 需提示缴纳保证金 -->
-            <a-modal v-model:visible="pay_info_Vis" :footer="null" style="z-index: 8;">
-              <div style="position: relative;">
+            <a-modal v-model:visible="pay_info_Vis" :footer="null" style="position: relative;">
+              <div>
                 <div class="b36">
                   <ExclamationCircleFilled class="b38" />
                 </div>
@@ -1887,8 +1820,8 @@
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">
-                    <div class="b41" @click="czbzj" v-if="shopObj.deposit_money>0">缴纳店铺保证金</div>
-                    <div class="b41" @click="handPay" v-else-if="pay_Obj.pay_info">缴纳分类保证金</div>
+                    <div class="b41" @click="czbzj">
+                      充值保证金</div>
                     <div @click="pay_info_Vis=false" class="b42">暂不充值
                     </div>
                   </div>
@@ -1900,7 +1833,7 @@
           </div>
           <!-- 支付弹框 -->
           <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
-            style="z-index: 999999;" cancel-text="放弃" :maskClosable="false">
+            cancel-text="放弃" :maskClosable="false">
             <div class="container">
               <div class="pcHeader">
                 <img class="logoImg"
@@ -1910,8 +1843,7 @@
               </div>
               <div class="price">
                 <span class="priceUnit">¥</span>
-                <span class="priceNumber" v-if="cz_type=='dpbzj'">{{shopObj.deposit_money}}</span>
-                <span class="priceNumber" v-if="cz_type=='flbzj'">{{pay_Obj.trans_amt}}</span>
+                <span class="priceNumber">{{pay_Obj.trans_amt}}</span>
               </div>
               <div class="payTimeRemaining">
                 <span class="payTxt">支付剩余时间</span>
@@ -3001,7 +2933,7 @@
     border-radius: 50%;
     width: 50px;
     height: 50px;
-    top: -70px;
+    top: -26px;
   }
 
   .b37 {

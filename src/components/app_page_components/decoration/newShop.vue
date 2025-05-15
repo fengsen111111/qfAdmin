@@ -10,7 +10,7 @@
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
 
-  let emit = defineEmits(["openChildPage", "closeChildPage",]);
+  let emit = defineEmits(["openChildPage", "closeChildPage","toShopDetails"]);
 
   const global = inject("global").value;
 
@@ -256,6 +256,11 @@
   function editType() {
     typeVis.value = 1
   }
+  // 去店铺详情
+  function toShopInfo(){
+    console.log('去店铺详情');
+    emit('toShopDetails')
+  }
 </script>
 
 <template>
@@ -338,7 +343,7 @@
     </div>
     <div v-else class="a17">
       <publishPage :pageData="pageData" @closeChildPageTwo="closeChildPageTwo" @closeChildPage="closeChildPage"
-        @editType="editType" @openChildPage="openChildPage" />
+        @editType="editType" @openChildPage="openChildPage" @toShopInfo="toShopInfo" />
     </div>
     <!-- 支付弹框 -->
     <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"

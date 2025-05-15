@@ -439,6 +439,24 @@
     })
   }
   getCustomerRoomList()
+
+  // 前往店铺详情
+  function toShopDetails(){
+    openPage({
+            checked: true,
+            checked_status: true,
+            open_status: true,
+            icon: "",
+            label: "店铺信息",
+            order: "1",
+            page_id: "0",
+            pid: "706154120674803773",
+            type: "myInfo",
+            url: "",
+            value: "333333",
+            page_key: "e06ac6e73a5db3b8f010acb4213123213",
+          }, true)
+  }
 </script>
 
 <template>
@@ -570,7 +588,7 @@
           :class="page.type=='IndexPage'||page.type=='orderDetails'?'contentZdy':'content'">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
-              @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" />
+              @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" @toShopDetails="toShopDetails" />
           </keep-alive>
         </div>
       </a-layout-content>
