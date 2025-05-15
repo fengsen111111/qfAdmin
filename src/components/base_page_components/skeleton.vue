@@ -30,48 +30,28 @@
       skeleton_state.admin = res.admin;
       skeleton_state.admin.portrait = res.admin.portrait ? res.admin.portrait : "/resource/image/head_img.png";
       global.adminMsg = skeleton_state.admin
-      res.menu.push({
-        icon: "",
-        label: "我的店铺",
-        order: "1",
-        page_id: "0",
-        pid: "706154120674803772",
-        type: "publishPage",
-        url: "",
-        value: "723777073939746104",
-        children: [
-          {
-            icon: "",
-            label: "店铺信息",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803773",
-            type: "myInfo",
-            url: "",
-            value: "333333",
-          },
-          {
-            icon: "",
-            label: "用户详情",
-            order: "3",
-            page_id: "0",
-            pid: "7061541206748037735",
-            type: "userDetails",
-            url: "",
-            value: "333335",
-          },
-          {
-            icon: "",
-            label: "订单详情",
-            order: "4",
-            page_id: "0",
-            pid: "7061541206748037736",
-            type: "orderDetails",
-            url: "",
-            value: "333336",
-          }
-        ]
-      })
+      // res.menu.push({
+      //   icon: "",
+      //   label: "我的店铺",
+      //   order: "1",
+      //   page_id: "0",
+      //   pid: "706154120674803772",
+      //   type: "publishPage",
+      //   url: "",
+      //   value: "723777073939746104",
+      //   children: [
+      //     {
+      //       icon: "",
+      //       label: "店铺信息",
+      //       order: "1",
+      //       page_id: "0",
+      //       pid: "706154120674803773",
+      //       type: "myInfo",
+      //       url: "",
+      //       value: "333333",
+      //     },
+      //   ]
+      // })
       //初始化tabMenu为未选中
       skeleton_state.menuData = res.menu;
       //循环三次，给每个菜单页面设置page_key以及checked = false

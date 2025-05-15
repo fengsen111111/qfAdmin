@@ -400,7 +400,7 @@
                     <span class="a55">（本年）</span>
                   </div>
                   <div style="margin-right: 100px;">
-                    <b>总用户数：{{Number(931991991).toLocaleString()}}</b>
+                    <b>总用户数：{{Number(tjzd.all_user_number).toLocaleString()}}</b>
                   </div>
                 </div>
                 <div style="width: 100%;height: 324px;position: relative;">
@@ -433,7 +433,7 @@
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
                         <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
+                          :src="item.head_image"
                           alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
@@ -455,7 +455,7 @@
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
                         <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025428/ev9v7kmhau77as4w7jbp9tvee3wdtkis.png"
+                          :src="item.head_image"
                           alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>

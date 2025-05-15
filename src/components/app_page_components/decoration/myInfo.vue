@@ -470,6 +470,7 @@
 	const pay_Obj = ref({})//支付信息
 	// 支付保证金
 	function payBzj() {
+		cz_type.value = 'bzj'
 		if (timer.value) {
 			clearInterval(timer.value);
 			timer.value = null;
@@ -536,10 +537,57 @@
 				} else if (res.result == 'S') {
 					message.success('支付成功')
 					isPay.value = false
+					bgl_vis.value = false //曝光量充值
 				} else if (res.result == 'F') {
 					message.error('支付失败')
 				} else {
 					message.error('未知')
+				}
+			})
+	}
+
+	const bgl_vis = ref(false)//曝光量充值
+	const czje = ref('')//充值金额
+	const jbpz = ref({})//基本配置
+    // 曝光量兑换比例
+	function getSetting() {
+		global.axios
+			.post('decoration/Setting/getSetting', {}, global)
+			.then((res) => {
+				console.log('基本配置', res);
+				jbpz.value = res
+			})
+	}
+    getSetting()
+    const cz_type = ref('')// bzj 保证金 bgl 曝光量
+    // 曝光量充值
+	function bglOk(){
+		if(!czje.value){
+			message.error('请输入充值金额')
+			return false
+		}
+		cz_type.value = 'bgl'
+		global.axios
+			.post('decoration/PowerLevel/buyPower', {
+				handle_type:'store',
+				price:czje.value,
+				trade_type:'A_NATIVE',
+				password:''
+			}, global)
+			.then((res) => {
+				console.log('生成曝光量支付数据', res);
+				pay_Obj.value = res
+				if (res.pay_info) {
+					QRCode.toDataURL(res.pay_info)
+						.then((url) => {
+							console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+							qrCodeData.value = url
+						})
+						.catch((err) => {
+							console.error('生成二维码失败', err);
+						});
+					isPay.value = true
+					timer.value = setInterval(updateTime, 1000);
 				}
 			})
 	}
@@ -1054,7 +1102,30 @@
 								</div>
 								<div>{{Number(2131312321).toLocaleString()}}</div>
 							</div>
+							<div style="display: flex;">
+								<div class="a67">剩余曝光量：
+								</div>
+								<div style="display: flex;">
+									<div>{{shopObj.power}}</div>
+									<div @click="bgl_vis= true" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
+								</div>
+							</div>
 						</div>
+                        <!-- 充值 -->
+						<a-modal v-model:visible="bgl_vis" title="充值" @ok="bglOk">
+							<div style="display: flex;">
+								<div style="display: flex;margin: 0 auto;">
+									<div style="margin-top: 5px;">金额：</div>
+								    <div>
+										<a-input prefix="￥" suffix="RMB" v-model:value="czje" style="width: 300px;" />
+										<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量</div>
+										<div style="color: #ff0000;" v-else>{{czje}}RMB={{czje*jbpz.charge_power}}曝光量</div>
+									</div>
+								</div>
+							</div>
+						</a-modal>
+
+
 						<div style="display: flex;">
 							<div class="a68" v-if="is_ptsj=='平台'">
 								<div style="margin-right: 20px;">
@@ -1170,7 +1241,8 @@
 				</div>
 				<div class="price">
 					<span class="priceUnit">¥</span>
-					<span class="priceNumber">{{shopObj.deposit_money}}</span>
+					<span class="priceNumber" v-if="cz_type=='bzj'">{{shopObj.deposit_money}}</span>
+					<span class="priceNumber" v-else-if="cz_type=='bgl'">{{czje}}</span>
 				</div>
 				<div class="payTimeRemaining">
 					<span class="payTxt">支付剩余时间</span>
