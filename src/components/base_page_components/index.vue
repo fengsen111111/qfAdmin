@@ -451,7 +451,7 @@
                         <img v-if="item.head_image" style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
                           :src="item.head_image" alt="">
                         <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="../../../../public/resource/image/userImg.png" alt="">
+                          src="../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
@@ -474,7 +474,7 @@
                         <img v-if="item.head_image" style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
                           :src="item.head_image" alt="">
                          <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="../../../../public/resource/image/userImg.png" alt="">
+                          src="../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
