@@ -302,7 +302,7 @@
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
 				"check_status": 'b',
-				"id": id.value,
+				"id": id.value?id.value:'',
 				"user_id": '',
 				"type": type.value,
 				"name": name.value,
