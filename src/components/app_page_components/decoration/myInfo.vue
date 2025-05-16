@@ -532,8 +532,7 @@
 			minute.value = '05';
 			second.value = '00';
 		}
-		global.axios
-			.post('decoration/Store/createStoreEnsureMoney', {
+		global.axios.post('decoration/Store/createStoreEnsureMoney', {
 				store_id: store_id.value,
 				trade_type: 'A_NATIVE',
 				password: ''
@@ -631,6 +630,14 @@
 			message.error('请输入充值金额')
 			return false
 		}
+		if (timer.value) {
+			clearInterval(timer.value);
+			timer.value = null;
+			totalSeconds.value = 5 * 60; // 5 分钟
+			minute.value = '05';
+			second.value = '00';
+		}
+		pay_Obj.value = {}
 		// 曝光量
 		if (allcz_type.value == 1) {
 			cz_type.value = 'bgl'

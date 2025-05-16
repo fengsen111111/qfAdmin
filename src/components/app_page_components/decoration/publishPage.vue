@@ -926,12 +926,12 @@
     // 支付成功后刷新缴纳状态
     payTypePrices()
     _shopInfo()
-    if (cz_type.value = 'dpbzj') {
-      isPay.value = false
-      pay_info_Vis.value = false
-      message.success('支付成功')
-      return false
-    }
+    // if (cz_type.value = 'dpbzj') {
+    //   isPay.value = false
+    //   pay_info_Vis.value = false
+    //   message.success('支付成功')
+    //   return false
+    // }
     // 查询支付结果
     global.axios
       .post('decoration/Store/payTypePricesResult', {
