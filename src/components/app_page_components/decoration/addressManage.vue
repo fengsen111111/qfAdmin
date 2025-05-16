@@ -36,7 +36,7 @@
 				dzmdfhdz.value = []
 				thdz.value = []
 				res.list.map((item) => {
-					item.status = item.status=='Y'?true:false
+					item.status = item.status == 'Y' ? true : false
 					if (item.type == 'a') {
 						dzmdfhdz.value.push(item)
 					} else {
@@ -57,9 +57,14 @@
 	const dzmd_obj = {}
 	const formRef = ref(null);
 	// 编辑
-	function editFhdz(item){
+	function editFhdz(item) {
 		dzmd_obj.value = item
-		formState.xx1 = ''
+
+		formState.xx1 = []
+		let arr = findPathById(treeData.value, item.area_id)
+		arr.map((item) => {
+			formState.xx1.push(item.value)
+		})
 		formState.xx2 = item.address
 		fh_vis.value = true
 	}
@@ -68,13 +73,29 @@
 		try {
 			const values = await formRef.value.validateFields();
 			console.log('Success:', values);
+			if (values.xx1.length < 3) {
+				message.error('请选到三级地址')
+			}
+			let arr = findPathById(treeData.value, values.xx1[2])
+			let str = ''
+			arr.map((item) => {
+				str = str + item.label
+			})
+
+			if (values.xx2.slice(0, str.length) == str) {
+				console.log('有地址头');
+			} else {
+				values.xx2 = str + values.xx2
+			}
 			global.axios
 				.post('decoration/StoreAddress/editStoreAddress', {
-					id: dzmd_obj.value.id,//ID  修改时必传  
+					id: dzmd_obj.value ? dzmd_obj.value.id : '',//ID  修改时必传  
 					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
 					sender_name: '',//发货人
 					sender_mobile: '',//发货电话
 					address: values.xx2,//发货地址
+					area_id: values.xx1[2],//所在地id
+					street_address: str,//所在地名称
 					type: 'a',//类型  a发货地址  b退货地址
 					status: 'Y',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
 				}, global)
@@ -113,18 +134,18 @@
 		});
 	}
 	// 修改状态
-	function onChange(item){
+	function onChange(item) {
 		// console.log('item',item);
 		global.axios
-				.post('decoration/StoreAddress/editStoreAddress', {
-					id: item.id,//ID  修改时必传  
-					status: item.status?'Y':'N',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
-					type:item.type
-				}, global)
-				.then((res) => {
-					message.success('操作成功')
-					lookData()
-				});
+			.post('decoration/StoreAddress/editStoreAddress', {
+				id: item.id,//ID  修改时必传  
+				status: item.status ? 'Y' : 'N',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
+				type: item.type
+			}, global)
+			.then((res) => {
+				message.success('操作成功')
+				lookData()
+			});
 	}
 	// -------------------end电子面单
 	// -------------------退货地址
@@ -138,11 +159,15 @@
 	const formRefTh = ref(null);
 	const thdz_obj = {}
 	// 编辑
-	function editThdz(item){
+	function editThdz(item) {
 		thdz_obj.value = item
 		formStateTh.key1 = item.sender_name
 		formStateTh.key2 = item.sender_mobile
-		formStateTh.key3 = ''
+		formStateTh.key3 = []
+		let arr = findPathById(treeData.value, item.area_id)
+		arr.map((item) => {
+			formStateTh.key3.push(item.value)
+		})
 		formStateTh.key4 = item.address
 		fh_visTh.value = true
 	}
@@ -151,13 +176,30 @@
 		try {
 			const values = await formRefTh.value.validateFields();
 			console.log('Success:', values);
+			if (values.key3.length < 3) {
+				message.error('请选到三级地址')
+			}
+			let arr = findPathById(treeData.value, values.key3[2])
+			let str = ''
+			arr.map((item) => {
+				str = str + item.label
+			})
+			// console.log('values.key4', values.key4.slice(0, str.length));
+			if (values.key4.slice(0, str.length) == str) {
+				console.log('有地址头');
+			} else {
+				values.key4 = str + values.key4
+			}
+
 			global.axios
 				.post('decoration/StoreAddress/editStoreAddress', {
-					id: '',//ID  修改时必传  
+					id: thdz_obj.value ? thdz_obj.value.id : '',//ID  修改时必传  
 					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
 					sender_name: values.key1,//发货人
 					sender_mobile: values.key2,//发货电话
 					address: values.key4,//发货地址
+					area_id: values.key3[2],//所在地id
+					street_address: str,//所在地名称
 					type: 'b',//类型  a发货地址  b退货地址
 					status: 'Y',//启用状态  Y启用  N禁用(启用禁用时传这个id和这个参数) 
 				}, global)
@@ -187,7 +229,7 @@
 					.post('decoration/StoreAddress/editStoreAddress', {
 						id: obj.id,//ID  修改时必传  
 						delete_status: 'Y',//Y 已删除  N未删除(删除时传这个id和这个参数)  
-					    type:item.type
+						type: item.type
 					}, global)
 					.then((res) => {
 						message.success('删除成功')
@@ -240,7 +282,7 @@
 						<th scope="col">编辑</th>
 					</tr>
 					<tr v-for="item in dzmdfhdz" :key="item.id">
-						<td>中国 福建省福州市鼓楼区</td>
+						<td>{{item.street_address}}</td>
 						<td>{{item.address}}</td>
 						<td><a-switch v-model:checked="item.status" @change="onChange(item)" /></td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">
@@ -283,7 +325,7 @@
 					<tr v-for="item in thdz" :key="item.id">
 						<td>{{item.sender_name}}</td>
 						<td>{{item.sender_mobile}}</td>
-						<td>中国 福建省福州市鼓楼区</td>
+						<td>{{item.street_address}}</td>
 						<td>{{item.address}}</td>
 						<td><a-switch v-model:checked="item.status" @change="onChange(item)" /></td>
 						<td style="color: #0c96f1;display: flex;align-items: center;cursor: pointer;">

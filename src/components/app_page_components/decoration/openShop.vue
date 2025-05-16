@@ -439,6 +439,9 @@
 			console.log('通过校验');
 		}
 	}
+	setTimeout(() => {
+		pasChange()
+	}, 500);
 	// 校验密码
 	function validatePassword(pwd) {
 		let passedCount = 0; // 统计通过的规则数
