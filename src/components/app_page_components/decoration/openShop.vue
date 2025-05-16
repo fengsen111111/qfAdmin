@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined,CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -52,7 +52,14 @@
 				id_card_images.value = res.id_card_images ? res.id_card_images : []
 				license_image.value = res.license_image
 				id_card_number.value = res.id_card_number
-				id_card_times.value = res.id_card_times
+				// id_card_times.value = res.id_card_times
+				id_card_times.value = res.id_card_times.map(timestamp => {
+					const date = new Date(timestamp * 1000); // 转为毫秒
+					const year = date.getFullYear();
+					const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始
+					const day = String(date.getDate()).padStart(2, '0');
+					return `${year}/${month}/${day}`;
+				});
 				name.value = res.name
 				mobile.value = res.mobile
 				admin_login_password.value = res.password
@@ -292,7 +299,7 @@
 				return false
 			}
 		}
-		if(!id_card_times.value){
+		if (!id_card_times.value) {
 			message.error('请选择身份证有效期')
 			return false
 		}
@@ -329,7 +336,7 @@
 				"mobile": mobile.value,
 				"id_card_number": id_card_number.value,
 				// "id_card_times":id_card_times.value,
-				"id_card_times":id_card_times.value.map(date => Math.floor(new Date(date).getTime() / 1000)),
+				"id_card_times": id_card_times.value.map(date => Math.floor(new Date(date).getTime() / 1000)),
 				"id_card_images": id_card_images.value,
 				"store_name": store_name.value,
 				"license_image": license_image.value,
@@ -489,7 +496,7 @@
 				msgValue.value = error.message
 			})
 	}
-    const popoverVisible = ref(false)
+	const popoverVisible = ref(false)
 
 </script>
 
@@ -800,7 +807,8 @@
 													</div>
 												</div>
 												<div>
-													<a-range-picker v-model:value="id_card_times" :format="'YYYY/MM/DD'" :value-format="'YYYY/MM/DD'"
+													<a-range-picker v-model:value="id_card_times" :format="'YYYY/MM/DD'"
+														:value-format="'YYYY/MM/DD'"
 														style="width: 220px;margin-left: 20px;" />
 												</div>
 												<div style="display: flex;align-items: center;margin-left: 10px;">
@@ -970,7 +978,8 @@
 								</div>
 								<!-- <div @click="resule_vis=true">入驻成功</div> -->
 								<!-- 入驻成功弹框 -->
-								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered @cancel="handUrl('/login')" cancelText="返回登录">
+								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered
+									@cancel="handUrl('/login')" cancelText="返回登录">
 									<div style="">
 										<div style="display: flex;">
 											<div style="margin: 0 auto;display: flex;align-items: center;">

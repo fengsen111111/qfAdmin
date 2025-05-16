@@ -1497,9 +1497,10 @@
 				</div>
 				<div class="price">
 					<span class="priceUnit">¥</span>
-					<span class="priceNumber" v-if="cz_type=='bzj'">{{shopObj.deposit_money}}</span>
-					<span class="priceNumber" v-else-if="cz_type=='bgl'">{{czje}}</span>
-					<span class="priceNumber" v-else-if="cz_type=='flbzj'">{{pay_Obj.trans_amt}}</span>
+					<span class="priceNumber" v-if="cz_type=='bzj'">{{shopObj.deposit_money}}</span><!-- 保证金 -->
+					<span class="priceNumber" v-else-if="cz_type=='bgl'">{{czje}}</span><!-- 曝光量 -->
+					<span class="priceNumber" v-else-if="cz_type=='flbzj'">{{pay_Obj.trans_amt}}</span><!-- 分类保证金 -->
+					<span class="priceNumber" v-else-if="cz_type=='sjcz'">{{czje}}</span><!-- 商家充值 -->
 				</div>
 				<div class="payTimeRemaining">
 					<span class="payTxt">支付剩余时间</span>
