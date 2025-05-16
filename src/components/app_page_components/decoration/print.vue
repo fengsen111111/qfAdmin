@@ -55,9 +55,10 @@
             clearInterval(intervalId); // 停止定时器
         }
     }, 5000);
-
+    const dyjmc = ref('')
     function selChange(value) {
         console.log('value', value);
+        dyjmc.value = value
     }
     // 刷新
     function sure() {
@@ -100,11 +101,12 @@
             </body>
         </html>`
         LODOP.PRINT_INITA('')  // 打印初始化
-        // LODOP.SET_PRINTER_INDEX("HPRT N31BT");//按名称指定打印机
+        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        return false
         LODOP.PRINT()// 直接打印
         visPrint.value = false//关闭打印弹窗
         ksDy.value = true//打开打印提示框
@@ -138,7 +140,7 @@
             </body>
         </html>`
         LODOP.PRINT_INITA('')  // 打印初始化
-        // LODOP.SET_PRINTER_INDEX("Microsoft XPS Document Writer");//按名称指定打印机
+        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
         LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
         LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
