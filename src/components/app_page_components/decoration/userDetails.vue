@@ -93,6 +93,7 @@
 <template>
 	<!--搜索-->
 	<div>
+		<div @click="lookOrder">订单详情</div>
 		<div style="padding: 0px 20px;">
 			<!--搜索-->
 			<div>
