@@ -294,7 +294,7 @@
 		const result = validatePassword(admin_login_password.value)
 		if (!result.valid) {
 			console.log('密码不合法：', result.msg, pasYz.value);
-			message.error('密码不合法')
+			message.error('密码不合规')
 			return false
 		} else {
 			console.log('通过校验');
