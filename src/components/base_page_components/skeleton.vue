@@ -24,7 +24,7 @@
     nowPage: {}, //当前页面
   });
 
-  onBeforeMount(() => {
+  function afterLogin() {
     global.axios.post("factory_system/Base/afterLogin", {}, global, false).then((res) => {
       skeleton_state.author = res.author;
       skeleton_state.admin = res.admin;
@@ -74,7 +74,12 @@
           });
       });
     });
-  });
+  }
+  afterLogin()
+
+  // onBeforeMount(() => {
+
+  // });
 
   onMounted(() => {
     //打开首页
@@ -82,32 +87,73 @@
       { value: -1, label: "首页", type: "IndexPage", page_key: "index_page" },
       true
     );
-    console.log('global.adminMsg.id', global.adminMsg.id);
     setTimeout(() => {
-      global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-        console.log('自己商家id', res_one.joiner_sign);
-        if (res_one.joiner_sign == 1) {
-          console.log('平台');
-        } else {
-          console.log('商家');
-          openPage({
-            checked: true,
-            checked_status: true,
-            open_status: true,
-            icon: "",
-            label: "店铺信息",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803773",
-            type: "myInfo",
-            url: "",
-            value: "333333",
-            page_key: "e06ac6e73a5db3b8f010acb4213123213",
-          }, true)
-        }
-      })
+      console.log('global.adminMsg.id', global.adminMsg.id);
+      if (global.adminMsg.id == -1) {
+        // 超管id
+        type.value = "平台"
+        return false
+      } else {
+        console.log('商家才执行');
+        setTimeout(() => {
+          global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+            console.log('自己商家id', res_one.joiner_sign);
+            store_id.value = res_one.joiner_sign
+            type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+            if (res_one.joiner_sign == 1) {
+              console.log('平台');
+            } else {
+              console.log('商家');
+              openPage({
+                checked: true,
+                checked_status: true,
+                open_status: true,
+                icon: "",
+                label: "店铺信息",
+                order: "1",
+                page_id: "0",
+                pid: "706154120674803773",
+                type: "myInfo",
+                url: "",
+                value: "333333",
+                page_key: "e06ac6e73a5db3b8f010acb4213123213",
+              }, true)
+            }
+          })
+        }, 1000);
+      } console.log('global.adminMsg.id', global.adminMsg.id);
+      if (global.adminMsg.id == -1) {
+        // 超管id
+        type.value = "平台"
+        return false
+      } else {
+        console.log('商家才执行');
+        global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
+          console.log('自己商家id', res_one.joiner_sign);
+          store_id.value = res_one.joiner_sign
+          type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+          if (res_one.joiner_sign == 1) {
+            console.log('平台');
+          } else {
+            console.log('商家');
+            openPage({
+              checked: true,
+              checked_status: true,
+              open_status: true,
+              icon: "",
+              label: "店铺信息",
+              order: "1",
+              page_id: "0",
+              pid: "706154120674803773",
+              type: "myInfo",
+              url: "",
+              value: "333333",
+              page_key: "e06ac6e73a5db3b8f010acb4213123213",
+            }, true)
+          }
+        })
+      }
     }, 1000);
-
   });
 
   //注销
@@ -126,6 +172,7 @@
             localStorage.removeItem(key);
           }
         }
+        global.adminMsg = {}
         global.router.push("/login");
       },
       onCancel() {
@@ -430,32 +477,23 @@
 
   const type = ref('平台')
   const store_id = ref('')
-  function getCustomerRoomList() {
-    // 获取自己的角色ID和聊天状态
-    global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-      console.log('自己商家id和禁言状态', res_one);
-      store_id.value = res_one.joiner_sign
-      type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-    })
-  }
-  getCustomerRoomList()
 
   // 前往店铺详情
-  function toShopDetails(){
+  function toShopDetails() {
     openPage({
-            checked: true,
-            checked_status: true,
-            open_status: true,
-            icon: "",
-            label: "店铺信息",
-            order: "1",
-            page_id: "0",
-            pid: "706154120674803773",
-            type: "myInfo",
-            url: "",
-            value: "333333",
-            page_key: "e06ac6e73a5db3b8f010acb4213123213",
-          }, true)
+      checked: true,
+      checked_status: true,
+      open_status: true,
+      icon: "",
+      label: "店铺信息",
+      order: "1",
+      page_id: "0",
+      pid: "706154120674803773",
+      type: "myInfo",
+      url: "",
+      value: "333333",
+      page_key: "e06ac6e73a5db3b8f010acb4213123213",
+    }, true)
   }
 </script>
 
@@ -704,7 +742,7 @@
           </div>
         </a-modal>
       </div>
-      <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+      <!-- <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <a-badge count="0">
           <div @click="openSer()"
             style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
@@ -712,13 +750,12 @@
             <br><span style="font-size: 12px;">客服</span>
           </div>
         </a-badge>
-        <!-- 聊天弹框 -->
         <a-modal v-model:visible="serVis" width="1000px" :footer="null">
           <div v-if="serVis">
             <CustomerPageVis :pageData="{}" />
           </div>
         </a-modal>
-      </div>
+      </div> -->
     </a-layout>
   </a-layout>
   <!--  全局视频组件-->

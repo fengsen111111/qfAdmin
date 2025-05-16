@@ -166,7 +166,22 @@
       }
     })
   }
-  getCustomerRoomList()
+
+  setTimeout(() => {
+    console.log('global.adminMsg.id', global.adminMsg.id);
+    if (global.adminMsg.id == -1) {
+      // 超管
+      type.value = '平台'
+      tamplateSta()//统计
+      getStoreMoneyTopList() // 获取商家营业额排行列表
+      getGoodsSaledNumberTopList() // 获取商品销量排行列表
+      getGoodsTypeSaledNumberTopList() // 获取商品二级分类销量排行列表
+      getArticleStarTopList() // 获取作品点赞排行列表
+      getArticleStarTopListVideo()  //获取视频点赞排行列表
+    } else {
+      getCustomerRoomList()
+    }
+  }, 1000);
 
   const tjzd = ref({})//统计字段
   function tamplateSta() {
@@ -433,8 +448,7 @@
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
                         <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          :src="item.head_image"
-                          alt="">
+                          :src="item.head_image" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
@@ -455,8 +469,7 @@
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
                         <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          :src="item.head_image"
-                          alt="">
+                          :src="item.head_image" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
