@@ -49,6 +49,7 @@
 		// 
 	}
 	function _shopInfoPc() {
+		console.log('平台查询店铺信息');
 		global.axios.post('decoration/Store/webGetStoreInfo', {
 			store_id: pageData.data.id
 		}, global)
@@ -76,11 +77,7 @@
 			})
 	}
 	console.log('pageData', pageData.data);
-	if (pageData.data) {
-		_shopInfoPc()
-	} else {
-		_shopInfo()
-	}
+	
 
 	const shType = ref('a')//a待审核 b 已通过 c已拒绝
 	const check_remark = ref('')//拒绝原因
@@ -353,7 +350,18 @@
 			}
 		})
 	}
-	getCustomerRoomList()
+
+	if(pageData.data){
+		// console.log('已有商家id');
+		store_id.value = pageData.data.id
+		is_ptsj.value = '平台'
+		_shopInfoPc()
+		getGoodsSaledNumberTopList()// 获取商品销量排行列表
+		getGoodsPowerTopList()// 获取商品投流排行列表
+	}else{
+		_shopInfo()
+		getCustomerRoomList()
+	}
 
 	const spxlphlist = ref([])//商品销量排行列表
 	const sptlphlist = ref([])//商品投流排行列表
