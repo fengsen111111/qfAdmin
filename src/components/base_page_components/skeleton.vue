@@ -333,13 +333,13 @@
     });
 
     setNowPage(pageData);
-
     if (pageData.value === -1) {
       skeleton_state.tabMenuCheckedLabel = "首页";
       skeleton_state.tabCheckedMenu = [];
       skeleton_state.menuCheckedValues = [];
       showFirstMenu(-1);
     }
+
   }
 
   //关闭Tag
@@ -375,6 +375,13 @@
 
   //递归删除子页面
   function deleteChildrenPage(parent_page_key) {
+    // if(parent_page_key == 'index_page'){
+    //   return false
+    // }
+    console.log('递归删除子页面', parent_page_key);
+    console.log('skeleton_state.openedPages', skeleton_state.openedPages);
+
+    // return false
     skeleton_state.openedPages.forEach((item, index) => {
       if (item.parent_page_key == parent_page_key) {
         deleteChildrenPage(item.page_key);
@@ -459,13 +466,16 @@
               iss.children.map((xx) => {
                 if (xx.label == strThree) {
                   // console.log('xx', xx);
-                  deleteChildrenPage(xx.page_key);
+                  // deleteChildrenPage(xx.page_key);
                   openPage(xx, true);
                 }
               })
             } else {
               // console.log('iss', iss);
-              deleteChildrenPage(iss.page_key);
+              // deleteChildrenPage(iss.page_key);
+              if(strTwo=='商家管理'){
+                deleteChildrenPage(iss.page_key);
+              }
               openPage(iss, true);
             }
           }
