@@ -546,10 +546,10 @@
       .then((res) => {
         // console.log('所有模板数据', res);
         // allYfmb.value = []
-        
+
         let mbsz = []
-        res.list.map((item)=>{
-          if(item.status=='Y'){
+        res.list.map((item) => {
+          if (item.status == 'Y') {
             mbsz.push(item)
           }
         })
@@ -667,7 +667,7 @@
       labelValue: 'name',
       labelOption: [
         { label: '名称', value: 'name' },
-        { label: '库存', value: 'stock' },
+        // { label: '库存', value: 'stock' },
         // { label: '排序', value: 'order' },
       ],
       value: [
@@ -678,7 +678,7 @@
     {
       labelValue: 'stock',
       labelOption: [
-        { label: '名称', value: 'name' },
+        // { label: '名称', value: 'name' },
         { label: '库存', value: 'stock' },
         // { label: '排序', value: 'order' },
       ],
@@ -726,20 +726,30 @@
   // 表格内容组装
   function zztext() {
     shopGuige.value.map((item, index) => {
-      console.log('item.labelValue', item.labelValue);
-      console.log('item.value', item.value);
+      // console.log('item.labelValue', item.labelValue);
+      // console.log('item.value', item.value);
       if (item.labelValue == 'name') {
         // 名称
         if (item.value.length > 0) {
           post_params.goods_sizes.map((iss, iss_index) => {
-            iss.name = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.name : iss.name
+            // iss.name = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.name : iss.name
+            iss.name = item.value[iss_index] ? item.value[iss_index].label : ''
+          })
+        } else {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.name = ''
           })
         }
       } else if (item.labelValue == 'stock') {
         // 库存
         if (item.value.length > 0) {
           post_params.goods_sizes.map((iss, iss_index) => {
-            iss.stock = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.stock : iss.stock
+            // iss.stock = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.stock : iss.stock
+            iss.stock = item.value[iss_index] ? item.value[iss_index].label : ''
+          })
+        } else {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.stock = ''
           })
         }
       } else if (item.labelValue == 'order') {
@@ -756,10 +766,10 @@
   watch(
     shopGuige.value,
     (newVal, oldVal) => {
-      console.log('商品规格变化', newVal, shopGuige.value)
+      // console.log('商品规格变化', newVal, shopGuige.value)
       zztext()
     },
-    { deep: true }
+    { deep: true },
   )
 
   // 当前商家审核状态
@@ -987,6 +997,21 @@
         }
       })
   }
+  // 表格规格输入内容变化
+  function chnageInput() {
+    shopGuige.value[0].value = []
+    shopGuige.value[1].value = []
+    post_params.goods_sizes.map((item, index) => {
+      shopGuige.value[0].value.push({
+        label: item.name,
+        isCustom: false
+      })
+      shopGuige.value[1].value.push({
+        label: item.stock,
+        isCustom: false
+      })
+    })
+  }
 
 </script>
 
@@ -1002,8 +1027,7 @@
             </a-button>
           </div>
           <div v-else>
-            <a-button class="a2 iconfont button-class"
-              @click="editType()">&#xe6d2;
+            <a-button class="a2 iconfont button-class" @click="editType()">&#xe6d2;
             </a-button>
           </div>
           <div class="spbj">商品编辑
@@ -1166,7 +1190,7 @@
                     <div class="a38">
                       <div style="display: flex;align-items: center;">
                         <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;" maxlength="30"
-                        placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
+                          placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
                         <div style="margin-left: 10px;">{{post_params.name.length}}/30</div>
                       </div>
                       <div class="a39">
@@ -1460,7 +1484,7 @@
                           <div class="a99">
                             <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
                             <span class="a100">|</span>
-                            <span @click="()=>{shopGuige[index].labelValue='';shopGuige[index].value=[]}">删除规格类型</span>
+                            <span @click="()=>{shopGuige[index].value=[]}">删除规格类型</span>
                           </div>
                         </div>
                         <!-- 是否点击了开始排序 -->
@@ -1541,30 +1565,6 @@
                                 </div>
                               </div>
                             </template>
-                            <template v-else-if="shopGuige[1].labelValue=='name'">
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">库存</div>
-                                </div>
-                              </div>
-                            </template>
-                            <template v-else-if="shopGuige[1].labelValue=='stock'">
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">名称</div>
-                                </div>
-                              </div>
-                            </template>
-                            <template v-else>
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">名称</div>
-                                </div>
-                              </div>
-                            </template>
                           </th>
                           <th>
                             <template v-if="shopGuige[1].labelValue=='name'">
@@ -1576,30 +1576,6 @@
                               </div>
                             </template>
                             <template v-else-if="shopGuige[1].labelValue=='stock'">
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">库存</div>
-                                </div>
-                              </div>
-                            </template>
-                            <template v-else-if="shopGuige[0].labelValue=='name'">
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">库存</div>
-                                </div>
-                              </div>
-                            </template>
-                            <template v-else-if="shopGuige[0].labelValue=='stock'">
-                              <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
-                                  <div style="color: red;">*</div>
-                                  <div style="color: #999999;">名称</div>
-                                </div>
-                              </div>
-                            </template>
-                            <template v-else>
                               <div style="display: flex;">
                                 <div style="display: flex;margin: 0 auto;">
                                   <div style="color: red;">*</div>
@@ -1648,36 +1624,18 @@
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
-                                </template>
-                                <template v-else-if="shopGuige[1].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
-                                </template>
-                                <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
-                                </template>
-                                <template v-else>
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>
                                 <template v-if="shopGuige[1].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
-                                </template>
-                                <template v-else-if="shopGuige[0].labelValue=='name'">
-                                  <a-input type="text" v-model:value="item.name" placeholder="请输入名称" />
-                                </template>
-                                <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
-                                </template>
-                                <template v-else>
-                                  <a-input type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>
