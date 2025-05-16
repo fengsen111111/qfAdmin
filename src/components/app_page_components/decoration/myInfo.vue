@@ -924,9 +924,9 @@
 							<div class="a33">
 								<div class="a34">商家提现银行卡:</div>
 								<div class="a35"
-									v-if="shopObj.open_h_store_account=='c'||shopObj.open_h_store_account=='a'"
+									v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
 									@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
-								<div class="a35" v-else-if="shopObj.open_h_store_account=='d'"
+								<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
 									style="cursor: pointer;color: #0c96f1;">已绑定</div>
 								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
 									审核中</div>
@@ -1421,9 +1421,13 @@
 									</div>
 									<div style="color: #ff0000;">当货款余额充足时，押金不足时将使用货款自动补齐押金.</div>
 								</div>
-								<div style="padding: 20px;cursor: pointer;">
+								<div style="padding: 20px;cursor: pointer;" v-if="shopObj.open_h_store_account=='c'">
 									<div class="a77" @click="czvisopen(2)">充值</div>
 									<div class="a78" @click="czvisopen(3)">提现</div>
+								</div>
+								<div v-else  style="padding: 20px;cursor: pointer;">
+									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">充值</div>
+									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</div>
 								</div>
 							</div>
 						</div>
@@ -2205,6 +2209,13 @@
 		color: #fff;
 		padding: 5px 20px;
 		border-radius: 10px;
+	}
+	.a77Cancel {
+		background-color: #f5f5f5;
+		color: #999999;
+		padding: 5px 20px;
+		border-radius: 10px;
+		margin-bottom: 5px;
 	}
 
 	.a78 {

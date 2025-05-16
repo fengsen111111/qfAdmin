@@ -11,6 +11,7 @@ function uploadFile(global, file, fileType = "image", folder, loading, action = 
         // file.size>1024*3
         if(file.size>3*1024*1024){
             message.warning('上传图片大小不能超过3MB')
+            return false
         }
     }
     let formData = new FormData();
