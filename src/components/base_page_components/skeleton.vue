@@ -506,6 +506,7 @@
   }
   // 前往订单详情
   function orderLook(item) {
+    console.log('订单详情的参数',item);
     openPage({
       checked: true,
       checked_status: true,

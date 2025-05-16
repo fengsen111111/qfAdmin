@@ -85,7 +85,7 @@
 	webGetUserOrderList()
 
 	function lookOrder(item){
-		console.log('查看订单详情',item);
+		// console.log('查看订单详情',item);
 		emit('orderLook',item)
 	}
 </script>
@@ -289,8 +289,7 @@
 						<div class="w10_100">手机号</div>
 						<div class="w15_100">地址</div>
 					</div>
-					<!-- <div v-for="item in orderList" :key="item.id" class="a89"> -->
-					<div v-for="item in [1]" :key="item.id" class="a89">
+					<div v-for="item in orderList" :key="item.id" class="a89">
 						<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情</div>
 						<div class="w10_100">{{item.id}}</div>
 						<div class="w5_100">
