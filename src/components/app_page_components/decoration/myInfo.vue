@@ -384,6 +384,7 @@
 		global.axios
 			.post('factory_system/Base/getAreas', {}, global)
 			.then((res) => {
+				console.log('地址数据',res);
 				treeData.value = res.areas
 			});
 	}
@@ -985,7 +986,7 @@
 									<a-col :span="12">
 										<a-form-item label="注册地址" name="regAddress"
 											:rules="[{ required: true, message: '请输入注册地址' }]">
-											<a-cascader v-model:value="formState.regAddress" :options="treeData"
+											<a-cascader v-model:value="formState.regAddress" :options="treeData" :field-names="{ label: 'label', value: 'adcode', children: 'children' }"
 												placeholder="请输入注册地址" />
 										</a-form-item>
 									</a-col>
@@ -1067,7 +1068,7 @@
 									<a-col :span="12">
 										<a-form-item label="银行所在地址" name="regAddress"
 											:rules="[{ required: true, message: '请输入银行所在地址' }]">
-											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
+											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData" :field-names="{ label: 'label', value: 'adcode', children: 'children' }"
 												placeholder="请输入银行所在地址" />
 										</a-form-item>
 									</a-col>
@@ -1192,7 +1193,7 @@
 									</div>
 									<div>
 										<div>商品总数</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.goods_number).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -1202,7 +1203,7 @@
 									</div>
 									<div>
 										<div>今日营业额</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.today_money).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -1212,7 +1213,7 @@
 									</div>
 									<div>
 										<div>本月营业额</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.month_money).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a52">
@@ -1222,7 +1223,7 @@
 									</div>
 									<div>
 										<div>押金余额</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
 									</div>
 								</div>
 							</div>
@@ -1234,7 +1235,7 @@
 									</div>
 									<div>
 										<div>总订单数</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.all_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -1244,7 +1245,7 @@
 									</div>
 									<div>
 										<div>今日订单数</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.today_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a44">
@@ -1254,7 +1255,7 @@
 									</div>
 									<div>
 										<div>本月订单数</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.month_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
 								<div class="a52">
@@ -1264,7 +1265,7 @@
 									</div>
 									<div>
 										<div>曝光量余额</div>
-										<div class="a47">{{Number(21313).toLocaleString()}}</div>
+										<div class="a47">{{Number(shopObj.power).toLocaleString()}}</div>
 									</div>
 								</div>
 							</div>

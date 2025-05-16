@@ -147,7 +147,7 @@
       chartInstance && chartInstance.resize();
       chartInstanceTwo && chartInstanceTwo.resize();
     });
-  }, 1000);
+  }, 1500);
 
   const store_id = ref('')
   function getCustomerRoomList() {
@@ -178,6 +178,7 @@
       getGoodsTypeSaledNumberTopList() // 获取商品二级分类销量排行列表
       getArticleStarTopList() // 获取作品点赞排行列表
       getArticleStarTopListVideo()  //获取视频点赞排行列表
+
     } else {
       getCustomerRoomList()
     }
@@ -447,8 +448,10 @@
                     <div style="display: flex;">
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
-                        <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                        <img v-if="item.head_image" style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
                           :src="item.head_image" alt="">
+                        <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                          src="../../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
@@ -468,8 +471,10 @@
                     <div style="display: flex;">
                       <div style="width: 30px;margin-right: 30px;">NO.{{index+1}}</div>
                       <div style="display: flex;">
-                        <img style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                        <img v-if="item.head_image" style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
                           :src="item.head_image" alt="">
+                         <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
+                          src="../../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
