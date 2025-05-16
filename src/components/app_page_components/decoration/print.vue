@@ -214,6 +214,7 @@
     const barcode = ref()
     const barcodeTwo = ref()
 
+    // 生成条形码
     function generateBarcode(kuaidinum) {
         nextTick(() => {
             JsBarcode(barcode.value, kuaidinum, {
