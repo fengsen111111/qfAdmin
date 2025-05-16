@@ -10,7 +10,7 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
-	let emit = defineEmits(["openChildPage", "closeChildPage"]);
+	let emit = defineEmits(["openChildPage", "closeChildPage","orderLook"]);
 	const global = inject("global").value;
 
 	// 复制店铺编号
@@ -83,6 +83,11 @@
 		})
 	}
 	webGetUserOrderList()
+
+	function lookOrder(item){
+		console.log('查看订单详情',item);
+		emit('orderLook',item)
+	}
 </script>
 
 <template>
@@ -284,8 +289,9 @@
 						<div class="w10_100">手机号</div>
 						<div class="w15_100">地址</div>
 					</div>
-					<div v-for="item in orderList" :key="item.id" class="a89">
-						<div class="w5_100" style="color: #40a9ff;">查看详情</div>
+					<!-- <div v-for="item in orderList" :key="item.id" class="a89"> -->
+					<div v-for="item in [1]" :key="item.id" class="a89">
+						<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情</div>
 						<div class="w10_100">{{item.id}}</div>
 						<div class="w5_100">
 							<span v-if="item.status=='a'">待支付</span>
@@ -306,10 +312,10 @@
 						<div class="w15_100">{{item.address}}</div>
 					</div>
 					<div v-if="orderList.length==0"
-						style="border-left: 1px solid #e9e9e9;border-right: 1px solid #e9e9e9;padding: 10px;">
+						style="padding: 10px;">
 						<a-empty />
 					</div>
-					<div class="a90">
+					<div class="a90" v-if="orderList.length>0">
 						<div></div>
 						<div class="a91">
 							<div class="a92">共 {{order_count}} 项数据</div>
@@ -475,7 +481,7 @@
 		align-items: center;
 		padding: 10px 30px;
 		margin-top: -1px;
-		border: 1px solid #e9e9e9;
+		/* border: 1px solid #e9e9e9; */
 	}
 
 	.a91 {

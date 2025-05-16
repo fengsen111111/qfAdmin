@@ -473,7 +473,7 @@
             } else {
               // console.log('iss', iss);
               // deleteChildrenPage(iss.page_key);
-              if(strTwo=='商家管理'){
+              if (strTwo == '商家管理' || strTwo == '订单管理') {
                 deleteChildrenPage(iss.page_key);
               }
               openPage(iss, true);
@@ -481,7 +481,6 @@
           }
         })
       }
-
     })
   }
 
@@ -503,6 +502,23 @@
       url: "",
       value: "333333",
       page_key: "e06ac6e73a5db3b8f010acb4213123213",
+    }, true)
+  }
+  // 前往订单详情
+  function orderLook(item) {
+    openPage({
+      checked: true,
+      checked_status: true,
+      open_status: true,
+      icon: "",
+      label: "订单详情",
+      order: "2",
+      page_id: "0",
+      pid: "706154120674803774",
+      type: "orderDetails",
+      url: "",
+      value: "4444",
+      page_key: "e06ac6e73a5db3b8f010acb421312",
     }, true)
   }
 </script>
@@ -636,7 +652,8 @@
           :class="page.type=='IndexPage'||page.type=='orderDetails'?'contentZdy':'content'">
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
-              @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" @toShopDetails="toShopDetails" />
+              @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" @toShopDetails="toShopDetails"
+              @orderLook="orderLook" />
           </keep-alive>
         </div>
       </a-layout-content>
@@ -752,7 +769,7 @@
           </div>
         </a-modal>
       </div>
-      <!-- <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+      <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <a-badge count="0">
           <div @click="openSer()"
             style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
@@ -765,7 +782,7 @@
             <CustomerPageVis :pageData="{}" />
           </div>
         </a-modal>
-      </div> -->
+      </div>
     </a-layout>
   </a-layout>
   <!--  全局视频组件-->

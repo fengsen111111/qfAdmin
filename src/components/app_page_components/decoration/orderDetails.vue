@@ -10,7 +10,7 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
-	let emit = defineEmits(["openChildPage", "closeChildPage"]);
+	let emit = defineEmits(["openChildPage", "closeChildPage","djtzmk"]);
 	const global = inject("global").value;
 
 	// 复制店铺编号
@@ -46,7 +46,8 @@
 			cancelText: global.findLanguage("取消"),
 			okType: "primary",
 			onOk: function () {
-				emit("closeChildPage", pageData.page_key);
+				// emit("closeChildPage", pageData.page_key);
+				emit("djtzmk", '购物商城', '订单管理');
 			},
 		});
 	}
