@@ -29,6 +29,7 @@
 	const admin_login_password = ref('')//后台登录密码  
 	const address = ref('')//店铺地址  
 	const location = ref('')//店铺地址坐标   
+	const id = ref('')//商家id
 
 	const isMap = ref(false)//是否打开地图
 	watch(() => isMap, val => {
@@ -302,7 +303,7 @@
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
 				"check_status": 'b',
-				"id": id.value?id.value:'',
+				"id": id.value,
 				"user_id": '',
 				"type": type.value,
 				"name": name.value,
