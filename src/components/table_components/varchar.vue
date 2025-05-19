@@ -23,11 +23,14 @@ onBeforeMount(() => {
   
   if(component_state.show_value.length>30){
     isZk.value = true
+    editText.value = component_state.show_value.slice(0,30)+'...'
   }else{
     isZk.value = false
+    editText.value = component_state.show_value
   }
 })
 const isZk = ref(false)//是否收起
+const editText = ref('')//处理后文本
 
 </script>
 
@@ -35,7 +38,7 @@ const isZk = ref(false)//是否收起
   <!-- <span v-html="component_state.show_value"></span> -->
    <div>
     <!-- <span v-if="component_state.show_value.length>30">{{component_state.show_value.slice(0,30)}}...<span style="color: #1890ff;">展开</span></span> -->
-    <span>{{isZk?component_state.show_value.slice(0,30)+'...':component_state.show_value}}</span>
+    <span v-html="isZk?editText:component_state.show_value"></span>
     <span v-if="component_state.show_value.length>30" style="color: #1890ff;cursor: pointer;" @click="isZk =!isZk">{{isZk?'展开':'收起'}}</span>
    </div>
 </template>
