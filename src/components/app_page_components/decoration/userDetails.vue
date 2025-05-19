@@ -10,10 +10,10 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
-	let emit = defineEmits(["openChildPage", "closeChildPage","orderLook"]);
+	let emit = defineEmits(["openChildPage", "closeChildPage", "orderLook"]);
 	const global = inject("global").value;
-    // console.log('pageData',pageData);
-	
+	// console.log('pageData',pageData);
+
 	// 复制店铺编号
 	function copyCode(code) {
 		navigator.clipboard.writeText(code).then(() => {
@@ -85,10 +85,32 @@
 	}
 	webGetUserOrderList()
 
-	function lookOrder(item){
+	function lookOrder(item) {
 		// console.log('查看订单详情',item);
-		emit('orderLook',item)
+		emit('orderLook', item)
 	}
+
+	// 拉黑状态变化
+	function lhztChange(checked) {
+		console.log('checked',checked);
+		global.axios.post('decoration/Order/webGetUserOrderList', {
+			user_id: pageData.data.id,
+			chat_status: checked?'Y':'N'
+		}, global, true).then((res) => {
+			console.log('拉黑状态操作', res);
+			message.success('操作成功')
+		})
+	}
+	// 聊天状态变化
+	function ltztChange(checked) {
+		global.axios.post('decoration/Order/webGetUserOrderList', {
+			user_id: pageData.data.id,
+			status: checked?'Y':'N'
+		}, global, true).then((res) => {
+			console.log('聊天状态操作', res);
+			message.success('操作成功')
+		})
+	} 
 </script>
 
 <template>
@@ -141,7 +163,8 @@
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div>
 							<div>聊天状态：</div>
-							<div><a-switch v-model:checked="userInfo.chat_status" size="small" /></div>
+							<div><a-switch v-model:checked="userInfo.chat_status" size="small" @change="ltztChange" />
+							</div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">手机号：</div>
@@ -162,7 +185,7 @@
 								<CloseCircleFilled style="color: #ff0000;font-size: 17px;margin-right: 10px;" />
 							</div>
 							<div>拉黑状态：</div>
-							<div><a-switch v-model:checked="userInfo.status" size="small" /></div>
+							<div><a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" /></div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">商家状态：</div>
@@ -311,8 +334,7 @@
 						<div class="w10_100">{{item.address_mobile}}</div>
 						<div class="w15_100">{{item.address}}</div>
 					</div>
-					<div v-if="orderList.length==0"
-						style="padding: 10px;">
+					<div v-if="orderList.length==0" style="padding: 10px;">
 						<a-empty />
 					</div>
 					<div class="a90" v-if="orderList.length>0">

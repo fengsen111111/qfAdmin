@@ -43,7 +43,9 @@
 
 					// 生成分类表格数据
 					const flattened = flattenCategories(shopObj.value.goods_types);
-					renderTable(flattened);
+					setTimeout(() => {
+						renderTable(flattened);
+					}, 1000);
 				})
 		})
 		// 
@@ -73,7 +75,9 @@
 
 				// 生成分类表格数据
 				const flattened = flattenCategories(shopObj.value.goods_types);
-				renderTable(flattened);
+				setTimeout(() => {
+					renderTable(flattened);
+				}, 1000);
 			})
 	}
 	console.log('pageData', pageData.data);
@@ -157,9 +161,6 @@
 			.post('decoration/GoodsType/getGoodsTypeList', {}, global)
 			.then((res) => {
 				console.log('商品分类列表', res.list);
-				// dataType.value = res.list
-				// const flattened = flattenCategories(dataType.value);
-				// renderTable(flattened);
 				dataType.value = res.list.map((item) => {
 					return {
 						value: item.id,
@@ -191,7 +192,9 @@
 			const newPath = [...path, item];
 			if (item.children && item.children.length) {
 				flattenCategories(item.children, newPath, result);
-			} else {
+			} else if(item.goods_list && item.goods_list.length){
+				flattenCategories(item.goods_list, newPath, result);
+			}else {
 				result.push(newPath);
 			}
 		});
@@ -589,14 +592,6 @@
 
 	// 查询支付结果
 	function handOKCode() {
-		// if (cz_type.value = 'bzj') {
-		// 	_shopInfo()
-		// 	isPay.value = false
-		// 	bgl_vis.value = false //曝光量充值
-		// 	message.success('支付成功')
-		// 	return false
-		// }
-		// console.log('确定');
 		// 查询支付结果
 		global.axios
 			.post('decoration/Store/payTypePricesResult', {
@@ -1502,7 +1497,8 @@
 						<div class="a81">
 							<div>流水类型</div>
 							<div>
-								<a-select ref="select" v-model:value="zjrzParams.type" class="a83 custom-select-wrapper">
+								<a-select ref="select" v-model:value="zjrzParams.type"
+									class="a83 custom-select-wrapper">
 									<a-select-option value="b">商家余额充值</a-select-option>
 									<a-select-option value="c">商家基础保证金</a-select-option>
 									<a-select-option value="d">商家分类保证金</a-select-option>
