@@ -506,7 +506,7 @@
   function searching() {
     table_state.currentPage = 1;
     getRecords();
-    if (!table_state.searchShowButton) controlSearch();
+    // if (!table_state.searchShowButton) controlSearch();
   }
 
   //清空搜索
