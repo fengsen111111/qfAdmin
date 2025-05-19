@@ -19,11 +19,15 @@ onBeforeMount(() => {
   } else {
     component_state.show_value = props.value
   }
+  console.log('component_state.show_value',component_state.show_value);
+  
   if(component_state.show_value.length>30){
     isZk.value = true
+  }else{
+    isZk.value = false
   }
 })
-const isZk = ref(true)//是否收起
+const isZk = ref(false)//是否收起
 
 </script>
 
