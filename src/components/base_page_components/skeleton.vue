@@ -436,21 +436,24 @@
   const msgType = ref('1')//消息类型
   // 点击消息,点击站内信 1消息2站内信
   function openVis(type) {
-    msgType.value = type + ''
+    // msgType.value = type + ''
     msgVisible.value = true
     if (type == 1) {
       console.log('点击消息');
     } else {
       console.log('点击站内信');
     }
+    getUserMsgList()//获取用户消息列表
   }
-  const msgKey = ref('1')//消息类型
+  const msgKey = ref('')//消息类型
+  const dq_type_msgList = ref([])//当前所选类型消息
   function editMsgKey(key) {
     msgKey.value = key
+    dq_type_msgList.value = msgList.value.filter((item)=>item.type==key)
   }
 
   const serVis = ref(false)//聊天弹框开关
-  // 点击消息,点击站内信 1消息2站内信
+  // 点击客服
   function openSer() {
     serVis.value = true
   }
@@ -506,7 +509,7 @@
   }
   // 前往订单详情
   function orderLook(item) {
-    console.log('订单详情的参数',item);
+    console.log('订单详情的参数', item);
     openPage({
       checked: true,
       checked_status: true,
@@ -522,6 +525,21 @@
       page_key: "e06ac6e73a5db3b8f010acb421312",
     }, true)
   }
+
+  const msgList = ref([])
+  // 获取用户消息列表
+  function getUserMsgList() {
+    global.axios
+      .post('decoration/UserMsg/getUserMsgList', {
+        currentPage: 1,
+        perPage: 20,
+      }, global)
+      .then((res) => {
+        console.log('获取用户消息列表', res);
+        msgList.value = res
+      })
+  }
+
 </script>
 
 <template>
@@ -672,13 +690,13 @@
               <br><span style="font-size: 12px;">消息</span>
             </div>
           </a-badge><br>
-          <a-badge count="5">
+          <!-- <a-badge count="5">
             <div @click="openVis(2)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <MailOutlined style="font-size: 18px;" />
               <br><span style="font-size: 12px;">站内信</span>
             </div>
-          </a-badge><br>
+          </a-badge><br> -->
           <a-badge count="0">
             <div @click="openSer()"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
@@ -699,18 +717,18 @@
             <a-tabs v-model:activeKey="msgType">
               <a-tab-pane key="1" tab="消息盒子">
                 <div style="display: flex;">
-                  <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;">
-                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知</div>
-                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">物流售后</div>
-                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">账户资金</div>
-                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
-                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺营销</div>
-                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
+                  <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;cursor: pointer;">
+                    <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">站内信</div>
+                    <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">用户通知</div>
+                    <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">资金通知</div>
+                    <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">作品通知</div>
+                    <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知 </div>
+                    <!-- <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商品动态</div>
                     <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广</div>
@@ -719,26 +737,26 @@
                     <div @click="editMsgKey(9)" :class="msgKey=='9'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
                     <div @click="editMsgKey(10)" :class="msgKey=='10'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">买菜通知</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">买菜通知</div> -->
                   </div>
                   <div style="width: 80%;">
-                    <div v-if="msgKey==2">
-                      <div style="padding: 5px 20px;">
+                    <div>
+                      <div v-for="item in dq_type_msgList" :key="item.id" style="padding: 5px 20px;">
                         <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
-                            <div style="font-weight: bold;">拼多多新手入驻攻略，必看！</div>
-                            <div>13:57</div>
+                            <div style="font-weight: bold;">{{item.title}}</div>
+                            <div>{{item.create_time}}</div>
                           </div>
-                          <div style="margin: 5px 0px;">多多大学为您准备《入门必学10节课》，带0基础的你快速赚钱！</div>
+                          <div style="margin: 5px 0px;">{{item.content}}</div>
                           <div style="height: 1px;width: 100%;background-color: #f5f5f5;"></div>
                         </div>
                       </div>
+                      <div v-if="dq_type_msgList.length==0" style=" margin-top: 20px;"><a-empty /></div>
                     </div>
-                    <div v-else style=" margin-top: 20%;"><a-empty /></div>
                   </div>
                 </div>
               </a-tab-pane>
-              <a-tab-pane key="2" tab="站内信" force-render>
+              <!-- <a-tab-pane key="2" tab="站内信" force-render>
                 <div style="display: flex;">
                   <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;">
                     <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''"
@@ -760,12 +778,13 @@
                     <a-empty />
                   </div>
                 </div>
-              </a-tab-pane>
+              </a-tab-pane> -->
             </a-tabs>
             <div
               style="margin-left: 20%;border-top: 1px solid #e8e8e8;margin-top: 10px;padding-top: 8px;display: flex;justify-content: space-between;align-items: center;">
-              <a-button>全部标记已读</a-button>
-              <div>共有 1 条</div>
+              <!-- <a-button>全部标记已读</a-button> -->
+              <div></div>
+              <div>共有 {{msgList.length}} 条</div>
             </div>
           </div>
         </a-modal>

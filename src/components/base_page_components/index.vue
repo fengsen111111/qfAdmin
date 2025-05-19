@@ -163,9 +163,48 @@
         getGoodsTypeSaledNumberTopList() // 获取商品二级分类销量排行列表
         getArticleStarTopList() // 获取作品点赞排行列表
         getArticleStarTopListVideo()  //获取视频点赞排行列表
+
+        getNewGoodsNotices()// 获取平台新商品提醒列表
+        readNewGoodsNotice()// 阅读商家新订单提醒列表
+      }else{
+        getNewOrderNotices()//获取商家新订单提醒列表
+        readNewOrderNotice()//阅读商家新订单提醒列表
       }
     })
   }
+  // 获取商家新订单提醒列表
+  function getNewOrderNotices() {
+    global.axios.post('decoration/StoreMsg/getNewOrderNotices', {
+      store_id:store_id.value
+    }, global, true).then((res) => {
+      console.log('获取商家新订单提醒列表', res);
+    })
+  }
+   // 阅读商家新订单提醒列表
+   function readNewOrderNotice() {
+    global.axios.post('decoration/StoreMsg/readNewOrderNotice', {
+      store_id:store_id.value
+    }, global, true).then((res) => {
+      console.log('阅读商家新订单提醒列表', res);
+    })
+  }
+   // 获取平台新商品提醒列表
+   function getNewGoodsNotices() {
+    global.axios.post('decoration/Goods/getNewGoodsNotices', {
+      store_id:store_id.value
+    }, global, true).then((res) => {
+      console.log('获取平台新商品提醒列表', res);
+    })
+  }   
+   // 阅读商家新订单提醒列表
+   function readNewGoodsNotice() {
+    global.axios.post('decoration/Goods/readNewGoodsNotice', {
+      store_id:store_id.value
+    }, global, true).then((res) => {
+      console.log('阅读商家新订单提醒列表', res);
+    })
+  }
+
 
   setTimeout(() => {
     console.log('global.adminMsg.id', global.adminMsg.id);

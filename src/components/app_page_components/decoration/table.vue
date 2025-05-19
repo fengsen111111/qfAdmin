@@ -452,6 +452,17 @@
 
     //跳转
     if (handleInfo.handleType == "jump") {
+      // console.log('jump',handleInfo,requestParams,table_state.tableData);
+      if (handleInfo.name == '用户详情') {
+        const obj = table_state.tableData.filter((item) => item.id == requestParams.user_id)
+        console.log('obj', obj[0]);
+        requestParams.id = obj[0].user_id
+      }else if (handleInfo.name == '订单详情') {
+        const obj = table_state.tableData.filter((item) => item.id == requestParams.id)
+        console.log('obj', obj[0]);
+        requestParams.user_id = obj[0].user_id
+      }
+      // console.log(requestParams);
       watchComponentShowStatus();
       openChildPage({
         type: handleInfo.page,

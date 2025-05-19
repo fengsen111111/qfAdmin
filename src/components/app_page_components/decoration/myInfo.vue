@@ -77,7 +77,7 @@
 			})
 	}
 	console.log('pageData', pageData.data);
-	
+
 
 	const shType = ref('a')//a待审核 b 已通过 c已拒绝
 	const check_remark = ref('')//拒绝原因
@@ -351,14 +351,14 @@
 		})
 	}
 
-	if(pageData.data){
+	if (pageData.data) {
 		// console.log('已有商家id');
 		store_id.value = pageData.data.id
 		is_ptsj.value = '平台'
 		_shopInfoPc()
 		getGoodsSaledNumberTopList()// 获取商品销量排行列表
 		getGoodsPowerTopList()// 获取商品投流排行列表
-	}else{
+	} else {
 		_shopInfo()
 		getCustomerRoomList()
 	}
@@ -369,7 +369,8 @@
 	function getGoodsSaledNumberTopList() {
 		global.axios.post('decoration/Setting/getGoodsSaledNumberTopList', {
 			currentPage: 1,
-			perPage: 10
+			perPage: 10,
+			store_id: store_id.value
 		}, global, true).then((res) => {
 			console.log('获取商品销量排行列表', res);
 			spxlphlist.value = res.list
@@ -379,7 +380,8 @@
 	function getGoodsPowerTopList() {
 		global.axios.post('decoration/Setting/getGoodsPowerTopList', {
 			currentPage: 1,
-			perPage: 10
+			perPage: 10,
+			store_id: store_id.value
 		}, global, true).then((res) => {
 			console.log('获取商品投流排行列表', res);
 			sptlphlist.value = res.list
@@ -392,7 +394,7 @@
 		global.axios
 			.post('factory_system/Base/getAreas', {}, global)
 			.then((res) => {
-				console.log('地址数据',res);
+				console.log('地址数据', res);
 				treeData.value = res.areas
 			});
 	}
@@ -542,10 +544,10 @@
 			second.value = '00';
 		}
 		global.axios.post('decoration/Store/createStoreEnsureMoney', {
-				store_id: store_id.value,
-				trade_type: 'A_NATIVE',
-				password: ''
-			}, global)
+			store_id: store_id.value,
+			trade_type: 'A_NATIVE',
+			password: ''
+		}, global)
 			.then((res) => {
 				console.log('结果', res);
 				pay_Obj.value = res
@@ -813,6 +815,51 @@
 		txpassword.value = ''//提现密码
 		bgl_vis.value = false
 	}
+	const zjxqtj = ref({})//资金详情统计
+	// 后台获取商家资金统计
+	function webGetStoreMoneySta() {
+		global.axios
+			.post('decoration/Store/webGetStoreMoneySta', {
+				store_id: store_id.value,
+			}, global)
+			.then((res) => {
+				console.log('后台获取商家资金统计', res);
+				zjxqtj.value = res
+			})
+	}
+	const zjrzParams = ref({
+		order_id: '',
+		type: '',
+		time: '',
+		page: 1,
+		limit: 10
+	})
+	const zjrzCount = ref(0)//资金记录总条数
+	const zjrzList = ref([])//资金记录数据
+	// 后台获取商家资金日志
+	function webGetStoreMoneyLog() {
+		global.axios
+			.post('decoration/Store/webGetStoreMoneyLog', {
+				store_id: store_id.value,
+				order_id: zjrzParams.value.order_id,
+				type: zjrzParams.value.type,
+				start_time: '',
+				end_time: '',
+				currentPage: zjrzParams.value.page,
+				perPage: zjrzParams.value.limit,
+
+			}, global)
+			.then((res) => {
+				console.log('后台获取商家资金日志', res);
+				zjrzCount.value = res.count
+				zjrzList.value = res.list
+			})
+	}
+	setTimeout(() => {
+		webGetStoreMoneySta()
+		webGetStoreMoneyLog()
+	}, 1500);
+
 </script>
 
 <template>
@@ -935,8 +982,8 @@
 								<div class="a35"
 									v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
 									@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
-								<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-									style="cursor: pointer;color: #0c96f1;">已绑定</div>
+								<div @click="bank_vis= true" class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+									style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
 								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
 									审核中</div>
 							</div>
@@ -994,7 +1041,8 @@
 									<a-col :span="12">
 										<a-form-item label="注册地址" name="regAddress"
 											:rules="[{ required: true, message: '请输入注册地址' }]">
-											<a-cascader v-model:value="formState.regAddress" :options="treeData" :field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+											<a-cascader v-model:value="formState.regAddress" :options="treeData"
+												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
 												placeholder="请输入注册地址" />
 										</a-form-item>
 									</a-col>
@@ -1076,7 +1124,8 @@
 									<a-col :span="12">
 										<a-form-item label="银行所在地址" name="regAddress"
 											:rules="[{ required: true, message: '请输入银行所在地址' }]">
-											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData" :field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
+												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
 												placeholder="请输入银行所在地址" />
 										</a-form-item>
 									</a-col>
@@ -1334,27 +1383,27 @@
 							<div style="display: flex;">
 								<div class="a67">总货款：
 								</div>
-								<div>{{Number(2131312321).toLocaleString()}}</div>
+								<div>{{Number(zjxqtj.all_order_money).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">可提现货款：
 								</div>
-								<div>{{Number(2131312321).toLocaleString()}}</div>
+								<div>{{Number(zjxqtj.can_withdrawal_money).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">待结算货款：
 								</div>
-								<div>{{Number(2131312321).toLocaleString()}}</div>
+								<div>{{Number(zjxqtj.wait_over_money).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">已提现货款：
 								</div>
-								<div>{{Number(2131312321).toLocaleString()}}</div>
+								<div>{{Number(zjxqtj.withdrawal_money).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">已结算货款：
 								</div>
-								<div>{{Number(2131312321).toLocaleString()}}</div>
+								<div>{{Number(zjxqtj.over_money).toLocaleString()}}</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">剩余曝光量：
@@ -1413,7 +1462,7 @@
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
 											<div v-if="shopObj.pay_deposit_money>shopObj.deposit_money" class="a72">
-												{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+												{{Number(zjxqtj.store_money).toLocaleString()}}</div>
 											<div v-else @click="payBzj()"
 												style="font-size: 25px;color: #0c96f1;cursor: pointer;">缴纳保证金</div>
 										</div>
@@ -1434,7 +1483,7 @@
 									<div class="a77" @click="czvisopen(2)">充值</div>
 									<div class="a78" @click="czvisopen(3)">提现</div>
 								</div>
-								<div v-else  style="padding: 20px;cursor: pointer;">
+								<div v-else style="padding: 20px;cursor: pointer;">
 									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">充值</div>
 									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</div>
 								</div>
@@ -1446,25 +1495,31 @@
 						<div class="a81">
 							<div>订单编号</div>
 							<div>
-								<a-input placeholder="请输入订单编号" class="a82"
+								<a-input placeholder="请输入订单编号" class="a82" v-model:value="item.order_id"
 									style="border:none;border-radius: 4px;"></a-input>
 							</div>
 						</div>
 						<div class="a81">
 							<div>流水类型</div>
 							<div>
-								<a-select ref="select" v-model:value="value1" class="a83 custom-select-wrapper">
-									<a-select-option value="jack">Jack</a-select-option>
-									<a-select-option value="lucy">Lucy</a-select-option>
-									<a-select-option value="disabled" disabled>Disabled</a-select-option>
-									<a-select-option value="Yiminghe">yiminghe</a-select-option>
+								<a-select ref="select" v-model:value="zjrzParams.type" class="a83 custom-select-wrapper">
+									<a-select-option value="b">商家余额充值</a-select-option>
+									<a-select-option value="c">商家基础保证金</a-select-option>
+									<a-select-option value="d">商家分类保证金</a-select-option>
+									<a-select-option value="f">普通商品订单</a-select-option>
+									<a-select-option value="g">积分商品订单</a-select-option>
+									<a-select-option value="h">红包</a-select-option>
+									<a-select-option value="i">商家罚金</a-select-option>
+									<a-select-option value="j">购买曝光量</a-select-option>
+									<a-select-option value="k">提现</a-select-option>
+									<a-select-option value="l">退店</a-select-option>
 								</a-select>
 							</div>
 						</div>
 						<div class="a81">
 							<div>流水时间</div>
 							<div>
-								<a-range-picker v-model:value="value1" class="a82"
+								<a-range-picker v-model:value="zjrzParams.time" class="a82"
 									style="border:none;border-radius: 4px;" />
 							</div>
 						</div>
@@ -1487,17 +1542,28 @@
 							<div>金额</div>
 							<div>流水时间</div>
 						</div>
-						<div v-for="item in [1,2,3,4,5,6,7,8,9,10]" :key="item" class="a89">
-							<div>QW12313123123</div>
-							<div>订单收款</div>
-							<div>{{Number(2131312321).toLocaleString()}}</div>
-							<div>2001-11-11 12:12:12</div>
+						<div v-for="item in zjrzList" :key="item.id" class="a89">
+							<div>{{item.order_id}}</div>
+							<div>
+								<span v-if="item.type=='b'">商家余额充值</span>
+								<span v-else-if="item.type=='c'">商家基础保证金</span>
+								<span v-else-if="item.type=='d'">商家分类保证金</span>
+								<span v-else-if="item.type=='f'">普通商品订单</span>
+								<span v-else-if="item.type=='g'">积分商品订单</span>
+								<span v-else-if="item.type=='h'">红包</span>
+								<span v-else-if="item.type=='i'">商家罚金</span>
+								<span v-else-if="item.type=='j'">购买曝光量</span>
+								<span v-else-if="item.type=='k'">提现</span>
+								<span v-else-if="item.type=='l'">退店</span>
+							</div>
+							<div>{{item.in_or_out=='in'?'+':'-'}}{{Number(item.trans_amt).toLocaleString()}}</div>
+							<div>{{item.create_time}}</div>
 						</div>
 						<div class="a90">
 							<div></div>
 							<div class="a91">
-								<div class="a92">共 898 项数据</div>
-								<a-pagination v-model:current="current" :total="5000" show-less-items
+								<div class="a92">共 {{zjrzCount}} 项数据</div>
+								<a-pagination v-model:current="current" :total="zjrzCount" show-less-items
 									:showSizeChanger="false" />
 							</div>
 						</div>
@@ -2219,6 +2285,7 @@
 		padding: 5px 20px;
 		border-radius: 10px;
 	}
+
 	.a77Cancel {
 		background-color: #f5f5f5;
 		color: #999999;

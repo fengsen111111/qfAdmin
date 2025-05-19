@@ -58,7 +58,7 @@
 	function webGetUserInfo() {
 		// 后台获取用户信息
 		global.axios.post('decoration/User/webGetUserInfo', {
-			user_id: pageData.data.id
+			user_id: pageData.data.user_id
 		}, global, true).then((res) => {
 			console.log('后台获取用户信息', res);
 			userInfo.value = res

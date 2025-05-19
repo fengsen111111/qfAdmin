@@ -12,7 +12,8 @@
 	const pageData = props.pageData;
 	let emit = defineEmits(["openChildPage", "closeChildPage","orderLook"]);
 	const global = inject("global").value;
-
+    // console.log('pageData',pageData);
+	
 	// 复制店铺编号
 	function copyCode(code) {
 		navigator.clipboard.writeText(code).then(() => {
