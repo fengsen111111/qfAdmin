@@ -304,10 +304,10 @@
 				<div style="">
 					<div class="a88">
 						<div class="w5_100">操作</div>
-						<div class="w10_100">订单编号</div>
+						<div class="w15_100">订单编号</div>
 						<div class="w5_100">订单状态</div>
 						<div class="w5_100">实付金额</div>
-						<div class="w30_100">商品信息</div>
+						<div class="w25_100">商品信息</div>
 						<div class="w15_100">下单时间</div>
 						<div class="w5_100">收货人</div>
 						<div class="w10_100">手机号</div>
@@ -315,7 +315,7 @@
 					</div>
 					<div v-for="item in orderList" :key="item.id" class="a89">
 						<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情</div>
-						<div class="w10_100">{{item.id}}</div>
+						<div class="w15_100">{{item.id}}</div>
 						<div class="w5_100">
 							<span v-if="item.status=='a'">待支付</span>
 							<span v-else-if="item.status=='b'">待拼成</span>
@@ -325,9 +325,9 @@
 							<span v-else-if="item.status=='z'">拼团失败</span>
 						</div>
 						<div class="w5_100">{{item.pay_price}}</div>
-						<div class="w30_100">
-							<span v-for="iss in item.goods_list"
-								:key="item.goods_id">{{iss.name}}（{{item.size_name}}）、</span>
+						<div class="w25_100">
+							<span v-for="(iss,index) in item.goods_list"
+								:key="item.goods_id">{{iss.name}}（{{iss.size_name}}）<span>{{index<item.goods_list.length-1?'、':'。'}}</span></span>
 						</div>
 						<div class="w15_100">{{item.create_time}}</div>
 						<div class="w5_100">{{item.address_name}}</div>

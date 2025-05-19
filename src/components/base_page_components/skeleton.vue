@@ -532,11 +532,11 @@
     global.axios
       .post('decoration/UserMsg/getUserMsgList', {
         currentPage: 1,
-        perPage: 20,
+        perPage: 100,
       }, global)
       .then((res) => {
         console.log('获取用户消息列表', res);
-        msgList.value = res
+        msgList.value = res.list
       })
   }
 
@@ -683,7 +683,7 @@
             <Print @djtzmk="djtzmk" />
           </div>
           <!-- BellOutlined,MailOutlined,MessageOutlined -->
-          <a-badge count="5">
+          <a-badge :count="msgList.length">
             <div @click="openVis(1)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <BellOutlined style="font-size: 18px;" />
