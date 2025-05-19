@@ -1327,7 +1327,7 @@
 									<span class="a55">（本年）</span>
 								</div>
 								<div style="margin-right: 100px;">
-									<b>总营业额：{{Number(21313).toLocaleString()}}</b>
+									<b>总营业额：{{Number(shopObj.order_money).toLocaleString()}}</b>
 								</div>
 							</div>
 							<div style="width: 100%;">
