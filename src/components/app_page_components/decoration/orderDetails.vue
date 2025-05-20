@@ -199,21 +199,21 @@
 							<div style="width: 80px;">商家电话：</div>
 							<div style="color: black;">{{orderDetails.store_mobile}}</div>
 						</div>
-						<div style="display: flex;color: #4e5969;">
+						<!-- <div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">订单类型：</div>
 							<div style="color: black;">拼团订单/积分订单</div>
-						</div>
+						</div> -->
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">收货时间：</div>
 							<div style="color: black;">{{orderDetails.over_time}}</div>
 						</div>
 					</div>
-					<div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">
+					<!-- <div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">
 						<div style="width: 80px;">用户备注：</div>
 						<div style="width: 82%;color: black;">
 							用户备注用户备注用户备注用户备注用户备注用户用户备注用户备注用户备注用户用户备注用户备注用户备注用户用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注
 						</div>
-					</div>
+					</div> -->
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 						收货信息</div>
@@ -272,10 +272,10 @@
 							<div style="width: 100px;margin-left: -28px;">商家预计收入：</div>
 							<div style="color: black;margin-left: 7px;">{{orderDetails.store_price}}</div>
 						</div>
-						<div style="display: flex;color: #4e5969;">
+						<!-- <div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">支付方式：</div>
 							<div>余额支付/支付宝支付/微信支付</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
@@ -295,6 +295,9 @@
 						<div class="w10_100">售后金额</div>
 						<div class="w10_100">订单状态</div>
 					</div>
+					<div v-if="orderDetails.goods_list.length==0" style="padding: 10px;">
+						<a-empty />
+					</div>
 					<div v-for="item in orderDetails.goods_list" :key="item" class="a89"
 						style="align-items: center;text-align: center;">
 						<div class="w20_100" style="display: flex;align-items: center;text-align: left;">
@@ -304,7 +307,7 @@
 								<div style="color: #999999;">规格：{{item.size_name}}</div>
 							</div>
 						</div>
-						<div class="w10_100">{{item.cover_image}}</div>
+						<div class="w10_100">{{item.old_price}}</div>
 						<div class="w10_100">X{{item.number}}</div>
 						<div class="w20_100">
 							<div>{{item.pay_price}}</div>

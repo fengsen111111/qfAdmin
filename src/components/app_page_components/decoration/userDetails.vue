@@ -63,6 +63,19 @@
 		time: [],
 		id: '',
 	})
+
+	// 重置
+	function chongz() {
+		order_sux.value.status = ''
+		order_sux.value.id = ''
+		order_sux.value.time = []
+		webGetUserOrderList()
+	}
+	// 查询
+	function chaxun() {
+		webGetUserOrderList()
+	}
+
 	const orderList = ref([])//订单数据
 	const order_count = ref('')//订单总数
 	const current = ref(1)// 分页
@@ -73,8 +86,8 @@
 			user_id: pageData.data.id,
 			id: order_sux.value.id,
 			status: order_sux.value.status,
-			start_time: '',
-			end_time: '',
+			start_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
+			end_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
 			currentPage: current.value,
 			perPage: 10,
 		}, global, true).then((res) => {
@@ -92,10 +105,10 @@
 
 	// 拉黑状态变化
 	function lhztChange(checked) {
-		console.log('checked',checked);
+		console.log('checked', checked);
 		global.axios.post('decoration/Order/webGetUserOrderList', {
 			user_id: pageData.data.id,
-			chat_status: checked?'Y':'N'
+			chat_status: checked ? 'Y' : 'N'
 		}, global, true).then((res) => {
 			console.log('拉黑状态操作', res);
 			message.success('操作成功')
@@ -105,7 +118,7 @@
 	function ltztChange(checked) {
 		global.axios.post('decoration/Order/webGetUserOrderList', {
 			user_id: pageData.data.id,
-			status: checked?'Y':'N'
+			status: checked ? 'Y' : 'N'
 		}, global, true).then((res) => {
 			console.log('聊天状态操作', res);
 			message.success('操作成功')
@@ -285,16 +298,16 @@
 					<div class="a81">
 						<div>流水时间</div>
 						<div>
-							<a-range-picker v-model:value="order_sux.time" class="a82"
-								style="border:none;border-radius: 4px;" />
+							<a-range-picker v-model:value="order_sux.time" class="a82" :format="'YYYY/MM/DD'"
+								:value-format="'YYYY/MM/DD'" style="border:none;border-radius: 4px;" />
 						</div>
 					</div>
 					<div class="a84">
-						<div class="a85">
+						<div class="a85" @click="chongz()">
 							<ReloadOutlined style="margin-right: 10px;" />
 							重置
 						</div>
-						<div class="a86">
+						<div class="a86" @click="chaxun()">
 							<SearchOutlined style="margin-right: 10px;" />
 							查询
 						</div>
@@ -326,8 +339,10 @@
 						</div>
 						<div class="w5_100">{{item.pay_price}}</div>
 						<div class="w25_100">
-							<span v-for="(iss,index) in item.goods_list"
-								:key="item.goods_id">{{iss.name}}（{{iss.size_name}}）<span>{{index<item.goods_list.length-1?'、':'。'}}</span></span>
+							<span v-for="(iss,index) in item.goods_list" :key="item.goods_id">
+								<span>{{iss.name}}（{{iss.size_name}}）</span>
+								<span>{{index<item.goods_list.length-1?'、':'。'}}</span>
+							</span>
 						</div>
 						<div class="w15_100">{{item.create_time}}</div>
 						<div class="w5_100">{{item.address_name}}</div>

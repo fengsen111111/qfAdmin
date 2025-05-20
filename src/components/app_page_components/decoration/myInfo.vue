@@ -254,6 +254,11 @@
 
 	// 分页
 	const current = ref(1)
+	// 分页变化
+	function pagChange(e) {
+		zjrzParams.value.page = e
+		webGetStoreMoneyLog()
+	}
 
 	const titleType = ref('店铺信息')
 
@@ -340,12 +345,12 @@
 	function getCustomerRoomList() {
 		// 获取自己的角色ID和聊天状态
 		// setTimeout(() => {
-			store_id.value = localStorage.getItem('storeId')
-			is_ptsj.value = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
-			if (is_ptsj.value == '商家') {
-				getGoodsSaledNumberTopList()// 获取商品销量排行列表
-				getGoodsPowerTopList()// 获取商品投流排行列表
-			}
+		store_id.value = localStorage.getItem('storeId')
+		is_ptsj.value = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
+		if (is_ptsj.value == '商家') {
+			getGoodsSaledNumberTopList()// 获取商品销量排行列表
+			getGoodsPowerTopList()// 获取商品投流排行列表
+		}
 		// }, 500);
 	}
 
@@ -820,10 +825,23 @@
 	const zjrzParams = ref({
 		order_id: '',
 		type: '',
-		time: '',
+		time: [],
 		page: 1,
 		limit: 10
 	})
+	// 重置
+	function chongz() {
+		zjrzParams.value.order_id = ''
+		zjrzParams.value.type = ''
+		zjrzParams.value.time = []
+		zjrzParams.value.page = 1
+		zjrzParams.value.limit = 10
+		webGetStoreMoneyLog()
+	}
+	// 查询
+	function chaxun() {
+		webGetStoreMoneyLog()
+	}
 	const zjrzCount = ref(0)//资金记录总条数
 	const zjrzList = ref([])//资金记录数据
 	// 后台获取商家资金日志
@@ -833,8 +851,8 @@
 				store_id: store_id.value,
 				order_id: zjrzParams.value.order_id,
 				type: zjrzParams.value.type,
-				start_time: '',
-				end_time: '',
+				start_time: zjrzParams.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
+				end_time: zjrzParams.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[1],
 				currentPage: zjrzParams.value.page,
 				perPage: zjrzParams.value.limit,
 
@@ -1442,7 +1460,7 @@
 								<div style="margin-right: 20px;">
 									<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 								</div>
-								<div class="a70">{{Number(2131312321).toLocaleString()}}</div>
+								<div class="a70">{{Number(zjxqtj.store_money).toLocaleString()}}</div>
 							</div>
 							<div v-else style="display: flex;">
 								<div class="a71">
@@ -1485,7 +1503,7 @@
 						<div class="a81">
 							<div>订单编号</div>
 							<div>
-								<a-input placeholder="请输入订单编号" class="a82" v-model:value="item.order_id"
+								<a-input placeholder="请输入订单编号" class="a82" v-model:value="zjrzParams.order_id"
 									style="border:none;border-radius: 4px;"></a-input>
 							</div>
 						</div>
@@ -1510,16 +1528,16 @@
 						<div class="a81">
 							<div>流水时间</div>
 							<div>
-								<a-range-picker v-model:value="zjrzParams.time" class="a82"
+								<a-range-picker v-model:value="zjrzParams.time" class="a82" :format="'YYYY/MM/DD'" :value-format="'YYYY/MM/DD'"
 									style="border:none;border-radius: 4px;" />
 							</div>
 						</div>
 						<div class="a84">
-							<div class="a85">
+							<div class="a85" @click="chongz()">
 								<ReloadOutlined style="margin-right: 10px;" />
 								重置
 							</div>
-							<div class="a86">
+							<div class="a86" @click="chaxun()">
 								<SearchOutlined style="margin-right: 10px;" />
 								查询
 							</div>
@@ -1534,7 +1552,10 @@
 							<div>流水时间</div>
 						</div>
 						<div v-for="item in zjrzList" :key="item.id" class="a89">
-							<div>{{item.order_id}}</div>
+							<div>
+								<span v-if="item.type=='f'||item.type=='g'">{{item.order_id}}</span>
+								<span v-else></span>
+							</div>
 							<div>
 								<span v-if="item.type=='b'">商家余额充值</span>
 								<span v-else-if="item.type=='c'">商家基础保证金</span>
@@ -1547,15 +1568,23 @@
 								<span v-else-if="item.type=='k'">提现</span>
 								<span v-else-if="item.type=='l'">退店</span>
 							</div>
-							<div>{{item.in_or_out=='in'?'+':'-'}}{{Number(item.trans_amt).toLocaleString()}}</div>
+							<div>
+								<span v-if="item.trans_amt !=0">
+									{{item.in_or_out=='in'?'+':'-'}}
+								</span>
+								<span>{{Number(item.trans_amt).toLocaleString()}}</span>
+							</div>
 							<div>{{item.create_time}}</div>
 						</div>
-						<div class="a90">
+						<div v-if="zjrzList.length==0" style="padding: 10px;">
+							<a-empty />
+						</div>
+						<div class="a90" v-if="zjrzList.length>0">
 							<div></div>
 							<div class="a91">
 								<div class="a92">共 {{zjrzCount}} 项数据</div>
 								<a-pagination v-model:current="current" :total="zjrzCount" show-less-items
-									:showSizeChanger="false" />
+									@change="pagChange" :showSizeChanger="false" />
 							</div>
 						</div>
 					</div>
