@@ -25,14 +25,11 @@
 	const current = ref(1)
 
 	const is_ptsj = ref('商家')
-	function getCustomerRoomList() {
-		// 获取自己的角色ID和聊天状态
-		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-			console.log('自己商家id和禁言状态', res_one);
-			is_ptsj.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-		})
-	}
-	getCustomerRoomList()
+
+	setTimeout(() => {
+		is_ptsj.value = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
+	}, 500);
+
 	const value1 = ref('')
 	const checkedOne = ref(false)
 	const checkedTwo = ref(false)
@@ -298,10 +295,10 @@
 						<div class="w10_100">售后金额</div>
 						<div class="w10_100">订单状态</div>
 					</div>
-					<div v-for="item in orderDetails.goods_list" :key="item" class="a89" style="align-items: center;text-align: center;">
+					<div v-for="item in orderDetails.goods_list" :key="item" class="a89"
+						style="align-items: center;text-align: center;">
 						<div class="w20_100" style="display: flex;align-items: center;text-align: left;">
-							<img :src="item.cover_image"
-								style="width: 40px;height: 40px;border-radius: 4px;" alt="">
+							<img :src="item.cover_image" style="width: 40px;height: 40px;border-radius: 4px;" alt="">
 							<div style="padding: 5px 10px;">
 								<div>{{item.goods_name}}</div>
 								<div style="color: #999999;">规格：{{item.size_name}}</div>

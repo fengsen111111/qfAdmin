@@ -7,30 +7,26 @@
     const global = inject("global").value;
     let emit = defineEmits(["djtzmk"])
     // 跳转对应模块
-    function handTz(str,strTwo,strThree) {
+    function handTz(str, strTwo, strThree) {
         visJc.value = false
-        emit('djtzmk', str,strTwo,strThree)
+        emit('djtzmk', str, strTwo, strThree)
     }
     // 所有可用地址
     const addressList = ref([])
     function getStoreAddressList() {
-        global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-            // console.log('自己商家id和禁言状态', res_one);
-            global.axios
-                .post('decoration/StoreAddress/getStoreAddressList', {
-                    store_id: res_one.joiner_sign
-                }, global)
-                .then((res) => {
-                    // console.log('当前数据', res.list);
-                    res.list.map((item) => {
-                        item.status = item.status == 'Y' ? true : false
-                        if (item.type == 'a') {
-                            addressList.value.push(item)
-                        }
-                    })
-                });
-        })
-
+        global.axios
+            .post('decoration/StoreAddress/getStoreAddressList', {
+                store_id: localStorage.getItem("storeId")
+            }, global)
+            .then((res) => {
+                // console.log('当前数据', res.list);
+                res.list.map((item) => {
+                    item.status = item.status == 'Y' ? true : false
+                    if (item.type == 'a') {
+                        addressList.value.push(item)
+                    }
+                })
+            });
     }
     getStoreAddressList()
 
@@ -46,7 +42,7 @@
             LODOP = getLodop()
         } else {
             azqk.value = 'lodop已安装'
-            LODOP.SET_LICENSES("","EE0887D00FCC7D29375A695F728489A6","C94CEE276DB2187AE6B65D56B3FC2848","");
+            LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
             const count = LODOP.GET_PRINTER_COUNT()
             for (let i = 0; i < count; i++) {
                 printerList.value.push(LODOP.GET_PRINTER_NAME(i))
@@ -309,7 +305,8 @@
             <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-form-item label="发货地址" name="key1" :rules="[{ required: true, message: '请选择发货地址!' }]">
                     <a-select ref="select" v-model:value="form.key1" placeholder="请选择发货地址">
-                        <a-select-option :value="item.id" v-for="item in addressList" :key="item.id">{{item.address}}</a-select-option>
+                        <a-select-option :value="item.id" v-for="item in addressList"
+                            :key="item.id">{{item.address}}</a-select-option>
                     </a-select>
                 </a-form-item>
             </a-form>
@@ -332,7 +329,8 @@
                             <CheckCircleFilled style="color: #15b464;margin-right: 5px;" />
                             已设置
                         </div>
-                        <div @click="handTz('快递物流','商家地址')" v-else style="display: flex;align-items: center;color: #fb8015;cursor: pointer;">
+                        <div @click="handTz('快递物流','商家地址')" v-else
+                            style="display: flex;align-items: center;color: #fb8015;cursor: pointer;">
                             <ExclamationCircleFilled style="color: #fb8015;margin-right: 5px;" />
                             去设置
                         </div>
@@ -472,7 +470,8 @@
                                 <!-- <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas> -->
                                 <svg ref="barcode"></svg>
                             </div>
-                            <div style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
+                            <div
+                                style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
                                 <div style="font-size: 24px;padding: 10px;">收</div>
                                 <div style="padding: 10px;">
                                     <div style="display: flex;justify-content: space-between;">
@@ -485,7 +484,8 @@
                             <div style="display: flex;align-items: center;">
                                 <div style="font-size: 24px;padding: 10px;">寄</div>
                                 <div style="padding: 10px;">
-                                    <div style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
+                                    <div
+                                        style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
                                         <div>{{paramObj.sendMan.name}}</div>
                                         <div>{{paramObj.sendMan.mobile}}</div>
                                     </div>

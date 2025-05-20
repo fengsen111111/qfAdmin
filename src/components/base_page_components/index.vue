@@ -151,11 +151,13 @@
 
   const store_id = ref('')
   function getCustomerRoomList() {
+    localStorage.removeItem("storeId");
     // 获取自己的角色ID和聊天状态
     global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
       console.log('自己商家id和禁言状态', res_one);
       store_id.value = res_one.joiner_sign
       type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+      localStorage.setItem("storeId", res_one.joiner_sign);
       if (type.value == '平台') {
         tamplateSta()//统计
         getStoreMoneyTopList() // 获取商家营业额排行列表
@@ -166,62 +168,45 @@
 
         getNewGoodsNotices()// 获取平台新商品提醒列表
         readNewGoodsNotice()// 阅读商家新订单提醒列表
-      }else{
+      } else {
         getNewOrderNotices()//获取商家新订单提醒列表
         readNewOrderNotice()//阅读商家新订单提醒列表
       }
     })
   }
+  getCustomerRoomList() //执行
   // 获取商家新订单提醒列表
   function getNewOrderNotices() {
     global.axios.post('decoration/StoreMsg/getNewOrderNotices', {
-      store_id:store_id.value
+      store_id: store_id.value
     }, global, true).then((res) => {
       console.log('获取商家新订单提醒列表', res);
     })
   }
-   // 阅读商家新订单提醒列表
-   function readNewOrderNotice() {
+  // 阅读商家新订单提醒列表
+  function readNewOrderNotice() {
     global.axios.post('decoration/StoreMsg/readNewOrderNotice', {
-      store_id:store_id.value
+      store_id: store_id.value
     }, global, true).then((res) => {
       console.log('阅读商家新订单提醒列表', res);
     })
   }
-   // 获取平台新商品提醒列表
-   function getNewGoodsNotices() {
+  // 获取平台新商品提醒列表
+  function getNewGoodsNotices() {
     global.axios.post('decoration/Goods/getNewGoodsNotices', {
-      store_id:store_id.value
+      store_id: store_id.value
     }, global, true).then((res) => {
       console.log('获取平台新商品提醒列表', res);
     })
-  }   
-   // 阅读商家新订单提醒列表
-   function readNewGoodsNotice() {
+  }
+  // 阅读商家新订单提醒列表
+  function readNewGoodsNotice() {
     global.axios.post('decoration/Goods/readNewGoodsNotice', {
-      store_id:store_id.value
+      store_id: store_id.value
     }, global, true).then((res) => {
       console.log('阅读商家新订单提醒列表', res);
     })
   }
-
-
-  setTimeout(() => {
-    console.log('global.adminMsg.id', global.adminMsg.id);
-    if (global.adminMsg.id == -1) {
-      // 超管
-      type.value = '平台'
-      tamplateSta()//统计
-      getStoreMoneyTopList() // 获取商家营业额排行列表
-      getGoodsSaledNumberTopList() // 获取商品销量排行列表
-      getGoodsTypeSaledNumberTopList() // 获取商品二级分类销量排行列表
-      getArticleStarTopList() // 获取作品点赞排行列表
-      getArticleStarTopListVideo()  //获取视频点赞排行列表
-
-    } else {
-      getCustomerRoomList()
-    }
-  }, 1000);
 
   const tjzd = ref({})//统计字段
   function tamplateSta() {
@@ -233,7 +218,6 @@
 
   // 跳转对应模块
   function handTz(str, strTwo, strThree) {
-    // console.log('str', str);
     emit('djtzmk', str, strTwo, strThree)
   }
   const sjyyeList = ref([])

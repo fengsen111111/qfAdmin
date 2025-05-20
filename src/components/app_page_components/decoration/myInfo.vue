@@ -18,37 +18,33 @@
 	// 店铺信息
 	function _shopInfo() {
 		console.log('店铺信息');
-		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-			console.log('自己的商家id', res_one);
-			global.axios.post('decoration/Store/webGetStoreInfo', {
-				store_id: res_one.joiner_sign
-			}, global)
-				.then(res => {
-					console.log('店铺数据', res);
-					shopObj.value = res
-					logo.value = res.logo
-					// a待审核 b 已通过 c已拒绝
-					shType.value = res.check_status
-					if (shType.value == 'b') {
-						getGoodsTypeList()
-					}
-					if (shType.value == 'c') {
-						global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
-							mobile: shopObj.value.mobile,
-						}, global).then(res => {
-							console.log('商家入驻信息', res);
-							check_remark.value = res.check_remark
-						})
-					}
+		global.axios.post('decoration/Store/webGetStoreInfo', {
+			store_id: localStorage.getItem('storeId')
+		}, global)
+			.then(res => {
+				console.log('店铺数据', res);
+				shopObj.value = res
+				logo.value = res.logo
+				// a待审核 b 已通过 c已拒绝
+				shType.value = res.check_status
+				if (shType.value == 'b') {
+					getGoodsTypeList()
+				}
+				if (shType.value == 'c') {
+					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
+						mobile: shopObj.value.mobile,
+					}, global).then(res => {
+						console.log('商家入驻信息', res);
+						check_remark.value = res.check_remark
+					})
+				}
 
-					// 生成分类表格数据
-					const flattened = flattenCategories(shopObj.value.goods_types);
-					setTimeout(() => {
-						renderTable(flattened);
-					}, 1000);
-				})
-		})
-		// 
+				// 生成分类表格数据
+				const flattened = flattenCategories(shopObj.value.goods_types);
+				setTimeout(() => {
+					renderTable(flattened);
+				}, 1000);
+			})
 	}
 	function _shopInfoPc() {
 		console.log('平台查询店铺信息');
@@ -192,9 +188,9 @@
 			const newPath = [...path, item];
 			if (item.children && item.children.length) {
 				flattenCategories(item.children, newPath, result);
-			} else if(item.goods_list && item.goods_list.length){
+			} else if (item.goods_list && item.goods_list.length) {
 				flattenCategories(item.goods_list, newPath, result);
-			}else {
+			} else {
 				result.push(newPath);
 			}
 		});
@@ -343,15 +339,14 @@
 	const store_id = ref('')//商家id
 	function getCustomerRoomList() {
 		// 获取自己的角色ID和聊天状态
-		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-			console.log('自己商家id和禁言状态', res_one);
-			store_id.value = res_one.joiner_sign
-			is_ptsj.value = res_one.joiner_sign == 1 ? "平台" : '商家'
+		// setTimeout(() => {
+			store_id.value = localStorage.getItem('storeId')
+			is_ptsj.value = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
 			if (is_ptsj.value == '商家') {
 				getGoodsSaledNumberTopList()// 获取商品销量排行列表
 				getGoodsPowerTopList()// 获取商品投流排行列表
 			}
-		})
+		// }, 500);
 	}
 
 	if (pageData.data) {

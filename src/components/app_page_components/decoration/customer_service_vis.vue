@@ -217,64 +217,59 @@
 
   //获取聊天房间列表
   function getCustomerRoomList() {
-    // 获取自己的角色ID和聊天状态
-    global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-      console.log('自己商家id和禁言状态', res_one);
-      store_id.value = res_one.joiner_sign
-      global.axios.post('decoration/CustomerService/getRoomList', {
-        joiner_sign: store_id.value //自己id
-      }, global, true).then((res) => {
-        console.log('聊天房间数据', res.list);
-        // 当前身份是商家,创建与平台客服的聊天
-        if (store_id.value == global.adminMsg.id) {
-          console.log('当前身份为平台客服！');
-          res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
-          customer_service_state.room_list = res.list
-          // 自动打开第一个人的聊天房间
-          customer_service_state.room = res.list[0] //聊天房间
-          customer_service_state.room_id = res.list[0].id //聊天房间id
-          customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
-          _getMessage()
-          _shopList()//获取商品信息
-        } else {
-          global.axios.post('decoration/CustomerService/findRoomID', {
-            joiner_signs: [store_id.value, global.adminMsg.id]
-          }, global, true).then((res_two) => {
-            if (res_two.room_id) {
-              console.log('有平台房间，处理数据');
-              console.log('与平台房间号', res_two.room_id);
-              res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
-              customer_service_state.room_list = res.list
-              // 自动打开第一个人的聊天房间
-              customer_service_state.room = res.list[0] //聊天房间
-              customer_service_state.room_id = res.list[0].id //聊天房间id
-              customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
-              _getMessage()
-              _shopList()//获取商品信息
-            } else {
-              console.log('与平台无房间');
-              // 创建与平台的房间
-              global.axios.post('factory_system/WebSocketRoom/initRoom', {
-                joiner_signs: store_id.value,
-                joiners: [
-                  {
-                    joiner_sign: store_id.value,
-                    other_msg: {}
-                  },
-                  {
-                    joiner_sign: global.adminMsg.id,
-                    other_msg: {}
-                  }
-                ]
-              }, global, true).then((res_three) => {
-                console.log('与平台房间', res_three);
-                getCustomerRoomList() //更新房间列表
-              })
-            }
-          })
-        }
-
-      })
+    store_id.value = localStorage.getItem("storeId")
+    global.axios.post('decoration/CustomerService/getRoomList', {
+      joiner_sign: store_id.value //自己id
+    }, global, true).then((res) => {
+      console.log('聊天房间数据', res.list);
+      // 当前身份是商家,创建与平台客服的聊天
+      if (store_id.value == global.adminMsg.id) {
+        console.log('当前身份为平台客服！');
+        res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
+        customer_service_state.room_list = res.list
+        // 自动打开第一个人的聊天房间
+        customer_service_state.room = res.list[0] //聊天房间
+        customer_service_state.room_id = res.list[0].id //聊天房间id
+        customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
+        _getMessage()
+        _shopList()//获取商品信息
+      } else {
+        global.axios.post('decoration/CustomerService/findRoomID', {
+          joiner_signs: [store_id.value, global.adminMsg.id]
+        }, global, true).then((res_two) => {
+          if (res_two.room_id) {
+            console.log('有平台房间，处理数据');
+            console.log('与平台房间号', res_two.room_id);
+            res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
+            customer_service_state.room_list = res.list
+            // 自动打开第一个人的聊天房间
+            customer_service_state.room = res.list[0] //聊天房间
+            customer_service_state.room_id = res.list[0].id //聊天房间id
+            customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
+            _getMessage()
+            _shopList()//获取商品信息
+          } else {
+            console.log('与平台无房间');
+            // 创建与平台的房间
+            global.axios.post('factory_system/WebSocketRoom/initRoom', {
+              joiner_signs: store_id.value,
+              joiners: [
+                {
+                  joiner_sign: store_id.value,
+                  other_msg: {}
+                },
+                {
+                  joiner_sign: global.adminMsg.id,
+                  other_msg: {}
+                }
+              ]
+            }, global, true).then((res_three) => {
+              console.log('与平台房间', res_three);
+              getCustomerRoomList() //更新房间列表
+            })
+          }
+        })
+      }
     })
   }
   // 点击房间

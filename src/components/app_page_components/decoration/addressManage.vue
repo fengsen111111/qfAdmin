@@ -16,11 +16,10 @@
 	const store_id = ref('')
 	function getCustomerRoomList() {
 		// 获取自己的角色ID和聊天状态
-		global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-			console.log('自己商家id和禁言状态', res_one);
-			store_id.value = res_one.joiner_sign
+		setTimeout(() => {
+			store_id.value = localStorage.getItem('storeId')
 			lookData()
-		})
+		}, 500);
 	}
 	getCustomerRoomList()
 

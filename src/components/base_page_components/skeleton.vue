@@ -89,69 +89,12 @@
     );
     setTimeout(() => {
       console.log('global.adminMsg.id', global.adminMsg.id);
-      if (global.adminMsg.id == -1) {
+      if (global.adminMsg.id.length==1) {
         // 超管id
         type.value = "平台"
         return false
       } else {
-        console.log('商家才执行');
-        setTimeout(() => {
-          global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-            console.log('自己商家id', res_one.joiner_sign);
-            store_id.value = res_one.joiner_sign
-            type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-            if (res_one.joiner_sign == 1) {
-              console.log('平台');
-            } else {
-              console.log('商家');
-              openPage({
-                checked: true,
-                checked_status: true,
-                open_status: true,
-                icon: "",
-                label: "店铺信息",
-                order: "1",
-                page_id: "0",
-                pid: "706154120674803773",
-                type: "myInfo",
-                url: "",
-                value: "333333",
-                page_key: "e06ac6e73a5db3b8f010acb4213123213",
-              }, true)
-            }
-          })
-        }, 1000);
-      } console.log('global.adminMsg.id', global.adminMsg.id);
-      if (global.adminMsg.id == -1) {
-        // 超管id
-        type.value = "平台"
-        return false
-      } else {
-        console.log('商家才执行');
-        global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-          console.log('自己商家id', res_one.joiner_sign);
-          store_id.value = res_one.joiner_sign
-          type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-          if (res_one.joiner_sign == 1) {
-            console.log('平台');
-          } else {
-            console.log('商家');
-            openPage({
-              checked: true,
-              checked_status: true,
-              open_status: true,
-              icon: "",
-              label: "店铺信息",
-              order: "1",
-              page_id: "0",
-              pid: "706154120674803773",
-              type: "myInfo",
-              url: "",
-              value: "333333",
-              page_key: "e06ac6e73a5db3b8f010acb4213123213",
-            }, true)
-          }
-        })
+        toShopDetails()//前往店铺详情
       }
     }, 1000);
   });
@@ -449,7 +392,7 @@
   const dq_type_msgList = ref([])//当前所选类型消息
   function editMsgKey(key) {
     msgKey.value = key
-    dq_type_msgList.value = msgList.value.filter((item)=>item.type==key)
+    dq_type_msgList.value = msgList.value.filter((item) => item.type == key)
   }
 
   const serVis = ref(false)//聊天弹框开关
