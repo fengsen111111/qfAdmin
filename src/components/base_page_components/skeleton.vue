@@ -94,6 +94,7 @@
         type.value = "平台"
         return false
       } else {
+         type.value = "商家"
         toShopDetails()//前往店铺详情
       }
     }, 1000);
