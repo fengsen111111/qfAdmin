@@ -464,12 +464,27 @@
   function _getNewOrderNotices(){
     global.axios
       .post('decoration/StoreMsg/getNewOrderNotices', {
-        // store_id:
+        store_id:localStorage.getItem('storeId')
       }, global)
       .then((res) => {
         console.log('获取商家新订单提醒列表', res);
       })
+  }  
+  // 平台阅读商家新商品提醒列表 
+  function _getNewGoodsNotices(){
+    global.axios
+      .post('decoration/Goods/getNewGoodsNotices', {}, global)
+      .then((res) => {
+        console.log('平台阅读商家新商品提醒列表', res);
+      })
   }
+  setTimeout(() => {
+    if(type.value=='平台'){
+      _getNewGoodsNotices()
+    }else{
+      _getNewOrderNotices()
+    }
+  }, 1500);
 
   const msgList = ref([])
   // 获取商家消息列表

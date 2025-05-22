@@ -17,6 +17,7 @@
 	const shopObj = ref({})//店铺信息
 	// 店铺信息
 	function _shopInfo() {
+		shopObj.value = {}
 		console.log('店铺信息');
 		global.axios.post('decoration/Store/webGetStoreInfo', {
 			store_id: localStorage.getItem('storeId')
@@ -47,6 +48,7 @@
 			})
 	}
 	function _shopInfoPc() {
+		shopObj.value = {}
 		console.log('平台查询店铺信息');
 		global.axios.post('decoration/Store/webGetStoreInfo', {
 			store_id: pageData.data.id
@@ -220,6 +222,8 @@
 
 	// 渲染到 HTML 表格
 	function renderTable(data) {
+		console.log('渲染表格');
+
 		const table = document.querySelector(".table");
 		// ✅ 只清除旧的 <tbody>，保留 <thead>
 		const oldTbody = table.querySelector("tbody");
@@ -778,6 +782,15 @@
 				} else {
 					// console.log('已缴纳');
 					message.success('当前分类已无需缴纳')
+					add_type_vis.value = false
+					if (pageData.data) {
+						is_ptsj.value = '平台'
+						_shopInfoPc()
+					} else {
+						is_ptsj.value = '商家'
+						_shopInfo()
+					}
+
 				}
 			})
 	}
@@ -890,17 +903,17 @@
 		formRefSjwg.value.validate().then((values) => {
 			console.log('提交的内容：', values)
 			global.axios
-			.post('decoration/Store/webGetStoreMoneyLog', formSjwg, global)
-			.then((res) => {
-				console.log('商家违规确定', res);
-				if(res.code==1){
-					message.success('提交成功')
-					sjwgVis.value = false
-					formSjwg.title = ''
-					formSjwg.content = ''
-					RichTextContentRef.value.clearContent()
-				}
-			})
+				.post('decoration/Store/webGetStoreMoneyLog', formSjwg, global)
+				.then((res) => {
+					console.log('商家违规确定', res);
+					if (res.code == 1) {
+						message.success('提交成功')
+						sjwgVis.value = false
+						formSjwg.title = ''
+						formSjwg.content = ''
+						RichTextContentRef.value.clearContent()
+					}
+				})
 		}).catch(error => {
 			console.log('校验失败:', error)
 		})
@@ -1271,7 +1284,7 @@
 								</div>
 							</div>
 						</a-modal>
-						<div>
+						<div v-if="shopObj.goods_types.length>0">
 							<table class="table" border="1">
 								<thead>
 									<tr style="font-weight: bold;font-size: 18px;">
@@ -1284,9 +1297,11 @@
 								<!-- 渲染数据行 -->
 								<!-- 动态插入 -->
 							</table>
-							<div v-if="shopObj.goods_types.length==0"
-								style="border-left: 1px solid #e9e9e9;border-right: 1px solid #e9e9e9;padding: 10px;width: 80vw;">
-								<a-empty />
+							<div v-if="shopObj.goods_types">
+								<div v-if="shopObj.goods_types.length==0"
+									style="border-left: 1px solid #e9e9e9;border-right: 1px solid #e9e9e9;padding: 10px;width: 80vw;">
+									<a-empty />
+								</div>
 							</div>
 							<div class="a39" v-if="shopObj.goods_types">
 								<div style="color: #666666;">共 {{shopObj.goods_types.length}} 项数据</div>

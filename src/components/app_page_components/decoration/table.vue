@@ -457,10 +457,18 @@
         const obj = table_state.tableData.filter((item) => item.id == requestParams.user_id)
         console.log('obj', obj[0]);
         requestParams.id = obj[0].user_id
-      }else if (handleInfo.name == '订单详情') {
+      } else if (handleInfo.name == '订单详情') {
         const obj = table_state.tableData.filter((item) => item.id == requestParams.id)
         console.log('obj', obj[0]);
         requestParams.user_id = obj[0].user_id
+        // 阅读商家新订单提醒列表
+        global.axios
+          .post('decoration/StoreMsg/readNewOrderNotice', {
+            order_id: requestParams.id
+          }, global)
+          .then((res) => {
+            console.log('阅读商家新订单提醒列表', res);
+          })
       }
       // console.log(requestParams);
       watchComponentShowStatus();

@@ -295,8 +295,10 @@
 						<div class="w10_100">售后金额</div>
 						<div class="w10_100">订单状态</div>
 					</div>
-					<div v-if="orderDetails.goods_list.length==0" style="padding: 10px;">
-						<a-empty />
+					<div v-if="orderDetails.goods_list">
+						<div v-if="orderDetails.goods_list.length==0" style="padding: 10px;">
+							<a-empty />
+						</div>
 					</div>
 					<div v-for="item in orderDetails.goods_list" :key="item" class="a89"
 						style="align-items: center;text-align: center;">
