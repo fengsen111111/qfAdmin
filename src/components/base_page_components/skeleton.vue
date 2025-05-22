@@ -96,6 +96,7 @@
       } else {
          type.value = "商家"
         toShopDetails()//前往店铺详情
+        _getUnReadStoreMsgNum()//获取未读商家消息数
       }
     }, 1000);
   });
@@ -154,13 +155,6 @@
 
   //打开页面
   function openPage(pageData, openTagStatus = false) {
-    // if () {//当前是退店页面
-    //   message.error('正在退店，禁止跳转')
-    //   return false
-    // } else {
-    //   // 当前不是退店就跳转到退店
-    // }
-    // console.log('pageData', pageData);
     let new_page = true;
     skeleton_state.openedPages.forEach((item, index) => {
       if (
@@ -319,12 +313,8 @@
 
   //递归删除子页面
   function deleteChildrenPage(parent_page_key) {
-    // if(parent_page_key == 'index_page'){
-    //   return false
-    // }
     console.log('递归删除子页面', parent_page_key);
     console.log('skeleton_state.openedPages', skeleton_state.openedPages);
-
     // return false
     skeleton_state.openedPages.forEach((item, index) => {
       if (item.parent_page_key == parent_page_key) {
@@ -470,20 +460,46 @@
     }, true)
   }
 
-  const msgList = ref([])
-  // 获取用户消息列表
-  function getUserMsgList() {
+  // 获取商家新订单提醒列表  做到这儿了
+  function _getNewOrderNotices(){
     global.axios
-      .post('decoration/UserMsg/getUserMsgList', {
-        currentPage: 1,
-        perPage: 100,
+      .post('decoration/StoreMsg/getNewOrderNotices', {
+        // store_id:
       }, global)
       .then((res) => {
-        console.log('获取用户消息列表', res);
+        console.log('获取商家新订单提醒列表', res);
         msgList.value = res.list
       })
   }
 
+  const msgList = ref([])
+  // 获取商家消息列表
+  function getUserMsgList() {
+    global.axios
+      .post('decoration/StoreMsg/getStoreMsgList', {
+        currentPage: 1,
+        perPage: 100,
+      }, global)
+      .then((res) => {
+        console.log('获取商家消息列表', res);
+        msgList.value = res.list
+      })
+  }
+  const sjwdfxxs = ref(0)
+  // 获取未读商家消息数
+  function _getUnReadStoreMsgNum(){
+    global.axios
+      .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
+      .then((res) => {
+        console.log('获取未读商家消息数', res);
+        sjwdfxxs.value = res.number
+      })
+  }
+  // 查看商家消息详情
+  function lookDetails(item){
+    console.log('点击的消息',item);
+    // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
+  }
 </script>
 
 <template>
@@ -627,7 +643,7 @@
             <Print @djtzmk="djtzmk" />
           </div>
           <!-- BellOutlined,MailOutlined,MessageOutlined -->
-          <a-badge :count="msgList.length">
+          <a-badge :count="sjwdfxxs">
             <div @click="openVis(1)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <BellOutlined style="font-size: 18px;" />
@@ -665,27 +681,21 @@
                     <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">站内信</div>
                     <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">用户通知</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知</div>
                     <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">资金通知</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">帐户资金</div>
                     <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">作品通知</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
                     <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规 </div>
+                      <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知 </div>
-                    <!-- <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商品动态</div>
-                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广</div>
-                    <div @click="editMsgKey(8)" :class="msgKey=='8'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规</div>
-                    <div @click="editMsgKey(9)" :class="msgKey=='9'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
-                    <div @click="editMsgKey(10)" :class="msgKey=='10'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">买菜通知</div> -->
+                      <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广 </div>
                   </div>
                   <div style="width: 80%;">
                     <div>
-                      <div v-for="item in dq_type_msgList" :key="item.id" style="padding: 5px 20px;">
+                      <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id" style="padding: 5px 20px;">
                         <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
                             <div style="font-weight: bold;">{{item.title}}</div>

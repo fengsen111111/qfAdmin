@@ -280,14 +280,14 @@
 			},
 			xAxis: {
 				type: 'category',
-				data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+				data: shopObj.value.months_money.keys
 			},
 			yAxis: {
 				type: 'value'
 			},
 			series: [
 				{
-					data: [820, 932, 901, 934, 1290, 1330, 732, 1320, 1420, 1020, 1320, 1432],
+					data: shopObj.value.months_money.values,
 					type: 'line',
 					smooth: true,
 					lineStyle: {
