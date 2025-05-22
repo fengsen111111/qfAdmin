@@ -868,16 +868,49 @@
 		webGetStoreMoneyLog()
 	}, 1500);
 
+
+	import RichTextContent from './rich-text-content.vue'
+	const sjwgVis = ref(false)//违规弹框
+	const formSjwg = reactive({
+		store_id: '', //商家ID  
+		type: 'd',//d违规预警  f店铺违规  
+		title: '',//标题  
+		content: '',//详情 富文本  
+	});
+	const formRefSjwg = ref();//表单绑定
+	// 发布商家违规通知
+	function handSjwg() {
+		sjwgVis.value = true
+	}
+	const RichTextContentRef = ref()//富文本
+	// 商家违规确定
+	function handsjwgOk() {
+		formSjwg.id = store_id.value
+		formSjwg.content = RichTextContentRef.value.getContent()
+		formRefSjwg.value.validate().then((values) => {
+			console.log('提交的内容：', values)
+			global.axios
+			.post('decoration/Store/webGetStoreMoneyLog', formSjwg, global)
+			.then((res) => {
+				console.log('商家违规确定', res);
+				if(res.code==1){
+					message.success('提交成功')
+					sjwgVis.value = false
+					formSjwg.title = ''
+					formSjwg.content = ''
+					RichTextContentRef.value.clearContent()
+				}
+			})
+		}).catch(error => {
+			console.log('校验失败:', error)
+		})
+	}
+
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
-		<!-- <div style="display: flex;">
-			审核状态：<div @click="shType='a'">审核中</div>
-			<div @click="shType='b'" style="margin-left:20px">通过</div>
-			<div @click="shType='c'" style="margin-left:20px">拒绝</div>
-		</div> -->
 		<!-- <div>审核中状态</div> -->
 		<div v-if="shType=='a'||shType=='c'">
 			<div style="display: flex;align-items: center;">
@@ -940,7 +973,6 @@
 					alt="">
 			</div>
 		</div>
-
 		<!-- <div>审核通过</div> -->
 		<div v-else>
 			<!--搜索-->
@@ -955,8 +987,29 @@
 						<div>店铺详情页</div>
 						<div class="a22" @click="closeChildPage()">
 							返回</div>
+						<div v-if="is_ptsj == '平台'" class="a22B" @click="handSjwg()">发布违规通知</div>
 					</div>
 				</div>
+				<!-- 商家违规弹窗 -->
+				<a-modal v-model:visible="sjwgVis" title="商家违规" @ok="handsjwgOk" @cancel="sjwgVis = false">
+					<div>
+						<a-form :model="formSjwg" ref="formRefSjwg" name="formRefSjwg" :label-col="{ span: 4 }"
+							:wrapper-col="{ span: 19 }">
+							<a-form-item label="标题" name="title" :rules="[{ required: true, message: '请输入标题' }]">
+								<a-input v-model:value="formSjwg.title" />
+							</a-form-item>
+							<a-form-item label="违规类型" name="type" :rules="[{ required: true, message: '请选择违规类型' }]">
+								<a-radio-group v-model:value="formSjwg.type" name="radioGroup">
+									<a-radio value="d">违规预警</a-radio>
+									<a-radio value="f">店铺违规</a-radio>
+								</a-radio-group>
+							</a-form-item>
+							<a-form-item label="违规详情" name="content" :rules="[{ required: true, message: '请输入违规详情' }]">
+								<RichTextContent ref="RichTextContentRef" />
+							</a-form-item>
+						</a-form>
+					</div>
+				</a-modal>
 				<!-- 店铺信息 -->
 				<div v-if="titleType=='店铺信息'">
 					<div class="a23" style="margin-top: 10px;">店铺信息</div>
@@ -1453,8 +1506,6 @@
 								</div>
 							</div>
 						</a-modal>
-
-
 						<div style="display: flex;">
 							<div class="a68" v-if="is_ptsj=='平台'">
 								<div style="margin-right: 20px;">
@@ -1528,8 +1579,8 @@
 						<div class="a81">
 							<div>流水时间</div>
 							<div>
-								<a-range-picker v-model:value="zjrzParams.time" class="a82" :format="'YYYY/MM/DD'" :value-format="'YYYY/MM/DD'"
-									style="border:none;border-radius: 4px;" />
+								<a-range-picker v-model:value="zjrzParams.time" class="a82" :format="'YYYY/MM/DD'"
+									:value-format="'YYYY/MM/DD'" style="border:none;border-radius: 4px;" />
 							</div>
 						</div>
 						<div class="a84">
@@ -1991,6 +2042,17 @@
 		padding: 3px 20px;
 		margin-left: 15px;
 		font-size: 14px;
+		cursor: pointer;
+	}
+
+	.a22B {
+		border-radius: 5px;
+		background-color: #ff0000;
+		color: #fff;
+		padding: 3px 20px;
+		margin-left: 15px;
+		font-size: 14px;
+		cursor: pointer;
 	}
 
 	.a23 {

@@ -460,7 +460,7 @@
     }, true)
   }
 
-  // 获取商家新订单提醒列表  做到这儿了
+  // 获取商家新订单提醒列表 
   function _getNewOrderNotices(){
     global.axios
       .post('decoration/StoreMsg/getNewOrderNotices', {
@@ -468,7 +468,6 @@
       }, global)
       .then((res) => {
         console.log('获取商家新订单提醒列表', res);
-        msgList.value = res.list
       })
   }
 
