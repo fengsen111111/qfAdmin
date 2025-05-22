@@ -1051,7 +1051,8 @@
 									style="cursor: pointer;color: #0c96f1;">已开通</div>
 								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
 							</div>
-							<div class="a33">
+							<!-- 开通了商家汇付才允许绑定提现银行卡 -->
+							<div class="a33" v-if="shopObj.open_h_store_account=='b'">
 								<div class="a34">商家提现银行卡:</div>
 								<div class="a35"
 									v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
