@@ -9,7 +9,7 @@ const component_state = reactive({
 
 
 onBeforeMount(() => {
-  console.log('props.value',props.value);
+  // console.log('props.value',props.value);
   if (props.structure.hasOwnProperty('config') && props.structure.config.hasOwnProperty('values')) {
     props.structure.config.values.forEach((option) => {
       if (option.value === props.value) {
@@ -19,7 +19,7 @@ onBeforeMount(() => {
   } else {
     component_state.show_value = props.value
   }
-  console.log('component_state.show_value',component_state.show_value);
+  // console.log('component_state.show_value',component_state.show_value);
   
   if(component_state.show_value.length>30){
     isZk.value = true

@@ -284,6 +284,10 @@
     isPay.value = false//关闭弹框
     refresh()//刷新列表
   }
+
+  const detailsVis = ref(false)//是否打开详情弹窗
+  const detailsObj = ref({})//弹窗基本数据
+
   //列表操作
   function tableHandles(tableHandlesData) {
     console.log('回调', tableHandlesData);
@@ -469,6 +473,24 @@
           .then((res) => {
             console.log('阅读商家新订单提醒列表', res);
           })
+      } else if (handleInfo.name == '作品详情') {
+        console.log('作品详情', requestParams);
+        detailsObj.value = {
+          type: 'H5ArticlePage',
+          id: requestParams.article_id,
+          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/graphic/index?id=' + requestParams.article_id+'&identity=pc'
+        }
+        detailsVis.value = true//打开弹窗
+        return false
+      } else if (handleInfo.name == '商品详情') {
+        console.log('商品详情', requestParams);
+        detailsObj.value = {
+          type: 'H5ArticlePage',
+          id: requestParams.goods_id,
+          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/shopDetail/index?id=' + requestParams.goods_id+'&identity=pc'
+        }
+        detailsVis.value = true//打开弹窗
+        return false
       }
       // console.log(requestParams);
       watchComponentShowStatus();
@@ -809,6 +831,13 @@
     <div style="padding: 20px;text-align: center;">
       <div>请打开支付宝扫描二维码！</div>
       <img :src="qrCodeData" alt="支付二维码" />
+    </div>
+  </a-modal>
+  <!-- 作品、商品详情 弹框 -->
+  <a-modal v-model:visible="detailsVis" style="width: 460px;" :footer="null" :centered="true" title="详情" :maskClosable="false" width="420px">
+    <div style="display: flex; justify-content: center; align-items: center;">
+      <iframe :src="detailsObj.urlH5" frameborder="0"
+        style="width: 390px; height: 844px; border: 1px solid #ccc; border-radius: 12px;"></iframe>
     </div>
   </a-modal>
 </template>
