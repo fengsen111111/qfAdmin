@@ -462,8 +462,9 @@
         console.log('obj', obj[0]);
         requestParams.id = obj[0].user_id
       } else if (handleInfo.name == '订单详情') {
+        let shenfen = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
         const obj = table_state.tableData.filter((item) => item.id == requestParams.id)
-        console.log('obj', obj[0]);
+        // console.log('obj', obj[0]);
         requestParams.user_id = obj[0].user_id
         // 阅读商家新订单提醒列表
         global.axios

@@ -1024,7 +1024,7 @@
 					</div>
 				</a-modal>
 				<!-- 店铺信息 -->
-				<div v-if="titleType=='店铺信息'">
+				<div v-if="titleType=='店铺信息'" style="overflow: auto;height: 80vh;">
 					<div class="a23" style="margin-top: 10px;">店铺信息</div>
 					<div class="a24">
 						<div class="a25">
@@ -1287,7 +1287,7 @@
 								</div>
 							</div>
 						</a-modal>
-						<div v-if="shopObj.goods_types.length>0">
+						<div>
 							<table class="table" border="1">
 								<thead>
 									<tr style="font-weight: bold;font-size: 18px;">
