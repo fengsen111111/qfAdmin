@@ -357,17 +357,15 @@
 		}
 		// }, 500);
 	}
-
+	getCustomerRoomList()
 	if (pageData.data) {
-		// console.log('已有商家id');
+		// console.log('商家列表点进来，已有商家id');
 		store_id.value = pageData.data.id
-		is_ptsj.value = '平台'
 		_shopInfoPc()
 		getGoodsSaledNumberTopList()// 获取商品销量排行列表
 		getGoodsPowerTopList()// 获取商品投流排行列表
 	} else {
 		_shopInfo()
-		getCustomerRoomList()
 	}
 
 	const spxlphlist = ref([])//商品销量排行列表
@@ -784,10 +782,8 @@
 					message.success('当前分类已无需缴纳')
 					add_type_vis.value = false
 					if (pageData.data) {
-						is_ptsj.value = '平台'
 						_shopInfoPc()
 					} else {
-						is_ptsj.value = '商家'
 						_shopInfo()
 					}
 
@@ -1045,23 +1041,47 @@
 
 							<div class="a33">
 								<div class="a34">商家汇付:</div>
-								<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
-									style="cursor: pointer;color: #0c96f1;">点击开通</div>
-								<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-									style="cursor: pointer;color: #0c96f1;">已开通</div>
-								<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+								<div v-if="is_ptsj == '平台'">
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+										style="cursor: pointer;color: #ff0000;">暂未开通</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+										style="cursor: pointer;color: #0c96f1;">已开通</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+								</div>
+								<div v-else>
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+										style="cursor: pointer;color: #0c96f1;">点击开通</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+										style="cursor: pointer;color: #0c96f1;">已开通</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+								</div>
 							</div>
+
 							<!-- 开通了商家汇付才允许绑定提现银行卡 -->
 							<div v-if="shopObj.open_h_store_account">
 								<div class="a33" v-if="shopObj.open_h_store_account!='a'">
 									<div class="a34">商家提现银行卡:</div>
-									<div class="a35"
-										v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-										@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
-									<div @click="bank_vis= true" class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-										style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
-									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-										审核中</div>
+									<div v-if="is_ptsj == '平台'">
+										<div class="a35"
+											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+											@click="bank_vis= true" style="cursor: pointer;color: #ff0000;">暂未绑定</div>
+										<div class="a35"
+											v-else-if="shopObj.open_h_store_account=='c'"
+											style="cursor: pointer;color: #0c96f1;">已绑定</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+											审核中</div>
+									</div>
+									<div v-else>
+										<div class="a35"
+											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+											@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
+										<div @click="bank_vis= true" class="a35"
+											v-else-if="shopObj.open_h_store_account=='c'"
+											style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+											审核中</div>
+									</div>
+
 								</div>
 							</div>
 							<div v-if="shopObj.type=='a'" class="a33">
