@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watchEffect, nextTick, onMounted, reactive, inject } from 'vue'
+    import { ref, watchEffect, nextTick, onMounted, reactive, inject, defineProps } from 'vue'
     import axios from 'axios'
     import md5 from 'blueimp-md5'
     import JsBarcode from 'jsbarcode'
@@ -11,6 +11,17 @@
         visJc.value = false
         emit('djtzmk', str, strTwo, strThree)
     }
+
+    const props = defineProps({
+        details: {
+            type: Object,
+        }
+    });
+    setTimeout(() => {
+        console.log('接收到的参数', props.details); //接收到的订单详情数据
+    }, 2000);
+
+
     // 所有可用地址
     const addressList = ref([])
     function getStoreAddressList() {
@@ -58,17 +69,17 @@
     }
     // 刷新
     function sure() {
-        window.location.reload();
-        // if (!LODOP) { 
-        //     azqk.value = 'lodop未安装'
-        //     console.log('lodop未安装');
-        //     clearInterval(intervalId); // 停止定时器
-        //     LODOP = getLodop()
-        // } else {
-        //     console.log('lodop已安装');
-        //     azqk.value = 'lodop已安装'
-        //     clearInterval(intervalId); // 停止定时器
-        // }
+        // window.location.reload();
+        if (!LODOP) {
+            azqk.value = 'lodop未安装'
+            console.log('lodop未安装');
+            clearInterval(intervalId); // 停止定时器
+            LODOP = getLodop()
+        } else {
+            console.log('lodop已安装');
+            azqk.value = 'lodop已安装'
+            clearInterval(intervalId); // 停止定时器
+        }
     }
 
     function dy() {
@@ -155,17 +166,17 @@
         partnerId: 'J00868317776', // 电子面单客户账户或月结账号，需贵司向当地快递公司网点申请（参考电子面单申请指南）； 是否必填该属性，
         partnerKey: 'St0Hu2j9',//电子面单账户密码
         kuaidicom: 'jtexpress',//
-        recMan: {
-            name: '李四',
-            mobile: '13900000001', // 注意是字符串
-            printAddr: '北京市海淀区长北京市海淀区长春桥路春桥路北京市海淀区长春桥路', // 注意是字符串
+        recMan: {  //收件人
+            name: '',
+            mobile: '', // 注意是字符串
+            printAddr: '', // 注意是字符串
         },
-        sendMan: {
-            name: '张三',
-            mobile: '13900000000', // 注意是字符串
-            printAddr: '北京市海淀区长北京市海淀区长春', // 注意是字符串
+        sendMan: { //发件人
+            name: '',
+            mobile: '', // 注意是字符串
+            printAddr: '', // 注意是字符串
         },
-        cargo: '350ml苏打水 原味-恒大 604334534554345*24',
+        cargo: '',//商品数据
         count: 1,
         callBackUrl: '',
         weight: '1.5'
@@ -259,6 +270,22 @@
         try {
             const values = await formref.value.validateFields();
             console.log('Success:', values);
+            const obj = addressList.value.filter((item) => item.id == form.key1)
+            // console.log('obj', obj[0]);
+            // 设置收货地址和发货地址
+            paramObj.value.recMan = {
+                name: props.details.address_name,
+                mobile: props.details.address_mobile + '', // 注意是字符串
+                printAddr: props.details.address + '', // 注意是字符串
+            }
+            paramObj.value.sendMan = {
+                name: obj[0].sender_name,
+                mobile: obj[0].sender_mobile + '', // 注意是字符串
+                printAddr: obj[0].address + '', // 注意是字符串
+            }
+            props.details.goods_list.map((item) => {
+                paramObj.value.cargo = paramObj.value.cargo + item.goods_name + ' ' + item.size_name
+            })
             visible.value = false
             visJc.value = true
         } catch (errorInfo) {
@@ -388,18 +415,18 @@
         <a-modal v-model:visible="visPrint" title="打印快递单" :footer="null" width="800px">
             <div>
                 <div>
-                    <div style="display: flex;align-items: center;">
+                    <!-- <div style="display: flex;align-items: center;">
                         <div style="width: 100px;">快递名称</div>
                         <a-select ref="select" v-model:value="kdmc" placeholder="请选择快递"
                             style="width: 200px;margin-right: 10px;">
                             <a-select-option :value="item" v-for="item in ['中通快递','顺丰快递','顺丰同城','极兔速递']"
                                 :key="item">{{item}}</a-select-option>
                         </a-select>
-                    </div>
-                    <div style="display: flex;margin-top: 10px;">
+                    </div> -->
+                    <!-- <div style="display: flex;margin-top: 10px;">
                         <div style="width: 100px;">面单余额</div>
                         <div>33</div>
-                    </div>
+                    </div> -->
                     <div style="display: flex;align-items: center;margin-top: 10px;">
                         <div style="width: 100px;">选择打印机</div>
                         <div>
@@ -411,24 +438,20 @@
                         </div>
                         <div @click="yldyj">关于打印设置</div>
                     </div>
-                    <!-- <div style="display: flex;align-items: center;margin-top: 10px;">
-                        <div style="width: 100px;">设置打印机</div>
-                        <div @click="yldyj">点击进行打印设置</div>
-                    </div> -->
                     <table class="table_two" style="margin-top: 10px;">
                         <tr style="white-space:nowrap">
                             <th scope="col">收件人</th>
                             <th scope="col">联系方式</th>
                             <th scope="col">收件地址</th>
                             <th scope="col">备注</th>
-                            <th scope="col">快递单号</th>
+                            <th scope="col">快递单号(暂无)</th>
                         </tr>
                         <tr>
-                            <td>张三</td>
-                            <td>18481020570</td>
-                            <td>中国 福建省福州市鼓楼区</td>
-                            <td>备注1备注111</td>
-                            <td>12321312312312</td>
+                            <td>{{details.address_name}}</td>
+                            <td>{{details.address_mobile}}</td>
+                            <td>{{details.address}}</td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     </table>
                 </div>

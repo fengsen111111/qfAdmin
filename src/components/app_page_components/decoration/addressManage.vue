@@ -52,6 +52,8 @@
 	const formState = reactive({
 		xx1: '',
 		xx2: '',
+		xx3: '',
+		xx4: '',
 	});
 	const dzmd_obj = {}
 	const formRef = ref(null);
@@ -90,8 +92,8 @@
 				.post('decoration/StoreAddress/editStoreAddress', {
 					id: dzmd_obj.value ? dzmd_obj.value.id : '',//ID  修改时必传  
 					delete_status: 'N',//Y 已删除  N未删除(删除时传这个id和这个参数)  
-					sender_name: '',//发货人
-					sender_mobile: '',//发货电话
+					sender_name: values.xx3,//发货人
+					sender_mobile: values.xx4,//发货电话
 					address: values.xx2,//发货地址
 					area_id: values.xx1[2],//所在地id
 					street_address: str,//所在地名称
@@ -275,12 +277,16 @@
 			<div>
 				<table class="table_two">
 					<tr class="bg83colwhite">
+						<th scope="col">发货人</th>
+						<th scope="col">联系电话</th>
 						<th scope="col">所在地区</th>
 						<th scope="col">详细地址</th>
 						<th scope="col">状态</th>
 						<th scope="col">编辑</th>
 					</tr>
 					<tr v-for="item in dzmdfhdz" :key="item.id">
+						<td>{{item.sender_name}}</td>
+						<td>{{item.sender_mobile}}</td>
 						<td>{{item.street_address}}</td>
 						<td>{{item.address}}</td>
 						<td><a-switch v-model:checked="item.status" @change="onChange(item)" /></td>
@@ -295,6 +301,12 @@
 				<a-modal v-model:visible="fh_vis" title="电子面单发货地址" @ok="handleOk">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 						:wrapper-col="{ span: 16 }">
+						<a-form-item label="收件人" name="xx3" :rules="[{ required: true, message: '请输入收件人' }]">
+							<a-input v-model:value="formState.xx3" placeholder="请输入收件人" />
+						</a-form-item>
+						<a-form-item label="手机号" name="xx4" :rules="[{ required: true, message: '请填写手机号!' }]">
+							<a-input v-model:value="formState.xx4" placeholder="请填写手机号" />
+						</a-form-item>
 						<a-form-item label="选择地区" name="xx1" :rules="[{ required: true, message: '请选择地区!' }]">
 							<a-cascader v-model:value="formState.xx1" :options="treeData" placeholder="请选择地区" />
 						</a-form-item>

@@ -342,7 +342,7 @@
 						style="border: 1px solid #0c96f1;background-color: #e7edfd;border-radius: 4px;padding: 2px 10px;color: #0c96f1;margin-left: 30px;">
 						打印
 					</div> -->
-					<Print />
+					<Print :details = orderDetails />
 				</div>
 			</div>
 		</div>

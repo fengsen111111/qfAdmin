@@ -29,7 +29,7 @@
     });
   }
 
-  const type = ref('平台')
+  const type = ref('')
 
   watch(() => type.value, (newVal, oldVal) => {
     if (newVal == '平台') {
@@ -166,14 +166,37 @@
         getArticleStarTopList() // 获取作品点赞排行列表
         getArticleStarTopListVideo()  //获取视频点赞排行列表
 
-        getNewGoodsNotices()// 获取平台新商品提醒列表
-        readNewGoodsNotice()// 阅读商家新订单提醒列表
+        // getNewGoodsNotices()// 获取平台新商品提醒列表
+        // readNewGoodsNotice()// 阅读商家新订单提醒列表
       } else {
-        getNewOrderNotices()//获取商家新订单提醒列表
-        readNewOrderNotice()//阅读商家新订单提醒列表
+        // getNewOrderNotices()//获取商家新订单提醒列表
+        // readNewOrderNotice()//阅读商家新订单提醒列表
       }
     })
   }
+
+  const timer = ref(null)
+  function tongzhi() {
+    if (type.value == '平台') {
+      getNewGoodsNotices();// 获取平台新商品提醒列表
+    } else {
+      getNewOrderNotices();//获取商家新订单提醒列表
+    }
+  }
+
+
+  const is_btn = ref(false);
+  // 轮询订单
+  function cliTz() {
+    is_btn.value = true;
+    if (!timer.value) { // 防止重复创建定时器
+      // timer.value = setInterval(tongzhi, 10000);
+      timer.value = setTimeout(tongzhi, 10000);
+    }
+  }
+
+  import { notification } from 'ant-design-vue';
+  // const audio = new Audio('/resource/audio/order_notice.mp3'); // 音频路径建议放在 public 或 static 目录下
   getCustomerRoomList() //执行
   // 获取商家新订单提醒列表
   function getNewOrderNotices() {
@@ -181,32 +204,58 @@
       store_id: store_id.value
     }, global, true).then((res) => {
       console.log('获取商家新订单提醒列表', res);
+      if (res.count > 0) {
+        notification.open({
+          message: '您有新的订单待处理',
+          description: '您有新的订单待处理,请前往订单管理发货商品！',
+          onClick: () => {
+            console.log('确定!');
+          },
+        });
+        console.log('开始播放音频');
+        const audio = document.getElementById('myAudio');
+        audio.play();
+        audio.muted = false;
+      }
     })
   }
   // 阅读商家新订单提醒列表
-  function readNewOrderNotice() {
-    global.axios.post('decoration/StoreMsg/readNewOrderNotice', {
-      store_id: store_id.value
-    }, global, true).then((res) => {
-      console.log('阅读商家新订单提醒列表', res);
-    })
-  }
+  // function readNewOrderNotice() {
+  //   global.axios.post('decoration/StoreMsg/readNewOrderNotice', {
+  //     store_id: store_id.value
+  //   }, global, true).then((res) => {
+  //     console.log('阅读商家新订单提醒列表', res);
+  //   })
+  // }
   // 获取平台新商品提醒列表
   function getNewGoodsNotices() {
     global.axios.post('decoration/Goods/getNewGoodsNotices', {
       store_id: store_id.value
     }, global, true).then((res) => {
       console.log('获取平台新商品提醒列表', res);
+      if (res.count > 0) {
+        notification.open({
+          message: '您有新的商品待审核',
+          description: '您有新的商品待审核，请前往商品管理审核!',
+          onClick: () => {
+            console.log('确定!');
+          },
+        });
+        console.log('开始播放音频');
+        const audio = document.getElementById('myAudio');
+        audio.play();
+        audio.muted = false;
+      }
     })
   }
   // 阅读商家新订单提醒列表
-  function readNewGoodsNotice() {
-    global.axios.post('decoration/Goods/readNewGoodsNotice', {
-      store_id: store_id.value
-    }, global, true).then((res) => {
-      console.log('阅读商家新订单提醒列表', res);
-    })
-  }
+  // function readNewGoodsNotice() {
+  //   global.axios.post('decoration/Goods/readNewGoodsNotice', {
+  //     store_id: store_id.value
+  //   }, global, true).then((res) => {
+  //     console.log('阅读商家新订单提醒列表', res);
+  //   })
+  // }
 
   const tjzd = ref({})//统计字段
   function tamplateSta() {
@@ -278,6 +327,8 @@
     })
   }
 
+
+
 </script>
 <template>
   <div>
@@ -287,6 +338,17 @@
     </div> -->
     <!-- <div>自己商家id：{{store_id}}</div>
     <div>平台id：{{global.adminMsg.id}}</div> -->
+    <div style="position: fixed;top: 15px;right: 205px;width: 100px;height: 100px;z-index: 999;text-align: right;">
+      <a-button @click="cliTz" type="primary">{{is_btn ? '已打开' : '打开通知'}}</a-button>
+      <div v-show="false">
+        <audio controls id="myAudio">
+          <source
+            src="https://beverage-upload.oss-cn-chengdu.aliyuncs.com/rich_text_file/2025218/66cde77qgj5acvb38u9tvtfu14edpr8s.mp3"
+            type="audio/mpeg">
+          您的浏览器不支持 audio 元素。
+        </audio>
+      </div>
+    </div>
     <div v-if="type=='商家'">
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
