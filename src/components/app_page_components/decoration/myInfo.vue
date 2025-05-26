@@ -927,6 +927,9 @@
 			})
 	}
 	setTimeout(() => {
+		if(global.adminMsg.id==-1){
+			return false //超管登录
+		}
 		webGetStoreMoneySta()
 		webGetStoreMoneyLog()
 	}, 1500);

@@ -89,6 +89,9 @@
     );
     setTimeout(() => {
       console.log('global.adminMsg.id', global.adminMsg.id);
+      if(global.adminMsg.id==-1){
+        return false //超管登录
+      }
       if (global.adminMsg.id.length == 1) {
         // 超管id
         type.value = "平台"
