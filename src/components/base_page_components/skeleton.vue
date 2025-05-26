@@ -89,12 +89,12 @@
     );
     setTimeout(() => {
       console.log('global.adminMsg.id', global.adminMsg.id);
-      if (global.adminMsg.id.length==1) {
+      if (global.adminMsg.id.length == 1) {
         // 超管id
         type.value = "平台"
         return false
       } else {
-         type.value = "商家"
+        type.value = "商家"
         toShopDetails()//前往店铺详情
         _getUnReadStoreMsgNum()//获取未读商家消息数
       }
@@ -461,29 +461,40 @@
   }
 
   // 获取商家新订单提醒列表 
-  function _getNewOrderNotices(){
+  function _getNewOrderNotices() {
     global.axios
       .post('decoration/StoreMsg/getNewOrderNotices', {
-        store_id:localStorage.getItem('storeId')
+        store_id: localStorage.getItem('storeId')
       }, global)
       .then((res) => {
         console.log('获取商家新订单提醒列表', res);
       })
-  }  
+  }
   // 平台阅读商家新商品提醒列表 
-  function _getNewGoodsNotices(){
+  function _getNewGoodsNotices() {
     global.axios
       .post('decoration/Goods/getNewGoodsNotices', {}, global)
       .then((res) => {
         console.log('平台阅读商家新商品提醒列表', res);
       })
   }
+
+  const timer = ref(null)
+
   setTimeout(() => {
-    if(type.value=='平台'){
-      _getNewGoodsNotices()
-    }else{
-      _getNewOrderNotices()
-    }
+    clearInterval(timer);
+    timer = setInterval(() => {
+      if (type.value == '平台') {
+        _getNewGoodsNotices();
+      } else {
+        _getNewOrderNotices();
+      }
+    }, 5000);
+    // if (type.value == '平台') {
+    //   _getNewGoodsNotices()
+    // } else {
+    //   _getNewOrderNotices()
+    // }
   }, 1500);
 
   const msgList = ref([])
@@ -501,7 +512,7 @@
   }
   const sjwdfxxs = ref(0)
   // 获取未读商家消息数
-  function _getUnReadStoreMsgNum(){
+  function _getUnReadStoreMsgNum() {
     global.axios
       .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
       .then((res) => {
@@ -510,8 +521,8 @@
       })
   }
   // 查看商家消息详情
-  function lookDetails(item){
-    console.log('点击的消息',item);
+  function lookDetails(item) {
+    console.log('点击的消息', item);
     // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
   }
 </script>
@@ -653,9 +664,9 @@
       <!-- 固定标 -->
       <div v-if="type=='商家'" style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
-          <div>
+          <!-- <div>
             <Print @djtzmk="djtzmk" />
-          </div>
+          </div> -->
           <!-- BellOutlined,MailOutlined,MessageOutlined -->
           <a-badge :count="sjwdfxxs">
             <div @click="openVis(1)"
@@ -702,14 +713,15 @@
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
                     <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规 </div>
-                      <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''"
+                    <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知 </div>
-                      <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
+                    <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广 </div>
                   </div>
                   <div style="width: 80%;">
                     <div>
-                      <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id" style="padding: 5px 20px;">
+                      <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id"
+                        style="padding: 5px 20px;">
                         <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
                             <div style="font-weight: bold;">{{item.title}}</div>
