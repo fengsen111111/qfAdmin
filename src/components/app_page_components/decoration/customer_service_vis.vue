@@ -730,9 +730,9 @@
     const scrollTop = scrollContainer.scrollTop;
     const scrollHeight = scrollContainer.scrollHeight;
     const clientHeight = scrollContainer.clientHeight;
-    if (scrollTop + clientHeight >= scrollHeight) {
-      getCustomerRoomList()
-    }
+    // if (scrollTop + clientHeight >= scrollHeight) {
+    //   getCustomerRoomList()
+    // }
   };
   //  -------------------------------------消息窗滚动到顶部------------------------------------
   const scrolledToTop = ref(false);
@@ -1076,8 +1076,8 @@
       <div class="content" v-else>
       </div>
       <!-- 弹窗 -->
-      <a-modal v-model:visible="customer_service_state.isCollapse" :centered="true" :closable="false"
-        @ok="customer_service_state.isCollapse = false" :keyboard="false" :maskClosable="false">
+      <a-modal v-model:visible="customer_service_state.isCollapse" 
+        @cancel="customer_service_state.isCollapse = false" :footer="null">
         <div style="padding: 20px;width: 100%">
           <img :src="customer_service_state.now_image" style="width:100%;height: auto" alt="">
         </div>

@@ -453,6 +453,23 @@
 					console.log('res汇付开通结果', res);
 					message.success('操作成功')
 					hf_vis.value = false
+					formState.reg_name = '' //企业名称 
+					formState.license_code = ''//营业执照编号
+					formState.license_begin_date = ''//营业执照有效期起始日期
+					formState.license_validity_type = '0'//营业执照有效期  1长期有效  0非长期有效
+					formState.license_end_date = ''//营业执照有效期结束日期 非长期有效必填 
+					// reg_prov_id=''//注册地址(省)
+					// reg_area_id=''//注册地址(市)
+					// reg_district_id=''//注册地址(区)
+					formState.regAddress = ''//注册地址
+					formState.reg_detail = ''//注册地址(详细信息) 
+					formState.legal_name = ''//法人姓名
+					formState.legal_cert_np = ''//法人身份证号码
+					formState.legal_cert_begin_date = ''//身份证有效期开始时间  
+					formState.legal_cert_validity_type = '0'//身份证有效期  1长期有效  0非长期有效 
+					formState.legal_cert_end_date = ''//身份证有效期结束时间 非长期有效必填  
+					formState.contract_name = ''//联系人姓名 
+					formState.contract_mobile = ''//联系人手机号  
 					_shopInfo()
 				})
 			})
@@ -505,17 +522,32 @@
 				// 执行提交逻辑
 				let params = values
 				params.prov_id = params.regAddress[0]
-				params.reg_area_id = params.regAddress[1]
+				params.area_id = params.regAddress[1]
 				delete params.regAddress //删除注册地址，这个是自己的字段
 				params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
 				if (params.legal_cert_end_date) {
 					params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
 				}
 				console.log('处理后的params', params);
-				global.axios.post('decoration/Setting/bindHBank', params, global, true).then((res) => {
+				global.axios.post('decoration/Setting/bindHBank', {
+					...params,
+					type: 'store'
+				}, global, true).then((res) => {
 					console.log('res绑定商家提现银行卡', res);
 					message.success('操作成功')
 					bank_vis.value = false
+					formStateBank.type = 'store' //store商家 user用户 
+					formStateBank.card_name = ''//卡户名
+					formStateBank.card_no = ''//卡号 商家对公，个人对私
+					formStateBank.regAddress = ''//银行所在地址
+					// prov_id=''//银行所在(省)
+					// area_id=''//银行所在(市)
+					formStateBank.bank_code = ''//银行号 商家绑定对公银行卡时必填
+					formStateBank.branch_code = ''//支行联行号 商家绑定对公银行卡时必填
+					formStateBank.cert_no = ''//持卡人身份证号码 用户绑定对私银行卡时必填 
+					formStateBank.legal_cert_validity_type = '0'//持卡人身份证有效期  1长期有效  0非长期有效；用户绑定对私银行卡时必填
+					formStateBank.legal_cert_begin_date = ''//持卡人身份证有效期开始时间 用户绑定对私银行卡时必填
+					formStateBank.legal_cert_end_date = ''//持卡人身份证有效期结束时间 非长期有效必填；用户绑定对私银行卡时必填  
 					_shopInfo()
 				})
 			})
@@ -649,6 +681,7 @@
 		// 曝光量
 		if (allcz_type.value == 1) {
 			cz_type.value = 'bgl'
+			bgl_vis.value = false//关闭弹窗
 			global.axios
 				.post('decoration/PowerLevel/buyPower', {
 					handle_type: 'store',
@@ -737,6 +770,7 @@
 
 	// 添加分类
 	function addFlbzj() {
+		typeVal.value = ''
 		add_type_vis.value = true
 	}
 	// 添加分类确定
@@ -1051,9 +1085,11 @@
 								<div v-else>
 									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
 										style="cursor: pointer;color: #0c96f1;">点击开通</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
+										style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
 									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-										style="cursor: pointer;color: #0c96f1;">已开通</div>
-									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+										style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">银行卡审核中</div>
 								</div>
 							</div>
 
@@ -1065,11 +1101,10 @@
 										<div class="a35"
 											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
 											@click="bank_vis= true" style="cursor: pointer;color: #ff0000;">暂未绑定</div>
-										<div class="a35"
-											v-else-if="shopObj.open_h_store_account=='c'"
-											style="cursor: pointer;color: #0c96f1;">已绑定</div>
+										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+											style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
 										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-											审核中</div>
+											银行卡审核中</div>
 									</div>
 									<div v-else>
 										<div class="a35"
@@ -1644,6 +1679,7 @@
 							<div>
 								<span v-if="item.type=='f'||item.type=='g'">{{item.order_id}}</span>
 								<span v-else></span>
+								<!-- {{item.order_id}} -->
 							</div>
 							<div>
 								<span v-if="item.type=='b'">商家余额充值</span>

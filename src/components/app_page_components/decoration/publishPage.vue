@@ -362,7 +362,7 @@
       console.log('新增不要曝光量字段');
       delete post_params.power
     }
-    post_params.status = post_params.status ? 'Y' : 'N',
+    post_params.status = post_params.status ? 'N' : 'Y',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
@@ -390,12 +390,26 @@
     delete post_params.power_end_time
     delete post_params.power
     console.log('post_params', post_params);
-    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
+    // , 'carriage_id'  运费模板不检索
+    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
       // console.error('表单未填写完整');
       message.error('表单未填写完整')
       return false
     }
+
+    const goodsSizes = post_params.goods_sizes;
+    const incompleteItems = goodsSizes.filter(item => {
+      return !item.name || !item.price || !item.stock || !item.commission;
+    });
+    if (incompleteItems.length > 0) {
+      console.log('以下规格未填写完整：', incompleteItems);
+      message.error('表单未填写完整')
+      return false
+    } else {
+      console.log('所有规格已填写完整');
+    }
+
     loading()
     global.axios
       .post('decoration/Goods/webAddGoods', post_params, global)
@@ -1039,7 +1053,7 @@
         </div>
       </div>
       <div class="a3">
-        <div style="width: 15%;">
+        <div style="width: 15%;overflow: auto;height: 84vh;">
           <div class="a4">
             <div class="a5">
               商品填写建议
@@ -1624,18 +1638,22 @@
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name"
+                                    placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock"
+                                    placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>
                                 <template v-if="shopGuige[1].labelValue=='name'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name" placeholder="请输入名称" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name"
+                                    placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock" placeholder="请输入库存" />
+                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock"
+                                    placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>

@@ -207,7 +207,7 @@
 						</div> -->
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">收货时间：</div>
-							<div style="color: black;">{{orderDetails.over_time}}</div>
+							<div style="color: black;">{{orderDetails.over_time=='0'?'暂无':orderDetails.over_time}}</div>
 						</div>
 					</div>
 					<!-- <div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">

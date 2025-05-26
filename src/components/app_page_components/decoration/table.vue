@@ -542,6 +542,8 @@
 
   //清空搜索
   function emptySearch() {
+    console.log('重置',table_state.searchStructure);
+    
     table_state.searchStructure.forEach((item, index) => {
       if (table_state.searchStructure[index]["component"] == "Cascader")
         table_state.searchStructure[index]["value"] = [];

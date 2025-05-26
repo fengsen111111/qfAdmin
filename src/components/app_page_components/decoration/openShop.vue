@@ -273,7 +273,15 @@
 			message.error('请上传门店logo')
 			return false
 		}
-		if (!id_card_images.value || id_card_images.value.length != 2) {
+		// if (!id_card_images.value || id_card_images.value.length != 2) {
+		// 	message.error('请检查身份证照片信息')
+		// 	return false
+		// }
+		if (!id_card_images.value[0]) {
+			message.error('请检查身份证照片信息')
+			return false
+		}
+		if (!id_card_images.value[1]) {
 			message.error('请检查身份证照片信息')
 			return false
 		}
