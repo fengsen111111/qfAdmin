@@ -458,9 +458,6 @@
 					formState.license_begin_date = ''//营业执照有效期起始日期
 					formState.license_validity_type = '0'//营业执照有效期  1长期有效  0非长期有效
 					formState.license_end_date = ''//营业执照有效期结束日期 非长期有效必填 
-					// reg_prov_id=''//注册地址(省)
-					// reg_area_id=''//注册地址(市)
-					// reg_district_id=''//注册地址(区)
 					formState.regAddress = ''//注册地址
 					formState.reg_detail = ''//注册地址(详细信息) 
 					formState.legal_name = ''//法人姓名
@@ -540,14 +537,14 @@
 					formStateBank.card_name = ''//卡户名
 					formStateBank.card_no = ''//卡号 商家对公，个人对私
 					formStateBank.regAddress = ''//银行所在地址
-					// prov_id=''//银行所在(省)
-					// area_id=''//银行所在(市)
+					// prov_id= ''//银行所在(省)
+					// area_id= ''//银行所在(市)
 					formStateBank.bank_code = ''//银行号 商家绑定对公银行卡时必填
 					formStateBank.branch_code = ''//支行联行号 商家绑定对公银行卡时必填
-					formStateBank.cert_no = ''//持卡人身份证号码 用户绑定对私银行卡时必填 
-					formStateBank.legal_cert_validity_type = '0'//持卡人身份证有效期  1长期有效  0非长期有效；用户绑定对私银行卡时必填
-					formStateBank.legal_cert_begin_date = ''//持卡人身份证有效期开始时间 用户绑定对私银行卡时必填
-					formStateBank.legal_cert_end_date = ''//持卡人身份证有效期结束时间 非长期有效必填；用户绑定对私银行卡时必填  
+					formStateBankcert_no = ''//持卡人身份证号码 用户绑定对私银行卡时必填 
+					legal_cert_validity_type = '0'//持卡人身份证有效期  1长期有效  0非长期有效；用户绑定对私银行卡时必填
+					legal_cert_begin_date = ''//持卡人身份证有效期开始时间 用户绑定对私银行卡时必填
+					legal_cert_end_date = ''//持卡人身份证有效期结束时间 非长期有效必填；用户绑定对私银行卡时必填  
 					_shopInfo()
 				})
 			})

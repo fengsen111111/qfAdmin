@@ -84,6 +84,7 @@
 			.then((res) => {
 				console.log('提交退店', res);
 				visible.value = false
+				message.success('操作成功')
 				getOutMsg()
 			});
 	}
@@ -184,6 +185,32 @@
 		// message.error('功能暂未开通')
 		global.router.push('/ruleCenter?title=学习中心')
 	}
+
+	// 取消退店
+	function _closeOutApply() {
+		if (shopStatus.value.out_process == 'a') {
+			message.error('当前未申请退店')
+			return false
+		}
+		global.axios
+			.post('decoration/Store/closeOutApply', {
+				store_id: store_id.value
+			}, global)
+			.then((res) => {
+				// message.success('操作成功')
+				global.Modal.confirm({
+					title: global.findLanguage(
+						"操作成功？是否返回上一页！"
+					),
+					okText: global.findLanguage("确定"),
+					cancelText: global.findLanguage("取消"),
+					okType: "primary",
+					onOk: function () {
+						emit("closeChildPage", pageData.page_key);
+					},
+				});
+			});
+	}
 </script>
 
 <template>
@@ -269,6 +296,8 @@
 								<div style="margin-top: 20px;display: flex;">
 									<div style="margin: 0 auto;">
 										<a-button @click="handTo" type="primary">下一步</a-button>
+										<a-button @click="_closeOutApply" type="primary" danger
+											style="margin-left: 20px;">取消退店</a-button>
 									</div>
 								</div>
 								<!-- 弹框 -->
@@ -309,7 +338,8 @@
 											<div
 												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
 											</div>
-											<div>在退店环节中如有任何疑问可参考<span @click="qftdlcsm" style="color: #1890FF;">《圈风退店流程说明及常见问题》</span>;
+											<div>在退店环节中如有任何疑问可参考<span @click="qftdlcsm"
+													style="color: #1890FF;">《圈风退店流程说明及常见问题》</span>;
 											</div>
 										</div>
 										<div style="font-size: 16px;">
