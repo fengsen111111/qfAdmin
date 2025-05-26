@@ -727,6 +727,7 @@
 		} else if (allcz_type.value == 2) {
 			// 充值
 			cz_type.value = 'sjcz'
+			bgl_vis.value = false//关闭弹窗
 			global.axios
 				.post('decoration/User/charge', {
 					target_type: 'store',
