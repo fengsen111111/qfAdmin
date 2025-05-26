@@ -442,15 +442,15 @@
       if (value === undefined || value === null || value === '') {
         // console.warn(`字段 ${field} 是必填项`);
         // ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
-        if(field=='name'){
+        if (field == 'name') {
           message.error('商品名称未填写')
-        }else if(field=='cover_image'){
+        } else if (field == 'cover_image') {
           message.error('商品封面图未填写')
-        }else if(field=='images'){
+        } else if (field == 'images') {
           message.error('商品轮播图未填写')
-        }else if(field=='brand_id'){
+        } else if (field == 'brand_id') {
           message.error('商品品牌未选择')
-        }else if(field=='carriage_id'){
+        } else if (field == 'carriage_id') {
           message.error('运费模板未选择')
         }
         return false;
@@ -809,7 +809,8 @@
       })
   }
 
-  const pay_Obj = ref({})//分类保证金支付数据
+  const pay_Obj = ref({})//保证金支付数据
+  const type_Pay = ref({})
   // 当前分类保证金缴纳情况
   function payTypePrices() {
     global.axios
@@ -819,6 +820,7 @@
       }, global)
       .then((res) => {
         console.log('分类保证金缴纳情况', res);
+        type_Pay.value = res
         pay_Obj.value = res
         if (res.pay_info) {
           pay_Obj.value.trans_amt = Number(pay_Obj.value.trans_amt).toFixed(2)
@@ -897,24 +899,41 @@
   const minute = ref('05');
   const second = ref('00');
   const cz_type = ref('')//dpbzj 店铺保证金  flbzj 分类保证金
+  const codeGq = ref(false);//二维码没失效
   // 支付倒计时
   const updateTime = () => {
+    codeGq.value = false
     const mins = Math.floor(totalSeconds.value / 60);
     const secs = totalSeconds.value % 60;
     minute.value = String(mins).padStart(2, '0');
     second.value = String(secs).padStart(2, '0');
+    // if (totalSeconds.value < 290) {
+    //   codeGq.value = true
+    // }
     if (totalSeconds.value > 0) {
       totalSeconds.value--;
     } else {
       clearInterval(timer.value);
       // 倒计时结束后的处理逻辑
       console.log('倒计时结束,二维码过期,清除二维码，关闭弹窗');
-      qrCodeData.value = ''
-      pay_info_Vis.value = false//
-      isPay.value = false//
+      // qrCodeData.value = ''
+      // pay_info_Vis.value = false//
+      // isPay.value = false//
+      codeGq.value = true
     }
   };
-  // 打开弹窗
+
+  // 刷新二维码
+  function sxewm() {
+    console.log('当前二维码类型', cz_type.value);
+    // cz_type    //dpbzj 店铺保证金  flbzj 分类保证金
+    if (cz_type.value == 'dpbzj') {
+      czbzj()
+    } else if (cz_type.value == 'flbzj') {
+      handPay()
+    }
+  }
+  // 打开弹窗 分类保证金
   function handPay() {
     pay_Obj.value = {}//清除支付数据重新生成
     pay_info_Vis.value = false//关闭下面那个弹框
@@ -984,7 +1003,7 @@
   //   emit('toShopInfo')
   // }
 
-  // 点击直接缴纳版
+  // 点击直接缴纳版 店铺保证金
   function czbzj() {
     pay_Obj.value = {}//清除支付数据重新生成
     pay_info_Vis.value = false//关闭下面那个弹框
@@ -1109,10 +1128,10 @@
               <span @click="editType()" class="a16">修改分类</span>
             </div>
             <!-- 没给钱才有 -->
-            <div v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="a20">
+            <div v-if="type_Pay.pay_info||shopObj.deposit_money>0" class="a20">
               <ExclamationCircleOutlined class="a21" />
-              <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-              <span v-if="pay_Obj.pay_info" class="c22" @click="handPay()">去缴纳</span>
+              <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
+              <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
               <span
                 v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
               <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
@@ -1930,7 +1949,12 @@
                   </li>
                 </ul>
                 <div class="payContent">
-                  <img :src="qrCodeData" alt="支付二维码" />
+                  <!-- <img :src="qrCodeData" alt="支付二维码" /> -->
+                  <img :src="qrCodeData" alt="支付二维码" :style="{opacity: codeGq?'0.1':'1'}" />
+                  <div v-if="codeGq" style="position: relative;top: -100px;color: #000000;">
+                    二维码已失效
+                    <div style="color: #ff0000;cursor: pointer;" @click="sxewm">刷新</div>
+                  </div>
                   <div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
                   </div>
                 </div>

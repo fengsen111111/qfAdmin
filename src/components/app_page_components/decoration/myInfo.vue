@@ -596,29 +596,51 @@
 						});
 					isPay.value = true
 					timer.value = setInterval(updateTime, 1000);
-				}
+				} 
 			})
 	}
 	let timer = ref(null);
 	const totalSeconds = ref(5 * 60); // 5 分钟
 	const minute = ref('05');
 	const second = ref('00');
+	const codeGq = ref(false);//二维码没失效
 	// 支付倒计时
 	const updateTime = () => {
+		codeGq.value = false
 		const mins = Math.floor(totalSeconds.value / 60);
 		const secs = totalSeconds.value % 60;
 		minute.value = String(mins).padStart(2, '0');
 		second.value = String(secs).padStart(2, '0');
+		// if (totalSeconds.value <290) {
+		// 	codeGq.value = true
+		// }
 		if (totalSeconds.value > 0) {
 			totalSeconds.value--;
 		} else {
 			clearInterval(timer.value);
 			// 倒计时结束后的处理逻辑
 			console.log('倒计时结束');
-			qrCodeData.value = ''
-			isPay.value = false//
+			// qrCodeData.value = ''
+			codeGq.value = true
+			// isPay.value = false//
 		}
 	};
+
+	// 刷新二维码
+	function sxewm(){
+		console.log('当前二维码类型',cz_type.value);
+		// cz_type    bzj 保证金 bgl 曝光量 flbzj 分类保证金 sjcz 商家充值
+		// allcz_type  1曝光量2商家充值3商家提现
+		if(cz_type.value=='bzj'){
+			payBzj()
+		}else if(cz_type.value=='bgl'){
+			bglOk()
+		}else if(cz_type.value=='flbzj'){
+			handTypeOk()
+		}else if(cz_type.value=='sjcz'){
+			bglOk()
+		}
+	}
 	const dateFormat = ref('YYYY/MM/DD')
 
 	// 查询支付结果
@@ -1751,7 +1773,11 @@
 						</li>
 					</ul>
 					<div class="payContent">
-						<img :src="qrCodeData" alt="支付二维码" />
+						<img :src="qrCodeData" alt="支付二维码" :style="{opacity: codeGq?'0.1':'1'}" />
+						<div v-if="codeGq" style="position: relative;top: -100px;color: #000000;">
+							二维码已失效
+							<div style="color: #ff0000;cursor: pointer;" @click="sxewm">刷新</div>
+						</div>
 						<div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
 						</div>
 					</div>
