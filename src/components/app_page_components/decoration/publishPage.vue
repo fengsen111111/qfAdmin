@@ -330,12 +330,8 @@
       });
   }
 
-  let spinning = ref(false) //加载状态
   function loading() {
-    spinning.value = true
-    setTimeout(() => {
-      spinning.value = false
-    }, 1000);
+    console.log('加载');
   }
   // 提交商品数据
   function tjShopData() {
@@ -390,11 +386,11 @@
     delete post_params.power_end_time
     delete post_params.power
     console.log('post_params', post_params);
-    // , 'carriage_id'  运费模板不检索
-    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id']; //需要检索的字段
+    //   运费模板不检索
+    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
       // console.error('表单未填写完整');
-      message.error('表单未填写完整')
+      // message.error('表单未填写完整')
       return false
     }
 
@@ -404,7 +400,7 @@
     });
     if (incompleteItems.length > 0) {
       console.log('以下规格未填写完整：', incompleteItems);
-      message.error('表单未填写完整')
+      message.error('商品规格未填写完整')
       return false
     } else {
       console.log('所有规格已填写完整');
@@ -415,7 +411,6 @@
       .post('decoration/Goods/webAddGoods', post_params, global)
       .then((res) => {
         console.log('提交数据结果', res);
-        // message.success('操作成功');
         if (props.pageData.data.id) {
           global.Modal.confirm({
             title: global.findLanguage(
@@ -431,6 +426,7 @@
         } else {
           // 没有id就是新增商品
           // emit("closeChildPageTwo", pageData.page_key);
+          message.success('操作成功');
           setTimeout(() => {
             emit('editType')
           }, 2000);
@@ -444,7 +440,19 @@
     for (const field of requiredFields) {
       const value = post_params[field];
       if (value === undefined || value === null || value === '') {
-        console.warn(`字段 ${field} 是必填项`);
+        // console.warn(`字段 ${field} 是必填项`);
+        // ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
+        if(field=='name'){
+          message.error('商品名称未填写')
+        }else if(field=='cover_image'){
+          message.error('商品封面图未填写')
+        }else if(field=='images'){
+          message.error('商品轮播图未填写')
+        }else if(field=='brand_id'){
+          message.error('商品品牌未选择')
+        }else if(field=='carriage_id'){
+          message.error('运费模板未选择')
+        }
         return false;
       }
     }
@@ -1032,7 +1040,7 @@
 <template>
   <!--搜索-->
   <div>
-    <a-spin :spinning="spinning">
+    <div>
       <div class="wcdiv">
         <div class="a1">
           <div v-if="props.pageData.data.id">
@@ -1931,7 +1939,7 @@
           </a-modal>
         </div>
       </div>
-    </a-spin>
+    </div>
   </div>
   <!--导出-->
 </template>
