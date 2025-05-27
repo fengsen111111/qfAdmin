@@ -467,8 +467,11 @@
           detailsObj.value = {
             type: 'H5OrderPageIntegral',
             id: requestParams.order_id,
-            urlH5: 'https://h5.qfcss.cn/#/pages/my/components/orderListDetails/index?id=' + requestParams.order_id + '&identity=pc'
+            urlH5: 'https://h5.qfcss.cn/#/pages/my/components/orderListDetails/index?id=' + requestParams.order_id + '&identity=pc&token='+localStorage.getItem('Authorization')
           }
+          // console.log('detailsObj',detailsObj.value);
+          detailsVis.value = true//打开弹窗
+          return false
         } else {
           console.log('skeleton_state', skeleton_state);
           let page = skeleton_state.tags.filter((item) => item.checked_status == true)
