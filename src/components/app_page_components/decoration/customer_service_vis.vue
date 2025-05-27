@@ -225,7 +225,6 @@
       // 当前身份是商家,创建与平台客服的聊天
       if (store_id.value == global.adminMsg.id) {
         console.log('当前身份为平台客服！');
-        res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
         customer_service_state.room_list = res.list
         // 自动打开第一个人的聊天房间
         customer_service_state.room = res.list[0] //聊天房间
@@ -240,7 +239,6 @@
           if (res_two.room_id) {
             console.log('有平台房间，处理数据');
             console.log('与平台房间号', res_two.room_id);
-            res.list.sort((a, b) => new Date(a.update_time) - new Date(b.update_time));
             customer_service_state.room_list = res.list
             // 自动打开第一个人的聊天房间
             customer_service_state.room = res.list[0] //聊天房间
@@ -488,6 +486,12 @@
     }
   }
 
+  // 去除p 标签
+  function removePTagsIfOnlyText(html) {
+    const match = html.match(/^<p>([^<>]*)<\/p>$/i);
+    return match ? match[1] : html;
+  }
+
   //发送文字消息
   function send_word() {
     if (customer_service_state.connect_msg !== 'success') {
@@ -498,6 +502,8 @@
       message.warning('请输入内容！');
       return false
     }
+
+    customer_service_state.text_content = removePTagsIfOnlyText(customer_service_state.text_content)
     // 处理表情包
     const emojiMap = {};
     emojiData.forEach(group => {
@@ -509,7 +515,7 @@
       const url = emojiMap[`[${alt}]`];
       return url ? `<image src="${url}" style="width:18px;height:18px" />` : match;
     });
-
+    console.log('发送的消息内容', customer_service_state.text_content);
     send({
       content_type: 'text',
       content: customer_service_state.text_content,
@@ -550,7 +556,9 @@
     }, global, true).then((res) => {
       console.log('自动回复', res);
       // 自动回复了，加一条消息在下面
-      customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'text', content: res, joiner_sign: store_id.value })
+      if (res.length > 0) {
+        customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'text', content: res, joiner_sign: store_id.value })
+      }
     })
   }
 
@@ -561,7 +569,7 @@
       return false
     }
     customer_service_state.loading = true
-    global.file.uploadFile(global, options.file, customer_service_state.file_type, 'customer_service', true, send_resource_msg)
+    global.file.uploadFile(global, options.file, customer_service_state.file_type=='video'?'media':customer_service_state.file_type, 'customer_service', true, send_resource_msg)
   }
 
   //发送资源消息
@@ -1076,8 +1084,8 @@
       <div class="content" v-else>
       </div>
       <!-- 弹窗 -->
-      <a-modal v-model:visible="customer_service_state.isCollapse" 
-        @cancel="customer_service_state.isCollapse = false" :footer="null">
+      <a-modal v-model:visible="customer_service_state.isCollapse" @cancel="customer_service_state.isCollapse = false"
+        :footer="null">
         <div style="padding: 20px;width: 100%">
           <img :src="customer_service_state.now_image" style="width:100%;height: auto" alt="">
         </div>
@@ -1249,7 +1257,7 @@
         float: left;
         background-color: white;
         max-width: 400px;
-        min-height: 48px;
+        /* min-height: 48px; */
         border-radius: 3px;
         text-align: left;
         padding: 10px;
@@ -1273,7 +1281,7 @@
         float: right;
         background-color: white;
         max-width: 400px;
-        min-height: 48px;
+        /* min-height: 48px; */
         border-radius: 3px;
         text-align: left;
         padding: 10px;

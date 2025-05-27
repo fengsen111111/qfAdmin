@@ -89,7 +89,7 @@
     );
     setTimeout(() => {
       console.log('global.adminMsg.id', global.adminMsg.id);
-      if(global.adminMsg.id==-1){
+      if (global.adminMsg.id == -1) {
         return false //超管登录
       }
       if (global.adminMsg.id.length == 1) {
@@ -528,6 +528,37 @@
     console.log('点击的消息', item);
     // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
   }
+
+  const msgCount = ref(0)//未读消息总数
+  //获取聊天房间列表
+  function getCustomerRoomList() {
+    global.axios.post('decoration/CustomerService/getRoomList', {
+      joiner_sign: localStorage.getItem("storeId") //自己id
+    }, global, true).then((res) => {
+      // console.log('聊天房间数据', res.list);
+      res.list.map((item) => {
+        msgCount.value = msgCount.value + item.unread
+      })
+    })
+  }
+
+  setTimeout(() => {
+    getCustomerRoomList()//第一次执行
+  }, 2000);
+
+  let customerRoomTimer = null;
+  // 定时器
+  function startCustomerRoomTimer() {
+    // 清除已存在的定时器
+    if (customerRoomTimer) {
+      clearInterval(customerRoomTimer);
+    }
+    // 启动新的定时器
+    customerRoomTimer = setInterval(() => {
+      getCustomerRoomList();
+    }, 10000); // 每 10 秒执行一次
+  }
+  startCustomerRoomTimer()
 </script>
 
 <template>
@@ -773,7 +804,7 @@
         </a-modal>
       </div>
       <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
-        <a-badge count="0">
+        <a-badge :count="msgCount">
           <div @click="openSer()"
             style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
             <MessageOutlined style="font-size: 18px;" />
