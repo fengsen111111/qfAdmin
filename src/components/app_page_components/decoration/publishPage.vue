@@ -144,7 +144,7 @@
         console.log('商品数据', res.goods_datas);
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
-          res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
+          res.goods_datas.status = res.goods_datas.status == 'Y' ? false : true
           res.goods_datas.goods_sizes.map((item) => {
             item.status = item.status == 'Y' ? true : false
             item.uper_status = item.uper_status == 'Y' ? true : false

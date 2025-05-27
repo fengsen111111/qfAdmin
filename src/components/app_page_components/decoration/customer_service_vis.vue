@@ -222,8 +222,7 @@
       joiner_sign: store_id.value //自己id
     }, global, true).then((res) => {
       console.log('聊天房间数据', res.list);
-      // 当前身份是商家,创建与平台客服的聊天
-      if (store_id.value == global.adminMsg.id) {
+      if (store_id.value == '1') {
         console.log('当前身份为平台客服！');
         customer_service_state.room_list = res.list
         // 自动打开第一个人的聊天房间
@@ -233,8 +232,9 @@
         _getMessage()
         _shopList()//获取商品信息
       } else {
+      // 当前身份是商家,创建与平台客服的聊天
         global.axios.post('decoration/CustomerService/findRoomID', {
-          joiner_signs: [store_id.value, global.adminMsg.id]
+          joiner_signs: [store_id.value, '1']
         }, global, true).then((res_two) => {
           if (res_two.room_id) {
             console.log('有平台房间，处理数据');
@@ -257,7 +257,7 @@
                   other_msg: {}
                 },
                 {
-                  joiner_sign: global.adminMsg.id,
+                  joiner_sign: '1',
                   other_msg: {}
                 }
               ]
@@ -791,7 +791,7 @@
               :style="{ 'background-color': item.id==customer_service_state.room_id ? '#c5c6c6' : '#f5f5f5' }">
               <div class="head_image">
                 <img v-if="item.head_image"
-                  :src="item.head_image[0]=='h'?item.head_image:'https://api.qfcss.cn'+item.head_image" alt="">
+                  :src="item.head_image" alt="">
                 <!-- 平台 -->
                 <img v-else-if="item.joiner_type=='c'" src="../../../../public/resource/image/head_img.png" alt="">
                 <!-- 用户或者商家 -->
@@ -800,7 +800,10 @@
                   alt="">
               </div>
               <div class="msg">
-                <div class="name">{{ item.nickname }}</div>
+                <div class="name">
+                  {{ item.nickname }}
+                  <span style="border:1px solid #0a980a;color: #0a980a;border-radius: 2px;font-size: 8px;position: relative;top: -2px;padding: 0px;">官方</span>
+                </div>
                 <div style="line-height: 18px;font-size: 12px;opacity: 0.6;">
                   <span v-if="item.new_content_type=='text'" class="col666666">
                     <span class="ellipsis-html" v-html="JSON.parse(item.new_content)"></span>
