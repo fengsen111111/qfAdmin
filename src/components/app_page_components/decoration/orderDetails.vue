@@ -43,8 +43,12 @@
 			cancelText: global.findLanguage("取消"),
 			okType: "primary",
 			onOk: function () {
-				// emit("closeChildPage", pageData.page_key);
-				emit("djtzmk", '购物商城', '订单管理');
+				// 
+				if(localStorage.getItem('is_shouhou')){
+					emit("closeChildPage", pageData.page_key);
+				}else{
+					emit("djtzmk", '购物商城', '订单管理');
+				}
 			},
 		});
 	}

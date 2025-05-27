@@ -1017,7 +1017,7 @@
 						</div>
 					</div>
 				</div>
-				<div>
+				<div v-if="is_ptsj == '商家'">
 					<a-dropdown>
 						<a-button class="a13">
 							<span>更多</span>

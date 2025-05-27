@@ -5,8 +5,9 @@
   import buttons from './buttons.vue' //表格按钮组
   TableComponents['TableButtons'] = buttons  //替换原来的
 
-  let props = defineProps(["pageData"]);
+  let props = defineProps(["pageData", "skeleton_state"]);
   const pageData = props.pageData;
+  const skeleton_state = props.skeleton_state //
 
   let emit = defineEmits(["openChildPage", "closeChildPage"]);
 
@@ -462,24 +463,43 @@
         console.log('obj', obj[0]);
         requestParams.id = obj[0].user_id
       } else if (handleInfo.name == '订单详情') {
-        let shenfen = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
-        const obj = table_state.tableData.filter((item) => item.id == requestParams.id)
-        // console.log('obj', obj[0]);
-        requestParams.user_id = obj[0].user_id
-        // 阅读商家新订单提醒列表
-        global.axios
-          .post('decoration/StoreMsg/readNewOrderNotice', {
-            order_id: requestParams.id
-          }, global)
-          .then((res) => {
-            console.log('阅读商家新订单提醒列表', res);
-          })
+        if (handleInfo.page == 'H5OrderPageIntegral') {
+          detailsObj.value = {
+            type: 'H5OrderPageIntegral',
+            id: requestParams.order_id,
+            urlH5: 'https://h5.qfcss.cn/#/pages/my/components/orderListDetails/index?id=' + requestParams.order_id + '&identity=pc'
+          }
+        } else {
+          console.log('skeleton_state', skeleton_state);
+          let page = skeleton_state.tags.filter((item) => item.checked_status == true)
+          if (page[0].label == '售后管理') {
+            console.log('售后管理');
+            const obj = table_state.tableData.filter((item) => item.order_id == requestParams.id)
+            requestParams.user_id = obj[0].user_id
+            requestParams.id = obj[0].order_id
+            localStorage.setItem('is_shouhou',true)
+          } else {
+            localStorage.removeItem('is_shouhou')
+            // let shenfen = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
+            const obj = table_state.tableData.filter((item) => item.id == requestParams.id)
+            requestParams.user_id = obj[0].user_id
+            // 阅读商家新订单提醒列表
+            global.axios
+              .post('decoration/StoreMsg/readNewOrderNotice', {
+                order_id: requestParams.id
+              }, global)
+              .then((res) => {
+                console.log('阅读商家新订单提醒列表', res);
+              })
+          }
+
+        }
       } else if (handleInfo.name == '作品详情') {
         console.log('作品详情', requestParams);
         detailsObj.value = {
           type: 'H5ArticlePage',
           id: requestParams.article_id,
-          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/graphic/index?id=' + requestParams.article_id+'&identity=pc'
+          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/graphic/index?id=' + requestParams.article_id + '&identity=pc'
         }
         detailsVis.value = true//打开弹窗
         return false
@@ -488,13 +508,13 @@
         detailsObj.value = {
           type: 'H5ArticlePage',
           id: requestParams.goods_id,
-          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/shopDetail/index?id=' + requestParams.goods_id+'&identity=pc'
+          urlH5: 'https://h5.qfcss.cn/#/pages/home/components/shopDetail/index?id=' + requestParams.goods_id + '&identity=pc'
         }
         detailsVis.value = true//打开弹窗
         return false
-      }else if(handleInfo.name == '查看'){
-        localStorage.setItem('is_out_shop',true) //退店页面点击查看进入，记录个缓存
-      }else{
+      } else if (handleInfo.name == '查看') {
+        localStorage.setItem('is_out_shop', true) //退店页面点击查看进入，记录个缓存
+      } else {
         localStorage.removeItem('is_out_shop') //相反其余页面进入就清除
       }
       // console.log(requestParams);
@@ -546,8 +566,8 @@
 
   //清空搜索
   function emptySearch() {
-    console.log('重置',table_state.searchStructure);
-    
+    console.log('重置', table_state.searchStructure);
+
     table_state.searchStructure.forEach((item, index) => {
       if (table_state.searchStructure[index]["component"] == "Cascader")
         table_state.searchStructure[index]["value"] = [];
@@ -841,7 +861,8 @@
     </div>
   </a-modal>
   <!-- 作品、商品详情 弹框 -->
-  <a-modal v-model:visible="detailsVis" style="width: 460px;" :footer="null" :centered="true" title="详情" :maskClosable="false" width="420px">
+  <a-modal v-model:visible="detailsVis" style="width: 460px;" :footer="null" :centered="true" title="详情"
+    :maskClosable="false" width="420px">
     <div style="display: flex; justify-content: center; align-items: center;">
       <iframe :src="detailsObj.urlH5" frameborder="0"
         style="width: 390px; height: 844px; border: 1px solid #ccc; border-radius: 12px;"></iframe>

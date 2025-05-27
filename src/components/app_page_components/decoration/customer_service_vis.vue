@@ -232,7 +232,7 @@
         _getMessage()
         _shopList()//获取商品信息
       } else {
-      // 当前身份是商家,创建与平台客服的聊天
+        // 当前身份是商家,创建与平台客服的聊天
         global.axios.post('decoration/CustomerService/findRoomID', {
           joiner_signs: [store_id.value, '1']
         }, global, true).then((res_two) => {
@@ -569,7 +569,7 @@
       return false
     }
     customer_service_state.loading = true
-    global.file.uploadFile(global, options.file, customer_service_state.file_type=='video'?'media':customer_service_state.file_type, 'customer_service', true, send_resource_msg)
+    global.file.uploadFile(global, options.file, customer_service_state.file_type == 'video' ? 'media' : customer_service_state.file_type, 'customer_service', true, send_resource_msg)
   }
 
   //发送资源消息
@@ -790,8 +790,7 @@
             <div @click="checkRoom(item,item.id,item.head_image)" class="user"
               :style="{ 'background-color': item.id==customer_service_state.room_id ? '#c5c6c6' : '#f5f5f5' }">
               <div class="head_image">
-                <img v-if="item.head_image"
-                  :src="item.head_image" alt="">
+                <img v-if="item.head_image" :src="item.head_image" alt="">
                 <!-- 平台 -->
                 <img v-else-if="item.joiner_type=='c'" src="../../../../public/resource/image/head_img.png" alt="">
                 <!-- 用户或者商家 -->
@@ -802,7 +801,8 @@
               <div class="msg">
                 <div class="name">
                   {{ item.nickname }}
-                  <span style="border:1px solid #0a980a;color: #0a980a;border-radius: 2px;font-size: 8px;position: relative;top: -2px;padding: 0px;">官方</span>
+                  <span v-if="item.joiner_sign=='1'"
+                    style="border:1px solid #0a980a;color: #0a980a;border-radius: 2px;font-size: 8px;position: relative;top: -2px;padding: 0px;">官方</span>
                 </div>
                 <div style="line-height: 18px;font-size: 12px;opacity: 0.6;">
                   <span v-if="item.new_content_type=='text'" class="col666666">

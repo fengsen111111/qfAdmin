@@ -691,7 +691,7 @@
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
               @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" @toShopDetails="toShopDetails"
-              @orderLook="orderLook" />
+              @orderLook="orderLook" :skeleton_state="skeleton_state" />
           </keep-alive>
         </div>
       </a-layout-content>
