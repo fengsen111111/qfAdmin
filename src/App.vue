@@ -1,6 +1,5 @@
 <script setup>
   import { inject, onBeforeMount, onMounted } from 'vue'
-
   const global = inject('global').value
 
   onBeforeMount(() => {
@@ -19,10 +18,14 @@
 
     //初始化语言
     global.changeLanguage(global.language.code)
-
     //未登录跳转登录页
     if (!localStorage.getItem('Authorization')) {
-      global.router.push("/login")
+      console.log('win',window.location.pathname);
+      if(window.location.pathname=='/openShop'){
+        // 不跳转
+      }else{
+        global.router.push("/login")
+      }
     }
   })
 
@@ -45,7 +48,6 @@
 </template>
 
 <style lang="less">
-  
   /* //全局样式// */
   html,
   body {

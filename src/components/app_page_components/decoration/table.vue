@@ -492,6 +492,10 @@
         }
         detailsVis.value = true//打开弹窗
         return false
+      }else if(handleInfo.name == '查看'){
+        localStorage.setItem('is_out_shop',true) //退店页面点击查看进入，记录个缓存
+      }else{
+        localStorage.removeItem('is_out_shop') //相反其余页面进入就清除
       }
       // console.log(requestParams);
       watchComponentShowStatus();

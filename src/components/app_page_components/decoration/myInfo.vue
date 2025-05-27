@@ -596,7 +596,7 @@
 						});
 					isPay.value = true
 					timer.value = setInterval(updateTime, 1000);
-				} 
+				}
 			})
 	}
 	let timer = ref(null);
@@ -627,17 +627,17 @@
 	};
 
 	// 刷新二维码
-	function sxewm(){
-		console.log('当前二维码类型',cz_type.value);
+	function sxewm() {
+		console.log('当前二维码类型', cz_type.value);
 		// cz_type    bzj 保证金 bgl 曝光量 flbzj 分类保证金 sjcz 商家充值
 		// allcz_type  1曝光量2商家充值3商家提现
-		if(cz_type.value=='bzj'){
+		if (cz_type.value == 'bzj') {
 			payBzj()
-		}else if(cz_type.value=='bgl'){
+		} else if (cz_type.value == 'bgl') {
 			bglOk()
-		}else if(cz_type.value=='flbzj'){
+		} else if (cz_type.value == 'flbzj') {
 			handTypeOk()
-		}else if(cz_type.value=='sjcz'){
+		} else if (cz_type.value == 'sjcz') {
 			bglOk()
 		}
 	}
@@ -778,9 +778,13 @@
 			cancelText: global.findLanguage("取消"),
 			okType: "primary",
 			onOk: function () {
-				// emit("closeChildPage", pageData.page_key);
-				// 返回商家列表页
-				emit("djtzmk", '用户管理', '商家管理');
+				// 退店进来的店铺详情
+				if (localStorage.getItem('is_out_shop')) {
+					emit("closeChildPage", pageData.page_key);
+				} else {
+					//其余情况 返回商家列表页
+					emit("djtzmk", '用户管理', '商家管理');
+				}
 			},
 		});
 	}
@@ -927,7 +931,7 @@
 			})
 	}
 	setTimeout(() => {
-		if(global.adminMsg.id==-1){
+		if (global.adminMsg.id == -1) {
 			return false //超管登录
 		}
 		webGetStoreMoneySta()

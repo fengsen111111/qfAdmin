@@ -216,6 +216,7 @@
 <template>
 	<!--搜索-->
 	<div>
+		<!-- <div @click="current++">{{current}}</div> -->
 		<div style="padding: 20px;">
 			<div class="wcdiv">
 				<div style="display: flex;align-items: center;">
