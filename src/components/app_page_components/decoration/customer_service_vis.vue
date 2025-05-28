@@ -665,18 +665,22 @@
       messages: data //数据
     })
 
-    if(heart_beat=='N'){
-      console.log('房间信息',customer_service_state);
+    if (heart_beat == 'N') {
+      console.log('房间信息', customer_service_state);
       // 发送消息，把当前房间号排序变道第一个
-      let check = customer_service_state.room_list.filter((item)=>item.id==customer_service_state.room_id)
-      customer_service_state.room_list.unshift(check[0])
-      customer_service_state.room_list = [...new Set(customer_service_state.room_list)];
+      msgOneEdit(customer_service_state.room_id)
     }
 
     if (store_id.value) {
       customer_service_state.WebSocketClient.send(JSON.stringify(send_data));
       customer_service_state.connect_msg = 'success'
     }
+  }
+  // 房间移动到最前
+  function msgOneEdit(roomId) {
+    let check = customer_service_state.room_list.filter((item) => item.id == roomId)
+    customer_service_state.room_list.unshift(check[0])
+    customer_service_state.room_list = [...new Set(customer_service_state.room_list)];
   }
   // 接收到消息
   function onMessage(message) {
@@ -694,10 +698,11 @@
     } else {
       socket_data = global.axios.rsaDecode(res);
     }
-    console.log('socket_data',socket_data);
-    
+    console.log('socket_data', socket_data);
+
     if (socket_data.room_id === customer_service_state.room_id && socket_data.type === 'content') {
       customer_service_state.msg_list.push({ create_time: socket_data.data.create_time, content_type: socket_data.data.content_type, content: JSON.parse(socket_data.data.content), joiner_sign: socket_data.data.joiner_sign })
+      
       nextTick(() => {
         scrollToBottom()
       })
@@ -707,6 +712,9 @@
         for (let i = 0; i < customer_service_state.room_list.length; i++) {
           if (customer_service_state.room_list[i]['room_id'] === socket_data.room_id) {
             customer_service_state.room_list[i].unread++
+            customer_service_state.room_list[i].new_content = JSON.parse(socket_data.data.content) //新消息
+            customer_service_state.room_list[i].new_content_type = socket_data.data.content_type //新消息类型
+            msgOneEdit(socket_data.room_id)
             nextTick(() => {
               shortRoomList()
             })
