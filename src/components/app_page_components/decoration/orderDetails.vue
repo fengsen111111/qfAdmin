@@ -10,6 +10,9 @@
 	const route = useRoute();
 	let props = defineProps(["pageData"]);
 	const pageData = props.pageData;
+
+	// console.log('pageData',pageData);
+
 	let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk"]);
 	const global = inject("global").value;
 
@@ -396,6 +399,7 @@
 		padding: 3px 20px;
 		margin-left: 15px;
 		font-size: 14px;
+		cursor: pointer;
 	}
 
 	.a43 {

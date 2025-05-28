@@ -99,8 +99,11 @@
 	webGetUserOrderList()
 
 	function lookOrder(item) {
-		// console.log('查看订单详情',item);
-		emit('orderLook', item)
+		console.log('查看订单详情',item);
+		emit('orderLook', {
+			user_id:pageData.data.id,//用户id
+			id: item.id//订单id
+		})
 	}
 
 	// 拉黑状态变化
@@ -409,6 +412,7 @@
 		padding: 3px 20px;
 		margin-left: 15px;
 		font-size: 14px;
+		cursor: pointer;
 	}
 
 	.a43 {

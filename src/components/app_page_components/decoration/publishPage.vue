@@ -17,7 +17,7 @@
     detail: [],//详情 富文本  
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
-    status: true,//启用状态 Y上架 N下架    
+    status: false,//启用状态 Y上架 N下架    
     attributes: [],//商品属性  
     services: [],//商品服务  
     goods_sizes: [
@@ -144,7 +144,7 @@
         console.log('商品数据', res.goods_datas);
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
-          res.goods_datas.status = res.goods_datas.status == 'Y' ? false : true
+          res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
           res.goods_datas.goods_sizes.map((item) => {
             item.status = item.status == 'Y' ? true : false
             item.uper_status = item.uper_status == 'Y' ? true : false
@@ -1247,10 +1247,12 @@
                   <div class="a43">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
-                      <div>提交不上架</div>
+                      <div>启用状态</div>
                     </div>
-                    <div style="margin-left: 20px;">
-                      <a-switch v-model:checked="post_params.status" un-checked-children="否" checked-children="是" />
+                    <div style="margin-left: 20px;display: flex;">
+                      <span>下架</span>
+                      <a-switch v-model:checked="post_params.status" style="margin: 0 5px;" />
+                      <span>上架</span>
                     </div>
                   </div>
                 </div>
@@ -2441,7 +2443,7 @@
 
   .a42 {
     margin-top: 20px;
-    margin-left: 20px;
+    margin-left: 34px;
     align-items: center;
   }
 
