@@ -185,38 +185,35 @@
     const handleGetOrderImage = async () => {
         dy()
         return false
-        loading.value = true
-        message.value = ''
-
-        const paramStr = JSON.stringify(paramObj.value)
-        const t = Date.now().toString()
-        const sign = md5(paramStr + t + key + secret).toUpperCase()
-
-        const formData = new URLSearchParams()
-        formData.append('param', paramStr)
-        formData.append('key', key)
-        formData.append('sign', sign)
-        formData.append('t', t)
-        formData.append('method', 'getElecOrder')
-
-        try {
-            const res = await axios.post('/api/kuaidi', formData, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-            if (res.data.result) {
-                console.log('结果', res.data.data);
-                resule.value = res.data
-                generateBarcode(resule.value.data[0].kuaidinum)
-            } else {
-                message.value = '获取失败：' + res.data.message
-            }
-        } catch (err) {
-            message.value = '请求异常：' + err.message
-        } finally {
-            loading.value = false
-        }
+        // loading.value = true
+        // message.value = ''
+        // const paramStr = JSON.stringify(paramObj.value)
+        // const t = Date.now().toString()
+        // const sign = md5(paramStr + t + key + secret).toUpperCase()
+        // const formData = new URLSearchParams()
+        // formData.append('param', paramStr)
+        // formData.append('key', key)
+        // formData.append('sign', sign)
+        // formData.append('t', t)
+        // formData.append('method', 'getElecOrder')
+        // try {
+        //     const res = await axios.post('/api/kuaidi', formData, {
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded'
+        //         }
+        //     })
+        //     if (res.data.result) {
+        //         console.log('结果', res.data.data);
+        //         resule.value = res.data
+        //         generateBarcode(resule.value.data[0].kuaidinum)
+        //     } else {
+        //         message.value = '获取失败：' + res.data.message
+        //     }
+        // } catch (err) {
+        //     message.value = '请求异常：' + err.message
+        // } finally {
+        //     loading.value = false
+        // }
     }
     const barcode = ref()
     const barcodeTwo = ref()

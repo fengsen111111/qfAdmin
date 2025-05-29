@@ -532,6 +532,16 @@
   const is_btn = ref(false);
   const timer = ref(null)
   is_btn.value = localStorage.getItem('dktz')
+
+  const isCg = ref(false)//是否是超管 密码登录
+  setTimeout(() => {
+    if (Number(localStorage.getItem("storeId"))) {
+      isCg.value = false
+    } else {
+      isCg.value = true
+    }
+  }, 2000);
+
   // 轮询订单
   function cliTz() {
     is_btn.value = !is_btn.value; // 切换按钮状态
@@ -552,17 +562,24 @@
     }
   }
   function tongzhi() {
-    if (type.value == '平台') {
-      getNewGoodsNotices();// 获取平台新商品提醒列表
+    if (Number(localStorage.getItem("storeId"))) {
+      if (localStorage.getItem("storeId") != -1) {
+        if (type.value == '平台') {
+          getNewGoodsNotices();// 获取平台新商品提醒列表
+        } else {
+          getNewOrderNotices();//获取商家新订单提醒列表
+        }
+      }
     } else {
-      getNewOrderNotices();//获取商家新订单提醒列表
+      console.log('超级管理员登录,不执行轮询');
+      return false
     }
   }
   import { notification } from 'ant-design-vue';
   // 获取平台新商品提醒列表
   function getNewGoodsNotices() {
     global.axios.post('decoration/Goods/getNewGoodsNotices', {
-      store_id: store_id.value
+      store_id: localStorage.getItem("storeId")
     }, global, true).then((res) => {
       console.log('获取平台新商品提醒列表', res);
       if (res.count > 0) {
@@ -583,7 +600,7 @@
   // 获取商家新订单提醒列表
   function getNewOrderNotices() {
     global.axios.post('decoration/StoreMsg/getNewOrderNotices', {
-      store_id: store_id.value
+      store_id: localStorage.getItem("storeId")
     }, global, true).then((res) => {
       console.log('获取商家新订单提醒列表', res);
       if (res.count > 0) {
@@ -675,7 +692,7 @@
               margin-top: 16px;
             " @click="closeAllTag()"><span class="iconfont" style="font-size: 26px">&#xe6a1;</span></a-tag>
         </div>
-        <div>
+        <div v-show="!isCg">
           <a-button @click="cliTz" type="primary" style="margin: 0 10px 0 0;">{{is_btn ? '已打开' : '打开通知'}}</a-button>
           <div v-show="false">
             <audio controls id="myAudio">

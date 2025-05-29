@@ -299,10 +299,6 @@
 					<div
 						style="border: 1px solid #ff0000;background-color: #fbeaea;border-radius: 6px;padding: 9px 18px;color: #ff0000;margin-right: 10px;">
 						退款</div>
-					<!-- <div
-						style="border: 1px solid #0c96f1;background-color: #e7edfd;border-radius: 4px;padding: 2px 10px;color: #0c96f1;margin-left: 30px;">
-						打印
-					</div> -->
 					<Print :details=orderDetails />
 				</div>
 			</div>
