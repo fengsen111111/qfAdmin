@@ -1247,7 +1247,7 @@
                   <div class="a43">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
-                      <div>启用状态</div>
+                      <div>发布不上架</div>
                     </div>
                     <div style="margin-left: 20px;display: flex;">
                       <span>下架</span>
@@ -2443,7 +2443,7 @@
 
   .a42 {
     margin-top: 20px;
-    margin-left: 34px;
+    margin-left: 20px;
     align-items: center;
   }
 

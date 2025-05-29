@@ -976,6 +976,54 @@
 		})
 	}
 
+	const lookAll = ref(false)//查看更多
+	const allTitle = ref('')//弹窗标题
+	const allList = ref([])//弹窗数据
+	const columns_spxl_all = [//商品销量top
+		{
+			title: '商品名称',
+			dataIndex: 'name',
+			key: 'name',
+		}, {
+			title: '销量',
+			dataIndex: 'saled_number',
+			key: 'saled_number',
+		}];
+	const columns_tlsp_all = [//投流商品
+		{
+			title: '商品名称',
+			dataIndex: 'name',
+			key: 'name',
+		}, {
+			title: '曝光量',
+			dataIndex: 'power',
+			key: 'power',
+		}, {
+			title: '投流等级',
+			dataIndex: 'power_level_name',
+			key: 'power_level_name',
+		}];
+	function allShopList() {
+		if (allTitle.value == '商品销量排行') {
+			global.axios.post('decoration/Setting/getGoodsSaledNumberTopList', {
+				currentPage: 1,
+				perPage: 100,
+				store_id: store_id.value
+			}, global, true).then((res) => {
+				// console.log('获取商品销量排行列表', res);
+				allList.value = res.list
+			})
+		} else {
+			global.axios.post('decoration/Setting/getGoodsPowerTopList', {
+				currentPage: 1,
+				perPage: 100,
+				store_id: store_id.value
+			}, global, true).then((res) => {
+				// console.log('获取商品投流排行列表', res);
+				allList.value = res.list
+			})
+		}
+	}
 </script>
 
 <template>
@@ -1506,12 +1554,14 @@
 							<div class="a58">
 								<div class="a59">
 									<div style="font-size: 17px;"><b>商品销量Top10</b></div>
-									<div class="a60">查看更多</div>
+									<div class="a60" @click="()=>{lookAll = true;allTitle='商品销量排行';allShopList()}">查看更多
+									</div>
 								</div>
 								<div class="a61" v-for="(item,index) in spxlphlist" :key="item.id">
 									<div style="display: flex;">
 										<div style="width: 30px;">NO.{{index+1}}</div>
-										<div style="margin-left: 20px;">{{item.name}}</div>
+										<div style="margin-left: 20px;">
+											{{item.name.length>12?item.name.slice(0,12)+'...':item.name}}</div>
 									</div>
 									<div>{{Number(item.saled_number).toLocaleString()}}</div>
 								</div>
@@ -1520,18 +1570,32 @@
 							<div class="a58">
 								<div class="a59">
 									<div style="font-size: 17px;"><b>投流商品</b></div>
-									<div class="a60">查看更多</div>
+									<div class="a60" @click="()=>{lookAll = true;allTitle='投流商品排行';allShopList()}">查看更多
+									</div>
 								</div>
 								<div class="a61" v-for="item in sptlphlist" :key="item.id">
-									<div>{{item.name}}</div>
+									<div>{{item.name.length>10?item.name.slice(0,10)+'...':item.name}}</div>
 									<div>{{item.power_level_name}}</div>
 									<div>{{item.power}}曝光量</div>
 								</div>
 								<a-empty v-if="sptlphlist.length==0" style="margin-top: 20%;" />
 							</div>
+							<!-- 投流商品弹窗，商品销量弹窗 -->
+							<a-modal v-model:visible="lookAll" :title="allTitle" :footer="null"
+								:width="allTitle=='商品销量排行'?'600px':'800px'">
+								<div>
+									<a-table :columns="allTitle=='商品销量排行'?columns_spxl_all:columns_tlsp_all"
+										:data-source="allList">
+										<template #bodyCell="{ column, record }">
+											<template v-if="column.key === 'name'">
+												<span>{{ record.name }}</span>
+											</template>
+										</template>
+									</a-table>
+								</div>
+							</a-modal>
 						</div>
 					</div>
-
 				</div>
 				<!-- 资金日志 -->
 				<div v-if="titleType=='资金日志'">
@@ -1706,7 +1770,6 @@
 							<div>
 								<span v-if="item.type=='f'||item.type=='g'">{{item.order_id}}</span>
 								<span v-else></span>
-								<!-- {{item.order_id}} -->
 							</div>
 							<div>
 								<span v-if="item.type=='b'">商家余额充值</span>
@@ -1763,8 +1826,6 @@
 				<div class="payTimeRemaining">
 					<span class="payTxt">支付剩余时间</span>
 					<span class="time">
-						<!-- <span class="timeItem" id="pay_minute">05</span><span class="timeSplit">:</span><span
-							class="timeItem" id="pay_second">00</span> -->
 						<span class="time">
 							<span class="timeItem">{{ minute }}</span>
 							<span class="timeSplit">:</span>
