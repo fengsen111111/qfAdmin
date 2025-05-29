@@ -327,8 +327,6 @@
     })
   }
 
-
-
 </script>
 <template>
   <div>
@@ -338,7 +336,7 @@
     </div> -->
     <!-- <div>自己商家id：{{store_id}}</div>
     <div>平台id：{{global.adminMsg.id}}</div> -->
-    <div style="position: fixed;top: 15px;right: 205px;width: 100px;height: 100px;z-index: 999;text-align: right;">
+    <!-- <div style="position: fixed;top: 15px;right: 205px;width: 100px;height: 100px;z-index: 999;text-align: right;">
       <a-button @click="cliTz" type="primary">{{is_btn ? '已打开' : '打开通知'}}</a-button>
       <div v-show="false">
         <audio controls id="myAudio">
@@ -348,7 +346,7 @@
           您的浏览器不支持 audio 元素。
         </audio>
       </div>
-    </div>
+    </div> -->
     <div v-if="type=='商家'">
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>

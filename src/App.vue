@@ -3,6 +3,7 @@
   const global = inject('global').value
 
   onBeforeMount(() => {
+    localStorage.removeItem('dktz')
     //BS基本信息
     global.axios.post('factory_system/Base/beforeLogin', {}, global, false).then(res => {
       document.title = res.project_name ? res.project_name : 'Factory5.0';

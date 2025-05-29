@@ -460,47 +460,9 @@
       url: "",
       value: "4444",
       page_key: "e06ac6e73a5db3b8f010acb421312",
-      data:item
+      data: item
     }, true)
   }
-
-  // // 获取商家新订单提醒列表 
-  // function _getNewOrderNotices() {
-  //   global.axios
-  //     .post('decoration/StoreMsg/getNewOrderNotices', {
-  //       store_id: localStorage.getItem('storeId')
-  //     }, global)
-  //     .then((res) => {
-  //       console.log('获取商家新订单提醒列表', res);
-  //     })
-  // }
-  // // 平台阅读商家新商品提醒列表 
-  // function _getNewGoodsNotices() {
-  //   global.axios
-  //     .post('decoration/Goods/getNewGoodsNotices', {}, global)
-  //     .then((res) => {
-  //       console.log('平台阅读商家新商品提醒列表', res);
-  //     })
-  // }
-
-  // const timer = ref(null)
-
-  // setTimeout(() => {
-  //   clearInterval(timer);
-  //   timer = setInterval(() => {
-  //     if (type.value == '平台') {
-  //       _getNewGoodsNotices();
-  //     } else {
-  //       _getNewOrderNotices();
-  //     }
-  //   }, 5000);
-  //   // if (type.value == '平台') {
-  //   //   _getNewGoodsNotices()
-  //   // } else {
-  //   //   _getNewOrderNotices()
-  //   // }
-  // }, 1500);
-
   const msgList = ref([])
   // 获取商家消息列表
   function getUserMsgList() {
@@ -537,6 +499,7 @@
       joiner_sign: localStorage.getItem("storeId") //自己id
     }, global, true).then((res) => {
       // console.log('聊天房间数据', res.list);
+      msgCount.value = 0
       res.list.map((item) => {
         msgCount.value = msgCount.value + item.unread
       })
@@ -560,6 +523,81 @@
     }, 10000); // 每 10 秒执行一次
   }
   startCustomerRoomTimer()
+
+  // 通知
+  const is_btn = ref(false);
+  const timer = ref(null)
+  is_btn.value = localStorage.getItem('dktz')
+  // 轮询订单
+  function cliTz() {
+    is_btn.value = !is_btn.value; // 切换按钮状态
+    localStorage.setItem('dktz', is_btn.value); // 存储状态
+    if (is_btn.value) {
+      // ✅ 打开通知，启动定时器
+      if (!timer.value) {
+        timer.value = setInterval(tongzhi, 10000); // 每 10 秒执行一次
+      }
+      console.log('通知已开启');
+    } else {
+      // ❌ 关闭通知，清除定时器
+      if (timer.value) {
+        clearInterval(timer.value);
+        timer.value = null;
+      }
+      console.log('通知已关闭');
+    }
+  }
+  function tongzhi() {
+    if (type.value == '平台') {
+      getNewGoodsNotices();// 获取平台新商品提醒列表
+    } else {
+      getNewOrderNotices();//获取商家新订单提醒列表
+    }
+  }
+  import { notification } from 'ant-design-vue';
+  // 获取平台新商品提醒列表
+  function getNewGoodsNotices() {
+    global.axios.post('decoration/Goods/getNewGoodsNotices', {
+      store_id: store_id.value
+    }, global, true).then((res) => {
+      console.log('获取平台新商品提醒列表', res);
+      if (res.count > 0) {
+        notification.open({
+          message: '您有新的商品待审核',
+          description: '您有新的商品待审核，请前往商品管理审核!',
+          onClick: () => {
+            console.log('确定!');
+          },
+        });
+        console.log('开始播放音频');
+        const audio = document.getElementById('myAudio');
+        audio.play();
+        audio.muted = false;
+      }
+    })
+  }
+  // 获取商家新订单提醒列表
+  function getNewOrderNotices() {
+    global.axios.post('decoration/StoreMsg/getNewOrderNotices', {
+      store_id: store_id.value
+    }, global, true).then((res) => {
+      console.log('获取商家新订单提醒列表', res);
+      if (res.count > 0) {
+        notification.open({
+          message: '您有新的订单待处理',
+          description: '您有新的订单待处理,请前往订单管理发货商品！',
+          onClick: () => {
+            console.log('确定!');
+          },
+        });
+        console.log('开始播放音频');
+        const audio = document.getElementById('myAudio');
+        audio.play();
+        audio.muted = false;
+      }
+    })
+  }
+
 </script>
 
 <template>
@@ -592,7 +630,6 @@
                   <a-sub-menu :key="child.value">
                     <template #title>
                       <span>
-                        <!-- <span class="iconfont" v-html="child.icon" /> -->
                         <span>{{ child.label }}</span>
                       </span>
                     </template>
@@ -604,9 +641,6 @@
                 <!-- 只有一级 -->
                 <template v-else>
                   <a-menu-item :key="child.value" @click="openPage(child, true)">
-                    <!-- <template #icon>
-                      <span class="iconfont" v-html="child.icon" />
-                    </template> -->
                     {{ child.label }}
                   </a-menu-item>
                 </template>
@@ -621,12 +655,6 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header>
-        <!-- <div class="icon-font" style="color: #656565 !important; font-size: 22px">
-          <span v-if="!skeleton_state.collapsed" class="iconfont"
-            @click="skeleton_state.collapsed = !skeleton_state.collapsed">&#xe79a;</span>
-          <span v-else class="iconfont" @click="skeleton_state.collapsed = !skeleton_state.collapsed">&#xe794;</span>
-        </div> -->
-
         <div class="tag">
           <a-tag v-for="tag in skeleton_state.tags" :key="tag.value" :class="tag.checked_status ? 'active-tag' : ''"
             :closable="tag.value === -1 ? false : true" @click="openTag(tag)" @close="closeTag(tag.page_key)">
@@ -642,6 +670,17 @@
               padding: 0 10px;
               margin-top: 16px;
             " @click="closeAllTag()"><span class="iconfont" style="font-size: 26px">&#xe6a1;</span></a-tag>
+        </div>
+        <div>
+          <a-button @click="cliTz" type="primary" style="margin: 0 10px 0 0;">{{is_btn ? '已打开' : '打开通知'}}</a-button>
+          <div v-show="false">
+            <audio controls id="myAudio">
+              <source
+                src="https://beverage-upload.oss-cn-chengdu.aliyuncs.com/rich_text_file/2025218/66cde77qgj5acvb38u9tvtfu14edpr8s.mp3"
+                type="audio/mpeg">
+              您的浏览器不支持 audio 元素。
+            </audio>
+          </div>
         </div>
         <div @click="gzzx()">
           <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;">
@@ -699,10 +738,6 @@
       <!-- 固定标 -->
       <div v-if="type=='商家'" style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
-          <!-- <div>
-            <Print @djtzmk="djtzmk" />
-          </div> -->
-          <!-- BellOutlined,MailOutlined,MessageOutlined -->
           <a-badge :count="sjwdfxxs">
             <div @click="openVis(1)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
@@ -710,14 +745,7 @@
               <br><span style="font-size: 12px;">消息</span>
             </div>
           </a-badge><br>
-          <!-- <a-badge count="5">
-            <div @click="openVis(2)"
-              style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
-              <MailOutlined style="font-size: 18px;" />
-              <br><span style="font-size: 12px;">站内信</span>
-            </div>
-          </a-badge><br> -->
-          <a-badge count="0">
+          <a-badge :count="msgCount">
             <div @click="openSer()"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <MessageOutlined style="font-size: 18px;" />
@@ -771,33 +799,9 @@
                   </div>
                 </div>
               </a-tab-pane>
-              <!-- <a-tab-pane key="2" tab="站内信" force-render>
-                <div style="display: flex;">
-                  <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;">
-                    <div @click="editMsgKey(1)" :class="msgKey=='1'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺动态</div>
-                    <div @click="editMsgKey(2)" :class="msgKey=='2'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">平台动态</div>
-                    <div @click="editMsgKey(3)" :class="msgKey=='3'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">规则更新</div>
-                    <div @click="editMsgKey(4)" :class="msgKey=='4'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规通知</div>
-                    <div @click="editMsgKey(5)" :class="msgKey=='5'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">营销推广</div>
-                    <div @click="editMsgKey(6)" :class="msgKey=='6'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">重要通知</div>
-                    <div @click="editMsgKey(7)" :class="msgKey=='7'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">商家成长</div>
-                  </div>
-                  <div style="width: 80%; margin-top: 10%;">
-                    <a-empty />
-                  </div>
-                </div>
-              </a-tab-pane> -->
             </a-tabs>
             <div
               style="margin-left: 20%;border-top: 1px solid #e8e8e8;margin-top: 10px;padding-top: 8px;display: flex;justify-content: space-between;align-items: center;">
-              <!-- <a-button>全部标记已读</a-button> -->
               <div></div>
               <div>共有 {{msgList.length}} 条</div>
             </div>
