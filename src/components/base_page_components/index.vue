@@ -267,6 +267,13 @@
 
   // 跳转对应模块
   function handTz(str, strTwo, strThree) {
+    if(str=='用户管理'){
+      if(strTwo=='商家管理'){
+        localStorage.setItem('indexGoShop',true)
+      }else{
+        localStorage.removeItem('indexGoShop')
+      }
+    }
     emit('djtzmk', str, strTwo, strThree)
   }
   const sjyyeList = ref([])

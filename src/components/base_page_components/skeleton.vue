@@ -414,7 +414,11 @@
               // console.log('iss', iss);
               // deleteChildrenPage(iss.page_key);
               if (strTwo == '商家管理' || strTwo == '订单管理') {
-                deleteChildrenPage(iss.page_key);
+                if (localStorage.getItem('indexGoShop')) {
+                  // 首页点击商家管理，不操作，保留记录
+                } else {
+                  deleteChildrenPage(iss.page_key);
+                }
               }
               openPage(iss, true);
             }
