@@ -229,6 +229,7 @@
         customer_service_state.room = res.list[0] //聊天房间
         customer_service_state.room_id = res.list[0].id //聊天房间id
         customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
+        cancelMsgNumber()// 去掉当前打开聊天框的消息红点
         _getMessage()
         _shopList()//获取商品信息
       } else {
@@ -244,6 +245,8 @@
             customer_service_state.room = res.list[0] //聊天房间
             customer_service_state.room_id = res.list[0].id //聊天房间id
             customer_service_state.msgObjImg = res.list[0].head_image//聊天对象头像
+
+            cancelMsgNumber()// 去掉当前打开聊天框的消息红点
             _getMessage()
             _shopList()//获取商品信息
           } else {
@@ -285,6 +288,7 @@
         customer_service_state.customer_msg = '最新一条消息'
         item.checked = true//设置状态 当前打开
         emojiVisable.value = false//关闭表情
+        cancelMsgNumber()// 去掉当前打开聊天框的消息红点
         _getMessage(item.id) //获取聊天内容
         // 切换房间后自动聚焦  自动滚动到底部
         setTimeout(() => {
@@ -295,6 +299,16 @@
         item.checked = false//其余全部关闭
       }
     })
+  }
+  // 去掉当前打开聊天框的消息红点
+  function cancelMsgNumber() {
+    console.log('当前房间id', customer_service_state.room_id);
+    customer_service_state.room_list.map((item, index) => {
+      if (item.id == customer_service_state.room_id) {
+        customer_service_state.room_list[index].unread = 0
+      }
+    })
+
   }
   // 处理红包状态
   function hbStatus() {
@@ -555,10 +569,10 @@
       user_text_content: text
     }, global, true).then((res) => {
       console.log('自动回复', res);
-      // 自动回复了，加一条消息在下面
-      if (res.length > 0) {
-        customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'text', content: res, joiner_sign: store_id.value })
-      }
+      // 自动回复了，加一条消息在下面  ==》自动回复是后端那边发的消息，我这边不需要显示，app 推送了就行
+      // if (res.length > 0) {
+      //   customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'text', content: res, joiner_sign: store_id.value })
+      // }
     })
   }
 
@@ -702,37 +716,27 @@
 
     if (socket_data.room_id === customer_service_state.room_id && socket_data.type === 'content') {
       customer_service_state.msg_list.push({ create_time: socket_data.data.create_time, content_type: socket_data.data.content_type, content: JSON.parse(socket_data.data.content), joiner_sign: socket_data.data.joiner_sign })
-      
       nextTick(() => {
         scrollToBottom()
       })
     } else {
       // 不是当前聊天对象的消息
       if (socket_data.type === 'content') {
-        for (let i = 0; i < customer_service_state.room_list.length; i++) {
-          if (customer_service_state.room_list[i]['room_id'] === socket_data.room_id) {
-            customer_service_state.room_list[i].unread++
-            customer_service_state.room_list[i].new_content = JSON.parse(socket_data.data.content) //新消息
-            customer_service_state.room_list[i].new_content_type = socket_data.data.content_type //新消息类型
-            msgOneEdit(socket_data.room_id)
-            nextTick(() => {
-              shortRoomList()
-            })
+        customer_service_state.room_list.map((item, index) => {
+          if (item.id == socket_data.room_id) {
+            customer_service_state.room_list[index].unread++
+            customer_service_state.room_list[index].new_content = socket_data.data.content
+            customer_service_state.room_list[index].new_content_type = socket_data.data.content_type
+            customer_service_state.room_list[index].update_time = socket_data.data.create_time
           }
-        }
-      } else {
-        //房间不存在。插入房间
-        customer_service_state.room_list.unshift(socket_data.data)
-        nextTick(() => {
-          shortRoomList()
         })
+      } else {
+        //房间不存在。重新获取房间列表
+        getCustomerRoomList()
       }
     }
   }
 
-  function shortRoomList() {
-    console.log('shortRoomList');
-  }
 
   //辅助方法
   function timeFormate(timeStamp) {
