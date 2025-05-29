@@ -29,14 +29,48 @@
       language: 'zh_CN',
       selector: "#init",
       skin_url: `/tinymce/skins/ui/oxide`,
-      height: '12vh',
+      height: '100%',
       content_css: `/tinymce/skins/content/default/content.css`,
       plugins: 'lists image media table wordcount link',
       toolbar: false,
       branding: false,
       menubar: false,
       statusbar: false,
-      // content_style: "body { background-color: #f5f5f5; }", // 修改背景颜色
+      content_style: `
+        body {
+          padding: 8px; /* 默认可能是 16px，可以适当缩小 */
+          margin: 0;
+          font-size: 14px;
+          line-height: 1.6;
+          scrollbar-width: thin;
+          scrollbar-color: #c1c1c1 #f1f1f1;
+        }
+        p:first-child {
+          margin-top: 0 !important;
+        }
+        p {
+          margin: 0;
+          padding: 0;
+        }
+        br {
+          display: none; /* 可选：去除空行视觉效果 */
+        }
+        /* WebKit 滚动条美化 */
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #999;
+        }
+      `, // 修改背景颜色
       forced_root_block: "",  // 禁止默认 <p>，防止 TinyMCE 自动包装内容
       paste_data_images: false, // 允许粘贴图像
       images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
@@ -484,7 +518,6 @@
     })
   }
 
-
   const timeoutId = ref(null)// 用于存储超时id
 
   // 按下回车发送，ctrl加回车换行
@@ -516,7 +549,6 @@
       message.warning('请输入内容！');
       return false
     }
-
     customer_service_state.text_content = removePTagsIfOnlyText(customer_service_state.text_content)
     // 处理表情包
     const emojiMap = {};
@@ -547,7 +579,6 @@
     timeoutId.value = setTimeout(() => {
       _zdhf()
     }, 30000); // 30秒后检查是否超时
-
   }
   // 自动回复
   function _zdhf() {
@@ -600,18 +631,6 @@
     nextTick(() => {
       scrollToBottom()
     })
-  }
-  //下载文件
-  function download(file) {
-    global.Modal.confirm({
-      title: global.findLanguage('确定要下载该文件吗？'),
-      okText: global.findLanguage('确定'),
-      cancelText: global.findLanguage('取消'),
-      okType: 'primary',
-      onOk: function () {
-        global.file.download(file.url, file.name, global)
-      }
-    });
   }
 
   //WebSocket相关
@@ -713,7 +732,6 @@
       socket_data = global.axios.rsaDecode(res);
     }
     console.log('socket_data', socket_data);
-
     if (socket_data.room_id === customer_service_state.room_id && socket_data.type === 'content') {
       customer_service_state.msg_list.push({ create_time: socket_data.data.create_time, content_type: socket_data.data.content_type, content: JSON.parse(socket_data.data.content), joiner_sign: socket_data.data.joiner_sign })
       nextTick(() => {
@@ -736,7 +754,6 @@
       }
     }
   }
-
 
   //辅助方法
   function timeFormate(timeStamp) {
@@ -863,9 +880,7 @@
                 <!-- id不相同，别人发的消息 -->
                 <div class="left_user" v-if="item.joiner_sign != store_id">
                   <div align="left" style="float: left;margin-right: 12px">
-                    <img v-if="customer_service_state.msgObjImg"
-                      :src="customer_service_state.msgObjImg[0]=='h'?customer_service_state.msgObjImg:'https://api.qfcss.cn'+customer_service_state.msgObjImg"
-                      alt="">
+                    <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
                     <img v-else
                       src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025217/6j7h9ut1qc6vik5cltb18fr7bh7v5mjs.png"
                       alt="">
@@ -912,7 +927,7 @@
               <div class="left_user" v-if="item.joiner_sign != store_id">
                 <div align="left" style="float: left;margin-right: 12px">
                   <img v-if="customer_service_state.msgObjImg"
-                    :src="customer_service_state.msgObjImg[0]=='h'?customer_service_state.msgObjImg:'https://api.qfcss.cn'+customer_service_state.msgObjImg"
+                    :src="customer_service_state.msgObjImg"
                     alt="">
                   <img v-else
                     src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025217/6j7h9ut1qc6vik5cltb18fr7bh7v5mjs.png"
@@ -929,7 +944,7 @@
                   </div>
                   <div v-if="item.content_type === 'video'" class="left_content">
                     <video :src="item.content" controls="controls"
-                      style="width: 200px;height: 160px;float: left"></video>
+                      style="width: 200px;max-height: 160px;float: left"></video>
                   </div>
                   <div @click="openMap(JSON.parse(item.content))" v-if="item.content_type === 'map'"
                     class="left_content">
@@ -977,7 +992,7 @@
                   </div>
                   <div v-if="item.content_type === 'video'" class="left_content">
                     <video :src="item.content" controls="controls"
-                      style="width: 200px;height: 160px;float: right"></video>
+                      style="width: 200px;max-height: 160px;float: right"></video>
                   </div>
                   <div v-if="item.content_type === 'map'" class="left_content">
                     <div class="p20">{{JSON.parse(item.content).name}}</div>
@@ -1026,11 +1041,6 @@
         <div class="send">
           <!-- 消息内容块（包含表情包） -->
           <div style="float: left;width: 70%;height: 100%;">
-            <!-- <textarea @keydown="handleKeydown" ref="textareaRef" v-if="emojiVisable"
-              v-model="customer_service_state.text_content"
-              style="padding: 6px;width: 100%;border-radius: 5px;resize:none;border: none;outline: none;background-color: #f5f5f5;"></textarea> -->
-            <!-- <textarea @keydown="handleKeydown" ref="textareaRef" v-model="customer_service_state.text_content"
-              style="padding: 6px;width: 100%;height:100%;border-radius: 5px;resize:none;border: none;outline: none;background-color: #f5f5f5;"></textarea> -->
             <editor id="init" v-model="customer_service_state.text_content" :init="component_state.init">
             </editor>
             <!-- 表情选择 -->
@@ -1062,46 +1072,27 @@
           <!-- 右边 -->
           <div
             style="float: right;width: 30%;height: 100%;padding: 0 10px;    display: flex;justify-self: center;justify-content: center;flex-direction: column;">
+            <a-button type="primary" @click="send_word()">发送消息</a-button>
             <div
-              style="width: 100%;height: 40px;line-height: 40px;background-color: #1b95e5;border-radius: 3px;color: white;font-size: 16px"
-              @click="send_word()">
-              发 送 消 息
+              style="display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));grid-column-gap: 5px; align-items: center;margin: 5px 0px;">
+              <a-button type="primary" @click="xzBq()">选择表情</a-button>
+              <a-button type="primary" @click="xzSp()">选择商品</a-button>
             </div>
-            <div style="display: flex;justify-content: space-between;">
-              <div
-                style="width: 48%;height: 40px;margin-top: 5px;line-height: 40px;background-color: #1b95e5;border-radius: 3px;color: white;font-size: 16px"
-                @click="xzBq()">
-                选择表情
-              </div>
-              <div @click="xzSp()"
-                style="width: 48%;height: 40px;margin-top: 5px;line-height: 40px;background-color: #1b95e5;border-radius: 3px;color: white;font-size: 16px">
-                选择商品
-              </div>
-            </div>
-            <div style="width: 100%;line-height: 30px;margin-top: 5px;color: white;font-size: 12px;">
-              <div style="width: 32%;height: 30px;margin-right: 2%;float: left;">
-                <div style="width: 100%;height: 30px;background-color: #1b95e5;border-radius: 3px;"
-                  @click="customer_service_state.file_type = 'image'">
-                  <a-upload :customRequest="upload" :showUploadList="false"
-                    :accept="customer_service_state.image_file_extends">
-                    <span style="color: white">图&nbsp;&nbsp;&nbsp;片</span>
-                  </a-upload>
-                </div>
-              </div>
-              <div style="width: 32%;height: 30px;margin-right: 2%;float: left;">
-                <div style="width: 100%;height: 30px;background-color: #1b95e5;border-radius: 3px;"
-                  @click="customer_service_state.file_type = 'video'">
-                  <a-upload :customRequest="upload" :showUploadList="false"
-                    :accept="customer_service_state.media_file_extends">
-                    <span style="color: white">视&nbsp;&nbsp;&nbsp;频</span>
-                  </a-upload>
-                </div>
-              </div>
-              <div style="width: 32%;height: 30px;float: left;">
-                <div style="width: 100%;height: 30px;background-color: #1b95e5;border-radius: 3px;" @click="fsHb()">
-                  <div><span style="color: white">红&nbsp;&nbsp;&nbsp;包</span></div>
-                </div>
-              </div>
+            <div
+              style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));grid-column-gap: 5px; align-items: center;">
+              <a-button type="primary" @click="customer_service_state.file_type = 'image'">
+                <a-upload :customRequest="upload" :showUploadList="false"
+                  :accept="customer_service_state.image_file_extends">
+                  <span style="color: #fff;font-size: 12px;">图片</span>
+                </a-upload>
+              </a-button>
+              <a-button type="primary" @click="customer_service_state.file_type = 'video'">
+                <a-upload :customRequest="upload" :showUploadList="false"
+                  :accept="customer_service_state.media_file_extends">
+                  <span style="color: #fff;font-size: 12px;">视频</span>
+                </a-upload>
+              </a-button>
+              <a-button type="primary" @click="fsHb()">红包</a-button>
             </div>
           </div>
         </div>
@@ -1184,7 +1175,8 @@
       margin: 0;
       width: 25%;
       height: 100%;
-      padding: 10px 0 20px 0;
+      /* padding: 10px 0 20px 0; */
+      padding-top: 10px;
       overflow-y: auto;
       border-right: 1px solid #d4d4d7;
       float: left;
@@ -1317,8 +1309,7 @@
       .send {
         width: 100%;
         height: 20%;
-        padding: 10px 0 10px 10px;
-
+        padding: 10px 0 0px 10px;
 
       }
     }
