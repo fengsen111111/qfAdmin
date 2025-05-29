@@ -166,96 +166,12 @@
         getArticleStarTopList() // 获取作品点赞排行列表
         getArticleStarTopListVideo()  //获取视频点赞排行列表
 
-        // getNewGoodsNotices()// 获取平台新商品提醒列表
-        // readNewGoodsNotice()// 阅读商家新订单提醒列表
       } else {
-        // getNewOrderNotices()//获取商家新订单提醒列表
-        // readNewOrderNotice()//阅读商家新订单提醒列表
       }
     })
   }
 
-  const timer = ref(null)
-  function tongzhi() {
-    if (type.value == '平台') {
-      getNewGoodsNotices();// 获取平台新商品提醒列表
-    } else {
-      getNewOrderNotices();//获取商家新订单提醒列表
-    }
-  }
-
-
-  const is_btn = ref(false);
-  // 轮询订单
-  function cliTz() {
-    is_btn.value = true;
-    if (!timer.value) { // 防止重复创建定时器
-      // timer.value = setInterval(tongzhi, 10000);
-      timer.value = setTimeout(tongzhi, 10000);
-    }
-  }
-
-  import { notification } from 'ant-design-vue';
-  // const audio = new Audio('/resource/audio/order_notice.mp3'); // 音频路径建议放在 public 或 static 目录下
   getCustomerRoomList() //执行
-  // 获取商家新订单提醒列表
-  function getNewOrderNotices() {
-    global.axios.post('decoration/StoreMsg/getNewOrderNotices', {
-      store_id: store_id.value
-    }, global, true).then((res) => {
-      console.log('获取商家新订单提醒列表', res);
-      if (res.count > 0) {
-        notification.open({
-          message: '您有新的订单待处理',
-          description: '您有新的订单待处理,请前往订单管理发货商品！',
-          onClick: () => {
-            console.log('确定!');
-          },
-        });
-        console.log('开始播放音频');
-        const audio = document.getElementById('myAudio');
-        audio.play();
-        audio.muted = false;
-      }
-    })
-  }
-  // 阅读商家新订单提醒列表
-  // function readNewOrderNotice() {
-  //   global.axios.post('decoration/StoreMsg/readNewOrderNotice', {
-  //     store_id: store_id.value
-  //   }, global, true).then((res) => {
-  //     console.log('阅读商家新订单提醒列表', res);
-  //   })
-  // }
-  // 获取平台新商品提醒列表
-  function getNewGoodsNotices() {
-    global.axios.post('decoration/Goods/getNewGoodsNotices', {
-      store_id: store_id.value
-    }, global, true).then((res) => {
-      console.log('获取平台新商品提醒列表', res);
-      if (res.count > 0) {
-        notification.open({
-          message: '您有新的商品待审核',
-          description: '您有新的商品待审核，请前往商品管理审核!',
-          onClick: () => {
-            console.log('确定!');
-          },
-        });
-        console.log('开始播放音频');
-        const audio = document.getElementById('myAudio');
-        audio.play();
-        audio.muted = false;
-      }
-    })
-  }
-  // 阅读商家新订单提醒列表
-  // function readNewGoodsNotice() {
-  //   global.axios.post('decoration/Goods/readNewGoodsNotice', {
-  //     store_id: store_id.value
-  //   }, global, true).then((res) => {
-  //     console.log('阅读商家新订单提醒列表', res);
-  //   })
-  // }
 
   const tjzd = ref({})//统计字段
   function tamplateSta() {
@@ -267,10 +183,10 @@
 
   // 跳转对应模块
   function handTz(str, strTwo, strThree) {
-    if(str=='用户管理'){
-      if(strTwo=='商家管理'){
-        localStorage.setItem('indexGoShop',true)
-      }else{
+    if (str == '用户管理') {
+      if (strTwo == '商家管理') {
+        localStorage.setItem('indexGoShop', true)
+      } else {
         localStorage.removeItem('indexGoShop')
       }
     }
@@ -334,26 +250,111 @@
     })
   }
 
+  const lookAll = ref(false)//查看更多
+  const allTitle = ref('')//弹窗标题
+  const allList = ref([])//弹窗数据
+  const allColumn = ref([])//弹窗表头
+  const columns_spxl_all = [//商品销量top
+    {
+      title: '商品名称',
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: '销量',
+      dataIndex: 'saled_number',
+      key: 'saled_number',
+    }];
+  const columns_sjyye_all = [//商家营业额
+    {
+      title: '商品名称',
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: '营业额',
+      dataIndex: 'order_money',
+      key: 'order_money',
+    }];
+  const columns_ejflxl_all = [//二级分类销售量Top10
+    {
+      title: '名称',
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: '销量',
+      dataIndex: 'saled_number',
+      key: 'saled_number',
+    }];
+  const columns_sqwzdz_all = [//社区文章点赞数量
+    {
+      title: '商品名称',
+      dataIndex: 'title',
+      key: 'title',
+    }, {
+      title: '昵称',
+      dataIndex: 'nickname',
+      key: 'nickname',
+    },
+    {
+      title: '头像',
+      dataIndex: 'head_image',
+      key: 'head_image',
+    },
+    {
+      title: '点赞数量',
+      dataIndex: 'star_number',
+      key: 'star_number',
+    }
+  ];
+  function allShopList() {
+    allList.value = []
+    if (allTitle.value == '二级分类销售量排行') {
+      allColumn.value = columns_ejflxl_all
+      global.axios.post('decoration/Setting/getGoodsTypeSaledNumberTopList', {
+        currentPage: 1,
+        perPage: 100
+      }, global, true).then((res) => {
+        allList.value = res.list
+      })
+    } else if (allTitle.value == '商家营业额排行') {
+      allColumn.value = columns_sjyye_all
+      global.axios.post('decoration/Setting/getStoreMoneyTopList', {
+        currentPage: 1,
+        perPage: 100
+      }, global, true).then((res) => {
+        allList.value = res.list
+      })
+    } else if (allTitle.value == '商品销量排行') {
+      allColumn.value = columns_spxl_all
+      global.axios.post('decoration/Setting/getGoodsSaledNumberTopList', {
+        currentPage: 1,
+        perPage: 100
+      }, global, true).then((res) => {
+        allList.value = res.list
+      })
+    } else if (allTitle.value == '社区文章点赞数量排行') {
+      allColumn.value = columns_sqwzdz_all
+      global.axios.post('decoration/Setting/getArticleStarTopList', {
+        type: 'a',
+        currentPage: 1,
+        perPage: 100
+      }, global, true).then((res) => {
+        allList.value = res.list
+      })
+    } else if (allTitle.value == '社区视频点赞数量排行') {
+      allColumn.value = columns_sqwzdz_all
+      global.axios.post('decoration/Setting/getArticleStarTopList', {
+        type: 'b',
+        currentPage: 1,
+        perPage: 100
+      }, global, true).then((res) => {
+        allList.value = res.list
+      })
+    }
+  }
+
 </script>
 <template>
   <div>
-    <!-- <div style="display: flex;">
-      <div @click="type='商家'">商家</div>
-      <div @click="type='平台'">平台</div>
-    </div> -->
-    <!-- <div>自己商家id：{{store_id}}</div>
-    <div>平台id：{{global.adminMsg.id}}</div> -->
-    <!-- <div style="position: fixed;top: 15px;right: 205px;width: 100px;height: 100px;z-index: 999;text-align: right;">
-      <a-button @click="cliTz" type="primary">{{is_btn ? '已打开' : '打开通知'}}</a-button>
-      <div v-show="false">
-        <audio controls id="myAudio">
-          <source
-            src="https://beverage-upload.oss-cn-chengdu.aliyuncs.com/rich_text_file/2025218/66cde77qgj5acvb38u9tvtfu14edpr8s.mp3"
-            type="audio/mpeg">
-          您的浏览器不支持 audio 元素。
-        </audio>
-      </div>
-    </div> -->
     <div v-if="type=='商家'">
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
@@ -532,7 +533,7 @@
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
                     <div style="font-size: 17px;"><b>社区文章点赞数量Top10</b></div>
-                    <div class="a60">查看更多</div>
+                    <div class="a60" @click="()=>{lookAll = true;allTitle='社区文章点赞数量排行';allShopList()}">查看更多</div>
                   </div>
                   <div class="a61" v-for="(item,index) in zpddList" :key="item.id">
                     <div style="display: flex;">
@@ -551,12 +552,13 @@
                       <div>{{Number(item.star_number).toLocaleString()}}</div>
                     </div>
                   </div>
+                  <a-empty v-if="zpddList.length==0" style="margin-top: 20%;" />
                 </div>
                 <div style="width: 10px;background-color: #f5f5f5;"></div>
                 <div class="a58" style="width: 48%;">
                   <div class="a59">
                     <div style="font-size: 17px;"><b>社区视频点赞数量Top10</b></div>
-                    <div class="a60">查看更多</div>
+                    <div class="a60" @click="()=>{lookAll = true;allTitle='社区视频点赞数量排行';allShopList()}">查看更多</div>
                   </div>
                   <div class="a61" v-for="(item,index) in spdzList" :key="item.id">
                     <div style="display: flex;">
@@ -575,6 +577,7 @@
                       <div>{{Number(item.star_number).toLocaleString()}}</div>
                     </div>
                   </div>
+                  <a-empty v-if="spdzList.length==0" style="margin-top: 20%;" />
                 </div>
               </div>
             </div>
@@ -653,7 +656,7 @@
               <div class="a58">
                 <div class="a59">
                   <div style="font-size: 17px;"><b>商家营业额Top10</b></div>
-                  <div class="a60">查看更多</div>
+                  <div class="a60" @click="()=>{lookAll = true;allTitle='商家营业额排行';allShopList()}">查看更多</div>
                 </div>
                 <div class="a61" v-for="(item,index) in sjyyeList" :key="item.id">
                   <div style="display: flex;">
@@ -662,11 +665,12 @@
                   </div>
                   <div>{{Number(item.order_money).toLocaleString()}}</div>
                 </div>
+                <a-empty v-if="sjyyeList.length==0" style="margin-top: 20%;" />
               </div>
               <div class="a58">
                 <div class="a59">
                   <div style="font-size: 17px;"><b>商品销量Top10</b></div>
-                  <div class="a60">查看更多</div>
+                  <div class="a60" @click="()=>{lookAll = true;allTitle='商品销量排行';allShopList()}">查看更多</div>
                 </div>
                 <div class="a61" v-for="(item,index) in spxlList" :key="item.id">
                   <div style="display: flex;">
@@ -675,11 +679,12 @@
                   </div>
                   <div>{{Number(item.saled_number).toLocaleString()}}</div>
                 </div>
+                <a-empty v-if="spxlList.length==0" style="margin-top: 20%;" />
               </div>
               <div class="a58">
                 <div class="a59">
                   <div style="font-size: 17px;"><b>二级分类销售量Top10</b></div>
-                  <div class="a60">查看更多</div>
+                  <div class="a60" @click="()=>{lookAll = true;allTitle='二级分类销售量排行';allShopList()}">查看更多</div>
                 </div>
                 <div class="a61" v-for="(item,index) in spejflxlList" :key="item.id">
                   <div style="display: flex;">
@@ -688,12 +693,31 @@
                   </div>
                   <div>{{Number(item.saled_number).toLocaleString()}}</div>
                 </div>
+                <a-empty v-if="spejflxlList.length==0" style="margin-top: 20%;" />
               </div>
             </div>
           </a-col>
         </a-row>
       </div>
     </div>
+    <!-- 社区文章点赞数量Top10弹窗，社区视频点赞数量Top10弹窗,二级分类销售量Top10弹窗，商品销量Top10弹窗，商家营业额Top10弹窗 -->
+    <a-modal v-model:visible="lookAll" :title="allTitle" :footer="null" :width="allTitle=='商品销量排行'?'600px':'800px'">
+      <div>
+        <a-table :columns="allColumn" :data-source="allList">
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'nickname'">
+              <span>{{ record.nickname?record.nickname:'默认昵称' }}</span>
+            </template>
+            <template v-if="column.key === 'head_image'">
+              <img v-if="record.head_image" :src="record.head_image" 
+                style="width: 30px;height: 30px;border-radius: 50%;" alt="">
+              <img v-else style="width: 30px;height: 30px;border-radius: 50%;"
+                src="../../../public/resource/image/userImg.png" alt="">
+            </template>
+          </template>
+        </a-table>
+      </div>
+    </a-modal>
   </div>
 </template>
 <style scoped>

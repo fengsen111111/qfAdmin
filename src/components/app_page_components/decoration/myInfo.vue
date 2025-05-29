@@ -1565,6 +1565,7 @@
 									</div>
 									<div>{{Number(item.saled_number).toLocaleString()}}</div>
 								</div>
+								<a-empty v-if="spxlphlist.length==0" style="margin-top: 20%;" />
 							</div>
 							<div class="a62"></div>
 							<div class="a58">
@@ -1853,6 +1854,7 @@
 				</div>
 			</div>
 		</a-modal>
+		<!--  -->
 	</div>
 </template>
 
