@@ -416,8 +416,6 @@
       const url = emojiMap[`[${alt}]`];
       return url ? `<image src="${url}" style="width:18px;height:18px" />` : match;
     });
-    // console.log('数据',customer_service_state.text_content);
-
   }
   const emojiVisable = ref(false)//表情开关
   // 打开表情选择
@@ -435,30 +433,120 @@
       shopVisable.value = !shopVisable.value
     }
   }
+
+
+  import QRCode from 'qrcode';
   const hbVisable = ref(false)//红包开关
   const hbMoney = ref(null)//红包金额
+  const pay_Obj = ref({})//生成的支付数据
+  let isPay = ref(false)  // 支付弹窗开关
+  let qrCodeData = ref('')//存储生成的二维码数据URL
+  let red_bag_id = ref('')
+  let timer = ref(null);
+  const totalSeconds = ref(5 * 60); // 5 分钟
+  const minute = ref('05');
+  const second = ref('00');
+  const cz_type = ref('')//dpbzj 店铺保证金  flbzj 分类保证金
+  const codeGq = ref(false);//二维码没失效
   // 打开红包弹框
   function fsHb() {
     console.log('打开发送红包');
+    hbMoney.value = ''//打开前清空金额
     hbVisable.value = !hbVisable.value
   }
-  // 支付弹窗开关
-  let isPay = ref(false)
-  import QRCode from 'qrcode';
-  let qrCodeData = ref('')//存储生成的二维码数据URL
-  let red_bag_id = ref('')
+  // 发送红包 -支付
+  function send_hb() {
+    pay_Obj.value = {}//清空支付信息
+    console.log('支付红包', hbMoney.value);
+    if (!Number(hbMoney.value)) {
+      message.error('请检查你的红包金额！')
+      return false
+    }
+    global.axios.post('decoration/RedBag/sendRedBag', {
+      handler_scene: 'pc',//app移动端 pc电脑端  
+      sender_type: store_id.value == global.adminMsg.id ? 'company' : 'store',//store商家 user用户 company平台  
+      sender_id: store_id.value, //商家id
+      geter_id: customer_service_state.room.joiner_sign,//接收人id
+      money: hbMoney.value,//红包金额
+      trade_type: store_id.value == global.adminMsg.id ? 'BALANCE' : 'A_NATIVE',//T_APP微信  A_NATIVE支付宝   BALANCE余额支付
+    }, global, true).then((res) => {
+      console.log('发送红包', res);
+      pay_Obj.value = res //储存支付信息
+      if (res.resp_code == '0000') { // 0000  未开通余额账号；0001  未绑定提现银行卡；0002 余额不足，拉起支付，选择支付方式后重新调用发红包接口  
+        message.error('未开通余额账号,前往前台开通！')
+      } else if (res.resp_code == '0001') {
+        message.error('未绑定提现银行卡,前往前台绑定！')
+      } else if (res.resp_code == '0002') {
+        message.error('余额不足！')
+      }
+      // 有支付信息
+      if (res.pay_info) {
+        red_bag_id.value = res.red_bag_id //记录红包id
+        QRCode.toDataURL(res.pay_info)
+          .then((url) => {
+            console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
+            qrCodeData.value = url
+            hbVisable.value = false//关闭输入弹窗
+            isPay.value = true
+            timer.value = setInterval(updateTime, 1000);
+          })
+          .catch((err) => {
+            console.error('生成二维码失败', err);
+          });
+      }
+    })
+  }
+  // 支付倒计时
+  const updateTime = () => {
+    codeGq.value = false
+    const mins = Math.floor(totalSeconds.value / 60);
+    const secs = totalSeconds.value % 60;
+    minute.value = String(mins).padStart(2, '0');
+    second.value = String(secs).padStart(2, '0');
+    if (totalSeconds.value > 0) {
+      totalSeconds.value--;
+    } else {
+      clearInterval(timer.value);
+      // 倒计时结束后的处理逻辑
+      console.log('倒计时结束,二维码过期,清除二维码，关闭弹窗');
+      codeGq.value = true
+    }
+  };
+  // 刷新二维码
+  function sxewm() {
+    console.log('刷新二维码');
+    send_hb()
+  }
   // 支付弹框点击确定
   function handOKCode() {
-    if (red_bag_id.value) {
-      send({
-        content_type: 'hb',
-        content: red_bag_id.value,
+    // 查询支付结果
+    global.axios
+      .post('decoration/Store/payTypePricesResult', {
+        money_log_id: pay_Obj.value.money_log_id
+      }, global)
+      .then((res) => {
+        // P支付中 S成功 F失败  
+        if (res.result == 'P') {
+          message.error('支付中')
+        } else if (res.result == 'S') {
+          message.success('支付成功')
+          if (red_bag_id.value) {
+            send({
+              content_type: 'hb',
+              content: red_bag_id.value,
+            })
+            customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'hb', content: red_bag_id.value, joiner_sign: store_id.value })
+            red_bag_id.value = ''
+            isPay.value = false//关闭弹框
+            hbVisable.value = false//关闭发红包弹框
+          }
+          isPay.value = false
+        } else if (res.result == 'F') {
+          message.error('支付失败')
+        } else {
+          message.error('未知')
+        }
       })
-      customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'hb', content: red_bag_id.value, joiner_sign: store_id.value })
-      red_bag_id.value = ''
-      isPay.value = false//关闭弹框
-      hbVisable.value = false//关闭发红包弹框
-    }
   }
   // 领取红包 发送消息
   function editList(item) {
@@ -476,46 +564,6 @@
         customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'hb', content: hb_id + '|已领取！', joiner_sign: store_id.value })
       })
     }
-  }
-  // 发送红包 -支付
-  function send_hb() {
-    console.log('支付红包', hbMoney.value);
-    if (!Number(hbMoney.value)) {
-      message.error('请检查你的红包金额！')
-      return false
-    }
-    global.axios.post('decoration/RedBag/sendRedBag', {
-      handler_scene: 'pc',//app移动端 pc电脑端  
-      sender_type: store_id.value == global.adminMsg.id ? 'company' : 'store',//store商家 user用户 company平台  
-      sender_id: store_id.value, //商家id
-      geter_id: customer_service_state.room.joiner_sign,//接收人id
-      money: hbMoney.value,//红包金额
-      trade_type: store_id.value == global.adminMsg.id ? 'BALANCE' : 'A_NATIVE',//T_APP微信  A_NATIVE支付宝   BALANCE余额支付
-    }, global, true).then((res) => {
-      console.log('发送红包', res);
-      const { resp_code } = res
-      // 0000  未开通余额账号；0001  未绑定提现银行卡；0002 余额不足，拉起支付，选择支付方式后重新调用发红包接口  
-      if (resp_code == '0000') {
-        message.error('未开通余额账号,前往前台开通！')
-      } else if (resp_code == '0001') {
-        message.error('未绑定提现银行卡,前往前台绑定！')
-      } else if (resp_code == '0002') {
-        message.error('余额不足！')
-      }
-      // 有支付信息
-      if (res.pay_info) {
-        red_bag_id.value = res.red_bag_id //记录红包id
-        QRCode.toDataURL(res.pay_info)
-          .then((url) => {
-            console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-            qrCodeData.value = url
-            isPay.value = true
-          })
-          .catch((err) => {
-            console.error('生成二维码失败', err);
-          });
-      }
-    })
   }
 
   const timeoutId = ref(null)// 用于存储超时id
@@ -926,9 +974,7 @@
               <!-- id不相同，别人发的消息 -->
               <div class="left_user" v-if="item.joiner_sign != store_id">
                 <div align="left" style="float: left;margin-right: 12px">
-                  <img v-if="customer_service_state.msgObjImg"
-                    :src="customer_service_state.msgObjImg"
-                    alt="">
+                  <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
                   <img v-else
                     src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025217/6j7h9ut1qc6vik5cltb18fr7bh7v5mjs.png"
                     alt="">
@@ -1131,12 +1177,47 @@
           <a-input v-model:value="hbMoney" placeholder="请输入红包金额" />
         </div>
       </a-modal>
-      <!-- 支付弹框 -->
-      <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"
-        cancel-text="放弃" :maskClosable="false">
-        <div style="padding: 20px;text-align: center;">
-          <div>请打开支付宝扫描二维码！</div>
-          <img :src="qrCodeData" alt="支付二维码" />
+      <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
+        style="z-index: 999999;" cancel-text="放弃" :maskClosable="false">
+        <div class="container">
+          <div class="pcHeader">
+            <img class="logoImg"
+              src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025421/tjgvd9d3mr771js7f2o6hqqjsegs2p9b.png"
+              alt="Logo" title="Logo" />
+            <div class="headerTitle">收银台</div>
+          </div>
+          <div class="price">
+            <span class="priceUnit">¥</span>
+            <span class="priceNumber">{{hbMoney}}</span>
+          </div>
+          <div class="payTimeRemaining">
+            <span class="payTxt">支付剩余时间</span>
+            <span class="time">
+              <span class="time">
+                <span class="timeItem">{{ minute }}</span>
+                <span class="timeSplit">:</span>
+                <span class="timeItem">{{ second }}</span>
+              </span>
+            </span>
+          </div>
+          <div class="payType">
+            <ul class="payTab">
+              <li class="payItem activePayItem" style="--theme: #0B5AFE" data-type="alipay">
+                <img class="payIcon"
+                  src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025421/1lbj3114n1mkb3mt71ak14ajhv5gc5nh.png" />
+                <span class=" payTitle">支付宝</span>
+              </li>
+            </ul>
+            <div class="payContent">
+              <img :src="qrCodeData" alt="支付二维码" :style="{opacity: codeGq?'0.1':'1'}" />
+              <div v-if="codeGq" style="position: relative;top: -100px;color: #000000;">
+                二维码已失效
+                <div style="color: #ff0000;cursor: pointer;" @click="sxewm">刷新</div>
+              </div>
+              <div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
+              </div>
+            </div>
+          </div>
         </div>
       </a-modal>
     </div>
@@ -1144,6 +1225,161 @@
 </template>
 
 <style lang="less" scoped>
+  .container {
+    width: 100%;
+    max-width: 1080px;
+    height: 100%;
+    max-height: 720px;
+    position: relative;
+    text-align: center;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .pcHeader {
+    margin-left: 24px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .logoImg {
+    object-fit: contain;
+    height: 30px;
+    margin-right: 10px;
+    max-width: 160px;
+  }
+
+  .headerTitle {
+    font-size: 18px;
+    font-weight: 500;
+    color: #050505;
+  }
+
+  .price {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-family: DINAlternate, DINAlternate-Bold;
+    color: #333333;
+  }
+
+  .priceUnit {
+    font-size: 20px;
+    font-weight: 400;
+    margin-right: 4px;
+  }
+
+  .priceNumber {
+    font-size: 24px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  .payTimeRemaining {
+    margin-bottom: 6px;
+  }
+
+  .payTxt {
+    color: #999;
+    margin-right: 11px;
+  }
+
+  .time {
+    font-weight: 400;
+    font-size: 14px;
+    color: #000000;
+  }
+
+  .timeItem {
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 2px;
+    padding: 2px;
+  }
+
+  .timeSplit {
+    margin: 0 4px;
+  }
+
+  .payTab {
+    margin-top: 20px;
+    display: flex;
+    border-bottom: 1px solid #e9e6e6;
+  }
+
+  .payItem {
+    padding: 10px 20px;
+    background: #ffffff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    margin-right: 20px;
+    box-sizing: border-box;
+  }
+
+  .payItem:last-of-type {
+    margin-right: 0;
+  }
+
+  .payIcon {
+    height: 20px;
+    object-fit: contain;
+    margin-right: 10px;
+  }
+
+  .activePayItem {
+    border-radius: 6px 6px 0px 0px;
+    border: 1px solid #e9e6e6;
+    border-bottom: none;
+  }
+
+  .payItem:first-of-type::after {
+    position: absolute;
+    content: '推荐';
+    right: -18px;
+    top: -11px;
+    width: 36px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+    border-radius: 10px 0 10px 0;
+    background: #E74E4E;
+    color: #ffffff;
+    z-index: 999;
+    font-size: 12px;
+  }
+
+  .activePayItem::before {
+    position: absolute;
+    content: '';
+    right: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 3px;
+    background: #ffffff;
+    z-index: 999;
+  }
+
+  .payContent {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .conetentTxt {
+    text-align: center;
+    font-weight: 400;
+    color: #000000;
+    /* margin-bottom: 55px; */
+  }
+
+
+
   .ellipsis-html {
     display: -webkit-box;
     -webkit-box-orient: vertical;

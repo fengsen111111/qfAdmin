@@ -397,7 +397,7 @@
     const goodsSizes = post_params.goods_sizes;
     const incompleteItems = goodsSizes.filter(item => {
       // || !item.commission; 佣金
-      return !item.name || !item.price || !item.stock 
+      return !item.name || !item.price || !item.stock
     });
     if (incompleteItems.length > 0) {
       console.log('以下规格未填写完整：', incompleteItems);
