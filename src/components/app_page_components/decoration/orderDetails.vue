@@ -47,9 +47,9 @@
 			okType: "primary",
 			onOk: function () {
 				// 
-				if(localStorage.getItem('is_shouhou')){
+				if (localStorage.getItem('is_shouhou')) {
 					emit("closeChildPage", pageData.page_key);
-				}else{
+				} else {
 					emit("djtzmk", '购物商城', '订单管理');
 				}
 			},
@@ -100,11 +100,6 @@
 						<img v-else src="../../../../public/resource/image/userImg.png"
 							style="width: 50px;height: 50px;border-radius: 50%;" alt="">
 						<div style="margin-left: 20px;">
-							<!-- <div style="font-size: 18px;font-weight: bold;">张三成都软件开发·创业卷卷圈</div>
-							<div style="color: #4e5969;font-size: 12px;">
-								<span>QFID:1231312</span>
-								<span style="margin-left: 40px;">18388118811</span>
-							</div> -->
 							<div style="font-size: 18px;font-weight: bold;">
 								{{userInfo.nickname?userInfo.nickname:'默认昵称'}}</div>
 							<div style="color: #4e5969;font-size: 12px;">
@@ -123,62 +118,21 @@
 				<div style="width: 35%;padding: 10px 30px;">
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
-						订单日志</div>
+						物流信息</div>
 					<div style="padding: 20px;">
-						<div style="border-left: 2px solid #dee5ec;position: relative;padding-bottom: 10px;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #dee5ec;top: 0px;left: -11px;">
+						<div v-for="(item,index) in orderDetails.logistics_detail" :key="index"
+							style="position: relative;padding-bottom: 10px;"
+							:style="{ 'border-left': index==orderDetails.logistics_detail.length-1 ? 'none' : '2px solid #dee5ec' }">
+							<div style="position: absolute;width: 20px;height: 20px;border-radius: 50%;top: 0px;left: -11px;"
+								:style="{ 'background-color': index==orderDetails.logistics_detail.length-1 ? '#0c96f1' : '#dee5ec' }">
 							</div>
 							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>用户已下单 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">用户已支付完成下单</div>
+								<div>物流状态 2020-10-10 12:12:12</div>
+								<div style="color: #999999;">物流状态物流状态物流状态</div>
 							</div>
 						</div>
-						<div style="border-left: 2px solid #dee5ec;position: relative;padding-bottom: 10px;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #dee5ec;top: 0px;left: -11px;">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>订单发货 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">商家（张三）已通过顺丰发货</div>
-							</div>
-						</div>
-						<div style="border-left: 2px solid #dee5ec;position: relative;padding-bottom: 10px;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #dee5ec;top: 0px;left: -11px;">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>订单收货 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">用户已确认收货</div>
-							</div>
-						</div>
-						<div style="border-left: 2px solid #dee5ec;position: relative;padding-bottom: 10px;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #dee5ec;top: 0px;left: -11px;">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>提交售后 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">用户已发起售后</div>
-							</div>
-						</div>
-						<div style="border-left: 2px solid #dee5ec;position: relative;padding-bottom: 10px;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #dee5ec;top: 0px;left: -11px;">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>平台介入 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">当前售后平台已介入共同处理</div>
-							</div>
-						</div>
-						<div style="position: relative;">
-							<div
-								style="position: absolute;width: 20px;height: 20px;border-radius: 50%;background-color: #0c96f1;top: 0px;left: -11px;">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>售后完成 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">当前售后商家拒绝</div>
-								<div style="color: #999999;">当前售后商家已同意退款/换货</div>
-							</div>
+						<div v-if="!orderDetails.logistics_detail">
+							<a-empty />
 						</div>
 					</div>
 				</div>
@@ -349,7 +303,7 @@
 						style="border: 1px solid #0c96f1;background-color: #e7edfd;border-radius: 4px;padding: 2px 10px;color: #0c96f1;margin-left: 30px;">
 						打印
 					</div> -->
-					<Print :details = orderDetails />
+					<Print :details=orderDetails />
 				</div>
 			</div>
 		</div>
