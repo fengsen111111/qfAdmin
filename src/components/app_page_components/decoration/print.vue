@@ -18,7 +18,14 @@
         }
     });
     setTimeout(() => {
-        console.log('接收到的参数', props.details); //接收到的订单详情数据
+        console.log('接收到的参数', props.details.id); //接收到的订单详情数据
+        global.axios
+            .post('decoration/Order/printOrder', {
+                order_id: props.details.id
+            }, global)
+            .then((res) => {
+                console.log('当前数据', res.list);
+            });
     }, 2000);
 
 
