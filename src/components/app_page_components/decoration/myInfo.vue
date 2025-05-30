@@ -1030,69 +1030,71 @@
 	<!--搜索-->
 	<div>
 		<!-- <div>审核中状态</div> -->
-		<div v-if="shType=='a'||shType=='c'">
-			<div style="display: flex;align-items: center;">
-				<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
-					style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
-					@click="closeChildPage()">&#xe6d2;
-				</a-button>
-				<div style="font-size: 18px;">
-					店铺信息
-				</div>
-			</div>
-			<div class="a1">
-				<div class="a2">
-					<ClockCircleFilled class="a3" />
-					<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
-					<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span></div>
-				</div>
-				<div style="font-size: 12px;">
-					<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
-					<div class="a8">
-						<span>审核进度：</span>
-						<div v-if="shType=='a'" class="a9"></div>
-						<div v-if="shType=='c'" class="a10"></div>
+		<div v-if="is_ptsj == '商家'">
+			<div v-if="shType=='a'||shType=='c'">
+				<div style="display: flex;align-items: center;">
+					<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+						style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+						@click="closeChildPage()">&#xe6d2;
+					</a-button>
+					<div style="font-size: 18px;">
+						店铺信息
 					</div>
-					<div class="a11">
-						<div>店铺信息：</div>
-						<div class="a12">
-							<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺编号</span>
-								{{shopObj.id}}</span>
-							<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
-								{{shopObj.store_name}}</span>
-							<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺类型</span>
-								{{shopObj.type=='b'?'个人店铺':'实体店铺'}}</span>
+				</div>
+				<div class="a1">
+					<div class="a2">
+						<ClockCircleFilled class="a3" />
+						<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
+						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span></div>
+					</div>
+					<div style="font-size: 12px;">
+						<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
+						<div class="a8">
+							<span>审核进度：</span>
+							<div v-if="shType=='a'" class="a9"></div>
+							<div v-if="shType=='c'" class="a10"></div>
+						</div>
+						<div class="a11">
+							<div>店铺信息：</div>
+							<div class="a12">
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺编号</span>
+									{{shopObj.id}}</span>
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
+									{{shopObj.store_name}}</span>
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺类型</span>
+									{{shopObj.type=='b'?'个人店铺':'实体店铺'}}</span>
+							</div>
 						</div>
 					</div>
+					<div v-if="is_ptsj == '商家'">
+						<a-dropdown>
+							<a-button class="a13">
+								<span>更多</span>
+								<DownOutlined style="font-size: 10px;" />
+							</a-button>
+							<template #overlay>
+								<a-menu>
+									<a-menu-item>
+										<span @click="cancelRz()" class="a14">取消入驻</span>
+									</a-menu-item>
+									<a-menu-item v-if="shType=='c'">
+										<span @click="cxrz" class="a14">重新入驻</span>
+									</a-menu-item>
+								</a-menu>
+							</template>
+						</a-dropdown>
+	
+					</div>
 				</div>
-				<div v-if="is_ptsj == '商家'">
-					<a-dropdown>
-						<a-button class="a13">
-							<span>更多</span>
-							<DownOutlined style="font-size: 10px;" />
-						</a-button>
-						<template #overlay>
-							<a-menu>
-								<a-menu-item>
-									<span @click="cancelRz()" class="a14">取消入驻</span>
-								</a-menu-item>
-								<a-menu-item v-if="shType=='c'">
-									<span @click="cxrz" class="a14">重新入驻</span>
-								</a-menu-item>
-							</a-menu>
-						</template>
-					</a-dropdown>
-
+				<div style="margin-top: 40px;">
+					<img class="a15"
+						src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025424/5njwtnlml419mj9la4lbvidvelv2fq85.png"
+						alt="">
 				</div>
-			</div>
-			<div style="margin-top: 40px;">
-				<img class="a15"
-					src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025424/5njwtnlml419mj9la4lbvidvelv2fq85.png"
-					alt="">
 			</div>
 		</div>
 		<!-- <div>审核通过</div> -->
-		<div v-else>
+		<div v-if="shType=='b'||is_ptsj == '平台'">
 			<!--搜索-->
 			<div style="padding: 20px;">
 				<div class="a16">
@@ -1105,7 +1107,7 @@
 						<div>店铺详情页</div>
 						<div class="a22" @click="closeChildPage()">
 							返回</div>
-						<div v-if="is_ptsj == '平台'" class="a22B" @click="handSjwg()">发布违规通知</div>
+						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22B" @click="handSjwg()">发布违规通知</div>
 					</div>
 				</div>
 				<!-- 商家违规弹窗 -->

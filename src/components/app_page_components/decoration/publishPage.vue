@@ -879,7 +879,7 @@
     post_params.detail.splice(index, 1)
   }
 
-  const isYl = ref(false)//是否预览
+  const isYl = ref(true)//是否预览 //默认打开
 
   const sprmc = ref([])//商品热门词
   function sprmcList() {
