@@ -3,7 +3,7 @@
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
 	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined,CheckCircleFilled,CloseCircleFilled } from "@ant-design/icons-vue";
+	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
 	import { bd09ToGcj02 } from './zbzh'
@@ -286,7 +286,9 @@
 				return false
 			}
 		}
-		if (!id_card_times.value.length==2) {
+		if (id_card_times.value.length > 1) {
+			// 
+		} else {
 			message.error('请选择身份证有效期')
 			return false
 		}
@@ -437,7 +439,7 @@
 			return { valid: false, msg: '密码未满足所有规则' };
 		}
 	}
-    const popoverVisible = ref(false)
+	const popoverVisible = ref(false)
 </script>
 
 <template>
@@ -844,7 +846,7 @@
 													</div>
 													<div>
 														<div style="display: flex;align-items: center;">
-															<CheckCircleFilled v-if="pasYz.rule_a"  
+															<CheckCircleFilled v-if="pasYz.rule_a"
 																style="font-size: 10px;color: green;margin-right: 5px;" />
 															<CloseCircleFilled v-else
 																style="font-size: 10px;color: #FF5454;margin-right: 5px;" />
@@ -915,7 +917,8 @@
 										</div>
 										<!-- <div @click="resule_vis=true">入驻成功</div> -->
 										<!-- 入驻成功弹框 -->
-										<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered @cancel="toHome">
+										<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered
+											@cancel="toHome">
 											<div>
 												<div style="display: flex;">
 													<div style="margin: 0 auto;display: flex;align-items: center;">

@@ -307,11 +307,13 @@
 				return false
 			}
 		}
-		if (!id_card_times.value.length==2) {
+		// console.log('id_card_times.value',id_card_times.value.length);
+		if (id_card_times.value.length > 1) {
+			// 
+		} else {
 			message.error('请选择身份证有效期')
 			return false
 		}
-		return false
 		if (!mobile.value) {
 			message.error('请输入手机号')
 			return false
