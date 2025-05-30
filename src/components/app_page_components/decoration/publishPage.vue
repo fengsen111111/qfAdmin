@@ -358,7 +358,7 @@
       console.log('新增不要曝光量字段');
       delete post_params.power
     }
-    post_params.status = post_params.status ? 'Y' : 'N',
+    post_params.status = post_params.status==true ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
