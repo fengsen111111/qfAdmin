@@ -286,7 +286,7 @@
 				return false
 			}
 		}
-		if (!id_card_times.value) {
+		if (!id_card_times.value.length==2) {
 			message.error('请选择身份证有效期')
 			return false
 		}
