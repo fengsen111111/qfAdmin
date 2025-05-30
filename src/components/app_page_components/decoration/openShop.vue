@@ -307,10 +307,11 @@
 				return false
 			}
 		}
-		if (!id_card_times.value) {
+		if (!id_card_times.value.length==2) {
 			message.error('请选择身份证有效期')
 			return false
 		}
+		return false
 		if (!mobile.value) {
 			message.error('请输入手机号')
 			return false
@@ -839,22 +840,6 @@
 										</div>
 									</div>
 								</div>
-
-
-								<!-- <div style="display: flex;margin: 15px 0px 15px 100px;align-items: center;">
-									<div style="display: flex;white-space:nowrap;">
-										<span style="color: red;">*</span>
-										<span>身份证号</span>
-									</div>
-									<a-input v-model:value="id_card_number" style="margin-left: 10px;width: 300px;" />
-								</div>
-								<div style="display: flex;margin: 15px 0px 15px 87px;align-items: center;">
-									<div style="display: flex;white-space:nowrap;">
-										<span style="color: red;">*</span>
-										<span>负责人姓名</span>
-									</div>
-									<a-input v-model:value="name" style="margin-left: 10px;width: 300px;" />
-								</div> -->
 								<div style="display: flex;margin: 15px 0px 15px 44px;align-items: center;">
 									<div style="display: flex;white-space:nowrap;">
 										<span style="color: red;">*</span>
