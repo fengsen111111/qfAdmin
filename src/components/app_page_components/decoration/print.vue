@@ -69,17 +69,17 @@
     }
     // 刷新
     function sure() {
-        // window.location.reload();
-        if (!LODOP) {
-            azqk.value = 'lodop未安装'
-            console.log('lodop未安装');
-            clearInterval(intervalId); // 停止定时器
-            LODOP = getLodop()
-        } else {
-            console.log('lodop已安装');
-            azqk.value = 'lodop已安装'
-            clearInterval(intervalId); // 停止定时器
-        }
+        window.location.reload();
+        // if (!LODOP) {
+        //     azqk.value = 'lodop未安装'
+        //     console.log('lodop未安装');
+        //     clearInterval(intervalId); // 停止定时器
+        //     LODOP = getLodop()
+        // } else {
+        //     console.log('lodop已安装');
+        //     azqk.value = 'lodop已安装'
+        //     clearInterval(intervalId); // 停止定时器
+        // }
     }
 
     function dy() {
@@ -315,6 +315,7 @@
     // 跳转下载打印组件
     function andyzj() {
         window.open('http://www.c-lodop.com/download.html', '_blank')
+        // https://admin.qfcss.cn/CLodop_Setup_for_Win32NT.exe
     }
 </script>
 
@@ -385,9 +386,11 @@
                                     未设置
                                 </div>
                             </div>
-                            <div @click="andyzj"
+                            <!-- <div @click="andyzj"
                                 style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
-                                安装打印组件</div>
+                                安装打印组件</div> -->
+                            <a style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;"
+                                href="https://admin.qfcss.cn/CLodop_Setup_for_Win32NT.exe">安装打印组件</a>
                         </div>
                     </div>
                 </div>
