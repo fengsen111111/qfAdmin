@@ -286,7 +286,7 @@
 			return false
 		}
 		// 本地商家需要营业执照
-		if (type.value == 'a') {
+		if (type.value == 'a'||type.value == 'c'||type.value == 'd') {
 			if (!license_image.value) {
 				message.error('请上传营业执照')
 				return false
@@ -392,26 +392,19 @@
 			})
 	}
 
-	const shopTypeWd = ref(false)//商户类型 a本地商家 b网店商家   
-	const shopTypeBd = ref(false)//商户类型 a本地商家 b网店商家  
+	const shopRzType = ref('a')//商户类型 a本地商家 b网店商家 c个体工商户  d企业店
 	const buzhou_type = ref(1)//1选择类型 2填写信息
 
-	if (route.query.type == 'a') {
-		shopTypeWd.value = true
-		buzhou_type.value = 2
-	} else if (route.query.type == 'b') {
-		shopTypeBd.value = true
+	if (route.query.type) {
+		shopRzType.value = route.query.type
 		buzhou_type.value = 2
 	}
+
 	// 下一步
 	function toxyb() {
 		// 切换店铺信息页面
-		if (shopTypeWd.value || shopTypeBd.value) {
-			type.value = shopTypeWd.value ? 'b' : 'a'
-			buzhou_type.value = 2
-		} else {
-			message.error('请先选择类型')
-		}
+		type.value = shopRzType.value
+		buzhou_type.value = 2
 	}
 
 	const errMsg = ref('')//错误信息
@@ -557,28 +550,53 @@
 								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 								<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
 							</div>
-							<div @click="()=>{shopTypeWd=true;shopTypeBd=false}"
-								:style="{ 'border': shopTypeWd ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+							<div @click="()=>{shopRzType='a'}"
+								:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio v-model:checked="shopTypeWd"
-									@change="shopTypeBd=shopTypeWd?false:true"></a-radio>
-								<div style="margin-left: 10px;">
-									<div>网店商家</div>
-									<div>无营业执照，想以个人身份开店</div>
-								</div>
-							</div>
-							<div @click="()=>{shopTypeBd=true;shopTypeWd=false}"
-								:style="{ 'border': shopTypeBd ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio v-model:checked="shopTypeBd"
-									@change="shopTypeWd=shopTypeBd?false:true"></a-radio>
+								<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
+								<a-radio :checked="false" v-else></a-radio>
 								<div style="margin-left: 10px;">
 									<div>本地商家</div>
 									<div>有营业执照，想以个体工商户身份开店</div>
 								</div>
 							</div>
+							<div @click="()=>{shopRzType='b'}"
+								:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
+								<a-radio :checked="false" v-else></a-radio>
+								<div style="margin-left: 10px;">
+									<div>网店商家</div>
+									<div>无营业执照，想以个人身份开店</div>
+								</div>
+							</div>
+							
+							<div @click="()=>{shopRzType='c'}"
+								:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio :checked="true" v-if="shopRzType=='c'"></a-radio>
+								<a-radio :checked="false" v-else></a-radio>
+								<div style="margin-left: 10px;">
+									<div>个体工商户</div>
+									<div>可以提交个体工商户营业执照</div>
+								</div>
+							</div>
+							<div style="display: flex;align-items: baseline;margin-top: 20px;">
+								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">企业店</span>
+								<span style="font-size: 12px;">（适合企业入驻，可以提交企业工商户营业执照）</span>
+							</div>
+							<div @click="()=>{shopRzType='d'}"
+								:style="{ 'border': shopRzType=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
+								<a-radio :checked="true" v-if="shopRzType=='d'"></a-radio>
+								<a-radio :checked="false" v-else></a-radio>
+								<div style="margin-left: 10px;">
+									<div>企业店</div>
+									<div>可以提交企业工商户营业执照</div>
+								</div>
+							</div>
 
-							<div style="text-align: center;margin-top: 60px;margin-bottom: 70px;">
+							<div style="text-align: center;margin:20px 0px;">
 								<a-button @click="toxyb" type="primary"
 									style="font-size: 15px !important;padding: 8px 40px;" size="large">下一步</a-button>
 							</div>
@@ -647,8 +665,10 @@
 									</div>
 									<div style="margin-left: 10px;">
 										<a-radio-group v-model:value="type" name="radioGroup">
-											<a-radio value="b" v-if="type=='b'">网店商家</a-radio>
-											<a-radio value="a" v-else-if="type=='a'">本地商家</a-radio>
+											<a-radio value="a" v-if="type=='a'">本地商家</a-radio>
+											<a-radio value="b" v-else-if="type=='b'">网店商家</a-radio>
+											<a-radio value="c" v-else-if="type=='c'">个体工商户</a-radio>
+											<a-radio value="d" v-else-if="type=='d'">企业店</a-radio>
 										</a-radio-group>
 									</div>
 									<a-popover v-if="type=='a'" title="规范" placement="rightTop">
@@ -659,8 +679,8 @@
 										<span style="color: #1890FF;margin-left: 10px;">查看规范</span>
 									</a-popover>
 								</div>
-								<!-- 本地商家 -->
-								<div v-if="type=='a'" style="cursor: pointer;">
+								<!-- 本地商家 个体工商户 企业店 -->
+								<div v-if="type=='a'||type=='c'||type=='d'" style="cursor: pointer;">
 									<div style="display: flex;margin: 15px 0px 15px 105px;align-items: center;">
 										<div style="display: flex;white-space:nowrap;">
 											<span>详细地址</span>
@@ -671,11 +691,8 @@
 										<div style="display: flex;white-space:nowrap;">
 											<span>坐标</span>
 										</div>
-										<!-- <a-button type="primary" @click="isMap = true"
-											style="margin-left: 10px;">打开</a-button> -->
-
 										<div @click="isMap = true" style="margin-left: 10px;">{{location}}</div>
-										<a-popover v-if="type=='a'" title="提示" placement="rightTop">
+										<a-popover title="提示" placement="rightTop">
 											<template #content>
 												<div>点击经纬度选择您的店铺地址</div>
 											</template>
@@ -752,7 +769,7 @@
 													</div>
 												</a-upload>
 											</div>
-											<div v-if="type=='a'" style="display: flex;margin-left: 20px;">
+											<div v-if="type=='a'||type=='c'||type=='d'" style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>
 													<span>营业执照</span>
