@@ -1,10 +1,10 @@
 <script setup>
   import { inject, onBeforeMount, reactive, ref, getCurrentInstance, watch } from "vue";
-  import { RightOutlined, InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined, ExclamationCircleFilled,QuestionCircleOutlined } from "@ant-design/icons-vue";
+  import { RightOutlined, InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined, ExclamationCircleFilled, QuestionCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
   import Draggable from 'vuedraggable';//排序插件
 
-  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType", "toShopInfo"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "closeChildPageTwo", "editType", "toShopInfo", "djtzmk"]);
   const global = inject("global").value;
   import dayjs from 'dayjs';
 
@@ -358,7 +358,7 @@
       console.log('新增不要曝光量字段');
       delete post_params.power
     }
-    post_params.status = post_params.status==true ? 'Y' : 'N',
+    post_params.status = post_params.status == true ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
           item.status = item.status ? 'Y' : 'N'//启用状态
@@ -1040,7 +1040,13 @@
       })
   }
   // 表格规格输入内容变化
-  function chnageInput() {
+  function chnageInput(key, item, index) {
+    if (key == 'stock') {
+      // 库存需要判断
+      if (!/^\d+$/.test(item.stock)) {
+        post_params.goods_sizes[index].stock = ''//清空库存
+      }
+    }
     shopGuige.value[0].value = []
     shopGuige.value[1].value = []
     post_params.goods_sizes.map((item, index) => {
@@ -1053,6 +1059,34 @@
         isCustom: false
       })
     })
+  }
+
+
+  // 判断规格拼单价是否大于原价
+  function pdpdjsfdyyj(item, index) {
+    if (item.price < item.old_price) {
+      // 拼单价小于原价
+    } else {
+      // 大于等于原价
+      message.error('拼单价不可大于商品原价')
+      post_params.goods_sizes[index].price = ''//清空拼单价
+    }
+  }
+
+  function formatPrice(value) {
+    // 1. 只能是数字和小数点
+    value = value.replace(/[^0-9.]/g, '');
+    // 2. 只保留第一个小数点
+    value = value.replace(/^\./, ''); // 开头不能是点
+    value = value.replace(/\.{2,}/g, '.'); // 连续点变一个
+    value = value.replace('.', '#').replace(/\./g, '').replace('#', '.');
+    // 3. 最多保留两位小数
+    value = value.replace(/^(\d+)(\.\d{0,2})?.*$/, '$1$2');
+    return value;
+  }
+
+  function _toYfmb() {
+    emit("djtzmk");
   }
 
 </script>
@@ -1133,8 +1167,7 @@
               <ExclamationCircleOutlined class="a21" />
               <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
               <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
-              <span
-                v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+              <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
               <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
               <!-- <span v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="c22" @click="czbzj()">去缴纳</span> -->
 
@@ -1543,7 +1576,10 @@
                           }">
                             <template #item="{ element, val_index }">
                               <div class="b1">
-                                <a-input v-model:value="element.label" placeholder="请输入规格名称" style="width: 200px;" />
+                                <a-input v-if="item.labelValue=='stock'" placeholder="请输入规格库存"
+                                  @input="e => xx.label = formatPrice(e.target.value)" v-model:value="xx.label"
+                                  style="width: 200px;" />
+                                <a-input v-else placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
                                 <div @click="removeItem(index,val_index)" class="b2">删除</div>
                                 <div v-if="element.isCustom" class="b3">
                                   定制
@@ -1555,7 +1591,11 @@
                         <div v-else class="b4">
                           <template v-for="(xx,xx_index) in item.value" :key="xx_index">
                             <div class="b5">
-                              <a-input placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
+                              <!-- {{item.labelValue=='stock'}} -->
+                              <a-input v-if="item.labelValue=='stock'" placeholder="请输入规格库存"
+                                @input="e => xx.label = formatPrice(e.target.value)" v-model:value="xx.label"
+                                style="width: 200px;" />
+                              <a-input v-else placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
                               <div @click="removeItem(index,xx_index)" class="b6">删除
                               </div>
                               <div v-if="xx.isCustom" class="b7">
@@ -1693,42 +1733,46 @@
                               </td>
                               <td>
                                 <template v-if="shopGuige[0].labelValue=='name'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name"
-                                    placeholder="请输入名称" />
+                                  <a-input @change="chnageInput('name',item,index)" type="text"
+                                    v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[0].labelValue=='stock'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock"
-                                    placeholder="请输入库存" />
+                                  <a-input @change="chnageInput('stock',item,index)" type="text"
+                                    v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>
                                 <template v-if="shopGuige[1].labelValue=='name'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.name"
-                                    placeholder="请输入名称" />
+                                  <a-input @change="chnageInput('name',item,index)" type="text"
+                                    v-model:value="item.name" placeholder="请输入名称" />
                                 </template>
                                 <template v-else-if="shopGuige[1].labelValue=='stock'">
-                                  <a-input @change="chnageInput()" type="text" v-model:value="item.stock"
-                                    placeholder="请输入库存" />
+                                  <a-input @change="chnageInput('stock',item,index)" type="text"
+                                    v-model:value="item.stock" placeholder="请输入库存" />
                                 </template>
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.old_price" placeholder="请输入原价" />
+                                <a-input type="text" v-model:value="item.old_price"
+                                  @input="e => item.old_price = formatPrice(e.target.value)" placeholder="请输入原价" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.price" placeholder="输入拼单价" />
+                                <a-input type="text" v-model:value="item.price" @change="pdpdjsfdyyj(item,index)"
+                                  placeholder="输入拼单价" @input="e => item.price = formatPrice(e.target.value)" />
                               </td>
                               <td>
                                 <a-switch v-model:checked="item.uper_status" checked-children="是"
                                   un-checked-children="否" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.commission" placeholder="输入佣金" />
+                                <a-input type="text" v-model:value="item.commission"
+                                  @input="e => item.commission = formatPrice(e.target.value)" placeholder="输入佣金" />
                               </td>
                               <td>
                                 <a-switch v-model:checked="item.status" checked-children="是" un-checked-children="否" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.order" placeholder="请输入排序" />
+                                <a-input type="text" v-model:value="item.order"
+                                  @input="e => item.order = formatPrice(e.target.value)" placeholder="请输入排序" />
                               </td>
                             </tr>
                           </template>
@@ -1817,7 +1861,10 @@
                     <div>运费模板</div>
                   </div>
                   <div class="b21">
-                    <div v-if="allYfmb.length==0">暂无启用模板！</div>
+                    <div v-if="allYfmb.length==0">
+                      暂无启用模板！点击<span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;">新增</span>;
+                      若已有模板点击<span @click="getStoreCarriageList()" style="color: #1890FF;cursor: pointer;">刷新</span>
+                    </div>
                     <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
                       <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
                       <!-- <a-radio value="2">其它模板</a-radio> -->
@@ -1925,8 +1972,7 @@
                 </div>
                 <div class="b37">
                   <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-                  <span
-                    v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+                  <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">

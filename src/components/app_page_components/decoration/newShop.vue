@@ -10,7 +10,7 @@
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
 
-  let emit = defineEmits(["openChildPage", "closeChildPage","toShopDetails"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "toShopDetails", "djtzmk"]);
 
   const global = inject("global").value;
 
@@ -140,7 +140,7 @@
     console.log('pageData.data', pageData.data);
     pageData.data = pageData.data ? pageData.data : {}
     // pageData.data.typeId = checkClassify.value.threeClassify
-    pageData.data.typeId = [checkClassify.value.oneClassify,checkClassify.value.twoClassify,checkClassify.value.threeClassify]
+    pageData.data.typeId = [checkClassify.value.oneClassify, checkClassify.value.twoClassify, checkClassify.value.threeClassify]
     pageData.data.typeName = selClassify.value
     let arr = selClassify.value.split(' > ')
     console.log('arr', arr, checkClassify.value.threeClassify);
@@ -257,9 +257,14 @@
     typeVis.value = 1
   }
   // 去店铺详情
-  function toShopInfo(){
+  function toShopInfo() {
     console.log('去店铺详情');
     emit('toShopDetails')
+  }
+
+  // 去运费模板
+  function _djtzmk() {
+    emit("djtzmk", '快递物流', '运费模板');
   }
 </script>
 
@@ -268,7 +273,7 @@
   <a-spin :spinning="spinning">
     <div v-if="typeVis==1" class="a1">
       <div class="a2">
-        <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class a3" 
+        <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class a3"
           @click="closeChildPage(pageData.page_key)">&#xe6d2;
         </a-button>
         <div style="font-size: 18px;">发布新商品</div>
@@ -343,7 +348,7 @@
     </div>
     <div v-else class="a17">
       <publishPage :pageData="pageData" @closeChildPageTwo="closeChildPageTwo" @closeChildPage="closeChildPage"
-        @editType="editType" @openChildPage="openChildPage" @toShopInfo="toShopInfo" />
+        @editType="editType" @openChildPage="openChildPage" @toShopInfo="toShopInfo" @djtzmk="_djtzmk" />
     </div>
     <!-- 支付弹框 -->
     <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"
@@ -480,6 +485,4 @@
     padding: 20px;
     text-align: center;
   }
-
-  
 </style>
