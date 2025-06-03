@@ -56,11 +56,9 @@
   }
 
   function onChange(val, label) {
-    console.log('选择了行政区', val[2], label[2].label);
-    val = val[2]
-    label = label[2].label
-    console.log('三级', getFullRegionNameByLabel(treeData.value, label));
-    send_addressText.value = getFullRegionNameByLabel(treeData.value, label)
+    console.log('选择了行政区', val, label);
+    console.log('三级', getFullRegionNameByLabel(treeData.value, label[0]));
+    send_addressText.value = getFullRegionNameByLabel(treeData.value, label[0])
     // send_addressText.value = label[0]
   }
   const checkedList = ref([])
@@ -335,14 +333,12 @@
           // 取值  发货地id
           // send_address.value = findItemByLabel(treeData.value, res.send_address).value;
           let objArr = findRegionChainByFullName(treeData.value, res.send_address)
-          // console.log('objArr', objArr);
-          send_address.value = []
-          objArr.map((item) => {
-            send_address.value.push(item.value)
-          })
+          if(objArr){
+            send_address.value = objArr[objArr.length-1].value
+          }
           console.log('send_address', send_address.value);
 
-          status.value = res.status + ''
+          status.value = res.status+''
           let arr = [] //不包邮地区
           res.price_city.map((item) => {
             arr.push(item.adcode)
@@ -366,7 +362,7 @@
             })
           })
 
-          if (res.price_city.length > 0) {
+          if(res.price_city.length>0){
             jffs.value = res.price_city[0].price_type ? res.price_city[0].price_type : 'b' //计费方式
           }
           zdqyyf.value = [] //指定区域运费
@@ -447,8 +443,14 @@
               </div>
               <div class="a12">
                 <div class="a13">发货地与您的实际发货地不符，可能会导致物流投诉</div>
-                <a-cascader v-model:value="send_address" @change="onChange" :options="treeData" placeholder="请选择地区"
-                  style="width: 400px;" />
+                <a-tree-select @change="onChange" v-model:value="send_address" show-search style="width: 400px;"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="请输入关键词搜索发货地" allow-clear
+                  tree-default-expand-all :tree-data="treeData" tree-node-filter-prop="label">
+                  <template #title="{ value: val, label }">
+                    <b v-if="val === 'parent 1-1'" style="color: #08c">sss</b>
+                    <template v-else>{{ label }}</template>
+                  </template>
+                </a-tree-select>
               </div>
             </div>
             <!-- 状态 -->
