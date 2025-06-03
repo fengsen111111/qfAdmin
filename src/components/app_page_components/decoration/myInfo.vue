@@ -1151,7 +1151,7 @@
 							</div>
 
 							<div class="a33">
-								<div class="a34">商家汇付:</div>
+								<div class="a34">商家账户（汇付）:</div>
 								<div v-if="is_ptsj == '平台'">
 									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
 										style="cursor: pointer;color: #ff0000;">暂未开通</div>

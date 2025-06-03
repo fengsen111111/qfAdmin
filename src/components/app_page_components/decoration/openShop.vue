@@ -286,7 +286,7 @@
 			return false
 		}
 		// 本地商家需要营业执照
-		if (type.value == 'a'||type.value == 'c'||type.value == 'd') {
+		if (type.value == 'a' || type.value == 'c' || type.value == 'd') {
 			if (!license_image.value) {
 				message.error('请上传营业执照')
 				return false
@@ -380,7 +380,7 @@
 	const drFwb = ref('')
 
 	function handOpen(type) {
-		drTitle.value = type == 'store_entry_introduce' ? '商家入驻介绍' : type == 'store_privacy_rule' ? '商家隐私协议' : type == 'store_rule' ? '平台商家规则' : '标题'
+		drTitle.value = type == 'store_entry_introduce' ? '商家入驻介绍' : type == 'store_privacy_rule' ? '商家隐私协议' : type == 'store_rule' ? '商家服务协议' : '标题'
 		global.axios
 			.post('decoration/Setting/getRichTextContent', {
 				type: type
@@ -570,7 +570,7 @@
 									<div>无营业执照，想以个人身份开店</div>
 								</div>
 							</div>
-							
+
 							<div @click="()=>{shopRzType='c'}"
 								:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
@@ -639,21 +639,26 @@
 										<span style="color: red;">*</span>
 										<span>门店logo</span>
 									</div>
-									<div style="margin-left: 10px;display: flex;">
-										<div v-if="logo"
-											style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
-											<a-image :width="90" :src="logo" :preview="{ src: logo }" />
-											<div @click="delImgLogo()" class="imgClose" style="margin-left: 10px;">
-												<CloseCircleOutlined />
+									<div>
+										<div style="margin-left: 10px;display: flex;">
+											<div v-if="logo"
+												style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
+												<a-image :width="90" :src="logo" :preview="{ src: logo }" />
+												<div @click="delImgLogo()" class="imgClose" style="margin-left: 10px;">
+													<CloseCircleOutlined />
+												</div>
 											</div>
+											<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
+												<div
+													style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;border-radius: 4px;margin-right: 10px;text-align: center;">
+													<PlusOutlined
+														style="font-size: 30px;color: #999999;margin-top: 35%;" />
+												</div>
+											</a-upload>
 										</div>
-										<a-upload v-else :customRequest="upload" :file-list="[]" list-type="text">
-											<div
-												style="width: 90px;height: 90px;border: 1px dashed #dbdbdb;border-radius: 4px;margin-right: 10px;text-align: center;">
-												<PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
-											</div>
-										</a-upload>
+										<div style="margin-left: 10px;color: #ff0000;">宽 : 高 = 1 : 1</div>
 									</div>
+
 								</div>
 								<!--  -->
 								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">开店人基本信息
@@ -769,7 +774,8 @@
 													</div>
 												</a-upload>
 											</div>
-											<div v-if="type=='a'||type=='c'||type=='d'" style="display: flex;margin-left: 20px;">
+											<div v-if="type=='a'||type=='c'||type=='d'"
+												style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>
 													<span>营业执照</span>
@@ -968,7 +974,7 @@
 											<span style="color: #1890FF;"
 												@click="handOpen('store_privacy_rule')">《商家隐私协议》</span>
 											<span style="color: #1890FF;"
-												@click="handOpen('store_rule')">《平台商家规则》</span>
+												@click="handOpen('store_rule')">《商家服务协议》</span>
 										</div>
 									</div>
 								</div>

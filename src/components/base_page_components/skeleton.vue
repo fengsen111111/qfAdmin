@@ -757,7 +757,7 @@
         </div>
       </a-layout-content>
       <!-- 固定标 -->
-      <div v-if="type=='商家'" style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+      <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
           <a-badge :count="sjwdfxxs">
             <div @click="openVis(1)"
@@ -770,7 +770,7 @@
             <div @click="openSer()"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <MessageOutlined style="font-size: 18px;" />
-              <br><span style="font-size: 12px;">官方客服</span>
+              <br><span style="font-size: 12px;">{{ type=='商家'?'官方客服':'客服'}}</span>
             </div>
           </a-badge>
         </div>
@@ -829,7 +829,7 @@
           </div>
         </a-modal>
       </div>
-      <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
+      <!-- <div v-else style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <a-badge :count="msgCount">
           <div @click="openSer()"
             style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
@@ -842,7 +842,7 @@
             <CustomerPageVis :pageData="{}" />
           </div>
         </a-modal>
-      </div>
+      </div> -->
     </a-layout>
   </a-layout>
   <!--  全局视频组件-->
