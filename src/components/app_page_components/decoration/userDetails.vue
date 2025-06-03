@@ -135,7 +135,30 @@
 			console.log('聊天状态操作', res);
 			message.success('操作成功')
 		})
-	} 
+	}
+
+	// 地址*号
+	function maskAddress(address) {
+		if (!address) return '';
+		const match = address.match(/^(.{2,3}省)?(.{2,3}市)?(.*)$/);
+		if (!match) return '';
+		const province = match[1] || '';
+		const city = match[2] || '';
+		const rest = match[3] || '';
+		const masked = '*'.repeat(rest.length);
+		return province + city + masked;
+	}
+	// 姓名*号
+	function maskName(name) {
+		if (!name) return '';
+		if (name.length === 2) {
+			return name[0] + '*';
+		} else if (name.length > 2) {
+			return name[0] + '*' + name.slice(2);
+		} else {
+			return '*'; // 只有1个字
+		}
+	}
 </script>
 
 <template>
@@ -177,7 +200,9 @@
 						style="width: 45%;display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));border-right: 1px solid #f5f5f5;padding: 10px 0px;">
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">真实姓名：</div>
-							<div>{{userInfo.auth_name}}</div>
+							<div>
+								{{is_ptsj=='平台'?userInfo.auth_name:maskName(userInfo.auth_name) }}
+							</div>
 						</div>
 						<div></div>
 						<div style="display: flex;">
@@ -189,7 +214,8 @@
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div>
 							<div>聊天状态：</div>
-							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small" @change="ltztChange" />
+							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small"
+									@change="ltztChange" />
 							</div>
 						</div>
 						<div style="display: flex;">
@@ -363,16 +389,21 @@
 						<div class="w25_100">
 							<span v-for="(iss,index) in item.goods_list" :key="item.goods_id">
 								<span>{{iss.name}}（{{iss.size_name}}）</span>
-								<span>{{index<item.goods_list.length-1?'、':'。'}}</span>
-							</span>
+								<span>
+									{{index<item.goods_list.length-1?'、':'。'}} </span>
+								</span>
 						</div>
 						<div class="w15_100">{{item.create_time}}</div>
-						<div class="w5_100">{{item.address_name}}</div>
+						<div class="w5_100">
+							{{is_ptsj=='平台'?item.address_name:maskName(item.address_name) }}
+						</div>
 						<div class="w10_100">
 							{{is_ptsj=='平台'?item.address_mobile:(item.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
 							'$1****$2') || '') }}
 						</div>
-						<div class="w15_100">{{item.address}}</div>
+						<div class="w15_100">
+							{{is_ptsj=='平台'?item.address:maskAddress(item.address) }}
+						</div>
 					</div>
 					<div v-if="orderList.length==0" style="padding: 10px;">
 						<a-empty />

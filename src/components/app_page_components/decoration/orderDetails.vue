@@ -84,6 +84,29 @@
 	}
 	webGetOrderDetail()
 	import Print from './print.vue'
+    
+	// 地址*号
+	function maskAddress(address) {
+		if (!address) return '';
+		const match = address.match(/^(.{2,3}省)?(.{2,3}市)?(.*)$/);
+		if (!match) return '';
+		const province = match[1] || '';
+		const city = match[2] || '';
+		const rest = match[3] || '';
+		const masked = '*'.repeat(rest.length);
+		return province + city + masked;
+	}
+	// 姓名*号
+	function maskName(name) {
+		if (!name) return '';
+		if (name.length === 2) {
+			return name[0] + '*';
+		} else if (name.length > 2) {
+			return name[0] + '*' + name.slice(2);
+		} else {
+			return '*'; // 只有1个字
+		}
+	}
 
 </script>
 
@@ -145,7 +168,9 @@
 						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">商家名称：</div>
-							<div>{{orderDetails.store_name}}</div>
+							<div>
+								{{is_ptsj=='平台'?orderDetails.store_name:maskName(orderDetails.store_name) }}
+							</div>
 						</div>
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">订单编号：</div>
@@ -186,7 +211,9 @@
 						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;padding-left: 13px;">收货人：</div>
-							<div>{{orderDetails.address_name}}</div>
+							<div>
+								{{is_ptsj=='平台'?orderDetails.address_name:maskName(orderDetails.address_name) }}
+							</div>
 						</div>
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">联系电话：</div>
@@ -197,7 +224,9 @@
 					</div>
 					<div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">
 						<div style="width: 80px;">收货地址：</div>
-						<div style="width: 82%;color: black;">{{orderDetails.address}}</div>
+						<div style="width: 82%;color: black;">
+							{{is_ptsj=='平台'?orderDetails.address:maskAddress(orderDetails.address) }}
+						</div>
 					</div>
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">

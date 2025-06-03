@@ -354,6 +354,9 @@
 		if (is_ptsj.value == '商家') {
 			getGoodsSaledNumberTopList()// 获取商品销量排行列表
 			getGoodsPowerTopList()// 获取商品投流排行列表
+			titleType.value = '店铺数据'
+		}else{
+			titleType.value = '店铺信息'
 		}
 		// }, 500);
 	}
