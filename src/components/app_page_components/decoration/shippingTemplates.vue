@@ -333,10 +333,12 @@
           // 取值  发货地id
           // send_address.value = findItemByLabel(treeData.value, res.send_address).value;
           let objArr = findRegionChainByFullName(treeData.value, res.send_address)
-          send_address.value = objArr[objArr.length-1].value
+          if(objArr){
+            send_address.value = objArr[objArr.length-1].value
+          }
           console.log('send_address', send_address.value);
 
-          status.value = res.status
+          status.value = res.status+''
           let arr = [] //不包邮地区
           res.price_city.map((item) => {
             arr.push(item.adcode)
@@ -360,7 +362,9 @@
             })
           })
 
-          jffs.value = res.price_city[0].price_type ? res.price_city[0].price_type : 'b' //计费方式
+          if(res.price_city.length>0){
+            jffs.value = res.price_city[0].price_type ? res.price_city[0].price_type : 'b' //计费方式
+          }
           zdqyyf.value = [] //指定区域运费
           res.price_city.map((item) => {
             let obj = findItemByAdcode(treeData.value, item.adcode);
