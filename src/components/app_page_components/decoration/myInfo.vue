@@ -1061,8 +1061,13 @@
 									{{shopObj.id}}</span>
 								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
 									{{shopObj.store_name}}</span>
-								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺类型</span>
-									{{shopObj.type=='b'?'个人店铺':'实体店铺'}}</span>
+								<span style="margin-left: 40px;">
+									<span style="margin-right: 30px;">店铺类型</span>
+									<span v-if="shopObj.type=='a'">本地商家</span>
+									<span v-if="shopObj.type=='b'">网店商家</span>
+									<span v-if="shopObj.type=='c'">个体工商户</span>
+									<span v-if="shopObj.type=='d'">企业店</span>
+								</span>
 							</div>
 						</div>
 					</div>

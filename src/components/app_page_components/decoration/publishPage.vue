@@ -1,6 +1,6 @@
 <script setup>
   import { inject, onBeforeMount, reactive, ref, getCurrentInstance, watch } from "vue";
-  import { RightOutlined, InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined, ExclamationCircleFilled } from "@ant-design/icons-vue";
+  import { RightOutlined, InfoCircleOutlined, UpCircleOutlined, DownCircleOutlined, PlusOutlined, CloseCircleOutlined, ExclamationCircleOutlined, ExclamationCircleFilled,QuestionCircleOutlined } from "@ant-design/icons-vue";
   import { message } from 'ant-design-vue';
   import Draggable from 'vuedraggable';//排序插件
 
@@ -17,7 +17,7 @@
     detail: [],//详情 富文本  
     type_id: '',//商品分类ID  
     brand_id: '',//商品品牌ID   
-    status: false,//启用状态 Y上架 N下架    
+    status: true,//启用状态 Y上架 N下架    
     attributes: [],//商品属性  
     services: [],//商品服务  
     goods_sizes: [
@@ -446,7 +446,7 @@
         if (field == 'name') {
           message.error('商品名称未填写')
         } else if (field == 'cover_image') {
-          message.error('商品封面图未填写')
+          message.error('商品详情图未填写')
         } else if (field == 'images') {
           message.error('商品轮播图未填写')
         } else if (field == 'brand_id') {
@@ -476,7 +476,7 @@
           post_params.images = []
           post_params.detail = []
           post_params.brand_id = ''
-          post_params.status = false
+          post_params.status = true
           // 重新赋值属性 
           getGoodsTypeList()
 
@@ -1134,7 +1134,7 @@
               <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
               <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
               <span
-                v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+                v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
               <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
               <!-- <span v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="c22" @click="czbzj()">去缴纳</span> -->
 
@@ -1196,7 +1196,7 @@
                   <div class="a32">
                     <div style="display: flex;">
                       <div style="color: red;">*</div>
-                      <div>商品封面图</div>
+                      <div>商品详情图</div>
                     </div>
                     <div style="margin-left: 20px;">
                       <div style="color: #ff7300;">请优先上传封面图，预填白底图</div>
@@ -1253,6 +1253,7 @@
                       <span>下架</span>
                       <a-switch v-model:checked="post_params.status" style="margin: 0 5px;" />
                       <span>上架</span>
+                      <span style="color: #ff0000;margin-left: 20px;">*选择不上架时，提交数据将在“商品管理”保存为草稿。</span>
                     </div>
                   </div>
                 </div>
@@ -1603,9 +1604,15 @@
                             </template>
                             <template v-else-if="shopGuige[0].labelValue=='stock'">
                               <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
+                                <div style="display: flex;margin: 0 auto;align-items: center;">
                                   <div style="color: red;">*</div>
                                   <div style="color: #999999;">库存</div>
+                                  <a-popover placement="rightTop">
+                                    <template #content>
+                                      <div>上架商品库存须大于0</div>
+                                    </template>
+                                    <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                  </a-popover>
                                 </div>
                               </div>
                             </template>
@@ -1621,26 +1628,44 @@
                             </template>
                             <template v-else-if="shopGuige[1].labelValue=='stock'">
                               <div style="display: flex;">
-                                <div style="display: flex;margin: 0 auto;">
+                                <div style="display: flex;margin: 0 auto;align-items: center;">
                                   <div style="color: red;">*</div>
                                   <div style="color: #999999;">库存</div>
+                                  <a-popover placement="rightTop">
+                                    <template #content>
+                                      <div>上架商品库存须大于0</div>
+                                    </template>
+                                    <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                  </a-popover>
                                 </div>
                               </div>
                             </template>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 0 auto;align-items: center;">
                                 <div style="color: red;">*</div>
                                 <div style="color: #999999;">原价</div>
+                                <a-popover placement="rightTop">
+                                  <template #content>
+                                    <div>商品的指导价格</div>
+                                  </template>
+                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                </a-popover>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 0 auto;align-items: center;">
                                 <div style="color: red;">*</div>
                                 <div style="color: #999999;">拼单价</div>
+                                <a-popover placement="rightTop">
+                                  <template #content>
+                                    <div>用户拼单时价格,不可大于原价</div>
+                                  </template>
+                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                </a-popover>
                               </div>
                             </div>
                           </th>
@@ -1901,7 +1926,7 @@
                 <div class="b37">
                   <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
                   <span
-                    v-if="shopObj.deposit_money>0">结合店铺经营情况，共需{{shopObj.deposit_money}}元店铺保证金，当前保证金余额{{shopObj.avl_bal}}元，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+                    v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">

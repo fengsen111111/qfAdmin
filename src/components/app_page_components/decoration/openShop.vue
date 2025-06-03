@@ -491,6 +491,21 @@
 	// 店铺名称变化
 	function nameChange() {
 		console.log('名称变化', store_name.value);
+		// 自定义敏感关键词列表（可根据实际需求扩展）
+		const sensitiveWords = [
+			'马云', '习近平', '马化腾', '王健林', '雷军', // 名人
+			'北京', '上海', '深圳', '广州', '香港',     // 地名
+			'苹果', '华为', '微信', '支付宝', '抖音',   // 品牌
+			'国家', '中央', '公安', '法院', '政府'      // 敏感机关词
+		];
+		const hits = sensitiveWords.filter(word => store_name.value.includes(word));
+		if (hits.length > 0) {
+			// 清空或纠正输入
+			msgValue.value = `不得包含敏感词：${hits.join('、')}`//不重复就清空
+			return false
+		}
+
+		// 验证店铺名称是否重复
 		global.axios.post('decoration/Store/checkStoreName', {
 			store_name: store_name.value,
 		}, global)
@@ -963,6 +978,8 @@
 											style="margin-left: 10px;width: 300px;" />
 									</div>
 								</a-popover>
+								<!--  -->
+								<!-- <div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">商家汇付开通</div> -->
 
 								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
 									<div style="display: flex;margin: 0 auto;">
@@ -986,7 +1003,6 @@
 								</a-drawer>
 								<div v-if="check_remark" style="text-align: center;color: red;margin-bottom: 20px;">
 									被拒绝原因：{{check_remark}}</div>
-
 								<!-- 提交 -->
 								<div
 									style="text-align: center;display: flex;justify-content: space-between;align-items: center;cursor: pointer;">
@@ -1013,7 +1029,12 @@
 											style="padding: 5px 10px !important;margin-top: 10px;" />
 										<div style="display: flex;margin-top: 10px;">
 											<div style="width: 180px;text-align: right;">店铺类型： </div>
-											<div>{{type=='a'?'实体店铺':'个人店铺'}}</div>
+											<div>
+												<span v-if="type=='a'">本地商家</span>
+												<span v-if="type=='b'">网店商家</span>
+												<span v-if="type=='c'">个体工商户</span>
+												<span v-if="type=='d'">企业店</span>
+											</div>
 										</div>
 										<div style="display: flex;margin-top: 20px;">
 											<span style="width: 180px;text-align: right;">店铺名称： </span>
@@ -1059,7 +1080,6 @@
 										<div>1.请开店人仔细检查身份资料，确保身份证照片/信息准确无误。</div>
 										<div>2.请上传开店人身份证的正反面实拍图，字体清晰无反光，边角完整，无任何无关水印及故意遮盖。</div>
 										<div>3.请按照身份证准确填写「姓名、身份证号」，核实确认无错别字。</div>
-										<!-- <div>4.请按照身份证准确填写「身份证有效期」，不可延长有效期，有效期非“长期”的身份证不可勾选"长期”。</div> -->
 									</div>
 									<div style="font-size: 16px;margin: 10px 0px;">示例图</div>
 									<div>
@@ -1067,29 +1087,6 @@
 											src="https://mms-static.pddpic.com/mallcenter/static/media/idCardImage.7257d73d.png?imageView2/2/w/1700/q/85/format/webp"
 											alt="">
 									</div>
-									<!-- <div style="padding: 20px;">
-										<div style="display: flex;">
-											<img style="width: 180px;object-fit: contain;border-radius: 5px;"
-												src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/202535/ceoe98ri2u3wjmcejvothruie3dkirih.jpg"
-												alt="">
-											<div style="margin: 0 10px;">
-												<div
-													style="display: flex;align-items: center;font-size: 14px;margin-top: 8px;">
-													<CheckCircleFilled style="color: #4DB23F;" />
-													<div style="margin-left: 5px;white-space:nowrap">四角完整</div>
-												</div>
-												<div
-													style="display: flex;align-items: center;font-size: 14px;margin: 15px 0px;">
-													<CheckCircleFilled style="color: #4DB23F;" />
-													<div style="margin-left: 5px;white-space:nowrap">亮度均匀</div>
-												</div>
-												<div style="display: flex;align-items: center;font-size: 14px;">
-													<CheckCircleFilled style="color: #4DB23F;" />
-													<div style="margin-left: 5px;white-space:nowrap">照片清晰</div>
-												</div>
-											</div>
-										</div>
-									</div> -->
 								</div>
 							</div>
 						</a-col>
