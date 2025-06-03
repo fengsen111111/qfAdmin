@@ -103,7 +103,7 @@
 							<div style="font-size: 18px;font-weight: bold;">
 								{{userInfo.nickname?userInfo.nickname:'默认昵称'}}</div>
 							<div style="color: #4e5969;font-size: 12px;">
-								<span>{{userInfo.mobile}}</span>
+								<span>{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}</span>
 							</div>
 						</div>
 					</div>
@@ -160,7 +160,9 @@
 						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">商家电话：</div>
-							<div style="color: black;">{{orderDetails.store_mobile}}</div>
+							<div style="color: black;">
+								{{is_ptsj=='平台'?orderDetails.store_mobile:(orderDetails.store_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}
+							</div>
 						</div>
 						<!-- <div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">订单类型：</div>
@@ -188,7 +190,9 @@
 						</div>
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">联系电话：</div>
-							<div>{{orderDetails.address_mobile}}</div>
+							<div>
+								{{is_ptsj=='平台'?orderDetails.address_mobile:(orderDetails.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}
+							</div>
 						</div>
 					</div>
 					<div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">

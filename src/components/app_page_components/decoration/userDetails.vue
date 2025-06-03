@@ -14,6 +14,11 @@
 	const global = inject("global").value;
 	// console.log('pageData',pageData);
 
+	const is_ptsj = ref('商家')
+	setTimeout(() => {
+		is_ptsj.value = localStorage.getItem('storeId') == 1 ? "平台" : '商家'
+	}, 500);
+
 	// 复制店铺编号
 	function copyCode(code) {
 		navigator.clipboard.writeText(code).then(() => {
@@ -99,9 +104,9 @@
 	webGetUserOrderList()
 
 	function lookOrder(item) {
-		console.log('查看订单详情',item);
+		console.log('查看订单详情', item);
 		emit('orderLook', {
-			user_id:pageData.data.id,//用户id
+			user_id: pageData.data.id,//用户id
 			id: item.id//订单id
 		})
 	}
@@ -119,6 +124,10 @@
 	}
 	// 聊天状态变化
 	function ltztChange(checked) {
+		if (is_ptsj.value == '商家') {
+			message.error('禁止操作')
+			return false
+		}
 		global.axios.post('decoration/Order/webGetUserOrderList', {
 			user_id: pageData.data.id,
 			status: checked ? 'Y' : 'N'
@@ -145,9 +154,10 @@
 							<div style="font-size: 18px;font-weight: bold;">
 								{{userInfo.nickname?userInfo.nickname:'默认昵称'}}</div>
 							<div style="color: #4e5969;font-size: 12px;">
-								<!-- <span>QFID:{{userInfo.id}}</span> -->
-								<!-- <span style="margin-left: 40px;">{{userInfo.mobile}}</span> -->
-								<span>{{userInfo.mobile}}</span>
+								<span>
+									{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+									'$1****$2') || '') }}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -179,12 +189,15 @@
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div>
 							<div>聊天状态：</div>
-							<div><a-switch v-model:checked="userInfo.chat_status" size="small" @change="ltztChange" />
+							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small" @change="ltztChange" />
 							</div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">手机号：</div>
-							<div>{{userInfo.mobile}}</div>
+							<div>
+								{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+								'$1****$2') || '') }}
+							</div>
 						</div>
 						<div></div>
 						<div style="display: flex;">
@@ -221,7 +234,8 @@
 								</div>
 								<div>
 									<div>钱包余额</div>
-									<div class="a47">{{Number(userInfo.avl_bal||0).toLocaleString()}}</div>
+									<div class="a47">
+										{{is_ptsj=='平台'?(Number(userInfo.avl_bal||0).toLocaleString()):'*'}}</div>
 								</div>
 							</div>
 							<div class="a44">
@@ -230,7 +244,8 @@
 								</div>
 								<div>
 									<div>积分余额</div>
-									<div class="a47">{{Number(userInfo.integral||0).toLocaleString()}}</div>
+									<div class="a47">
+										{{is_ptsj=='平台'?(Number(userInfo.integral||0).toLocaleString()):'*'}}</div>
 								</div>
 							</div>
 							<div class="a44">
@@ -239,7 +254,9 @@
 								</div>
 								<div>
 									<div>总消费额</div>
-									<div class="a47">{{Number(userInfo.all_order_money||0).toLocaleString()}}</div>
+									<div class="a47">
+										{{is_ptsj=='平台'?(Number(userInfo.all_order_money||0).toLocaleString()):'*'}}
+									</div>
 								</div>
 							</div>
 						</div>
@@ -250,7 +267,8 @@
 								</div>
 								<div>
 									<div>总订单数</div>
-									<div class="a47">{{Number(userInfo.order_number||0).toLocaleString()}}</div>
+									<div class="a47">
+										{{is_ptsj=='平台'?(Number(userInfo.order_number||0).toLocaleString()):'*'}}</div>
 								</div>
 							</div>
 							<div class="a44">
@@ -259,7 +277,8 @@
 								</div>
 								<div>
 									<div>总收益</div>
-									<div class="a47">{{Number(userInfo.all_get_money||0).toLocaleString()}}</div>
+									<div class="a47">
+										{{is_ptsj=='平台'?(Number(userInfo.all_get_money||0).toLocaleString()):'*'}}</div>
 								</div>
 							</div>
 							<!-- <div class="a44">
@@ -349,7 +368,10 @@
 						</div>
 						<div class="w15_100">{{item.create_time}}</div>
 						<div class="w5_100">{{item.address_name}}</div>
-						<div class="w10_100">{{item.address_mobile}}</div>
+						<div class="w10_100">
+							{{is_ptsj=='平台'?item.address_mobile:(item.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+							'$1****$2') || '') }}
+						</div>
 						<div class="w15_100">{{item.address}}</div>
 					</div>
 					<div v-if="orderList.length==0" style="padding: 10px;">
