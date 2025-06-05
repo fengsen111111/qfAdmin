@@ -16,7 +16,8 @@ import goodsPage from '@/components/app_page_components/decoration/publishPage.v
 
 import IndexPage from '@/components/base_page_components/index.vue' //项目首页，可以采用通用也可以使用个性化
 import publishPage from '@/components/app_page_components/decoration/publishPage.vue'//编辑商品
-import AddStorePage from '@/components/app_page_components/decoration/shopInfo.vue'//店铺信息
+// import AddStorePage from '@/components/app_page_components/decoration/shopInfo.vue'//平台添加店铺信息
+import AddStorePage from '@/components/app_page_components/decoration/openShop.vue'//平台添加店铺信息
 import shopOut from '@/components/app_page_components/decoration/shopOut.vue'//商家退店
 import EditCarriagePage from '@/components/app_page_components/decoration/shippingTemplates.vue'//运费模板
 // import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品

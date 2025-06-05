@@ -69,7 +69,12 @@
 			}
 		})
 	}
-	getSubmitEntryApplyMsg()
+	// console.log('当前页面路由信息',route.path);
+	if(route.path=='/'){
+		// 平台添加新商家,不需要获取入驻信息
+	}else{
+		getSubmitEntryApplyMsg()
+	}
 
 	const isMap = ref(false)//是否打开地图
 	watch(() => isMap, val => {
@@ -488,7 +493,6 @@
 		}
 	}
 
-
 	// 敏感词
 	function _getBaseTypes() {
 		global.axios.post('decoration/Setting/getBaseTypes', {}, global).then(res => {
@@ -536,7 +540,7 @@
 	<!--搜索-->
 	<a-spin :spinning="spinning">
 		<div>
-			<div style="background-color: #323242;height: 8vh;display: flex;">
+			<div v-if="route.path!='/'" style="background-color: #323242;height: 8vh;display: flex;">
 				<div
 					style="padding: 20px;height: 100%;width: 67vw;margin: 0 auto;display: flex;justify-content: space-between;align-items: center;">
 					<div style="display: flex;">
