@@ -3,7 +3,8 @@
 		inject,
 		onBeforeMount,
 		reactive,
-		ref
+		ref,
+		watch
 	} from "vue";
 	import {
 		FormComponents
@@ -52,7 +53,25 @@
 			message.warning('请选择退店原因！')
 			return false
 		}
-		visible.value = true
+		_checkMobileCode()
+		// visible.value = true
+	}
+	// 校验验证码
+	function _checkMobileCode() {
+		global.axios.post('decoration/User/checkMobileCode', {
+			mobile: shopObj.value.mobile,
+			mobile_code: mobile_code.value
+		}, global).then(res => {
+			console.log('res', res);
+			if (res.result !== 'N') {
+				message.success('验证码校验成功')
+				setTimeout(() => {
+					visible.value = true
+				}, 2000);
+			} else {
+				message.error(res.message)
+			}
+		})
 	}
 
 	const store_id = ref('')
@@ -63,10 +82,23 @@
 			.then((res) => {
 				console.log('商家id', res.store_id);
 				store_id.value = res.store_id
+				_webGetStoreInfo()//获取商家信息
 				getOutMsg()//查看当前退店详情
 			});
 	}
 	getStoreID()
+
+	const shopObj = ref({})
+	// 获取商家信息
+	function _webGetStoreInfo() {
+		global.axios.post('decoration/Store/webGetStoreInfo', {
+			store_id: store_id.value
+		}, global)
+			.then(res => {
+				// console.log('店铺数据', res.mobile);
+				shopObj.value = res
+			})
+	}
 
 	function handleOk() {
 		console.log('确认提交', checkedList.value);
@@ -211,6 +243,38 @@
 				});
 			});
 	}
+
+	const mobile_code = ref('')//验证码
+	const showDjs = ref(false)//显示倒计时
+	const timeData = ref(60)//倒计时
+	const timer = ref(null)//计时器 
+
+	// 页面还要定时器，清除
+	if (timer.value) {
+		clearInterval(timer.value); //清除定时器
+	}
+	watch(() => [timeData.value], (newVal, oldVal) => {
+		console.log('时间变化', newVal[0]); //
+		if (newVal[0] == 0) {
+			showDjs.value = false
+			clearInterval(timer.value); //清除定时器
+		}
+	});
+	// 发送验证码
+	function sendCode() {
+		console.log('发送验证码');
+		global.axios.post('decoration/User/getMobileCode', {
+			mobile: shopObj.value.mobile
+		}, global).then(res => {
+			console.log('验证码', res.code);
+			mobile_code.value = res.code
+			showDjs.value = true
+			timeData.value = 60
+			timer.value = setInterval(() => {
+				timeData.value = timeData.value - 1
+			}, 1000);
+		})
+	}
 </script>
 
 <template>
@@ -279,6 +343,35 @@
 									<div
 										style="margin-left: 10px;width: 760px;float: left;display: flex;align-items: center;">
 										<a-input v-model:value="qtyy" placeholder="请输入其它退店原因" />
+									</div>
+								</div>
+								<div style="display: flex;margin-top: 20px;align-items: center;">
+									<div style="width: 25%;display: flex;justify-content: space-between;">
+										<div></div>
+										<div style="display: flex;">
+											<div style="color: red;">*</div>
+											<div>主账号绑定手机号</div>
+										</div>
+									</div>
+									<div style="margin-left: 10px;display: flex;align-items: center;">
+										<a-input v-model:value="shopObj.mobile" disabled
+											style="width: 200px;"></a-input>
+										<span style="color: #1890FF;margin-left: 10px;cursor: pointer;">修改手机号</span>
+									</div>
+								</div>
+								<div style="display: flex;margin-top: 20px;align-items: center;">
+									<div style="width: 25%;display: flex;justify-content: space-between;">
+										<div></div>
+										<div style="display: flex;">
+											<div style="color: red;">*</div>
+											<div>短信验证码</div>
+										</div>
+									</div>
+									<div style="margin-left: 10px;display: flex;align-items: center;">
+										<a-input placeholder="请输入" v-model:value="mobile_code"
+											style="width: 100px;margin-right: 10px;"></a-input>
+										<a-button @click="sendCode" v-if="!showDjs">获取验证码</a-button>
+										<a-button v-else>还剩{{timeData}}秒</a-button>
 									</div>
 								</div>
 								<div style="margin-top: 20px;display: flex;">
