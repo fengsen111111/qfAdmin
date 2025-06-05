@@ -1035,7 +1035,7 @@
 
 	// 热区跳转
 	function rqtz(key1, key2, key3) {
-		localStorage.setItem('rqtz_store_id',shopObj.value.id)
+		localStorage.setItem('rqtz_store_id', shopObj.value.id)
 		emit("djtzmk", key1, key2, key3);
 	}
 </script>
@@ -1473,8 +1473,8 @@
 						<div class="a41">
 							<div class="a23">基础数据</div>
 							<div class="a42"></div>
-							<div class="a43" @click="rqtz('购物商城','商品管理')">
-								<div class="a44">
+							<div class="a43">
+								<div class="a44" @click="rqtz('购物商城','商品管理')">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/home1.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
@@ -1504,19 +1504,27 @@
 										<div class="a47">{{Number(shopObj.month_money).toLocaleString()}}</div>
 									</div>
 								</div>
-								<div class="a52">
+								<div class="a52b">
 									<div class="a53">
 										<img src="../../../../public/resource/image/home/icon4.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
-										<div>押金余额</div>
-										<div class="a47">{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+										<div>已缴纳保证金</div>
+										<div style="display: flex;align-items: center;">
+											<div class="a47">
+												{{Number(shopObj.pay_deposit_money*1+shopObj.payed_type_prices*1).toLocaleString()}}
+											</div>
+											<div style="margin-left: 10px;">
+												<div>商家保证金：{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+												<div>分类保证金：{{Number(shopObj.payed_type_prices).toLocaleString()}}</div>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
-							<div class="a43" @click="rqtz('购物商城','订单管理')">
-								<div class="a44">
+							<div class="a43">
+								<div class="a44" @click="rqtz('购物商城','订单管理')">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/icon5.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
@@ -1526,7 +1534,7 @@
 										<div class="a47">{{Number(shopObj.all_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
-								<div class="a44">
+								<div class="a44" @click="rqtz('购物商城','订单管理')">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/icon6.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
@@ -1536,7 +1544,7 @@
 										<div class="a47">{{Number(shopObj.today_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
-								<div class="a44">
+								<div class="a44" @click="rqtz('购物商城','订单管理')">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/icon7.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
@@ -1546,14 +1554,18 @@
 										<div class="a47">{{Number(shopObj.month_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
-								<div class="a52">
+								<div class="a52" @click="rqtz('运营管理','投流与推荐','曝光管理')">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/icon8.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
 									<div>
 										<div>曝光量余额</div>
-										<div class="a47">{{Number(shopObj.power).toLocaleString()}}</div>
+										<div style="display: flex;align-items: center;">
+											<div class="a47">{{Number(shopObj.power).toLocaleString()}}</div>
+											<a-button @click.stop="titleType='资金日志'"
+												style="margin-left: 10px;">去充值</a-button>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -1693,21 +1705,27 @@
 								</div>
 							</div>
 						</a-modal>
-						<div style="display: flex;">
-							<div class="a68" v-if="is_ptsj=='平台'">
-								<div style="margin-right: 20px;">
-									<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
+						<div style="display: flex;align-items: center;">
+							<div v-if="is_ptsj=='平台'" style="margin: 0 auto;">
+								<div class="a68">
+									<div style="margin-right: 20px;">
+										<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
+									</div>
+									<div class="a70">{{Number(zjxqtj.store_money).toLocaleString()}}</div>
+									<a-popconfirm title="请确定是否退回保证金?" ok-text="确定" cancel-text="取消" @confirm="thbzj()">
+										<a-button type="primary" style="margin-left: 20px;">退回保证金</a-button>
+									</a-popconfirm>
 								</div>
-								<div class="a70">{{Number(zjxqtj.store_money).toLocaleString()}}</div>
-								<!-- <div style="font-size: 25px;color: #0c96f1;cursor: pointer;">退回保证金</div> -->
-								<a-popconfirm title="请确定是否退回保证金?" ok-text="确定" cancel-text="取消" @confirm="thbzj()">
-									<a-button type="primary" style="margin-left: 20px;">退回保证金</a-button>
-								</a-popconfirm>
+								<div style="display: flex;">
+									<div>商家保证金：{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+									<div style="margin-left: 10px;">
+										分类保证金：{{Number(shopObj.payed_type_prices).toLocaleString()}}</div>
+								</div>
 							</div>
-							<div v-else style="display: flex;">
+							<div v-else style="display: flex;margin: 0 auto;">
 								<div class="a71">
 									<div style="display: flex;">
-										<div class="a68">
+										<div class="a68b">
 											<div style="margin-right: 20px;">
 												<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 											</div>
@@ -1726,6 +1744,11 @@
 											</div>
 											<div>当前押金过低请前往充值！</div>
 										</div>
+									</div>
+									<div style="display: flex;">
+										<div>商家保证金：{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
+										<div style="margin-left: 10px;">
+											分类保证金：{{Number(shopObj.payed_type_prices).toLocaleString()}}</div>
 									</div>
 									<div style="color: #ff0000;">当货款余额充足时，押金不足时将使用货款自动补齐押金.</div>
 								</div>
@@ -2410,6 +2433,13 @@
 		margin-left: 20px;
 	}
 
+	.a52b {
+		display: flex;
+		padding: 20px 0px;
+		align-items: center;
+		margin-left: 20px;
+	}
+
 	.a53 {
 		background-color: #f9f9f9;
 		border-radius: 50%;
@@ -2509,6 +2539,11 @@
 		align-items: center;
 		display: flex;
 		margin: 0 auto;
+	}
+	.a68b {
+		align-items: center;
+		display: flex;
+		/* margin: 0 auto; */
 	}
 
 	.a69 {
