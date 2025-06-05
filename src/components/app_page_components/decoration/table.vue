@@ -167,6 +167,18 @@
 
   //获取数据
   function getRecords() {
+    const rqtz_store_id = localStorage.getItem('rqtz_store_id')
+    if (rqtz_store_id) {
+      table_state.searchStructure.map((item)=>{
+        if(item.field=='store_id'){
+          item.value = rqtz_store_id
+          // 打开搜索
+          controlSearch()
+          localStorage.removeItem('rqtz_store_id')
+        }
+      })
+    }
+
     let requestParams;
     if (table_state.requestParams) {
       requestParams = Object.assign(
@@ -189,6 +201,7 @@
       requestParams.recycleStatus = true;
     else
       requestParams.recycleStatus = false;
+
     global.axios.post(table_state.recordsUrl, requestParams, global, false).then((res) => {
       if (res) {
         table_state.tableData = res.list;
@@ -467,7 +480,7 @@
           detailsObj.value = {
             type: 'H5OrderPageIntegral',
             id: requestParams.order_id,
-            urlH5: 'https://h5.qfcss.cn/#/pages/my/components/myShopOrderListDetails/index?id=' + requestParams.order_id + '&identity=pc&token='+localStorage.getItem('Authorization')
+            urlH5: 'https://h5.qfcss.cn/#/pages/my/components/myShopOrderListDetails/index?id=' + requestParams.order_id + '&identity=pc&token=' + localStorage.getItem('Authorization')
           }
           // console.log('detailsObj',detailsObj.value);
           detailsVis.value = true//打开弹窗
@@ -480,7 +493,7 @@
             const obj = table_state.tableData.filter((item) => item.order_id == requestParams.id)
             requestParams.user_id = obj[0].user_id
             requestParams.id = obj[0].order_id
-            localStorage.setItem('is_shouhou',true)
+            localStorage.setItem('is_shouhou', true)
           } else {
             localStorage.removeItem('is_shouhou')
             // let shenfen = localStorage.getItem('storeId') == 1 ? "平台" : '商家'

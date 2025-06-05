@@ -355,7 +355,7 @@
 			getGoodsSaledNumberTopList()// 获取商品销量排行列表
 			getGoodsPowerTopList()// 获取商品投流排行列表
 			titleType.value = '店铺数据'
-		}else{
+		} else {
 			titleType.value = '店铺信息'
 		}
 		// }, 500);
@@ -1027,6 +1027,17 @@
 			})
 		}
 	}
+
+	// 退回保证金
+	function thbzj() {
+		message.success('退店进程 a未申请 b公示中 c材料通过 d商家确认退店 e退款中  f已退款  当前状态' + shopObj.value.out_process)
+	}
+
+	// 热区跳转
+	function rqtz(key1, key2, key3) {
+		localStorage.setItem('rqtz_store_id',shopObj.value.id)
+		emit("djtzmk", key1, key2, key3);
+	}
 </script>
 
 <template>
@@ -1048,7 +1059,8 @@
 					<div class="a2">
 						<ClockCircleFilled class="a3" />
 						<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
-						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span></div>
+						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span>
+						</div>
 					</div>
 					<div style="font-size: 12px;">
 						<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
@@ -1091,7 +1103,7 @@
 								</a-menu>
 							</template>
 						</a-dropdown>
-	
+
 					</div>
 				</div>
 				<div style="margin-top: 40px;">
@@ -1461,7 +1473,7 @@
 						<div class="a41">
 							<div class="a23">基础数据</div>
 							<div class="a42"></div>
-							<div class="a43">
+							<div class="a43" @click="rqtz('购物商城','商品管理')">
 								<div class="a44">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/home1.png"
@@ -1503,7 +1515,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="a43">
+							<div class="a43" @click="rqtz('购物商城','订单管理')">
 								<div class="a44">
 									<div class="a45">
 										<img src="../../../../public/resource/image/home/icon5.png"
@@ -1612,7 +1624,7 @@
 				<div v-if="titleType=='资金日志'">
 					<div class="a63">
 						<div class="a64">货款账户</div>
-						<div style="padding: 10px 0px;">押金账户</div>
+						<div style="padding: 10px 0px;">保证金账户</div>
 					</div>
 					<div class="a65">
 						<div class="a66">
@@ -1687,6 +1699,10 @@
 									<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 								</div>
 								<div class="a70">{{Number(zjxqtj.store_money).toLocaleString()}}</div>
+								<!-- <div style="font-size: 25px;color: #0c96f1;cursor: pointer;">退回保证金</div> -->
+								<a-popconfirm title="请确定是否退回保证金?" ok-text="确定" cancel-text="取消" @confirm="thbzj()">
+									<a-button type="primary" style="margin-left: 20px;">退回保证金</a-button>
+								</a-popconfirm>
 							</div>
 							<div v-else style="display: flex;">
 								<div class="a71">
@@ -2355,6 +2371,7 @@
 		grid-template-columns: repeat(4, minmax(0, 1fr));
 		border-bottom: 1px solid #f5f5f5;
 		padding: 10px 0px;
+		cursor: pointer;
 	}
 
 	.a44 {

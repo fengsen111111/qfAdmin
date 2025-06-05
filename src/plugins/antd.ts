@@ -34,7 +34,8 @@ import {
     Statistic,
     Empty,
     Badge,
-    Alert
+    Alert,
+    Popconfirm
 } from 'ant-design-vue'
 
 
@@ -42,7 +43,7 @@ const plugins = [
     Layout, Menu, Tag, Dropdown, ConfigProvider, TimePicker, DatePicker, Drawer,
     Input, InputNumber, Radio, Checkbox, Row, Col, Switch, Select, Tree, Cascader,
     Upload, Button, Form, Table, Pagination, Image, Rate, Spin, TreeSelect, Modal,
-    Tabs,Popover,Progress,Steps,Statistic,Empty,Badge,Alert
+    Tabs,Popover,Progress,Steps,Statistic,Empty,Badge,Alert,Popconfirm
 ];
 
 export const setupAntd = (app: any, options = {}) => {
