@@ -487,6 +487,16 @@
 			return { valid: false, msg: '密码未满足所有规则' };
 		}
 	}
+
+
+	// 敏感词
+	function _getBaseTypes() {
+		global.axios.post('decoration/Setting/getBaseTypes', {}, global).then(res => {
+			console.log('敏感词', res);
+		})
+	}
+	_getBaseTypes()
+
 	const msgValue = ref('')
 	// 店铺名称变化
 	function nameChange() {
