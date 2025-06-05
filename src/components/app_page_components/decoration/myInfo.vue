@@ -408,6 +408,50 @@
 	}
 	getAreas()
 
+	// 个人汇付
+	const userhf_vis = ref(false)
+	const formUserState = reactive({
+		name: '', //姓名 
+		mobile: '',//电话
+		cert_no: '',//身份证号码
+		cert_begin_date: '',//身份证有效期开始时间  
+		cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
+		cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
+	});
+	const formUserRef = ref();//表单绑定
+	// 提交汇付
+	function handUserHfOk() {
+		console.log('个人汇付点击确定');
+		formUserRef.value
+			.validateFields()
+			.then(values => {
+				console.log('验证成功', values);
+				// 执行提交逻辑
+				let params = values
+				params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
+				if (params.cert_end_date) {
+					params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
+				}
+				console.log('处理后的params', params);
+				global.axios.post('decoration/User/openUserHAccount', params, global, true).then((res) => {
+					console.log('res汇付开通结果', res);
+					message.success('操作成功')
+					userhf_vis.value = false
+					formUserState.name = '' //姓名 
+					formUserState.mobile = ''//电话
+					formUserState.cert_no = ''//身份证
+					formUserState.cert_validity_type = '0'//有效期  1长期有效  0非长期有效
+					formUserState.cert_begin_date = ''//身份证有效期开始时间
+					formUserState.cert_end_date = ''//身份证有效期结束时间
+					_shopInfo()
+				})
+			})
+			.catch(err => {
+				console.log('验证失败', err);
+			});
+	}
+
+	// 商家汇付
 	const hf_vis = ref(false)
 	const formState = reactive({
 		reg_name: '', //企业名称 
@@ -497,8 +541,9 @@
 		{ value: '03050000', text: "中国民生银行" },
 	]
 	const bank_vis = ref(false)
+	const bank_type = ref('store')  //store商家 user用户 
 	const formStateBank = reactive({
-		type: 'store', //store商家 user用户 
+		type: bank_type.value, //store商家 user用户 
 		card_name: '',//卡户名
 		card_no: '',//卡号 商家对公，个人对私
 		regAddress: '',//银行所在地址
@@ -1169,53 +1214,99 @@
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
 							</div>
-
-							<div class="a33">
-								<div class="a34">商家账户（汇付）:</div>
-								<div v-if="is_ptsj == '平台'">
-									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
-										style="cursor: pointer;color: #ff0000;">暂未开通</div>
-									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-										style="cursor: pointer;color: #0c96f1;">已开通</div>
-									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+							<!-- a本地商家 b网店商家 c个体工商户  d企业店  网店商家无营业执照,需要个人汇付-->
+							<!-- 个人汇付,银行卡 -->
+							<template v-if="shopObj.type=='b'">
+								<div class="a33">
+									<div class="a34">个人账户（汇付）:</div>
+									<div class="a35" @click="userhf_vis= true" style="cursor: pointer;color: #0c96f1;">
+										点击开通
+									</div>
+									<div @click="bank_vis= true;bank_type='user'">绑定银行卡</div>
+									<div> 缺少个人汇付字段</div>
 								</div>
-								<div v-else>
-									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
-										style="cursor: pointer;color: #0c96f1;">点击开通</div>
-									<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
-										style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
-									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-										style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
-									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">银行卡审核中</div>
+								<!-- 开通了个人汇付才能绑定银行卡 -->
+								<div v-if="shopObj.open_h_user_account">
+									<div class="a33" v-if="shopObj.open_h_user_account!='a'">
+										<div class="a34">商家提现银行卡:</div>
+										<div v-if="is_ptsj == '平台'">
+											<div class="a35"
+												v-if="shopObj.open_h_user_account=='b'||shopObj.open_h_user_account=='a'"
+												@click="bank_vis= true;bank_type='user'"
+												style="cursor: pointer;color: #ff0000;">暂未绑定
+											</div>
+											<div class="a35" v-else-if="shopObj.open_h_user_account=='c'"
+												style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
+											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+												银行卡审核中</div>
+										</div>
+										<div v-else>
+											<div class="a35"
+												v-if="shopObj.open_h_user_account=='b'||shopObj.open_h_user_account=='a'"
+												@click="bank_vis= true;bank_type='user'"
+												style="cursor: pointer;color: #0c96f1;">点击绑定
+											</div>
+											<div @click="bank_vis= true;bank_type='user'" class="a35"
+												v-else-if="shopObj.open_h_user_account=='c'"
+												style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
+											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+												审核中</div>
+										</div>
+									</div>
 								</div>
-							</div>
-
-							<!-- 开通了商家汇付才允许绑定提现银行卡 -->
-							<div v-if="shopObj.open_h_store_account">
-								<div class="a33" v-if="shopObj.open_h_store_account!='a'">
-									<div class="a34">商家提现银行卡:</div>
+							</template>
+							<!-- 商家汇付,银行卡 -->
+							<template v-else>
+								<div class="a33">
+									<div class="a34">商家账户（汇付）:</div>
 									<div v-if="is_ptsj == '平台'">
-										<div class="a35"
-											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-											@click="bank_vis= true" style="cursor: pointer;color: #ff0000;">暂未绑定</div>
+										<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+											style="cursor: pointer;color: #ff0000;">暂未开通</div>
 										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-											style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
-										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-											银行卡审核中</div>
+											style="cursor: pointer;color: #0c96f1;">已开通</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
 									</div>
 									<div v-else>
-										<div class="a35"
-											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-											@click="bank_vis= true" style="cursor: pointer;color: #0c96f1;">点击绑定</div>
-										<div @click="bank_vis= true" class="a35"
-											v-else-if="shopObj.open_h_store_account=='c'"
-											style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
-										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-											审核中</div>
+										<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+											style="cursor: pointer;color: #0c96f1;">点击开通</div>
+										<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
+											style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
+										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+											style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">银行卡审核中</div>
 									</div>
-
 								</div>
-							</div>
+								<!-- 开通了商家汇付才允许绑定提现银行卡 -->
+								<div v-if="shopObj.open_h_store_account">
+									<div class="a33" v-if="shopObj.open_h_store_account!='a'">
+										<div class="a34">商家提现银行卡:</div>
+										<div v-if="is_ptsj == '平台'">
+											<div class="a35"
+												v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+												@click="bank_vis= true;bank_type='store'"
+												style="cursor: pointer;color: #ff0000;">暂未绑定
+											</div>
+											<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+												style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
+											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+												银行卡审核中</div>
+										</div>
+										<div v-else>
+											<div class="a35"
+												v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+												@click="bank_vis= true;bank_type='store'"
+												style="cursor: pointer;color: #0c96f1;">点击绑定
+											</div>
+											<div @click="bank_vis= true;bank_type='store'" class="a35"
+												v-else-if="shopObj.open_h_store_account=='c'"
+												style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
+											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+												审核中</div>
+										</div>
+									</div>
+								</div>
+							</template>
+
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺主体:</div>
 								<div class="a35"><img :src="shopObj.logo" alt="" class="a36"></div>
@@ -1226,7 +1317,41 @@
 							<div class="a37">店铺logo</div>
 						</div>
 					</div>
-					<!-- 开通汇付 -->
+					<!-- 开通个人汇付 -->
+					<a-modal v-model:visible="userhf_vis" title="开通个人汇付" @ok="handUserHfOk">
+						<div>
+							<a-form :model="formUserState" ref="formUserRef" name="basic" :label-col="{ span: 9 }"
+								:wrapper-col="{ span: 14 }">
+								<a-form-item label="姓名" name="name" :rules="[{ required: true, message: '请输入姓名' }]">
+									<a-input v-model:value="formUserState.name" />
+								</a-form-item>
+								<a-form-item label="电话" name="mobile" :rules="[{ required: true, message: '请输入电话' }]">
+									<a-input v-model:value="formUserState.mobile" />
+								</a-form-item>
+								<a-form-item label="身份证" name="cert_no"
+									:rules="[{ required: true, message: '请输入身份证' }]">
+									<a-input v-model:value="formUserState.cert_no" />
+								</a-form-item>
+								<a-form-item label="身份证有效期" name="cert_validity_type"
+									:rules="[{ required: true, message: '请输入身份证有效期' }]">
+									<a-radio-group v-model:value="formUserState.cert_validity_type" name="radioGroup">
+										<a-radio value="1">长期有效</a-radio>
+										<a-radio value="0">非长期有效</a-radio>
+									</a-radio-group>
+								</a-form-item>
+								<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
+									:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+									<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_begin_date"
+										style="width: 100%;" />
+								</a-form-item>
+								<a-form-item label="身份证有效期结束时间" name="cert_end_date">
+									<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_end_date"
+										style="width: 100%;" />
+								</a-form-item>
+							</a-form>
+						</div>
+					</a-modal>
+					<!-- 开通商家汇付 -->
 					<a-modal v-model:visible="hf_vis" title="开通商家汇付" width="1000px" @ok="handHfOk">
 						<div>
 							<a-form :model="formState" ref="formRef" name="basic" :label-col="{ span: 10 }"
@@ -1333,7 +1458,8 @@
 						</div>
 					</a-modal>
 					<!-- 绑定商家银行卡 -->
-					<a-modal v-model:visible="bank_vis" title="绑定商家提现银行卡" width="1000px" @ok="handBankOk">
+					<a-modal v-model:visible="bank_vis" :title="bank_type=='store'?'绑定商家提现银行卡(商家汇付)':'绑定商家提现银行卡(个人汇付)'"
+						width="1000px" @ok="handBankOk">
 						<div>
 							<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"
 								:wrapper-col="{ span: 14 }">
@@ -1345,8 +1471,12 @@
 										</a-form-item>
 									</a-col>
 									<a-col :span="12">
-										<a-form-item label="商家对公卡号" name="card_no"
+										<a-form-item v-if="bank_type=='store'" label="商家对公卡号" name="card_no"
 											:rules="[{ required: true, message: '请输入商家对公卡号' }]">
+											<a-input v-model:value="formStateBank.card_no" />
+										</a-form-item>
+										<a-form-item v-else label="个人对私卡号" name="card_no"
+											:rules="[{ required: true, message: '请输入个人对私卡号' }]">
 											<a-input v-model:value="formStateBank.card_no" />
 										</a-form-item>
 									</a-col>
@@ -2540,6 +2670,7 @@
 		display: flex;
 		margin: 0 auto;
 	}
+
 	.a68b {
 		align-items: center;
 		display: flex;
