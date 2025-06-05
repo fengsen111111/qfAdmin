@@ -1064,7 +1064,8 @@
 
   // 判断规格拼单价是否大于原价
   function pdpdjsfdyyj(item, index) {
-    if (item.price < item.old_price) {
+    console.log('判断规格拼单价是否大于原价',item.price,item.old_price);
+    if (item.price*1 < item.old_price*1) {
       // 拼单价小于原价
     } else {
       // 大于等于原价
@@ -1756,7 +1757,7 @@
                                   @input="e => item.old_price = formatPrice(e.target.value)" placeholder="请输入原价" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.price" @change="pdpdjsfdyyj(item,index)"
+                                <a-input type="text" v-model:value="item.price" @blur="pdpdjsfdyyj(item,index)"
                                   placeholder="输入拼单价" @input="e => item.price = formatPrice(e.target.value)" />
                               </td>
                               <td>
