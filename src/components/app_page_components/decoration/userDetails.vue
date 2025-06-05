@@ -92,7 +92,7 @@
 			id: order_sux.value.id,
 			status: order_sux.value.status,
 			start_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
-			end_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
+			end_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[1],
 			currentPage: current.value,
 			perPage: 10,
 		}, global, true).then((res) => {
