@@ -70,9 +70,9 @@
 		})
 	}
 	// console.log('当前页面路由信息',route.path);
-	if(route.path=='/'){
+	if (route.path == '/') {
 		// 平台添加新商家,不需要获取入驻信息
-	}else{
+	} else {
 		getSubmitEntryApplyMsg()
 	}
 
@@ -407,6 +407,10 @@
 
 	// 下一步
 	function toxyb() {
+		if(!huifu_Type.value){
+			message.error('请选择您的汇付类型！')
+			return false
+		}
 		// 切换店铺信息页面
 		type.value = shopRzType.value
 		buzhou_type.value = 2
@@ -534,6 +538,8 @@
 	}
 	const popoverVisible = ref(false)
 
+	const huifu_Type = ref('')//store商家 user用户  汇付类型
+
 </script>
 
 <template>
@@ -574,61 +580,93 @@
 							<div>针对本地商家和网店商家</div>
 						</div>
 						<!-- 分类 -->
-						<div style="background-color: #fff;padding: 20px;">
-							<div style="display: flex;align-items: baseline;">
-								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
-								<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
-							</div>
-							<div @click="()=>{shopRzType='a'}"
-								:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
-								<a-radio :checked="false" v-else></a-radio>
-								<div style="margin-left: 10px;">
-									<div>本地商家</div>
-									<div>有营业执照，想以个体工商户身份开店</div>
+						<div style="display: flex;">
+							<div style="background-color: #fff;padding: 20px;">
+								<div style="display: flex;align-items: baseline;">
+									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
+									<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
 								</div>
-							</div>
-							<div @click="()=>{shopRzType='b'}"
-								:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
-								<a-radio :checked="false" v-else></a-radio>
-								<div style="margin-left: 10px;">
-									<div>网店商家</div>
-									<div>无营业执照，想以个人身份开店</div>
+								<div @click="()=>{shopRzType='a'}"
+									:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>本地商家</div>
+										<div>有营业执照，想以个体工商户身份开店</div>
+									</div>
 								</div>
-							</div>
+								<div @click="()=>{shopRzType='b'}"
+									:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>网店商家</div>
+										<div>无营业执照，想以个人身份开店</div>
+									</div>
+								</div>
 
-							<div @click="()=>{shopRzType='c'}"
-								:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio :checked="true" v-if="shopRzType=='c'"></a-radio>
-								<a-radio :checked="false" v-else></a-radio>
-								<div style="margin-left: 10px;">
-									<div>个体工商户</div>
-									<div>可以提交个体工商户营业执照</div>
+								<div @click="()=>{shopRzType='c'}"
+									:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="shopRzType=='c'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>个体工商户</div>
+										<div>可以提交个体工商户营业执照</div>
+									</div>
 								</div>
-							</div>
-							<div style="display: flex;align-items: baseline;margin-top: 20px;">
-								<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">企业店</span>
-								<span style="font-size: 12px;">（适合企业入驻，可以提交企业工商户营业执照）</span>
-							</div>
-							<div @click="()=>{shopRzType='d'}"
-								:style="{ 'border': shopRzType=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-								style="display: flex;align-items: center;padding: 20px;width: 600px;border-radius: 4px;margin-top: 10px;">
-								<a-radio :checked="true" v-if="shopRzType=='d'"></a-radio>
-								<a-radio :checked="false" v-else></a-radio>
-								<div style="margin-left: 10px;">
-									<div>企业店</div>
-									<div>可以提交企业工商户营业执照</div>
+								<div style="display: flex;align-items: baseline;margin-top: 20px;">
+									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">企业店</span>
+									<span style="font-size: 12px;">（适合企业入驻，可以提交企业工商户营业执照）</span>
 								</div>
-							</div>
+								<div @click="()=>{shopRzType='d'}"
+									:style="{ 'border': shopRzType=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="shopRzType=='d'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>企业店</div>
+										<div>可以提交企业工商户营业执照</div>
+									</div>
+								</div>
 
-							<div style="text-align: center;margin:20px 0px;">
-								<a-button @click="toxyb" type="primary"
-									style="font-size: 15px !important;padding: 8px 40px;" size="large">下一步</a-button>
+
 							</div>
+							<!-- 汇付 -->
+							<div style="background-color: #fff;padding: 20px;">
+								<div style="display: flex;align-items: baseline;">
+									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">选择汇付类型</span>
+									<span style="font-size: 12px;">（若您拥有对公账户，请开通商家汇付，若您没有对公账户，请开通个人汇付）</span>
+								</div>
+								<span style="font-size: 12px;color: #ff0000;">注意：开通的汇付影响到您以后的提现相关，请谨慎选择！</span>
+								<div @click="()=>{huifu_Type='store'}"
+									:style="{ 'border': huifu_Type=='store' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="huifu_Type=='store'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>商家汇付</div>
+										<div>有对公账户，请开通商家汇付</div>
+									</div>
+								</div>
+								<div @click="()=>{huifu_Type='user'}"
+									:style="{ 'border': huifu_Type=='user' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="huifu_Type=='user'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>个人汇付</div>
+										<div>没有对公账户，请开通个人汇付</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 下一步 -->
+						<div style="text-align: center;padding:20px 0px;background: #fff;width: 1246px;">
+							<a-button @click="toxyb" type="primary"
+								style="font-size: 15px !important;padding: 8px 40px;" size="large">下一步</a-button>
 						</div>
 					</div>
 				</div>
@@ -993,7 +1031,10 @@
 									</div>
 								</a-popover>
 								<!--  -->
-								<!-- <div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">商家汇付开通</div> -->
+								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
+									<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
+									{{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通
+								</div>
 
 								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
 									<div style="display: flex;margin: 0 auto;">
