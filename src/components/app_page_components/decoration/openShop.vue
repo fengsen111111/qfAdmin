@@ -278,10 +278,6 @@
 			message.error('请上传门店logo')
 			return false
 		}
-		// if (!id_card_images.value || id_card_images.value.length != 2) {
-		// 	message.error('请检查身份证照片信息')
-		// 	return false
-		// }
 		if (!id_card_images.value[0]) {
 			message.error('请检查身份证照片信息')
 			return false
@@ -329,10 +325,6 @@
 				return false
 			}
 		}
-		// if (!admin_login_password.value) {
-		// 	message.error('请输入后台登陆密码')
-		// 	return false
-		// } 
 		const result = validatePassword(admin_login_password.value)
 		if (!result.valid) {
 			console.log('密码不合法：', result.msg, pasYz.value);
@@ -341,6 +333,62 @@
 		} else {
 			console.log('通过校验');
 		}
+
+		// 店铺入驻验证通过，开始验证汇付相关字段
+		// huifu_Type = ref('')//store商家 user用户  汇付类型
+		if (huifu_Type.value == 'store') {
+			// 商家汇付字段验证
+			formRef.value
+				.validateFields()
+				.then(values => {
+					console.log('验证成功', values);
+					// 执行提交逻辑
+					let params = values
+					params.reg_prov_id = params.regAddress[0]
+					params.reg_area_id = params.regAddress[1]
+					params.reg_district_id = params.regAddress[2]
+					delete params.regAddress //删除注册地址，这个是自己的字段
+					params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
+					if (params.license_end_date) {
+						params.license_end_date = params.license_end_date.format('YYYYMMDD')
+					}
+					params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
+					if (params.legal_cert_end_date) {
+						params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
+					}
+					console.log('处理后的params', params);
+
+				})
+				.catch(err => {
+					console.log('验证失败', err);
+					message.error('请检查汇付资料')
+					return false
+				});
+
+		} else if (huifu_Type.value == 'user') {
+			// 个人汇付字段验证
+			formUserRef.value
+				.validateFields()
+				.then(values => {
+					console.log('验证成功', values);
+					let params = values
+					params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
+					if (params.cert_end_date) {
+						params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
+					}
+					console.log('处理后的params', params);
+				})
+				.catch(err => {
+					console.log('验证失败', err);
+					message.error('请检查汇付资料')
+					return false
+				});
+		}
+
+
+		console.log('汇付字段检查通过');
+		return false
+
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
@@ -407,7 +455,7 @@
 
 	// 下一步
 	function toxyb() {
-		if(!huifu_Type.value){
+		if (!huifu_Type.value) {
 			message.error('请选择您的汇付类型！')
 			return false
 		}
@@ -540,6 +588,45 @@
 
 	const huifu_Type = ref('')//store商家 user用户  汇付类型
 
+	// 个人汇付
+	const formUserState = reactive({
+		name: '', //姓名 
+		mobile: '',//电话
+		cert_no: '',//身份证号码
+		cert_begin_date: '',//身份证有效期开始时间  
+		cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
+		cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
+	});
+	const formUserRef = ref();//表单绑定
+	// 商家汇付
+	const formState = reactive({
+		reg_name: '', //企业名称 
+		license_code: '',//营业执照编号
+		license_begin_date: '',//营业执照有效期起始日期
+		license_validity_type: '0',//营业执照有效期  1长期有效  0非长期有效
+		license_end_date: '',//营业执照有效期结束日期 非长期有效必填 
+		regAddress: '',//注册地址
+		reg_detail: '',//注册地址(详细信息) 
+		legal_name: '',//法人姓名
+		legal_cert_np: '',//法人身份证号码
+		legal_cert_begin_date: '',//身份证有效期开始时间  
+		legal_cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
+		legal_cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
+		contract_name: '',//联系人姓名 
+		contract_mobile: '',//联系人手机号  
+	});
+	const formRef = ref();//表单绑定
+	const treeData = ref([])
+	const dateFormat = ref('YYYY/MM/DD')
+	function getAreas() {
+		global.axios
+			.post('factory_system/Base/getAreas', {}, global)
+			.then((res) => {
+				console.log('地址数据', res);
+				treeData.value = res.areas
+			});
+	}
+	getAreas()
 </script>
 
 <template>
@@ -687,7 +774,7 @@
 										<span style="color: red;">*</span>
 										<span>店铺名称</span>
 									</div>
-									<a-input @change="nameChange" v-model:value="store_name"
+									<a-input @change="nameChange" v-model:value="store_name" placeholder="请输入店铺名称"
 										style="margin-left: 10px;width: 300px;" show-count :maxlength="30" />
 									<div style="position: absolute;top: 35px;left:72px;color: red;font-size: 10px;">
 										{{msgValue}}</div>
@@ -757,7 +844,8 @@
 										<div style="display: flex;white-space:nowrap;">
 											<span>详细地址</span>
 										</div>
-										<a-input v-model:value="address" style="margin-left: 10px;width: 300px;" />
+										<a-input v-model:value="address" placeholder="请输入详细地址"
+											style="margin-left: 10px;width: 300px;" />
 									</div>
 									<div style="display: flex;margin: 15px 0px 15px 133px;align-items: center;">
 										<div style="display: flex;white-space:nowrap;">
@@ -1034,6 +1122,126 @@
 								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
 									<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
 									{{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通
+								</div>
+								<!-- 商家汇付 -->
+								<div v-if="huifu_Type=='store'">
+									<a-form :model="formState" ref="formRef" name="basic" :colon="false"
+										style="margin-left: -10px;" :label-col="{ span: 6 }"
+										:wrapper-col="{ span: 14 }">
+
+										<a-form-item label="企业名称" name="reg_name"
+											:rules="[{ required: true, message: '请输入企业名称' }]">
+											<a-input v-model:value="formState.reg_name" placeholder="请输入企业名称" />
+										</a-form-item>
+
+										<a-form-item label="营业执照编号" name="license_code"
+											:rules="[{ required: true, message: '请输入营业执照编号' }]">
+											<a-input v-model:value="formState.license_code" placeholder="请输入营业执照编号" />
+										</a-form-item>
+
+										<a-form-item label="营业执照有效期" name="license_validity_type"
+											:rules="[{ required: true, message: '请输入营业执照有效期' }]">
+											<a-radio-group v-model:value="formState.license_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+
+										<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
+											:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.license_begin_date" style="width: 100%;" />
+										</a-form-item>
+
+										<a-form-item label="营业执照有效期结束日期" name="license_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.license_end_date" style="width: 100%;" />
+										</a-form-item>
+
+										<a-form-item label="注册地址" name="regAddress"
+											:rules="[{ required: true, message: '请输入注册地址' }]">
+											<a-cascader v-model:value="formState.regAddress" :options="treeData"
+												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+												placeholder="请输入注册地址" />
+										</a-form-item>
+
+										<a-form-item label="注册地址(详细信息)" name="reg_detail"
+											:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
+											<a-input v-model:value="formState.reg_detail" placeholder="请输入注册地址(详细信息)" />
+										</a-form-item>
+
+										<a-form-item label="法人姓名" name="legal_name"
+											:rules="[{ required: true, message: '请输入法人姓名' }]">
+											<a-input v-model:value="formState.legal_name" placeholder="请输入法人姓名" />
+										</a-form-item>
+
+										<a-form-item label="法人身份证号码" name="legal_cert_np"
+											:rules="[{ required: true, message: '请输入法人身份证号码' }]">
+											<a-input v-model:value="formState.legal_cert_np" placeholder="请输入法人身份证号码" />
+										</a-form-item>
+										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+											:rules="[{ required: true, message: '请输入身份证有效期' }]">
+											<a-radio-group v-model:value="formState.legal_cert_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.legal_cert_begin_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item label="联系人姓名" name="contract_name"
+											:rules="[{ required: true, message: '请输入联系人姓名' }]">
+											<a-input v-model:value="formState.contract_name" placeholder="请输入联系人姓名" />
+										</a-form-item>
+										<a-form-item label="联系人手机号" name="contract_mobile"
+											:rules="[{ required: true, message: '请输入联系人手机号' }]">
+											<a-input v-model:value="formState.contract_mobile"
+												placeholder="请输入联系人手机号" />
+										</a-form-item>
+									</a-form>
+								</div>
+								<div v-else="huifu_Type=='user'">
+									<a-form :colon="false" :model="formUserState" ref="formUserRef" name="basic"
+										style="margin-left: -10px;" :label-col="{ span: 6 }"
+										:wrapper-col="{ span: 14 }">
+										<a-form-item label="姓名" name="name"
+											:rules="[{ required: true, message: '请输入姓名' }]">
+											<a-input v-model:value="formUserState.name" placeholder="请输入姓名" />
+										</a-form-item>
+										<a-form-item label="电话" name="mobile"
+											:rules="[{ required: true, message: '请输入电话' }]">
+											<a-input v-model:value="formUserState.mobile" placeholder="请输入电话" />
+										</a-form-item>
+										<a-form-item label="身份证" name="cert_no"
+											:rules="[{ required: true, message: '请输入身份证' }]">
+											<a-input v-model:value="formUserState.cert_no" placeholder="请输入身份证" />
+										</a-form-item>
+										<a-form-item label="身份证有效期" name="cert_validity_type"
+											:rules="[{ required: true, message: '请输入身份证有效期' }]">
+											<a-radio-group v-model:value="formUserState.cert_validity_type"
+												name="radioGroup">
+												<a-radio value="1">长期有效</a-radio>
+												<a-radio value="0">非长期有效</a-radio>
+											</a-radio-group>
+										</a-form-item>
+										<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
+											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formUserState.cert_begin_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item label="身份证有效期结束时间" name="cert_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formUserState.cert_end_date" style="width: 100%;" />
+										</a-form-item>
+									</a-form>
 								</div>
 
 								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
