@@ -718,11 +718,11 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item v-if="skeleton_state.admin.id != -1">
-                  <span @click="changePassword">修改信息</span>
+                <a-menu-item  @click="changePassword" v-if="skeleton_state.admin.id != -1">
+                  <span>修改信息</span>
                 </a-menu-item>
-                <a-menu-item>
-                  <span @click="logout">退出登陆</span>
+                <a-menu-item  @click="logout">
+                  <span>退出登陆</span>
                 </a-menu-item>
               </a-menu>
             </template>
