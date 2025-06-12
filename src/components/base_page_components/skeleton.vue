@@ -802,13 +802,13 @@
                     <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广 </div>
                   </div>
-                  <div style="width: 80%;">
+                  <div style="width: 80%;height: 300px;overflow: auto;">
                     <div>
                       <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id"
                         style="padding: 5px 20px;">
                         <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
-                            <div style="font-weight: bold;">{{item.title}}</div>
+                            <div style="font-weight: bold;width: 255px;">{{item.title}}</div>
                             <div>{{item.create_time}}</div>
                           </div>
                           <div style="margin: 5px 0px;">{{item.content}}</div>

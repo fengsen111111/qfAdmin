@@ -1862,14 +1862,16 @@
                     <div>运费模板</div>
                   </div>
                   <div class="b21">
-                    <div v-if="allYfmb.length==0">
-                      暂无启用模板！点击<span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;">新增</span>;
-                      若已有模板点击<span @click="getStoreCarriageList()" style="color: #1890FF;cursor: pointer;">刷新</span>
+                    <div style="display: flex;">
+                      <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
+                        <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
+                        <!-- <a-radio value="2">其它模板</a-radio> -->
+                      </a-radio-group>
+                      <div style="display: flex;">
+                        <span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">新增模板</span>
+                        <span @click="getStoreCarriageList()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">刷新数据</span>
+                      </div>
                     </div>
-                    <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
-                      <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
-                      <!-- <a-radio value="2">其它模板</a-radio> -->
-                    </a-radio-group>
                     <template v-for="item in allYfmb" :key="item.id">
                       <template v-if="item.id == post_params.carriage_id">
                         <div class="b22">

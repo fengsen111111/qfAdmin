@@ -271,6 +271,7 @@
 			return false
 		} else {
 			if (msgValue.value) {
+			    message.error(msgValue.value)
 				return false
 			}
 		}
@@ -364,7 +365,6 @@
 					message.error('请检查汇付资料')
 					return false
 				});
-
 		} else if (huifu_Type.value == 'user') {
 			// 个人汇付字段验证
 			formUserRef.value
@@ -384,11 +384,7 @@
 					return false
 				});
 		}
-
-
 		console.log('汇付字段检查通过');
-		return false
-
 		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
@@ -413,18 +409,7 @@
 				// spinning.value = false
 				console.log('申请入驻', res);
 				resule_vis.value = true
-				// global.Modal.confirm({
-				// 	title: global.findLanguage(
-				// 		"保存成功，点击确定返回上一页！"
-				// 	),
-				// 	okText: global.findLanguage("确定"),
-				// 	cancelText: global.findLanguage("取消"),
-				// 	okType: "primary",
-				// 	onOk: function () {
-				// 		handUrl('/login')
-				// 	},
-				// });
-
+				// 绑定汇付信息
 			})
 	}
 
@@ -468,7 +453,7 @@
 
 	const resule_vis = ref(false)//提交结果弹框
 
-	// 提交后弹窗确定 前往首页
+	// 0元开店  提交后弹窗确定 前往首页
 	function toHome() {
 		console.log('等待数据');
 		// 账号密码登陆
@@ -479,10 +464,65 @@
 			.then(res => {
 				console.log('登陆成功');
 				localStorage.setItem('Authorization', res.token);
-				global.router.push("/")
+				// 店铺入驻验证通过，开始验证汇付相关字段
+				// huifu_Type = ref('')//store商家 user用户  汇付类型
+				if (huifu_Type.value == 'store') {
+					// 商家汇付字段验证
+					formRef.value
+						.validateFields()
+						.then(values => {
+							console.log('验证成功', values);
+							// 执行提交逻辑
+							let params = values
+							params.reg_prov_id = params.regAddress[0]
+							params.reg_area_id = params.regAddress[1]
+							params.reg_district_id = params.regAddress[2]
+							delete params.regAddress //删除注册地址，这个是自己的字段
+							params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
+							if (params.license_end_date) {
+								params.license_end_date = params.license_end_date.format('YYYYMMDD')
+							}
+							params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
+							if (params.legal_cert_end_date) {
+								params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
+							}
+							console.log('处理后的params', params);
+							global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
+								// 跳转首页
+								global.router.push("/")
+							})
+
+						})
+						.catch(err => {
+							console.log('验证失败', err);
+							message.error('请检查汇付资料')
+							return false
+						});
+				} else if (huifu_Type.value == 'user') {
+					// 个人汇付字段验证
+					formUserRef.value
+						.validateFields()
+						.then(values => {
+							console.log('验证成功', values);
+							let params = values
+							params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
+							if (params.cert_end_date) {
+								params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
+							}
+							console.log('处理后的params', params);
+							global.axios.post('decoration/User/openUserHAccount', params, global, true).then((res) => {
+								// 跳转首页
+								global.router.push("/")
+							})
+						})
+						.catch(err => {
+							console.log('验证失败', err);
+							message.error('请检查汇付资料')
+							return false
+						});
+				}
 			})
 	}
-
 
 	let pasYz = ref({
 		rule_a: false,//规则1
@@ -545,10 +585,13 @@
 		}
 	}
 
+
+	const danger_words = ref([])//铭感词列表
 	// 敏感词
 	function _getBaseTypes() {
 		global.axios.post('decoration/Setting/getBaseTypes', {}, global).then(res => {
 			console.log('敏感词', res);
+			danger_words.value = res.danger_words
 		})
 	}
 	_getBaseTypes()
@@ -558,17 +601,22 @@
 	function nameChange() {
 		console.log('名称变化', store_name.value);
 		// 自定义敏感关键词列表（可根据实际需求扩展）
-		const sensitiveWords = [
-			'马云', '习近平', '马化腾', '王健林', '雷军', // 名人
-			'北京', '上海', '深圳', '广州', '香港',     // 地名
-			'苹果', '华为', '微信', '支付宝', '抖音',   // 品牌
-			'国家', '中央', '公安', '法院', '政府'      // 敏感机关词
-		];
+		// const sensitiveWords = [
+		// 	'马云', '习近平', '马化腾', '王健林', '雷军', // 名人
+		// 	'北京', '上海', '深圳', '广州', '香港',     // 地名
+		// 	'苹果', '华为', '微信', '支付宝', '抖音',   // 品牌
+		// 	'国家', '中央', '公安', '法院', '政府'      // 敏感机关词
+		// ];
+		const sensitiveWords = danger_words.value
 		const hits = sensitiveWords.filter(word => store_name.value.includes(word));
-		if (hits.length > 0) {
+		console.log('hits',hits);
+		if (hits.length > 0 && hits[0]!='') {
 			// 清空或纠正输入
 			msgValue.value = `不得包含敏感词：${hits.join('、')}`//不重复就清空
+			msgValue.value = msgValue.value.slice(0,msgValue.value.length-1)
 			return false
+		}else{
+			msgValue.value = ''
 		}
 
 		// 验证店铺名称是否重复

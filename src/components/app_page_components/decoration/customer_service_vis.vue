@@ -19,10 +19,7 @@
   import 'tinymce/plugins/link' //  链接插件
   import 'tinymce/plugins/wordcount' // 字数统计插件
 
-  const fwbText = ref('')//富文本内容
   const component_state = reactive({
-    isCollapse: false,
-    myValue: fwbText.value,
     init: {
       promotion: false,
       language_url: `/tinymce/langs/zh_CN.js`,
@@ -52,9 +49,6 @@
           margin: 0;
           padding: 0;
         }
-        br {
-          display: none; /* 可选：去除空行视觉效果 */
-        }
         /* WebKit 滚动条美化 */
         ::-webkit-scrollbar {
           width: 6px;
@@ -71,7 +65,7 @@
           background: #999;
         }
       `, // 修改背景颜色
-      forced_root_block: "",  // 禁止默认 <p>，防止 TinyMCE 自动包装内容
+      forced_root_block: false,  // 禁止默认 <p>，防止 TinyMCE 自动包装内容
       paste_data_images: false, // 允许粘贴图像
       images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
         global.file.uploadFile(global, blobInfo.blob(), 'rich_text_file', 'rich_text_file', true, resolve)
@@ -91,6 +85,18 @@
         //触发点击
         input.click();
       },
+      setup(editor) {
+        editor.on('keydown', function (event) {
+          // console.log('触发',event);
+          if (event.key === 'Enter' && !event.ctrlKey && !event.shiftKey) {
+            event.preventDefault();
+            send_word(); // 替换为你自己的发送函数
+          }
+          if (event.key === 'Enter' && event.ctrlKey) {
+            customer_service_state.text_content += '<br />'; // 添加换行符
+          }
+        });
+      }
     },
   })
 
@@ -568,22 +574,11 @@
 
   const timeoutId = ref(null)// 用于存储超时id
 
-  // 按下回车发送，ctrl加回车换行
-  function handleKeydown(event) {
-    // 如果按下的是Enter键且没有按Ctrl，则发送消息
-    if (event.key === 'Enter' && !event.ctrlKey && !event.shiftKey) {
-      event.preventDefault(); // 阻止默认的换行行为
-      send_word()
-    }
-    // 如果按下的是Ctrl+Enter，则换行
-    if (event.ctrlKey && event.key === 'Enter') {
-      customer_service_state.text_content += '\n'; // 添加换行符
-    }
-  }
-
   // 去除p 标签
   function removePTagsIfOnlyText(html) {
-    const match = html.match(/^<p>([^<>]*)<\/p>$/i);
+    let match = html.match(/^<p>([^<>]*)<\/p>$/i);
+    console.log('match', match);
+
     return match ? match[1] : html;
   }
 
@@ -597,8 +592,9 @@
       message.warning('请输入内容！');
       return false
     }
-    customer_service_state.text_content = removePTagsIfOnlyText(customer_service_state.text_content)
-    // 处理表情包
+
+    // customer_service_state.text_content = removePTagsIfOnlyText(customer_service_state.text_content)
+    // // 处理表情包
     const emojiMap = {};
     emojiData.forEach(group => {
       group.forEach(emoji => {
@@ -1225,6 +1221,10 @@
 </template>
 
 <style lang="less" scoped>
+  :deep(p) {
+    margin: 0 !important;
+  }
+
   .container {
     width: 100%;
     max-width: 1080px;
