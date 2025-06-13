@@ -831,7 +831,7 @@
 					emit("closeChildPage", pageData.page_key);
 				} else {
 					//其余情况 返回商家列表页
-					emit("djtzmk", '用户管理', '商家管理');
+					emit("djtzmk", '商家信息', '商家资料');
 				}
 			},
 		});
