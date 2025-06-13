@@ -151,8 +151,51 @@
             cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
+          shopGuige.value = JSON.parse(JSON.stringify(parseGoodsSizesToGuige(post_params.goods_sizes)));
         }
       })
+  }
+
+  function parseGoodsSizesToGuige(goods_sizes) {
+    const specMap = new Map();
+
+    goods_sizes.forEach(item => {
+      item.name.forEach(entry => {
+        const [labelValue, label] = entry.split('：');
+        if (!specMap.has(labelValue)) {
+          specMap.set(labelValue, new Map());
+        }
+        const valueMap = specMap.get(labelValue);
+        if (!valueMap.has(label)) {
+          valueMap.set(label, {
+            label,
+            imgurl: item.size_image || '',
+            isCustom: false
+          });
+        } else {
+          // 如果已存在但当前 item.size_image 有值，更新 imgurl
+          const existing = valueMap.get(label);
+          if (!existing.imgurl && item.size_image) {
+            existing.imgurl = item.size_image;
+          }
+        }
+      });
+    });
+
+    // 转为响应式友好格式
+    const result = [];
+    for (const [labelValue, valueMap] of specMap.entries()) {
+      const valuesArray = Array.from(valueMap.values());
+      const hasImage = valuesArray.some(v => v.imgurl);
+      result.push({
+        labelValue,
+        value: valuesArray,
+        isSort: false,
+        isUrlimg: hasImage // ✅ 如果当前规格下任意项有图，就设置为 true
+      });
+    }
+
+    return result;
   }
 
   // 有数据，编辑数据
@@ -273,22 +316,18 @@
         // 根据分类id找到对应分类，并设置固定属性，只有新增
         let result = findItemById(res.list, post_params.type_id)
         console.log('result.default_attributes', result);
-        result.default_attributes = JSON.parse(result.default_attributes);
         post_params.attributes = []
-        result.default_attributes.map((item) => {
-          post_params.attributes.push({
-            key: item.key,
-            value: '',
-            type: 'select',
-            is_del: false,
-            is_must: item.is_must,//是否必填
-            option: item.values.split('|')
+        if (result) {
+          result.default_attributes.map((item) => {
+            post_params.attributes.push({
+              key: item.key,
+              value: '',
+              type: 'select',
+              is_del: false,
+              is_must: item.is_must,//是否必填
+              option: item.values.split('|')
+            })
           })
-        })
-        if (props.pageData.data.id) {
-          // 编辑页面赋值
-          setTimeout(() => {
-          }, 1000);
         }
       }, 1000);
   }
@@ -729,14 +768,10 @@
     const oldList = post_params.goods_sizes || [];
     const oldMap = new Map();
     oldList.forEach(item => {
-      oldMap.set(item.ggInfo || JSON.stringify(item.name), item); // 保证兼容性
+      oldMap.set(JSON.stringify(item.name), item); // 不再使用 ggInfo
     });
     result.forEach(item => {
-      const ggInfo = JSON.stringify(item);
-      // name 数组，如 ['红', 'S']
-      // const name = shopGuige.value.map(spec => item[spec.labelValue]);
       const name = shopGuige.value.map(spec => `${spec.labelValue}：${item[spec.labelValue]}`);
-      // 获取第一张图片（从开启了 isUrlimg 的规格中找）
       let sizeImage = '';
       for (const spec of shopGuige.value) {
         if (spec.isUrlimg) {
@@ -747,8 +782,9 @@
           }
         }
       }
-      if (oldMap.has(ggInfo)) {
-        const oldItem = { ...oldMap.get(ggInfo) };
+      const key = JSON.stringify(name);
+      if (oldMap.has(key)) {
+        const oldItem = { ...oldMap.get(key) };
         oldItem.name = name;
         oldItem.size_image = sizeImage;
         newList.push(oldItem);
@@ -761,10 +797,9 @@
           price: '',
           uper_status: false,
           commission: '',
-          integral_price: '',//可以积分抵扣的最大金额  
+          integral_price: '',
           status: false,
           order: '',
-          ggInfo,             // JSON 字符串形式，用于唯一标识
           size_image: sizeImage,
         });
       }
@@ -774,7 +809,7 @@
   }
   // 监听商品规格变化
   watch(
-    shopGuige.value,
+    shopGuige,
     (newVal, oldVal) => {
       console.log('newVal', newVal);
       if (newVal.length) {
@@ -1044,15 +1079,6 @@
   function _toYfmb() {
     emit("djtzmk");
   }
-  function formatSpecName(nameStr) {
-    try {
-      const obj = JSON.parse(nameStr);
-      return Object.entries(obj).map(([k, v]) => `${k}：${v}`).join('\n');
-    } catch (e) {
-      return nameStr; // 避免异常
-    }
-  }
-
   // 删除类型
   function delType(index) {
     shopGuige.value.splice(index, 1)
@@ -1711,8 +1737,7 @@
                                       </div>
                                     </a-upload>
                                   </div>
-                                  <pre v-if="item.ggInfo">{{ formatSpecName(item.ggInfo) }}</pre>
-                                  <div v-else>
+                                  <div>
                                     <div v-for="iss in item.name" :key="iss">{{iss}}</div>
                                   </div>
                                 </div>
@@ -2598,7 +2623,6 @@
   .a60 {
     width: 60px;
     text-align: right;
-    white-space: nowrap;
   }
 
   .a61 {
