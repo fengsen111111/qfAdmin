@@ -570,12 +570,18 @@
         // console.log('所有模板数据', res);
         // allYfmb.value = []
 
-        let mbsz = []
-        res.list.map((item) => {
-          if (item.status == 'Y') {
-            mbsz.push(item)
-          }
-        })
+        // let mbsz = []
+        // res.list.map((item) => {
+        //   if (item.status == 'Y') {
+        //     mbsz.push(item)
+        //   }
+        // })
+        let mbsz = res.list.sort((a, b) => {
+          // 把 status 为 Y 的排前面
+          if (a.status === 'Y' && b.status !== 'Y') return -1;
+          if (a.status !== 'Y' && b.status === 'Y') return 1;
+          return 0; // status 相同则不变
+        });
 
         allYfmb.value = mbsz.map((item) => {
           let arr = [] //不包邮地区
@@ -1064,8 +1070,8 @@
 
   // 判断规格拼单价是否大于原价
   function pdpdjsfdyyj(item, index) {
-    console.log('判断规格拼单价是否大于原价',item.price,item.old_price);
-    if (item.price*1 < item.old_price*1) {
+    console.log('判断规格拼单价是否大于原价', item.price, item.old_price);
+    if (item.price * 1 < item.old_price * 1) {
       // 拼单价小于原价
     } else {
       // 大于等于原价
@@ -1869,7 +1875,8 @@
                       </a-radio-group>
                       <div style="display: flex;">
                         <span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">新增模板</span>
-                        <span @click="getStoreCarriageList()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">刷新数据</span>
+                        <span @click="getStoreCarriageList()"
+                          style="color: #1890FF;cursor: pointer;margin-left: 10px;">刷新数据</span>
                       </div>
                     </div>
                     <template v-for="item in allYfmb" :key="item.id">

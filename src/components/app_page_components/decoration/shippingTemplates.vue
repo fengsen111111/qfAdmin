@@ -452,15 +452,15 @@
               </div>
             </div>
             <!-- 状态 -->
-            <div style="padding-left: 28px;margin-top: 20px;" class="flex">
+            <div style="margin-top: 20px;" class="flex">
               <div class="flex">
                 <span class="a11">*</span>
-                <span>状态</span>
+                <span>是否默认</span>
               </div>
               <div class="a12">
                 <a-radio-group v-model:value="status">
-                  <a-radio value="Y">启用</a-radio>
-                  <a-radio value="N">禁用</a-radio>
+                  <a-radio value="Y">是</a-radio>
+                  <a-radio value="N">否</a-radio>
                 </a-radio-group>
               </div>
             </div>
