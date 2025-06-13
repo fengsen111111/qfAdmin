@@ -273,38 +273,57 @@
       });
   }
   getStoreID()
-
+  function keepOnlyThreeLevels(treeList) {
+    return treeList.map(level1 => {
+      const newLevel1 = { ...level1 };
+      if (Array.isArray(newLevel1.children)) {
+        newLevel1.children = newLevel1.children.map(level2 => {
+          const newLevel2 = { ...level2 };
+          if (Array.isArray(newLevel2.children)) {
+            newLevel2.children = newLevel2.children.map(level3 => {
+              const newLevel3 = { ...level3 };
+              delete newLevel3.children; // 移除第三级以下
+              return newLevel3;
+            });
+          }
+          return newLevel2;
+        });
+      }
+      return newLevel1;
+    });
+  }
   const spflList = ref([])//商品分类列表
   // 商品分类列表
   function getGoodsTypeList() {
     global.axios
       .post('decoration/GoodsType/getGoodsTypeList', {
-        // store_id: post_params.store_id
       }, global)
       .then((res) => {
-          console.log('商品分类列表', res.list, post_params.type_id);
-          spflList.value = res.list
-          // 根据分类id找到对应分类，并设置固定属性，只有新增
-          let result = findItemById(res.list, post_params.type_id)
-          console.log('result.default_attributes', result);
-          result.default_attributes = JSON.parse(result.default_attributes);
-          post_params.attributes = []
-          result.default_attributes.map((item) => {
-            post_params.attributes.push({
-              key: item.key,
-              value: '',
-              type: 'select',
-              is_del: false,
-              is_must: item.is_must,//是否必填
-              option: item.values.split('|')
-            })
+        console.log('商品分类列表', res.list, post_params.type_id);
+        res.list = keepOnlyThreeLevels(res.list);
+        console.log('res.list', res.list);
+        spflList.value = res.list
+        // 根据分类id找到对应分类，并设置固定属性，只有新增
+        let result = findItemById(res.list, post_params.type_id)
+        console.log('result.default_attributes', result);
+        result.default_attributes = JSON.parse(result.default_attributes);
+        post_params.attributes = []
+        result.default_attributes.map((item) => {
+          post_params.attributes.push({
+            key: item.key,
+            value: '',
+            type: 'select',
+            is_del: false,
+            is_must: item.is_must,//是否必填
+            option: item.values.split('|')
           })
-          if (props.pageData.data.id) {
-            // 编辑页面赋值
-            setTimeout(() => {
-            }, 1000);
-          }
-        }, 1000);
+        })
+        if (props.pageData.data.id) {
+          // 编辑页面赋值
+          setTimeout(() => {
+          }, 1000);
+        }
+      }, 1000);
   }
   function findItemById(list, targetId) {
     for (const item of list) {
@@ -738,7 +757,6 @@
 
   // 表格内容组装
   function zztext() {
-    return false
     const result = getAllCombinations(shopGuige.value); // 所有组合
     const newList = [];
     const oldList = post_params.goods_sizes || [];
@@ -792,7 +810,6 @@
     shopGuige.value,
     (newVal, oldVal) => {
       console.log('newVal', newVal);
-      post_params.goods_sizes = []
       if (newVal.length) {
         zztext()
       }
