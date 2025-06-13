@@ -805,7 +805,10 @@
       }
     });
     post_params.goods_sizes = newList;
-    console.log('newList', newList);
+    post_params.goods_sizes.map((item,index)=>{
+      item.order = index+1
+    })
+    // console.log('newList', newList);
   }
   // 监听商品规格变化
   watch(
@@ -1720,26 +1723,28 @@
                               <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
                               </td>
-                              <td style="display: flex;">
-                                <div class="itemImg" style="display: flex;margin: 0 auto;">
-                                  <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
-                                    <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
-                                    <div @click="post_params.goods_sizes[index].size_image=''"
-                                      style="width: 15px;height: 15px;position: absolute;color: #fff;left: 24px;top: -2px;">
-                                      <CloseCircleOutlined />
+                              <td >
+                                <div style="display: flex;">
+                                  <div class="itemImg" style="display: flex;margin: 0 auto;">
+                                    <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
+                                      <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
+                                      <div @click="post_params.goods_sizes[index].size_image=''"
+                                        style="width: 15px;height: 15px;position: absolute;color: #fff;left: 24px;top: -2px;">
+                                        <CloseCircleOutlined />
+                                      </div>
+                                    </div>
+                                    <div v-else @click="itemImgIndex(index)">
+                                      <a-upload :customRequest="uploadItem" :multiple="false" :file-list="[]"
+                                        list-type="picture-card">
+                                        <div>
+                                          <PlusOutlined />
+                                        </div>
+                                      </a-upload>
                                     </div>
                                   </div>
-                                  <div v-else @click="itemImgIndex(index)">
-                                    <a-upload :customRequest="uploadItem" :multiple="false" :file-list="[]"
-                                      list-type="picture-card">
-                                      <div>
-                                        <PlusOutlined />
-                                      </div>
-                                    </a-upload>
-                                  </div>
-                                  <div>
-                                    <div v-for="iss in item.name" :key="iss">{{iss}}</div>
-                                  </div>
+                                </div>
+                                <div>
+                                  <div v-for="iss in item.name" :key="iss">{{iss}}</div>
                                 </div>
                               </td>
                               <td>
