@@ -151,43 +151,10 @@
             cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
-          shopGuige.value = []
-          shopGuige.value = parseGoodsSizesToGuige(post_params.goods_sizes);
-          console.log('shopGuige', shopGuige.value);
-
         }
       })
   }
-  // 处理需要回显的规格信息
-  function parseGoodsSizesToGuige(goods_sizes) {
-    const specMap = new Map();
-    goods_sizes.forEach(item => {
-      item.name.forEach(entry => {
-        const [labelValue, label] = entry.split('：');
-        if (!specMap.has(labelValue)) {
-          specMap.set(labelValue, new Map());
-        }
-        const valueMap = specMap.get(labelValue);
-        if (!valueMap.has(label)) {
-          valueMap.set(label, {
-            label,
-            imgurl: item.size_image || '',
-            isCustom: false
-          });
-        }
-      });
-    });
-    const shopGuige = [];
-    for (const [labelValue, valueMap] of specMap.entries()) {
-      shopGuige.push({
-        labelValue,
-        value: Array.from(valueMap.values()),
-        isSort: false,
-        isUrlimg: true // 如果你有逻辑判断是否显示图片，也可按需调整
-      });
-    }
-    return shopGuige;
-  }
+
   // 有数据，编辑数据
   if (props.pageData.data.id) {
     setTimeout(() => {
