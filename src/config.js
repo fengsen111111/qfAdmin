@@ -21,7 +21,7 @@ import AddStorePage from '@/components/app_page_components/decoration/openShop.v
 import shopOut from '@/components/app_page_components/decoration/shopOut.vue'//商家退店
 import EditCarriagePage from '@/components/app_page_components/decoration/shippingTemplates.vue'//运费模板
 // import newShop from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
-import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop.vue'//发布新商品
+import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop.vue'//发布新商品   //正确版本
 
 import myInfo from '@/components/app_page_components/decoration/myInfo.vue'//我的店铺信息
 import addressManage from '@/components/app_page_components/decoration/addressManage.vue'//地址管理

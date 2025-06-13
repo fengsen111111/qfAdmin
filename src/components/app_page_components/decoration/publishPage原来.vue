@@ -23,13 +23,11 @@
     goods_sizes: [
       {
         id: '',//
-        size_image: '',//商品规格图片  
         name: '',//名称  
         stock: '',//库存
         old_price: '',//原价
         price: '',//价格
         uper_status: false,//是否需要推荐官推荐
-        integral_price: '',//可以积分抵扣的最大金额
         commission: '',//佣金
         status: false,//启用状态
         order: '',//排序  
@@ -41,6 +39,12 @@
     is_plan_salled: 'a',//是否预售 a非预售 b定时预售 c时段预售 d规格预售    
     need_send_time: 'a',//承诺发货时间 a当日发货 b24小时 c48小时  
     carriage_id: '',//运费模板ID 
+
+    power_level_id: '',//曝光等级id
+    power_start_time: '',//曝光开始时间
+    power_end_time: '',//曝光结束时间
+    power: '',//曝光量
+
   })
   const bfb = ref(0)//填写进度
 
@@ -54,23 +58,23 @@
 
   const del_pp_text = ref(false)
 
-  // watch(() => post_params.brand_id, (newVal, oldVal) => {
-  //   del_pp_text.value = false
-  //   console.log('brand_id 品牌变化:', newVal,ppList.value);
-  //   setTimeout(() => {
-  //     const exists = ppList.value.some(item => item.value == newVal);
-  //     if (exists) {
-  //       bfb.value = 50
-  //       if (post_params.type_id) {
-  //         bfb.value = 100
-  //       }
-  //     } else {
-  //       // 品牌已删除
-  //       post_params.brand_id = ''
-  //       del_pp_text.value = true
-  //     }
-  //   }, 2000);
-  // });
+  watch(() => post_params.brand_id, (newVal, oldVal) => {
+    del_pp_text.value = false
+    console.log('brand_id 品牌变化:', newVal);
+    setTimeout(() => {
+      const exists = ppList.value.some(item => item.value == newVal);
+      if (exists) {
+        bfb.value = 50
+        if (post_params.type_id) {
+          bfb.value = 100
+        }
+      } else {
+        // 品牌已删除
+        post_params.brand_id = ''
+        del_pp_text.value = true
+      }
+    }, 2000);
+  });
 
   // 删除服务
   function delFw(index) {
@@ -84,18 +88,19 @@
   function delImgLb(index) {
     post_params.images.splice(index, 1)
   }
-
+  // 删除封面图
+  function delImgFm(index) {
+    post_params.cover_image = ''
+  }
   // 添加规格
   function addGG() {
     post_params.goods_sizes.push({
       id: '',//
-      size_image: '',//商品规格图片  
       name: '',//名称  
       stock: '',//库存
       old_price: '',//原价
       price: '',//价格
       uper_status: false,//是否需要推荐官推荐
-      integral_price: '',//可以积分抵扣的最大金额  
       commission: '',//佣金
       status: false,//启用状态
       order: '',//排序  
@@ -144,49 +149,34 @@
             item.status = item.status == 'Y' ? true : false
             item.uper_status = item.uper_status == 'Y' ? true : false
           })
+          // 富文本单独更新
           Object.assign(post_params, res.goods_datas);
+          // 服务单独更新
+          // cn_value.value = res.goods_datas.services.map((item) => {
+          //   return item.key
+          // })
+          // }
           let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
-          cn_value.value = []
           arrSer.map((item) => {
             cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
-          shopGuige.value = []
-          shopGuige.value = parseGoodsSizesToGuige(post_params.goods_sizes);
-          console.log('shopGuige', shopGuige.value);
-
+          // 曝光时间单独更行
+          setRangePicker(res.goods_datas.power_start_time * 1000, res.goods_datas.power_end_time * 1000)
+          shopGuige.value[0].value = []
+          shopGuige.value[1].value = []
+          res.goods_datas.goods_sizes.map((item, index) => {
+            shopGuige.value[0].value.push({
+              label: item.name,
+              isCustom: false
+            })
+            shopGuige.value[1].value.push({
+              label: item.stock,
+              isCustom: false
+            })
+          })
         }
       })
-  }
-  // 处理需要回显的规格信息
-  function parseGoodsSizesToGuige(goods_sizes) {
-    const specMap = new Map();
-    goods_sizes.forEach(item => {
-      item.name.forEach(entry => {
-        const [labelValue, label] = entry.split('：');
-        if (!specMap.has(labelValue)) {
-          specMap.set(labelValue, new Map());
-        }
-        const valueMap = specMap.get(labelValue);
-        if (!valueMap.has(label)) {
-          valueMap.set(label, {
-            label,
-            imgurl: item.size_image || '',
-            isCustom: false
-          });
-        }
-      });
-    });
-    const shopGuige = [];
-    for (const [labelValue, valueMap] of specMap.entries()) {
-      shopGuige.push({
-        labelValue,
-        value: Array.from(valueMap.values()),
-        isSort: false,
-        isUrlimg: true // 如果你有逻辑判断是否显示图片，也可按需调整
-      });
-    }
-    return shopGuige;
   }
   // 有数据，编辑数据
   if (props.pageData.data.id) {
@@ -211,13 +201,22 @@
       key: SxName.value,
       value: '',
       type: 'input',
-      is_del: true,
-      is_must: 'N'//是否必填
+      is_del: true
     })
     SxName.value = ''
     visibleSx.value = false
   }
 
+  // 上传封面
+  function uploadFm(options) {
+    console.log('option', options);
+    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeFm)
+  }
+  // 封面图
+  function completeFm(response) {
+    post_params.cover_image = response.url
+    console.log('回调', response);
+  }
 
   const sqJbxx = ref(false)//商品信息收起展开
   const ser_sqJbxx = ref(false)//服务信息收起展开
@@ -258,7 +257,6 @@
   function completeList(response) {
     console.log('商品图片回调', response);
     post_params.images.push(response.url)
-    post_params.cover_image = post_params.images[0]
   }
   // 商家id
   function getStoreID() {
@@ -282,29 +280,28 @@
         // store_id: post_params.store_id
       }, global)
       .then((res) => {
-          console.log('商品分类列表', res.list, post_params.type_id);
-          spflList.value = res.list
-          // 根据分类id找到对应分类，并设置固定属性，只有新增
-          let result = findItemById(res.list, post_params.type_id)
-          console.log('result.default_attributes', result);
-          result.default_attributes = JSON.parse(result.default_attributes);
-          post_params.attributes = []
-          result.default_attributes.map((item) => {
-            post_params.attributes.push({
-              key: item.key,
-              value: '',
-              type: 'select',
-              is_del: false,
-              is_must: item.is_must,//是否必填
-              option: item.values.split('|')
-            })
+        // console.log('商品分类列表', res.list, post_params.type_id);
+        spflList.value = res.list
+        // 根据分类id找到对应分类，并设置固定属性，只有新增
+        let result = findItemById(res.list, post_params.type_id)
+        // console.log('找到对应项', result.default_attributes);
+        post_params.attributes = []
+        result.default_attributes.map((item) => {
+          post_params.attributes.push({
+            key: item.key,
+            value: '',
+            type: 'select',
+            is_del: false,
+            option: item.values
           })
-          if (props.pageData.data.id) {
-            // 编辑页面赋值
-            setTimeout(() => {
-            }, 1000);
-          }
-        }, 1000);
+        })
+        if (props.pageData.data.id) {
+          // 编辑页面赋值
+          setTimeout(() => {
+
+          }, 1000);
+        }
+      });
   }
   function findItemById(list, targetId) {
     for (const item of list) {
@@ -346,12 +343,21 @@
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
+    // console.log('shopObj.deposit_money',shopObj.value.deposit_money);
 
     if (pay_Obj.value.pay_info || shopObj.value.deposit_money > 0) {
       pay_info_Vis.value = true
       return false
     }
-
+    if (timeStaEnd.value) {
+      post_params.power_start_time = Number(timeStaEnd.value[0]?.valueOf()) / 1000
+      post_params.power_end_time = Number(timeStaEnd.value[1]?.valueOf()) / 1000
+    }
+    // 新增不要曝光量字段
+    if (!props.pageData.data.id) {
+      console.log('新增不要曝光量字段');
+      delete post_params.power
+    }
     post_params.status = post_params.status == true ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
@@ -370,11 +376,20 @@
     wgxdcn.value.map((item) => {
       // console.log('item',item);
       post_params.service_ids.push(item.id)
+      // return {
+      //   key: item.label,
+      //   value: item.value
+      // }
     })
+    delete post_params.power_level_id
+    delete post_params.power_start_time
+    delete post_params.power_end_time
+    delete post_params.power
     console.log('post_params', post_params);
     //   运费模板不检索
-    const requiredFields = ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
+    const requiredFields = ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
+      // console.error('表单未填写完整');
       // message.error('表单未填写完整')
       return false
     }
@@ -427,9 +442,11 @@
       const value = post_params[field];
       if (value === undefined || value === null || value === '') {
         // console.warn(`字段 ${field} 是必填项`);
-        // ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
+        // ['name', 'store_id', 'cover_image', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
         if (field == 'name') {
           message.error('商品名称未填写')
+        } else if (field == 'cover_image') {
+          message.error('商品详情图未填写')
         } else if (field == 'images') {
           message.error('商品轮播图未填写')
         } else if (field == 'brand_id') {
@@ -462,6 +479,7 @@
           post_params.status = true
           // 重新赋值属性 
           getGoodsTypeList()
+
           post_params.services = [
             // {
             //   key: '全网低价',
@@ -481,7 +499,6 @@
               price: '',//价格
               uper_status: false,//是否需要推荐官推荐
               commission: '',//佣金
-              integral_price: '',//可以积分抵扣的最大金额  
               status: false,//启用状态
               order: '',//排序  
             },
@@ -550,7 +567,17 @@
     global.axios
       .post('decoration/Carriage/getStoreCarriageList', {}, global)
       .then((res) => {
-        let mbsz = res.list.sort((a, b) => {// 把 status 为 Y 的排前面
+        // console.log('所有模板数据', res);
+        // allYfmb.value = []
+
+        // let mbsz = []
+        // res.list.map((item) => {
+        //   if (item.status == 'Y') {
+        //     mbsz.push(item)
+        //   }
+        // })
+        let mbsz = res.list.sort((a, b) => {
+          // 把 status 为 Y 的排前面
           if (a.status === 'Y' && b.status !== 'Y') return -1;
           if (a.status !== 'Y' && b.status === 'Y') return 1;
           return 0; // status 相同则不变
@@ -581,6 +608,7 @@
             }),
             unsupport: item.unsupport.map((iss) => {
               let unsupport = findItemByAdcode(treeData.value, iss.adcode)
+              // console.log('unsupport', unsupport);
               iss = {
                 ...iss,
                 ...unsupport
@@ -589,8 +617,11 @@
             }),
           }
         })
+        // console.log('所有运费模板', allYfmb.value);
+        // 有数据，编辑数据
         if (props.pageData.data.id) {
         } else {
+          // 新增默认第一个模板
           if (allYfmb.value.length > 0) {
             post_params.carriage_id = allYfmb.value[0].id
           }
@@ -661,26 +692,30 @@
 
   // 商品规格
   const shopGuige = ref([
-    // {
-    //   labelValue: '颜色',//
-    //   value: [
-    //     { label: '红', imgurl: '', isCustom: false },
-    //     { label: '黄', imgurl: '', isCustom: false },
-    //     { label: '绿', imgurl: '', isCustom: false },
-    //   ],
-    //   isSort: false,//开始排序
-    //   isUrlimg: false,//默认不上传图片
-    // },
-    // {
-    //   labelValue: '尺寸',
-    //   value: [
-    //     { label: 'S', imgurl: '', isCustom: false },
-    //     { label: 'M', imgurl: '', isCustom: false },
-    //     { label: 'L', imgurl: '', isCustom: false },
-    //   ],
-    //   isSort: false,//开始排序
-    //   isUrlimg: false,//默认不上传图片
-    // }
+    {
+      labelValue: 'name',
+      labelOption: [
+        { label: '名称', value: 'name' },
+        // { label: '库存', value: 'stock' },
+        // { label: '排序', value: 'order' },
+      ],
+      value: [
+        { label: '', isCustom: false },
+      ],
+      isSort: false,//开始排序
+    },
+    {
+      labelValue: 'stock',
+      labelOption: [
+        // { label: '名称', value: 'name' },
+        { label: '库存', value: 'stock' },
+        // { label: '排序', value: 'order' },
+      ],
+      value: [
+        { label: '', isCustom: false },
+      ],
+      isSort: false,//开始排序
+    }
   ])
 
   // 删除
@@ -717,85 +752,51 @@
     }
   }
 
-  // 排列出所有组合
-  function getAllCombinations(specs) {
-    if (!specs.length) return [];
-    return specs.reduce((acc, spec) => {
-      const { labelValue, value } = spec;
-      const options = value.map(item => item.label);
-      if (acc.length === 0) {
-        return options.map(option => ({ [labelValue]: option }));
-      }
-      const res = [];
-      acc.forEach(prev => {
-        options.forEach(option => {
-          res.push({ ...prev, [labelValue]: option });
-        });
-      });
-      return res;
-    }, []);
-  }
-
   // 表格内容组装
   function zztext() {
-    return false
-    const result = getAllCombinations(shopGuige.value); // 所有组合
-    const newList = [];
-    const oldList = post_params.goods_sizes || [];
-    const oldMap = new Map();
-    oldList.forEach(item => {
-      oldMap.set(item.ggInfo || JSON.stringify(item.name), item); // 保证兼容性
-    });
-    result.forEach(item => {
-      const ggInfo = JSON.stringify(item);
-      // name 数组，如 ['红', 'S']
-      // const name = shopGuige.value.map(spec => item[spec.labelValue]);
-      const name = shopGuige.value.map(spec => `${spec.labelValue}：${item[spec.labelValue]}`);
-      // 获取第一张图片（从开启了 isUrlimg 的规格中找）
-      let sizeImage = '';
-      for (const spec of shopGuige.value) {
-        if (spec.isUrlimg) {
-          const match = spec.value.find(opt => opt.label === item[spec.labelValue]);
-          if (match && match.imgurl) {
-            sizeImage = match.imgurl;
-            break;
-          }
+    shopGuige.value.map((item, index) => {
+      // console.log('item.labelValue', item.labelValue);
+      // console.log('item.value', item.value);
+      if (item.labelValue == 'name') {
+        // 名称
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            // iss.name = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.name : iss.name
+            iss.name = item.value[iss_index] ? item.value[iss_index].label : ''
+          })
+        } else {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.name = ''
+          })
+        }
+      } else if (item.labelValue == 'stock') {
+        // 库存
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            // iss.stock = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.stock : iss.stock
+            iss.stock = item.value[iss_index] ? item.value[iss_index].label : ''
+          })
+        } else {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.stock = ''
+          })
+        }
+      } else if (item.labelValue == 'order') {
+        //排序
+        if (item.value.length > 0) {
+          post_params.goods_sizes.map((iss, iss_index) => {
+            iss.order = item.value[iss_index] ? item.value[iss_index].label ? item.value[iss_index].label : iss.order : iss.order
+          })
         }
       }
-      if (oldMap.has(ggInfo)) {
-        const oldItem = { ...oldMap.get(ggInfo) };
-        oldItem.name = name;
-        oldItem.size_image = sizeImage;
-        newList.push(oldItem);
-      } else {
-        newList.push({
-          id: '',
-          name,
-          stock: '',
-          old_price: '',
-          price: '',
-          uper_status: false,
-          commission: '',
-          integral_price: '',//可以积分抵扣的最大金额  
-          status: false,
-          order: '',
-          ggInfo,             // JSON 字符串形式，用于唯一标识
-          size_image: sizeImage,
-        });
-      }
-    });
-    post_params.goods_sizes = newList;
-    console.log('newList', newList);
+    })
   }
   // 监听商品规格变化
   watch(
     shopGuige.value,
     (newVal, oldVal) => {
-      console.log('newVal', newVal);
-      post_params.goods_sizes = []
-      if (newVal.length) {
-        zztext()
-      }
+      // console.log('商品规格变化', newVal, shopGuige.value)
+      zztext()
     },
     { deep: true },
   )
@@ -838,6 +839,7 @@
   payTypePrices()
 
   const pay_info_Vis = ref(false)//是否显示提示充值弹框
+
   // 
   function uploadAll(options) {
     uploadQueue.push(options);
@@ -972,6 +974,12 @@
     // 支付成功后刷新缴纳状态
     payTypePrices()
     _shopInfo()
+    // if (cz_type.value = 'dpbzj') {
+    //   isPay.value = false
+    //   pay_info_Vis.value = false
+    //   message.success('支付成功')
+    //   return false
+    // }
     // 查询支付结果
     global.axios
       .post('decoration/Store/payTypePricesResult', {
@@ -996,6 +1004,11 @@
         }
       })
   }
+  // 点击跳转店铺详情版
+  // function czbzj() {
+  //   pay_info_Vis.value = false
+  //   emit('toShopInfo')
+  // }
 
   // 点击直接缴纳版 店铺保证金
   function czbzj() {
@@ -1032,6 +1045,28 @@
         }
       })
   }
+  // 表格规格输入内容变化
+  function chnageInput(key, item, index) {
+    if (key == 'stock') {
+      // 库存需要判断
+      if (!/^\d+$/.test(item.stock)) {
+        post_params.goods_sizes[index].stock = ''//清空库存
+      }
+    }
+    shopGuige.value[0].value = []
+    shopGuige.value[1].value = []
+    post_params.goods_sizes.map((item, index) => {
+      shopGuige.value[0].value.push({
+        label: item.name,
+        isCustom: false
+      })
+      shopGuige.value[1].value.push({
+        label: item.stock,
+        isCustom: false
+      })
+    })
+  }
+
 
   // 判断规格拼单价是否大于原价
   function pdpdjsfdyyj(item, index) {
@@ -1059,61 +1094,6 @@
 
   function _toYfmb() {
     emit("djtzmk");
-  }
-  function formatSpecName(nameStr) {
-    try {
-      const obj = JSON.parse(nameStr);
-      return Object.entries(obj).map(([k, v]) => `${k}：${v}`).join('\n');
-    } catch (e) {
-      return nameStr; // 避免异常
-    }
-  }
-
-  // 删除类型
-  function delType(index) {
-    shopGuige.value.splice(index, 1)
-  }
-  // 添加类型
-  function addType(index) {
-    shopGuige.value.push({
-      labelValue: '',//
-      value: [
-        { label: '', imgurl: '', isCustom: false },
-      ],
-      isSort: false,//开始排序
-      isUrlimg: false,//默认不上传图片
-    })
-  }
-
-
-  const jlmpindex = ref('')//记录冒泡的规格index
-  // 点击规格上传规格图冒泡
-  function itemImgIndex(index) {
-    // console.log('index',index);
-    jlmpindex.value = index
-  }
-  // 上传规格图
-  function uploadItem(options) {
-    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeItem)
-  }
-  // 规格图图
-  function completeItem(response) {
-    post_params.goods_sizes[jlmpindex.value].size_image = response.url
-  }
-
-  const jlmpindexTwo = ref([])//记录冒泡的规格index Two
-  // 点击规格上传规格图冒泡
-  function itemImgIndexTwo(index, indexTwo) {
-    jlmpindexTwo.value = [index, indexTwo]
-  }
-  // 上传规格图
-  function uploadItemTwo(options) {
-    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeItemTwo)
-  }
-  // 规格图图
-  function completeItemTwo(response) {
-    console.log('回调', response);
-    shopGuige.value[jlmpindexTwo.value[0]].value[jlmpindexTwo.value[1]].imgurl = response.url
   }
 
 </script>
@@ -1196,8 +1176,12 @@
               <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
               <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
               <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
+              <!-- <span v-if="pay_Obj.pay_info||shopObj.deposit_money>0" class="c22" @click="czbzj()">去缴纳</span> -->
+
             </div>
           </div>
+          <!-- <div style="overflow: auto;width: 100%;height: 85%; "> -->
+          <!-- 高度没分类加 +7%  没缴纳金额+ 6%  height: 85%;             是编辑                            缴费-->
           <div class="a23" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
             <div class="a24">
@@ -1248,6 +1232,37 @@
                     </div>
                   </div>
                 </div>
+                <div>
+                  <div class="a32">
+                    <div style="display: flex;">
+                      <div style="color: red;">*</div>
+                      <div>商品详情图</div>
+                    </div>
+                    <div style="margin-left: 20px;">
+                      <div style="color: #ff7300;">请优先上传封面图，预填白底图</div>
+                      <div style="color: #999999;">
+                        图片要求：宽高比为1：1，或3：4，且宽高均大于480px，大小3M内，已上传{{post_params.cover_image?1:0}}/1张。
+                      </div>
+                      <div class="a33">
+                        <div v-if="post_params.cover_image" class="a34">
+                          <a-image :width="90" :src="post_params.cover_image"
+                            :preview="{ src: post_params.cover_image }" />
+                          <div @click="delImgFm()" class="imgClose" style="margin-left: 10px;">
+                            <CloseCircleOutlined />
+                          </div>
+                        </div>
+                        <div v-else>
+                          <a-upload :customRequest="uploadFm" :multiple="false" :file-list="[]"
+                            list-type="picture-card">
+                            <div class="a35">
+                              <PlusOutlined class="a36" />
+                            </div>
+                          </a-upload>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="a37">
                   <div style="display: flex;">
                     <div style="display: flex;">
@@ -1256,7 +1271,7 @@
                     </div>
                     <div class="a38">
                       <div style="display: flex;align-items: center;">
-                        <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;" :maxlength="30"
+                        <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;" maxlength="30"
                           placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
                         <div style="margin-left: 10px;">{{post_params.name.length}}/30</div>
                       </div>
@@ -1325,6 +1340,7 @@
                       value: 'id',
                     }">
                                 </a-tree-select>
+                                <!-- <div style="color: red;font-size: 12px;">商品分类请选到三级</div> -->
                               </div>
                             </div>
                           </div>
@@ -1344,6 +1360,8 @@
                                     :key="item.value">{{item.label}}</a-select-option>
                                 </a-select>
                                 <span v-if="del_pp_text" class="a58">品牌已被删除，请重新选择</span>
+                                <!-- <div style="padding-left: 20px;font-size: 12px;color: #999999;">未找到需要的品牌？<span
+                        style="color: #ff7300;">点击申请</span></div> -->
                               </div>
                             </div>
                           </div>
@@ -1352,10 +1370,7 @@
                           <div>
                             <template v-for="(item,index) in post_params.attributes" :key="index">
                               <div class="a59">
-                                <div style="display: flex;" class="a60">
-                                  <div v-if="item.is_must=='Y'" style="color: red;">*</div>
-                                  <div>{{item.key}}</div>
-                                </div>
+                                <div class="a60">{{item.key}}</div>
                                 <template v-if="item.type=='input'">
                                   <a-input type="text" v-model:value="item.value" class="a61" placeholder="请输入具体属性值" />
                                 </template>
@@ -1380,11 +1395,12 @@
                       <div>商品详情</div>
                       <div class="a63">
                         <div>详情介绍商品以提升转化。若未编辑，商品发布后轮播图将自动填充至图文详情
+                          <!-- <span class="a64">查看教程</span> -->
                         </div>
                         <div class="a65">
                           <div class="a66">
                             <div class="a67">
-                              <span>页面预览(等待同步前台商品详情，暂时不看)</span>
+                              <span>页面预览</span>
                               <span @click="()=>{isYl=!isYl}" style="color: #407cff;">{{isYl?'关闭':'预览'}}</span>
                             </div>
                             <div class="a68">
@@ -1537,23 +1553,23 @@
               <div>
                 <div class="a94">
                   <div style="display: flex;">
+                    <!-- <div style="color: red;">*</div> -->
                     <div>商品规格</div>
                   </div>
                   <div class="a95">
                     <div class="a96">
-                      <!-- <div>最多配置2个商品规格类型</div> -->
-                      <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
+                      <div>最多配置2个商品规格类型</div>
                       <div v-for="(item,index) in shopGuige" :key="index" class="a97">
                         <div class="a98">
-                          <div style="display: flex;align-items: center;">
-                            <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" style="width: 200px;" />
-                            <span @click="item.isUrlimg = !item.isUrlimg"
-                              style="color: #1890FF;margin-left: 10px;">{{item.isUrlimg?'删除规格图':'添加规格图'}}</span>
-                          </div>
+                          <!-- v-model:value="item.value" -->
+                          <a-select v-model:value="item.labelValue" style="width: 200px;" placeholder="请选择">
+                            <a-select-option :key="index+iss.value" :value="iss.value"
+                              v-for="iss in item.labelOption">{{iss.label}}</a-select-option>
+                          </a-select>
                           <div class="a99">
                             <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
                             <span class="a100">|</span>
-                            <span @click="delType(index)">删除规格类型</span>
+                            <span @click="()=>{shopGuige[index].value=[]}">删除规格类型</span>
                           </div>
                         </div>
                         <!-- 是否点击了开始排序 -->
@@ -1567,7 +1583,10 @@
                           }">
                             <template #item="{ element, val_index }">
                               <div class="b1">
-                                <a-input placeholder="请输入小规格名称" v-model:value="element.label" style="width: 200px;" />
+                                <a-input v-if="item.labelValue=='stock'" placeholder="请输入规格库存"
+                                  @input="e => xx.label = formatPrice(e.target.value)" v-model:value="xx.label"
+                                  style="width: 200px;" />
+                                <a-input v-else placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
                                 <div @click="removeItem(index,val_index)" class="b2">删除</div>
                                 <div v-if="element.isCustom" class="b3">
                                   定制
@@ -1578,28 +1597,14 @@
                         </div>
                         <div v-else class="b4">
                           <template v-for="(xx,xx_index) in item.value" :key="xx_index">
-                            <div class="b5" style="position: relative;">
-                              <div v-show="item.isUrlimg" class="itemImg"
-                                style="display: flex;position: absolute;top: 1px;">
-                                <div v-if="xx.imgurl">
-                                  <a-image :width="30" :src="xx.imgurl" :preview="{ src: xx.imgurl }" />
-                                  <div @click="xx.imgurl=''"
-                                    style="width: 15px;height: 15px;position: absolute;color: red;left: 20px;top: -8px;">
-                                    <CloseCircleOutlined />
-                                  </div>
-                                </div>
-                                <div v-else @click="itemImgIndexTwo(index,xx_index)">
-                                  <a-upload :customRequest="uploadItemTwo" :multiple="false" :file-list="[]"
-                                    list-type="picture-card">
-                                    <div>
-                                      <PlusOutlined />
-                                    </div>
-                                  </a-upload>
-                                </div>
+                            <div class="b5">
+                              <!-- {{item.labelValue=='stock'}} -->
+                              <a-input v-if="item.labelValue=='stock'" placeholder="请输入规格库存"
+                                @input="e => xx.label = formatPrice(e.target.value)" v-model:value="xx.label"
+                                style="width: 200px;" />
+                              <a-input v-else placeholder="请输入规格名称" v-model:value="xx.label" style="width: 200px;" />
+                              <div @click="removeItem(index,xx_index)" class="b6">删除
                               </div>
-                              <a-input placeholder="请输入小规格名称" v-model:value="xx.label"
-                                :style="{'margin-left': item.isUrlimg?'35px':'0px','width': item.isUrlimg?'150px':'200px'}" />
-                              <div @click="removeItem(index,xx_index)" class="b6">删除</div>
                               <div v-if="xx.isCustom" class="b7">
                                 定制
                               </div>
@@ -1610,7 +1615,7 @@
                           <div @click="()=>{shopGuige[index].isSort = !shopGuige[index].isSort}"
                             style="margin-right: 20px;">{{ shopGuige[index].isSort?'确定':'开始排序'}}</div>
                           <div @click="addgg(index)" style="margin-right: 20px;">添加规格</div>
-                          <div @click="addDzgg(index)" style="margin-right: 20px;">添加定制规格
+                          <div @click="addDzgg(index)" v-if="item.labelValue=='name'" style="margin-right: 20px;">添加定制规格
                           </div>
                         </div>
                       </div>
@@ -1631,31 +1636,57 @@
                         <div style="color: #407cff;" @click="addGG">添加规格</div>
                       </div>
                       <table class="b13">
-                        <tr class="b14 gridCol10">
+                        <tr class="b14">
                           <th>
                             <div style="color: #999999;">操作</div>
                           </th>
                           <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">规格</div>
+                            <template v-if="shopGuige[0].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
                               </div>
-                            </div>
+                            </template>
+                            <template v-else-if="shopGuige[0].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;align-items: center;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                  <a-popover placement="rightTop">
+                                    <template #content>
+                                      <div>上架商品库存须大于0</div>
+                                    </template>
+                                    <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                  </a-popover>
+                                </div>
+                              </div>
+                            </template>
                           </th>
                           <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;align-items: center;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">库存</div>
-                                <a-popover placement="rightTop">
-                                  <template #content>
-                                    <div>上架商品库存须大于0</div>
-                                  </template>
-                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
-                                </a-popover>
+                            <template v-if="shopGuige[1].labelValue=='name'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">名称</div>
+                                </div>
                               </div>
-                            </div>
+                            </template>
+                            <template v-else-if="shopGuige[1].labelValue=='stock'">
+                              <div style="display: flex;">
+                                <div style="display: flex;margin: 0 auto;align-items: center;">
+                                  <div style="color: red;">*</div>
+                                  <div style="color: #999999;">库存</div>
+                                  <a-popover placement="rightTop">
+                                    <template #content>
+                                      <div>上架商品库存须大于0</div>
+                                    </template>
+                                    <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                  </a-popover>
+                                </div>
+                              </div>
+                            </template>
                           </th>
                           <th>
                             <div style="display: flex;">
@@ -1692,9 +1723,6 @@
                             <div style="color: #999999;">佣金</div>
                           </th>
                           <th>
-                            <div style="color: #999999;">积分抵扣最大金额</div>
-                          </th>
-                          <th>
                             <div style="color: #999999;">启用状态</div>
                           </th>
                           <th>
@@ -1706,36 +1734,29 @@
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol10">
+                            <tr class="b15">
                               <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
                               </td>
-                              <td style="display: flex;">
-                                <div class="itemImg" style="display: flex;margin: 0 auto;">
-                                  <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
-                                    <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
-                                    <div @click="post_params.goods_sizes[index].size_image=''"
-                                      style="width: 15px;height: 15px;position: absolute;color: #fff;left: 24px;top: -2px;">
-                                      <CloseCircleOutlined />
-                                    </div>
-                                  </div>
-                                  <div v-else @click="itemImgIndex(index)">
-                                    <a-upload :customRequest="uploadItem" :multiple="false" :file-list="[]"
-                                      list-type="picture-card">
-                                      <div>
-                                        <PlusOutlined />
-                                      </div>
-                                    </a-upload>
-                                  </div>
-                                  <pre v-if="item.ggInfo">{{ formatSpecName(item.ggInfo) }}</pre>
-                                  <div v-else>
-                                    <div v-for="iss in item.name" :key="iss">{{iss}}</div>
-                                  </div>
-                                </div>
+                              <td>
+                                <template v-if="shopGuige[0].labelValue=='name'">
+                                  <a-input @change="chnageInput('name',item,index)" type="text"
+                                    v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else-if="shopGuige[0].labelValue=='stock'">
+                                  <a-input @change="chnageInput('stock',item,index)" type="text"
+                                    v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
                               </td>
                               <td>
-                                <a-input type="text" @input="e => item.stock = formatPrice(e.target.value)"
-                                  v-model:value="item.stock" placeholder="请输入库存" />
+                                <template v-if="shopGuige[1].labelValue=='name'">
+                                  <a-input @change="chnageInput('name',item,index)" type="text"
+                                    v-model:value="item.name" placeholder="请输入名称" />
+                                </template>
+                                <template v-else-if="shopGuige[1].labelValue=='stock'">
+                                  <a-input @change="chnageInput('stock',item,index)" type="text"
+                                    v-model:value="item.stock" placeholder="请输入库存" />
+                                </template>
                               </td>
                               <td>
                                 <a-input type="text" v-model:value="item.old_price"
@@ -1752,11 +1773,6 @@
                               <td>
                                 <a-input type="text" v-model:value="item.commission"
                                   @input="e => item.commission = formatPrice(e.target.value)" placeholder="输入佣金" />
-                              </td>
-                              <td>
-                                <a-input type="text" v-model:value="item.integral_price"
-                                  @input="e => item.integral_price = formatPrice(e.target.value)"
-                                  placeholder="积分抵扣最大金额" />
                               </td>
                               <td>
                                 <a-switch v-model:checked="item.status" checked-children="是" un-checked-children="否" />
@@ -1840,6 +1856,7 @@
                     <a-radio-group v-model:value="post_params.need_send_time" name="radioGroup">
                       <a-radio value="a">当日发货</a-radio>
                       <a-radio value="b">24小时
+                        <!-- <span style="color: #FF7300;margin-left: 10px;">获额外流量扶持</span> -->
                       </a-radio>
                       <a-radio value="c">48小时</a-radio>
                     </a-radio-group>
@@ -1853,8 +1870,8 @@
                   <div class="b21">
                     <div style="display: flex;">
                       <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
-                        <a-radio :value="item.id" v-for="(item,index) in allYfmb" :key="item.id">{{item.name}} <span
-                            v-if="index==0" style="color: #ff7300;">推荐</span></a-radio>
+                        <a-radio :value="item.id" v-for="item in allYfmb" :key="item.id">{{item.name}}</a-radio>
+                        <!-- <a-radio value="2">其它模板</a-radio> -->
                       </a-radio-group>
                       <div style="display: flex;">
                         <span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">新增模板</span>
@@ -1883,6 +1900,7 @@
                                 </div>
                                 <div v-else-if="iss.price_type=='b'">（{{index_sity+1}}）固定邮费 {{iss.order_price}} 元。</div>
                               </div>
+                              <!-- <div>2）新疆1件内28.00元，每增加1件，加25元</div> -->
                             </div>
                             <div v-else>未设置</div>
                           </div>
@@ -1997,6 +2015,8 @@
               <div class="payTimeRemaining">
                 <span class="payTxt">支付剩余时间</span>
                 <span class="time">
+                  <!-- <span class="timeItem" id="pay_minute">05</span><span class="timeSplit">:</span><span
+            class="timeItem" id="pay_second">00</span> -->
                   <span class="time">
                     <span class="timeItem">{{ minute }}</span>
                     <span class="timeSplit">:</span>
@@ -2013,6 +2033,7 @@
                   </li>
                 </ul>
                 <div class="payContent">
+                  <!-- <img :src="qrCodeData" alt="支付二维码" /> -->
                   <img :src="qrCodeData" alt="支付二维码" :style="{opacity: codeGq?'0.1':'1'}" />
                   <div v-if="codeGq" style="position: relative;top: -100px;color: #000000;">
                     二维码已失效
@@ -2184,12 +2205,6 @@
     font-weight: 400;
     color: #000000;
     /* margin-bottom: 55px; */
-  }
-
-
-  ::v-deep(.itemImg .ant-upload.ant-upload-select-picture-card) {
-    width: 30px !important;
-    height: 30px !important;
   }
 
   ::v-deep(.ant-upload.ant-upload-select-picture-card) {
@@ -2612,9 +2627,8 @@
   }
 
   .a60 {
-    width: 60px;
+    width: 30%;
     text-align: right;
-    white-space: nowrap;
   }
 
   .a61 {
@@ -2954,19 +2968,13 @@
 
   .b14 {
     display: grid;
-    text-align: center;
-  }
-
-  .gridCol9 {
     grid-template-columns: repeat(9, minmax(0, 1fr));
-  }
-
-  .gridCol10 {
-    grid-template-columns: repeat(10, minmax(0, 1fr));
+    text-align: center;
   }
 
   .b15 {
     display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
     text-align: center;
     background-color: #fff;
   }

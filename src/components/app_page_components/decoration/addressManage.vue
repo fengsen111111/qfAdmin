@@ -301,8 +301,8 @@
 				<a-modal v-model:visible="fh_vis" title="电子面单发货地址" @ok="handleOk">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 						:wrapper-col="{ span: 16 }">
-						<a-form-item label="收件人" name="xx3" :rules="[{ required: true, message: '请输入收件人' }]">
-							<a-input v-model:value="formState.xx3" placeholder="请输入收件人" />
+						<a-form-item label="发货人" name="xx3" :rules="[{ required: true, message: '请输入发货人' }]">
+							<a-input v-model:value="formState.xx3" placeholder="请输入发货人" />
 						</a-form-item>
 						<a-form-item label="手机号" name="xx4" :rules="[{ required: true, message: '请填写手机号!' }]">
 							<a-input v-model:value="formState.xx4" placeholder="请填写手机号" />
