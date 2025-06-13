@@ -359,7 +359,7 @@
       <img alt="" src="/resource/image/index_img.png" style="width: 100%;max-height: 500px;margin-top: 5vh">
     </div>
     <div v-if="type=='平台'">
-      <div v-if="tjzd.all_money" style="overflow: auto;height: 90vh;">
+      <div style="overflow: auto;height: 90vh;">
         <a-row>
           <a-col :lg="24" :xl="18">
             <div>
@@ -615,7 +615,7 @@
                     </span>
                     <div style="margin-top: 12px;">商城管理</div>
                   </div>
-                  <div @click="handTz('用户管理','商家管理')" style="text-align: center;margin-top: 40px;">
+                  <div @click="handTz('商家信息','商家资料')" style="text-align: center;margin-top: 40px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <ShopOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
@@ -633,7 +633,7 @@
                   <div style="font-size: 17px;"><b>代办事项</b></div>
                 </div>
                 <div style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));">
-                  <div @click="handTz('用户管理','退店申请')" style="text-align: center;margin-top: 38px;">
+                  <div @click="handTz('商家信息','退店申请')" style="text-align: center;margin-top: 38px;">
                     <span style="background-color: #f5f6f7;border-radius: 4px;padding: 10px;">
                       <DeleteRowOutlined style="font-size: 20px;position: relative;top: 2px;" />
                     </span>
