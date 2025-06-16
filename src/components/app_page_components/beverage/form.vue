@@ -73,8 +73,6 @@ function getStructure() {
 
 //提交
 function submit() {
-  console.log('form_state',form_state.formStructure);
-  return false
   global.Modal.confirm({
     title: global.findLanguage("确定要提交吗？"),
     okText: global.findLanguage("确定"),
