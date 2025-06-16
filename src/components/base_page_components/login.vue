@@ -102,11 +102,16 @@
               localStorage.removeItem('holdLogin.password');
               localStorage.setItem('holdLogin.status', 'false');
             }
-            if (isJb.value) { //是否廉政举报
-              global.router.push("/lzjb")
-            } else {
-              global.router.push("/")
-            }
+
+            // 获取权限列表
+            global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
+              console.log('after',after);
+              if (isJb.value) { //是否廉政举报
+                global.router.push("/lzjb")
+              } else {
+                global.router.push("/")
+              }
+            });
           } else {
             changeCaptcha()
           }
@@ -147,12 +152,14 @@
           if (res) {
             localStorage.setItem('Authorization', res.token);
             errorMsg.value = '' //清空报错信息
-            // global.router.push("/")
-            if (isJb.value) { //是否廉政举报
-              global.router.push("/lzjb")
-            } else {
-              global.router.push("/")
-            }
+             global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
+              console.log('after',after);
+              if (isJb.value) { //是否廉政举报
+                global.router.push("/lzjb")
+              } else {
+                global.router.push("/")
+              }
+            });
           } else {
             changeCaptcha()
           }
@@ -439,7 +446,7 @@
   })//密码验证情况
   // o元开店密码变化
   function pasChange() {
-		popoverVisible.value = true
+    popoverVisible.value = true
     const result = validatePassword(login_state.loginData.password)
     if (!result.valid) {
       console.log('密码不合法：', result.msg, pasYz.value);

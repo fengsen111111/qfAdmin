@@ -20,10 +20,11 @@ import Search from './search.vue'
 import Rate from './rate.vue'
 import Color from './color.vue'
 import RegionMap from './regionMap.vue'
+import SelectSearch from './SelectSearch.vue'
 
 export const FormComponents = {
     Input, Password, Textarea, Radio, Switch
     , Date, Time, Select, Tree, Upload, Map,RegionMap
     , Number, Checkbox, Cascader, More,Color
-    , Search, Rate, TreeSelect, RichText, RichTextContent
+    , Search, Rate, TreeSelect, RichText, RichTextContent,SelectSearch
 };

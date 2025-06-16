@@ -141,7 +141,7 @@ export function post(url, params = {}, global, loading = true, rsa_status = true
                 if (action) action(response_result);
                 resolve(response);
             })
-            .catch((error) => {  //登陆                         //店铺名称查询
+            .catch((error) => {  //登陆                         //店铺名称查询                     
                 if (url == 'factory_system/Base/login' || url == 'decoration/Store/checkStoreName') {
                     // console.log('error',error);
                     reject(error)
@@ -281,7 +281,7 @@ function handleError(error) {
             router.push("/login");
         }
         if (error.status === -2) {
-            message.error(findLanguageFunction(error.message));
+            message.error(error.message?findLanguageFunction(error.message):'账号删除/禁用，联系管理员');
             setTimeout(() => {
                 localStorage.removeItem("Authorization");
                 router.push("/login");
