@@ -261,6 +261,17 @@
 
 	// 提交入驻申请
 	function _submitEntryApply() {
+		if (localStorage.getItem('Authorization')) {
+			// 已开通商家，汇付提交失败，重新提交汇付
+			kaitonghuifu()
+		} else {
+			// 开通商家
+			kaitongshangjia()
+		}
+
+	}
+	// 开通商家
+	function kaitongshangjia() {
 		if (!xygx.value) {
 			message.error('请阅读并勾选协议')
 			return false
@@ -271,7 +282,7 @@
 			return false
 		} else {
 			if (msgValue.value) {
-			    message.error(msgValue.value)
+				message.error(msgValue.value)
 				return false
 			}
 		}
@@ -288,13 +299,12 @@
 			return false
 		}
 		// 本地商家需要营业执照
-		if (type.value == 'a' || type.value == 'c' || type.value == 'd') {
+		if (type.value == 'c' || type.value == 'd') {
 			if (!license_image.value) {
 				message.error('请上传营业执照')
 				return false
 			}
 		}
-
 		if (!name.value) {
 			message.error('请输入负责人姓名')
 			return false
@@ -309,7 +319,6 @@
 				return false
 			}
 		}
-		// console.log('id_card_times.value',id_card_times.value.length);
 		if (id_card_times.value.length > 1) {
 			// 
 		} else {
@@ -334,58 +343,6 @@
 		} else {
 			console.log('通过校验');
 		}
-
-		// 店铺入驻验证通过，开始验证汇付相关字段
-		// huifu_Type = ref('')//store商家 user用户  汇付类型
-		if (huifu_Type.value == 'store') {
-			// 商家汇付字段验证
-			formRef.value
-				.validateFields()
-				.then(values => {
-					console.log('验证成功', values);
-					// 执行提交逻辑
-					let params = values
-					params.reg_prov_id = params.regAddress[0]
-					params.reg_area_id = params.regAddress[1]
-					params.reg_district_id = params.regAddress[2]
-					delete params.regAddress //删除注册地址，这个是自己的字段
-					params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
-					if (params.license_end_date) {
-						params.license_end_date = params.license_end_date.format('YYYYMMDD')
-					}
-					params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
-					if (params.legal_cert_end_date) {
-						params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
-					}
-					console.log('处理后的params', params);
-
-				})
-				.catch(err => {
-					console.log('验证失败', err);
-					message.error('请检查汇付资料')
-					return false
-				});
-		} else if (huifu_Type.value == 'user') {
-			// 个人汇付字段验证
-			formUserRef.value
-				.validateFields()
-				.then(values => {
-					console.log('验证成功', values);
-					let params = values
-					params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
-					if (params.cert_end_date) {
-						params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
-					}
-					console.log('处理后的params', params);
-				})
-				.catch(err => {
-					console.log('验证失败', err);
-					message.error('请检查汇付资料')
-					return false
-				});
-		}
-		console.log('汇付字段检查通过');
-		// spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
 				"check_status": 'b',
@@ -406,11 +363,74 @@
 				"admin_login_password": admin_login_password.value
 			}, global)
 			.then((res) => {
-				// spinning.value = false
 				console.log('申请入驻', res);
-				resule_vis.value = true
-				// 绑定汇付信息
+				global.axios.post('factory_system/Base/login', {
+					account: mobile.value,
+					password: admin_login_password.value
+				}, global)
+					.then(res => {
+						console.log('登陆成功');
+						localStorage.setItem('Authorization', res.token);
+						kaitonghuifu()
+					})
 			})
+	}
+	// 开通汇付
+	function kaitonghuifu() {
+		// 店铺入驻验证通过，开始验证汇付相关字段
+		// huifu_Type = ref('')//store商家 user用户  汇付类型
+		if (huifu_Type.value == 'store') {
+			// 商家汇付字段验证
+			formRef.value
+				.validateFields()
+				.then(values => {
+					// 执行提交逻辑
+					let params = values
+					params.reg_prov_id = params.regAddress[0]
+					params.reg_area_id = params.regAddress[1]
+					params.reg_district_id = params.regAddress[2]
+					delete params.regAddress //删除注册地址，这个是自己的字段
+					params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
+					if (params.license_end_date) {
+						params.license_end_date = params.license_end_date.format('YYYYMMDD')
+					}
+					params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
+					if (params.legal_cert_end_date) {
+						params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
+					}
+					global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
+						// 跳转首页
+						resule_vis.value = true
+					})
+
+				})
+				.catch(err => {
+					console.log('验证失败', err);
+					message.error('请检查汇付资料')
+					return false
+				});
+		}
+		else if (huifu_Type.value == 'user') {
+			// 个人汇付字段验证
+			formUserRef.value
+				.validateFields()
+				.then(values => {
+					let params = values
+					params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
+					if (params.cert_end_date) {
+						params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
+					}
+					global.axios.post('decoration/User/openUserHAccount', params, global, true).then((res) => {
+						resule_vis.value = true
+					})
+				})
+				.catch(err => {
+					console.log('验证失败', err);
+					message.error('请检查汇付资料')
+					return false
+				});
+		}
+		console.log('汇付字段检查通过');
 	}
 
 	const visible_dr = ref(false)
@@ -455,73 +475,7 @@
 
 	// 0元开店  提交后弹窗确定 前往首页
 	function toHome() {
-		console.log('等待数据');
-		// 账号密码登陆
-		global.axios.post('factory_system/Base/login', {
-			account: mobile.value,
-			password: admin_login_password.value
-		}, global)
-			.then(res => {
-				console.log('登陆成功');
-				localStorage.setItem('Authorization', res.token);
-				// 店铺入驻验证通过，开始验证汇付相关字段
-				// huifu_Type = ref('')//store商家 user用户  汇付类型
-				if (huifu_Type.value == 'store') {
-					// 商家汇付字段验证
-					formRef.value
-						.validateFields()
-						.then(values => {
-							console.log('验证成功', values);
-							// 执行提交逻辑
-							let params = values
-							params.reg_prov_id = params.regAddress[0]
-							params.reg_area_id = params.regAddress[1]
-							params.reg_district_id = params.regAddress[2]
-							delete params.regAddress //删除注册地址，这个是自己的字段
-							params.license_begin_date = params.license_begin_date.format('YYYYMMDD')
-							if (params.license_end_date) {
-								params.license_end_date = params.license_end_date.format('YYYYMMDD')
-							}
-							params.legal_cert_begin_date = params.legal_cert_begin_date.format('YYYYMMDD')
-							if (params.legal_cert_end_date) {
-								params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
-							}
-							console.log('处理后的params', params);
-							global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
-								// 跳转首页
-								global.router.push("/")
-							})
-
-						})
-						.catch(err => {
-							console.log('验证失败', err);
-							message.error('请检查汇付资料')
-							return false
-						});
-				} else if (huifu_Type.value == 'user') {
-					// 个人汇付字段验证
-					formUserRef.value
-						.validateFields()
-						.then(values => {
-							console.log('验证成功', values);
-							let params = values
-							params.cert_begin_date = params.cert_begin_date.format('YYYYMMDD')
-							if (params.cert_end_date) {
-								params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
-							}
-							console.log('处理后的params', params);
-							global.axios.post('decoration/User/openUserHAccount', params, global, true).then((res) => {
-								// 跳转首页
-								global.router.push("/")
-							})
-						})
-						.catch(err => {
-							console.log('验证失败', err);
-							message.error('请检查汇付资料')
-							return false
-						});
-				}
-			})
+		global.router.push("/")
 	}
 
 	let pasYz = ref({
@@ -609,13 +563,13 @@
 		// ];
 		const sensitiveWords = danger_words.value
 		const hits = sensitiveWords.filter(word => store_name.value.includes(word));
-		console.log('hits',hits);
-		if (hits.length > 0 && hits[0]!='') {
+		console.log('hits', hits);
+		if (hits.length > 0 && hits[0] != '') {
 			// 清空或纠正输入
 			msgValue.value = `不得包含敏感词：${hits.join('、')}`//不重复就清空
-			msgValue.value = msgValue.value.slice(0,msgValue.value.length-1)
+			msgValue.value = msgValue.value.slice(0, msgValue.value.length - 1)
 			return false
-		}else{
+		} else {
 			msgValue.value = ''
 		}
 
@@ -634,7 +588,7 @@
 	}
 	const popoverVisible = ref(false)
 
-	const huifu_Type = ref('')//store商家 user用户  汇付类型
+	const huifu_Type = ref('user')//store商家 user用户  汇付类型
 
 	// 个人汇付
 	const formUserState = reactive({
@@ -719,44 +673,44 @@
 							<div style="background-color: #fff;padding: 20px;">
 								<div style="display: flex;align-items: baseline;">
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
-									<span style="font-size: 12px;">（适合个人入驻，提供身份证等即可开店）</span>
+									<span style="font-size: 12px;">（适合无营业执照的商家）</span>
 								</div>
-								<div @click="()=>{shopRzType='a'}"
+								<div @click="()=>{shopRzType='a',huifu_Type='user'}"
 									:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
-										<div>本地商家</div>
-										<div>有营业执照，想以个体工商户身份开店</div>
+										<div>本地商家（个人实体店）</div>
+										<div>有实体店铺，开通个人汇付，提供「个人身份证」即可入驻</div>
 									</div>
 								</div>
-								<div @click="()=>{shopRzType='b'}"
+								<div @click="()=>{shopRzType='b',huifu_Type='user'}"
 									:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
-										<div>网店商家</div>
-										<div>无营业执照，想以个人身份开店</div>
+										<div>网店商家（个人网店）</div>
+										<div>无实体店铺，开通个人汇付，提供「个人身份证」即可入驻</div>
 									</div>
 								</div>
 
-								<div @click="()=>{shopRzType='c'}"
+								<div @click="()=>{shopRzType='c',huifu_Type='store'}"
 									:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='c'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>个体工商户</div>
-										<div>可以提交个体工商户营业执照</div>
+										<div>提供「个人身份证」和「个体工商户营业执照」即可入驻</div>
 									</div>
 								</div>
 								<div style="display: flex;align-items: baseline;margin-top: 20px;">
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">企业店</span>
 									<span style="font-size: 12px;">（适合企业入驻，可以提交企业工商户营业执照）</span>
 								</div>
-								<div @click="()=>{shopRzType='d'}"
+								<div @click="()=>{shopRzType='d',huifu_Type='store'}"
 									:style="{ 'border': shopRzType=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='d'"></a-radio>
@@ -766,8 +720,6 @@
 										<div>可以提交企业工商户营业执照</div>
 									</div>
 								</div>
-
-
 							</div>
 							<!-- 汇付 -->
 							<div style="background-color: #fff;padding: 20px;">
@@ -776,24 +728,24 @@
 									<span style="font-size: 12px;">（若您拥有对公账户，请开通商家汇付，若您没有对公账户，请开通个人汇付）</span>
 								</div>
 								<span style="font-size: 12px;color: #ff0000;">注意：开通的汇付影响到您以后的提现相关，请谨慎选择！</span>
-								<div @click="()=>{huifu_Type='store'}"
+								<div  v-if="shopRzType=='c'||shopRzType=='d'" @click="()=>{huifu_Type='store'}"
 									:style="{ 'border': huifu_Type=='store' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="huifu_Type=='store'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>商家汇付</div>
-										<div>有对公账户，请开通商家汇付</div>
+										<div>有营业执照和对公账户，请开通商家汇付</div>
 									</div>
 								</div>
-								<div @click="()=>{huifu_Type='user'}"
+								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'" @click="()=>{huifu_Type='user'}"
 									:style="{ 'border': huifu_Type=='user' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="huifu_Type=='user'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>个人汇付</div>
-										<div>没有对公账户，请开通个人汇付</div>
+										<div>没有营业执照和对公账户，请开通个人汇付</div>
 									</div>
 								</div>
 							</div>
@@ -977,7 +929,7 @@
 													</div>
 												</a-upload>
 											</div>
-											<div v-if="type=='a'||type=='c'||type=='d'"
+											<div v-if="type=='c'||type=='d'"
 												style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>

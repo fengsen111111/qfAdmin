@@ -329,9 +329,9 @@
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;">
 				<div style="display: flex;margin: 0 auto;">
-					<div
+					<!-- <div
 						style="border: 1px solid #ff0000;background-color: #fbeaea;border-radius: 6px;padding: 9px 18px;color: #ff0000;margin-right: 10px;">
-						退款</div>
+						退款</div> -->
 					<Print :details=orderDetails />
 				</div>
 			</div>
