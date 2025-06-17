@@ -170,30 +170,7 @@
                     selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label + ' > ' + path[3].label
                   }
                 })
-
-                // 
-                // if (path.length > 0) {
-                //   checkClassify.value.oneClassify = path[0].value
-                //   checkClassify.value.oneList = path[0].children
-                //   selClassify.value = path[0].label
-                // }
-                // if (path.length > 1) {
-                //   checkClassify.value.twoClassify = path[1].value
-                //   checkClassify.value.twoList = path[1].children
-                //   selClassify.value = path[0].label + ' > ' + path[1].label
-                // }
-                // if (path.length > 2) {
-                //   checkClassify.value.threeClassify = path[2].value
-                //   checkClassify.value.threeList = path[2].children
-                //   selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
-                // }
-                // if (path.length > 3) {
-                //   checkClassify.value.fourClassify = path[3].value
-                //   selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label + ' > ' + path[3].label
-                // }
               }
-              // if (three.label == arr[2]) {
-
             })
           }
         })
