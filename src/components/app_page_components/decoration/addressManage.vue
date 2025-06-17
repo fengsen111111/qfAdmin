@@ -304,7 +304,8 @@
 						<a-form-item label="发货人" name="xx3" :rules="[{ required: true, message: '请输入发货人' }]">
 							<a-input v-model:value="formState.xx3" placeholder="请输入发货人" />
 						</a-form-item>
-						<a-form-item label="手机号" name="xx4" :rules="[{ required: true, message: '请填写手机号!' }]">
+						<a-form-item label="手机号" name="xx4"
+							:rules="[{ required: true, message: '请填写手机号!' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
 							<a-input v-model:value="formState.xx4" placeholder="请填写手机号" />
 						</a-form-item>
 						<a-form-item label="选择地区" name="xx1" :rules="[{ required: true, message: '请选择地区!' }]">
@@ -353,7 +354,8 @@
 						<a-form-item label="收件人" name="key1" :rules="[{ required: true, message: '请输入收件人' }]">
 							<a-input v-model:value="formStateTh.key1" placeholder="请输入收件人" />
 						</a-form-item>
-						<a-form-item label="手机号" name="key2" :rules="[{ required: true, message: '请填写手机号!' }]">
+						<a-form-item label="手机号" name="key2"
+							:rules="[{ required: true, message: '请填写手机号!' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
 							<a-input v-model:value="formStateTh.key2" placeholder="请填写手机号" />
 						</a-form-item>
 						<a-form-item label="选择地区" name="key3" :rules="[{ required: true, message: '请选择地区!' }]">

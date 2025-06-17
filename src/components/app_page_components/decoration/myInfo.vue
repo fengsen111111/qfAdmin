@@ -171,6 +171,12 @@
 									return {
 										value: y.id,
 										label: y.name,
+										children: y.children.length == 0 ? [] : y.children.map((z) => {
+											return {
+												value: z.id,
+												label: z.name,
+											}
+										})
 									}
 								})
 							}
@@ -225,34 +231,48 @@
 		console.log('渲染表格');
 
 		const table = document.querySelector(".table");
-		// ✅ 只清除旧的 <tbody>，保留 <thead>
+
+		// 清除旧 tbody
 		const oldTbody = table.querySelector("tbody");
 		if (oldTbody) {
 			table.removeChild(oldTbody);
 		}
+
 		const tbody = document.createElement("tbody");
+
+		// 找出最大层级数（列数）
 		const levelCount = Math.max(...data.map(row => row.length));
+
+		// 计算每列的 rowspan 信息
 		const rowspanMap = calculateRowspan(data, levelCount);
+
 		data.forEach((row, rowIndex) => {
 			const tr = document.createElement("tr");
-			row.forEach((col, colIndex) => {
-				const { id, name } = col;
-				const map = rowspanMap[colIndex].get(id);
-				if (map.rowIndex === rowIndex) {
-					const td = document.createElement("td");
-					td.textContent = name;
-					if (map.count > 1) {
-						td.setAttribute("rowspan", map.count);
+
+			for (let colIndex = 0; colIndex < levelCount; colIndex++) {
+				const col = row[colIndex]; // 有可能是 undefined（本行没有这一层级）
+
+				if (col) {
+					const { id, name } = col;
+					const map = rowspanMap[colIndex].get(id);
+					if (map.rowIndex === rowIndex) {
+						const td = document.createElement("td");
+						td.textContent = name;
+						if (map.count > 1) {
+							td.setAttribute("rowspan", map.count);
+						}
+						tr.appendChild(td);
 					}
-					tr.appendChild(td);
+					// 否则跳过，不再渲染（已被合并）
+				} else {
+					// 当前行这个层级没有值，填空 td
+					tr.appendChild(document.createElement("td"));
 				}
-			});
-			// 若某级为空，补空td
-			for (let i = row.length; i < levelCount; i++) {
-				tr.appendChild(document.createElement("td"));
 			}
+
 			tbody.appendChild(tr);
 		});
+
 		table.appendChild(tbody);
 	}
 
@@ -1576,6 +1596,7 @@
 										<th scope="col">一级分类</th>
 										<th scope="col">二级分类</th>
 										<th scope="col">三级分类</th>
+										<th scope="col">四级分类</th>
 										<th scope="col">商品</th>
 									</tr>
 								</thead>
@@ -1885,7 +1906,7 @@
 								<div style="padding: 20px;cursor: pointer;" v-if="shopObj.open_h_store_account=='c'">
 									<div class="a77" @click="czvisopen(2)">充值</div>
 									<div class="a78" @click="czvisopen(3)">提现</div>
-								    <a-button>退回保证金（暂无接口）</a-button>
+									<a-button>退回保证金（暂无接口）</a-button>
 								</div>
 								<div v-else style="padding: 20px;cursor: pointer;">
 									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">充值</div>

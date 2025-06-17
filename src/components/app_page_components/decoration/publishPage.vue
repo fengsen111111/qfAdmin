@@ -54,23 +54,23 @@
 
   const del_pp_text = ref(false)
 
-  // watch(() => post_params.brand_id, (newVal, oldVal) => {
-  //   del_pp_text.value = false
-  //   console.log('brand_id 品牌变化:', newVal,ppList.value);
-  //   setTimeout(() => {
-  //     const exists = ppList.value.some(item => item.value == newVal);
-  //     if (exists) {
-  //       bfb.value = 50
-  //       if (post_params.type_id) {
-  //         bfb.value = 100
-  //       }
-  //     } else {
-  //       // 品牌已删除
-  //       post_params.brand_id = ''
-  //       del_pp_text.value = true
-  //     }
-  //   }, 2000);
-  // });
+  watch(() => post_params.brand_id, (newVal, oldVal) => {
+    del_pp_text.value = false
+    console.log('brand_id 品牌变化:', newVal,ppList.value);
+    setTimeout(() => {
+      const exists = ppList.value.some(item => item.value == newVal);
+      if (exists) {
+        bfb.value = 50
+        if (post_params.type_id) {
+          bfb.value = 100
+        }
+      } else {
+        // 品牌已删除
+        post_params.brand_id = ''
+        del_pp_text.value = true
+      }
+    }, 2000);
+  });
 
   // 删除服务
   function delFw(index) {
@@ -205,7 +205,7 @@
     }, 1000);
   } else {
     // 没有id就是新增商品
-    post_params.type_id = props.pageData.data.typeId[2]
+    post_params.type_id = props.pageData.data.typeId[3]
   }
   //固定属性
   const visibleSx = ref(false)
@@ -283,25 +283,7 @@
       });
   }
   getStoreID()
-  function keepOnlyThreeLevels(treeList) {
-    return treeList.map(level1 => {
-      const newLevel1 = { ...level1 };
-      if (Array.isArray(newLevel1.children)) {
-        newLevel1.children = newLevel1.children.map(level2 => {
-          const newLevel2 = { ...level2 };
-          if (Array.isArray(newLevel2.children)) {
-            newLevel2.children = newLevel2.children.map(level3 => {
-              const newLevel3 = { ...level3 };
-              delete newLevel3.children; // 移除第三级以下
-              return newLevel3;
-            });
-          }
-          return newLevel2;
-        });
-      }
-      return newLevel1;
-    });
-  }
+ 
   const spflList = ref([])//商品分类列表
   // 商品分类列表
   function getGoodsTypeList() {
@@ -310,7 +292,6 @@
       }, global)
       .then((res) => {
         console.log('商品分类列表', res.list, post_params.type_id);
-        res.list = keepOnlyThreeLevels(res.list);
         console.log('res.list', res.list);
         spflList.value = res.list
         // 根据分类id找到对应分类，并设置固定属性，只有新增
@@ -325,7 +306,7 @@
               type: 'select',
               is_del: false,
               is_must: item.is_must,//是否必填
-              option: item.values.split('|')
+              option: item.values
             })
           })
         }
