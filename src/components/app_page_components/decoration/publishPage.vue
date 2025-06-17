@@ -344,7 +344,7 @@
   }
   // 提交商品数据
   function tjShopData() {
-    console.log('提交');
+    // console.log('提交',post_params);
     //a待审核 b 已通过 c已拒绝
     if (check_status.value == 'b') {
       console.log('店铺通过审核');
@@ -382,6 +382,21 @@
     const requiredFields = ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
       // message.error('表单未填写完整')
+      return false
+    }
+
+    let yzsl = 0
+    post_params.attributes.map((iss)=>{
+      if(iss.is_must=='Y'){
+        if(!iss.value){
+          yzsl = 1
+          return false
+        }
+      }
+    })
+
+    if(yzsl==1){
+      message.error('请检查属性是否填写')
       return false
     }
 
