@@ -508,7 +508,6 @@
                 console.log('阅读商家新订单提醒列表', res);
               })
           }
-
         }
       } else if (handleInfo.name == '作品详情') {
         console.log('作品详情', requestParams);

@@ -666,7 +666,7 @@
 						<div
 							style="background-color: #fff;width: 411px;border-top: 1px solid #1890FF;padding: 20px;border-radius: 10px 10px 0px 0px;">
 							<div style="color: #407CFF;font-size: 18px;">普通入驻</div>
-							<div>针对本地商家和网店商家</div>
+							<div>针对个体户和企业</div>
 						</div>
 						<!-- 分类 -->
 						<div style="display: flex;">
@@ -675,7 +675,7 @@
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 									<span style="font-size: 12px;">（适合无营业执照的商家）</span>
 								</div>
-								<div @click="()=>{shopRzType='a',huifu_Type='user'}"
+								<!-- <div @click="()=>{shopRzType='a',huifu_Type='user'}"
 									:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
@@ -693,6 +693,16 @@
 									<div style="margin-left: 10px;">
 										<div>网店商家（个人网店）</div>
 										<div>无实体店铺，开通个人汇付，提供「个人身份证」即可入驻</div>
+									</div>
+								</div> -->
+								<div @click="()=>{shopRzType='b',huifu_Type='user'}"
+									:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
+									<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
+									<a-radio :checked="false" v-else></a-radio>
+									<div style="margin-left: 10px;">
+										<div>个人店</div>
+										<div>开通个人汇付，提供「个人身份证」即可入驻</div>
 									</div>
 								</div>
 
@@ -738,7 +748,7 @@
 										<div>有营业执照和对公账户，请开通商家汇付</div>
 									</div>
 								</div>
-								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'"
+								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'||shopRzType=='d'"
 									@click="()=>{huifu_Type='user'}"
 									:style="{ 'border': huifu_Type=='user' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
@@ -825,10 +835,8 @@
 									</div>
 									<div style="margin-left: 10px;">
 										<a-radio-group v-model:value="type" name="radioGroup">
-											<a-radio value="a" v-if="type=='a'">本地商家</a-radio>
-											<a-radio value="b" v-else-if="type=='b'">网店商家</a-radio>
-											<a-radio value="c" v-else-if="type=='c'">个体工商户</a-radio>
-											<a-radio value="d" v-else-if="type=='d'">企业店</a-radio>
+											<a-radio value="a" >本地商家</a-radio>
+											<a-radio value="b" >网店商家</a-radio>
 										</a-radio-group>
 									</div>
 									<a-popover v-if="type=='a'" title="规范" placement="rightTop">
