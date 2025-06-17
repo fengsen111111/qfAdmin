@@ -805,8 +805,8 @@
       }
     });
     post_params.goods_sizes = newList;
-    post_params.goods_sizes.map((item,index)=>{
-      item.order = index+1
+    post_params.goods_sizes.map((item, index) => {
+      item.order = index + 1
     })
     // console.log('newList', newList);
   }
@@ -1129,6 +1129,25 @@
     shopGuige.value[jlmpindexTwo.value[0]].value[jlmpindexTwo.value[1]].imgurl = response.url
   }
 
+  // 计算字符长度（中文2，英文1）
+  function getCharLength(str) {
+    return str.replace(/[^\x00-\xff]/g, '**').length
+  }
+
+  // 限制输入长度 ≤ 60
+  function handleInput(e) {
+    let val = e.target.value
+    let result = ''
+    let length = 0
+    for (const char of val) {
+      const charLength = /[^\x00-\xff]/.test(char) ? 2 : 1
+      if (length + charLength > 60) break
+      result += char
+      length += charLength
+    }
+    post_params.name = result
+  }
+
 </script>
 
 <template>
@@ -1268,10 +1287,12 @@
                       <div>商品标题</div>
                     </div>
                     <div class="a38">
-                      <div style="display: flex;align-items: center;">
-                        <a-input type="text" v-model:value="post_params.name" style="width: 79.5%;" :maxlength="30"
-                          placeholder="商品标题组成：商品描述+规格，最多输入30个汉字" />
-                        <div style="margin-left: 10px;">{{post_params.name.length}}/30</div>
+                      <div style="display: flex; align-items: center;">
+                        <a-input type="text" :value="post_params.name" @input="handleInput" style="width: 79.5%;"
+                          placeholder="商品标题组成：商品描述+规格，最多输入30个汉字,60个字符" />
+                        <div style="margin-left: 10px; white-space: nowrap;">
+                          {{ getCharLength(post_params.name) }}/60
+                        </div>
                       </div>
                       <div class="a39">
                         <span class="a40">热搜词推荐</span>:
@@ -1723,7 +1744,7 @@
                               <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
                               </td>
-                              <td >
+                              <td>
                                 <div style="display: flex;">
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
                                     <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">

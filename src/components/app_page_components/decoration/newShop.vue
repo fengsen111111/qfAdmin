@@ -148,32 +148,52 @@
   // 点击缓存的分类
   function cliHcType(str) {
     let arr = str.split(' > ')
+    console.log('arr', arr);
     treeData.value.map((one) => {
       if (one.label == arr[0]) {
         one.children.map((two) => {
           if (two.label == arr[1]) {
             two.children.map((three) => {
               if (three.label == arr[2]) {
-                const path = findCategoryPath(treeData.value, three.value);
-                selClassify.value = ''//清空
-                if (path.length > 0) {
-                  checkClassify.value.oneClassify = path[0].value
-                  checkClassify.value.oneList = path[0].children
-                  selClassify.value = path[0].label
-                }
-                if (path.length > 1) {
-                  checkClassify.value.twoClassify = path[1].value
-                  checkClassify.value.twoList = path[1].children
-                  selClassify.value = path[0].label + ' > ' + path[1].label
-                }
-                if (path.length > 2) {
-                  checkClassify.value.threeClassify = path[2].value
-                  selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
-                }
-                if (path.length > 3) {
-                  selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label + ' > ' + path[3].label
-                }
+                three.children.map((four) => {
+                  if (four.label == arr[3]) {
+                    const path = findCategoryPath(treeData.value, four.value);
+                    selClassify.value = ''//清空
+                    console.log('path', path);
+                    checkClassify.value.oneClassify = path[0].value
+                    checkClassify.value.oneList = path[0].children
+                    checkClassify.value.twoClassify = path[1].value
+                    checkClassify.value.twoList = path[1].children
+                    checkClassify.value.threeClassify = path[2].value
+                    checkClassify.value.threeList = path[2].children
+                    checkClassify.value.fourClassify = path[3].value
+                    selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label + ' > ' + path[3].label
+                  }
+                })
+
+                // 
+                // if (path.length > 0) {
+                //   checkClassify.value.oneClassify = path[0].value
+                //   checkClassify.value.oneList = path[0].children
+                //   selClassify.value = path[0].label
+                // }
+                // if (path.length > 1) {
+                //   checkClassify.value.twoClassify = path[1].value
+                //   checkClassify.value.twoList = path[1].children
+                //   selClassify.value = path[0].label + ' > ' + path[1].label
+                // }
+                // if (path.length > 2) {
+                //   checkClassify.value.threeClassify = path[2].value
+                //   checkClassify.value.threeList = path[2].children
+                //   selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label
+                // }
+                // if (path.length > 3) {
+                //   checkClassify.value.fourClassify = path[3].value
+                //   selClassify.value = path[0].label + ' > ' + path[1].label + ' > ' + path[2].label + ' > ' + path[3].label
+                // }
               }
+              // if (three.label == arr[2]) {
+
             })
           }
         })
