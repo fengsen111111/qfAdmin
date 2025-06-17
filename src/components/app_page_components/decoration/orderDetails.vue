@@ -60,6 +60,9 @@
 		// 	},
 		// });
 	}
+	function sondjtzmk(str, strTwo, strThree){
+		emit("djtzmk", str, strTwo, strThree);
+	}
 
 
 	const userInfo = ref({})
@@ -196,21 +199,11 @@
 								'$1****$2') || '') }}
 							</div>
 						</div>
-						<!-- <div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">订单类型：</div>
-							<div style="color: black;">拼团订单/积分订单</div>
-						</div> -->
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">收货时间：</div>
 							<div style="color: black;">{{orderDetails.over_time=='0'?'暂无':orderDetails.over_time}}</div>
 						</div>
 					</div>
-					<!-- <div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">
-						<div style="width: 80px;">用户备注：</div>
-						<div style="width: 82%;color: black;">
-							用户备注用户备注用户备注用户备注用户备注用户用户备注用户备注用户备注用户用户备注用户备注用户备注用户用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注用户备注
-						</div>
-					</div> -->
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 						收货信息</div>
@@ -276,10 +269,6 @@
 							<div style="width: 100px;margin-left: -28px;">商家预计收入：</div>
 							<div style="color: black;margin-left: 7px;">{{orderDetails.store_price}}</div>
 						</div>
-						<!-- <div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">支付方式：</div>
-							<div>余额支付/支付宝支付/微信支付</div>
-						</div> -->
 					</div>
 				</div>
 
@@ -337,10 +326,7 @@
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;">
 				<div style="display: flex;margin: 0 auto;">
-					<!-- <div
-						style="border: 1px solid #ff0000;background-color: #fbeaea;border-radius: 6px;padding: 9px 18px;color: #ff0000;margin-right: 10px;">
-						退款</div> -->
-					<Print :details=orderDetails />
+					<Print :details=orderDetails @djtzmk="sondjtzmk" />
 				</div>
 			</div>
 		</div>

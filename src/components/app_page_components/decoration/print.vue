@@ -8,6 +8,7 @@
     let emit = defineEmits(["djtzmk"])
     // 跳转对应模块
     function handTz(str, strTwo, strThree) {
+        visible.value = false
         visJc.value = false
         emit('djtzmk', str, strTwo, strThree)
     }
@@ -89,45 +90,6 @@
         // }
     }
 
-    function dy() {
-        const printContent = document.getElementById('electronicWaybill').innerHTML;
-        let html = `
-        <html>
-            <head>
-                <title>电子面单</title>
-                <style>
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-                    }
-                    .print-container {
-                        max-width:360px;
-                        padding-top:30px;
-                    } 
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    ${printContent}
-                </div>
-            </body>
-        </html>`
-        LODOP.PRINT_INITA('')  // 打印初始化
-        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
-        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        // return false
-        LODOP.PRINT()// 直接打印
-        visPrint.value = false//关闭打印弹窗
-        ksDy.value = true//打开打印提示框
-        setTimeout(() => {
-            ksDy.value = false//关闭打印提示框
-        }, 3000);
-    }
     function yldyj() {
         const printContent = document.getElementById('electronicWaybill').innerHTML;
         let html = `
@@ -190,37 +152,43 @@
     })
 
     const handleGetOrderImage = async () => {
-        dy()
-        return false
-        // loading.value = true
-        // message.value = ''
-        // const paramStr = JSON.stringify(paramObj.value)
-        // const t = Date.now().toString()
-        // const sign = md5(paramStr + t + key + secret).toUpperCase()
-        // const formData = new URLSearchParams()
-        // formData.append('param', paramStr)
-        // formData.append('key', key)
-        // formData.append('sign', sign)
-        // formData.append('t', t)
-        // formData.append('method', 'getElecOrder')
-        // try {
-        //     const res = await axios.post('/api/kuaidi', formData, {
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded'
-        //         }
-        //     })
-        //     if (res.data.result) {
-        //         console.log('结果', res.data.data);
-        //         resule.value = res.data
-        //         generateBarcode(resule.value.data[0].kuaidinum)
-        //     } else {
-        //         message.value = '获取失败：' + res.data.message
-        //     }
-        // } catch (err) {
-        //     message.value = '请求异常：' + err.message
-        // } finally {
-        //     loading.value = false
-        // }
+        const printContent = document.getElementById('electronicWaybill').innerHTML;
+        let html = `
+        <html>
+            <head>
+                <title>电子面单</title>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        background-color: #fff;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+                    }
+                    .print-container {
+                        max-width:360px;
+                        padding-top:30px;
+                    } 
+                </style>
+            </head>
+            <body>
+                <div class="print-container">
+                    ${printContent}
+                </div>
+            </body>
+        </html>`
+        LODOP.PRINT_INITA('')  // 打印初始化
+        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
+        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
+        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
+        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+        // return false
+        LODOP.PRINT()// 直接打印
+        visPrint.value = false//关闭打印弹窗
+        ksDy.value = true//打开打印提示框
+        setTimeout(() => {
+            ksDy.value = false//关闭打印提示框
+        }, 3000);
     }
     const barcode = ref()
     const barcodeTwo = ref()
@@ -337,7 +305,7 @@
                             <a-select-option :value="item.id" v-for="item in addressList"
                                 :key="item.id">{{item.address}}</a-select-option>
                         </a-select>
-                        <div style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置</div>
+                        <div @click="handTz('快递物流','商家地址')" style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置</div>
                     </div>
                 </a-form-item>
             </a-form>

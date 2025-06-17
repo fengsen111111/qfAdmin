@@ -1190,7 +1190,7 @@
 					</div>
 					<div class="a21">
 						<div>店铺详情页</div>
-						<div class="a22" @click="closeChildPage()">
+						<div v-if="is_ptsj == '平台'" class="a22" @click="closeChildPage()">
 							返回</div>
 						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22B" @click="handSjwg()">发布违规通知</div>
 					</div>
