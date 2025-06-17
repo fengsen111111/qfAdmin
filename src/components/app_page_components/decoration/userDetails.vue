@@ -89,8 +89,8 @@
 		// 后台获取用户订单列表
 		global.axios.post('decoration/Order/webGetUserOrderList', {
 			user_id: pageData.data.id,
-			id: order_sux.value.id,
-			status: order_sux.value.status,
+			id: order_sux.value.id?order_sux.value.id:'',
+			status: order_sux.value.status?order_sux.value.status:'',
 			start_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
 			end_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[1],
 			currentPage: current.value,

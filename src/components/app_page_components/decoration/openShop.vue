@@ -728,7 +728,7 @@
 									<span style="font-size: 12px;">（若您拥有对公账户，请开通商家汇付，若您没有对公账户，请开通个人汇付）</span>
 								</div>
 								<span style="font-size: 12px;color: #ff0000;">注意：开通的汇付影响到您以后的提现相关，请谨慎选择！</span>
-								<div  v-if="shopRzType=='c'||shopRzType=='d'" @click="()=>{huifu_Type='store'}"
+								<div v-if="shopRzType=='c'||shopRzType=='d'" @click="()=>{huifu_Type='store'}"
 									:style="{ 'border': huifu_Type=='store' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="huifu_Type=='store'"></a-radio>
@@ -738,7 +738,8 @@
 										<div>有营业执照和对公账户，请开通商家汇付</div>
 									</div>
 								</div>
-								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'" @click="()=>{huifu_Type='user'}"
+								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'"
+									@click="()=>{huifu_Type='user'}"
 									:style="{ 'border': huifu_Type=='user' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="huifu_Type=='user'"></a-radio>
@@ -929,8 +930,7 @@
 													</div>
 												</a-upload>
 											</div>
-											<div v-if="type=='c'||type=='d'"
-												style="display: flex;margin-left: 20px;">
+											<div v-if="type=='c'||type=='d'" style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>
 													<span>营业执照</span>
@@ -1119,9 +1119,13 @@
 									</div>
 								</a-popover>
 								<!--  -->
-								<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
-									<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
-									{{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通
+								<div style="display: flex;align-items: end;">
+									<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
+										<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
+										{{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通
+									</div>
+									<div style="font-size: 12px;color: red;margin-left: 5px">
+										注意：资料将用于“汇付支付”账户开户使用，便于使用完整功能</div>
 								</div>
 								<!-- 商家汇付 -->
 								<div v-if="huifu_Type=='store'">
@@ -1255,6 +1259,8 @@
 												@click="handOpen('store_privacy_rule')">《商家隐私协议》</span>
 											<span style="color: #1890FF;"
 												@click="handOpen('store_rule')">《商家服务协议》</span>
+											<span style="color: #1890FF;" @click="()=>{message.error('改协议添加中')}">《开户协议》</span>
+											<span style="color: #1890FF;" @click="handOpen('privacy_rich')">《隐私协议》</span>
 										</div>
 									</div>
 								</div>
