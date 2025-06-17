@@ -38,22 +38,27 @@
 	const checkedTwo = ref(false)
 	// 返回上一页
 	function closeChildPage() {
-		global.Modal.confirm({
-			title: global.findLanguage(
-				"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
-			),
-			okText: global.findLanguage("确定"),
-			cancelText: global.findLanguage("取消"),
-			okType: "primary",
-			onOk: function () {
-				// 
-				if (localStorage.getItem('is_shouhou')) {
-					emit("closeChildPage", pageData.page_key);
-				} else {
-					emit("djtzmk", '购物商城', '订单管理');
-				}
-			},
-		});
+		if (localStorage.getItem('is_shouhou')) {
+			emit("closeChildPage", pageData.page_key);
+		} else {
+			emit("djtzmk", '购物商城', '订单管理');
+		}
+		// global.Modal.confirm({
+		// 	title: global.findLanguage(
+		// 		"确定要返回吗？该操作会导致未保存的数据丢失，请谨慎操作！"
+		// 	),
+		// 	okText: global.findLanguage("确定"),
+		// 	cancelText: global.findLanguage("取消"),
+		// 	okType: "primary",
+		// 	onOk: function () {
+		// 		// 
+		// 		if (localStorage.getItem('is_shouhou')) {
+		// 			emit("closeChildPage", pageData.page_key);
+		// 		} else {
+		// 			emit("djtzmk", '购物商城', '订单管理');
+		// 		}
+		// 	},
+		// });
 	}
 
 
@@ -84,7 +89,7 @@
 	}
 	webGetOrderDetail()
 	import Print from './print.vue'
-    
+
 	// 地址*号
 	function maskAddress(address) {
 		if (!address) return '';
@@ -126,7 +131,8 @@
 							<div style="font-size: 18px;font-weight: bold;">
 								{{userInfo.nickname?userInfo.nickname:'默认昵称'}}</div>
 							<div style="color: #4e5969;font-size: 12px;">
-								<span>{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}</span>
+								<span>{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+									'$1****$2') || '') }}</span>
 							</div>
 						</div>
 					</div>
@@ -186,7 +192,8 @@
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">商家电话：</div>
 							<div style="color: black;">
-								{{is_ptsj=='平台'?orderDetails.store_mobile:(orderDetails.store_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}
+								{{is_ptsj=='平台'?orderDetails.store_mobile:(orderDetails.store_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+								'$1****$2') || '') }}
 							</div>
 						</div>
 						<!-- <div style="display: flex;color: #4e5969;">
@@ -218,7 +225,8 @@
 						<div style="display: flex;color: #4e5969;">
 							<div style="width: 80px;">联系电话：</div>
 							<div>
-								{{is_ptsj=='平台'?orderDetails.address_mobile:(orderDetails.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2') || '') }}
+								{{is_ptsj=='平台'?orderDetails.address_mobile:(orderDetails.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+								'$1****$2') || '') }}
 							</div>
 						</div>
 					</div>

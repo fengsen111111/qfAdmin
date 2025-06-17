@@ -24,11 +24,13 @@ import EditCarriagePage from '@/components/app_page_components/decoration/shippi
 import AddNewGoodsPage from '@/components/app_page_components/decoration/newShop.vue'//发布新商品   //正确版本
 
 import myInfo from '@/components/app_page_components/decoration/myInfo.vue'//我的店铺信息
+import capitalAccount from '@/components/app_page_components/decoration/capitalAccount.vue'//我的店铺信息--资金账户
 import addressManage from '@/components/app_page_components/decoration/addressManage.vue'//地址管理
 import userDetails from '@/components/app_page_components/decoration/userDetails.vue'//用户详情
 import orderDetails from '@/components/app_page_components/decoration/orderDetails.vue'//订单详情
 
 export const allPageComponents = {
+    capitalAccount,
     TablePage, FormPage, DetailPage, IndexPage,
     StatisticsPage,publishPage,AddStorePage,shopOut,
     goodsPage,

@@ -1158,7 +1158,13 @@
 												v-model:value="formState.license_begin_date" style="width: 100%;" />
 										</a-form-item>
 
-										<a-form-item label="营业执照有效期结束日期" name="license_end_date">
+										<a-form-item v-if="formState.license_validity_type==1" label="营业执照有效期结束日期"
+											name="license_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.license_end_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item v-else label="营业执照有效期结束日期" name="license_end_date"
+											:rules="[{ required: true, message: '请输入营业执照有效期结束日期' }]">
 											<a-date-picker :format="dateFormat"
 												v-model:value="formState.license_end_date" style="width: 100%;" />
 										</a-form-item>
@@ -1181,7 +1187,7 @@
 										</a-form-item>
 
 										<a-form-item label="法人身份证号码" name="legal_cert_np"
-											:rules="[{ required: true, message: '请输入法人身份证号码' }]">
+											:rules="[{ required: true, message: '请输入法人身份证号码' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
 											<a-input v-model:value="formState.legal_cert_np" placeholder="请输入法人身份证号码" />
 										</a-form-item>
 										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
@@ -1197,7 +1203,13 @@
 											<a-date-picker :format="dateFormat"
 												v-model:value="formState.legal_cert_begin_date" style="width: 100%;" />
 										</a-form-item>
-										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+										<a-form-item v-if="formState.legal_cert_validity_type==1" label="身份证有效期结束时间"
+											name="legal_cert_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item v-else label="身份证有效期结束时间" name="legal_cert_end_date"
+											:rules="[{ required: true, message: '请输入身份证身份证有效期结束时间' }]">
 											<a-date-picker :format="dateFormat"
 												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
 										</a-form-item>
@@ -1206,7 +1218,7 @@
 											<a-input v-model:value="formState.contract_name" placeholder="请输入联系人姓名" />
 										</a-form-item>
 										<a-form-item label="联系人手机号" name="contract_mobile"
-											:rules="[{ required: true, message: '请输入联系人手机号' }]">
+											:rules="[{ required: true, message: '请输入联系人手机号' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
 											<a-input v-model:value="formState.contract_mobile"
 												placeholder="请输入联系人手机号" />
 										</a-form-item>
@@ -1221,11 +1233,11 @@
 											<a-input v-model:value="formUserState.name" placeholder="请输入姓名" />
 										</a-form-item>
 										<a-form-item label="电话" name="mobile"
-											:rules="[{ required: true, message: '请输入电话' }]">
+											:rules="[{ required: true, message: '请输入电话' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
 											<a-input v-model:value="formUserState.mobile" placeholder="请输入电话" />
 										</a-form-item>
 										<a-form-item label="身份证" name="cert_no"
-											:rules="[{ required: true, message: '请输入身份证' }]">
+											:rules="[{ required: true, message: '请输入身份证' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
 											<a-input v-model:value="formUserState.cert_no" placeholder="请输入身份证" />
 										</a-form-item>
 										<a-form-item label="身份证有效期" name="cert_validity_type"
@@ -1241,7 +1253,13 @@
 											<a-date-picker :format="dateFormat"
 												v-model:value="formUserState.cert_begin_date" style="width: 100%;" />
 										</a-form-item>
-										<a-form-item label="身份证有效期结束时间" name="cert_end_date">
+										<a-form-item v-if="formUserState.cert_validity_type==1" label="身份证有效期结束时间"
+											name="cert_end_date">
+											<a-date-picker :format="dateFormat"
+												v-model:value="formUserState.cert_end_date" style="width: 100%;" />
+										</a-form-item>
+										<a-form-item v-else label="身份证有效期结束时间" name="cert_end_date"
+											:rules="[{ required: true, message: '请输入身份证有效期结束时间' }]">
 											<a-date-picker :format="dateFormat"
 												v-model:value="formUserState.cert_end_date" style="width: 100%;" />
 										</a-form-item>
@@ -1259,8 +1277,10 @@
 												@click="handOpen('store_privacy_rule')">《商家隐私协议》</span>
 											<span style="color: #1890FF;"
 												@click="handOpen('store_rule')">《商家服务协议》</span>
-											<span style="color: #1890FF;" @click="()=>{message.error('改协议添加中')}">《开户协议》</span>
-											<span style="color: #1890FF;" @click="handOpen('privacy_rich')">《隐私协议》</span>
+											<span style="color: #1890FF;"
+												@click="()=>{message.error('改协议添加中')}">《开户协议》</span>
+											<span style="color: #1890FF;"
+												@click="handOpen('privacy_rich')">《隐私协议》</span>
 										</div>
 									</div>
 								</div>

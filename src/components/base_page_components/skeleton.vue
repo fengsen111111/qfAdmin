@@ -397,7 +397,7 @@
   import Print from '@/components/app_page_components/decoration/print.vue'
 
   function djtzmk(str, strTwo, strThree) {
-    console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
+    // console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
     skeleton_state.menuData.map((item) => {
       if (item.label == str) {
         item.children.map((iss) => {
@@ -405,17 +405,15 @@
             if (strThree) {
               iss.children.map((xx) => {
                 if (xx.label == strThree) {
-                  // console.log('xx', xx);
-                  // deleteChildrenPage(xx.page_key);
                   openPage(xx, true);
                 }
               })
             } else {
-              // console.log('iss', iss);
-              // deleteChildrenPage(iss.page_key);
-              if (strTwo == '商家管理' || strTwo == '订单管理') {
+              console.log('iss', iss);
+              deleteChildrenPage(iss.page_key);
+              if (strTwo == '商家信息' || strTwo == '订单管理') {
                 if (localStorage.getItem('indexGoShop')) {
-                  // 首页点击商家管理，不操作，保留记录
+                  // 首页点击商家信息，不操作，保留记录
                 } else {
                   deleteChildrenPage(iss.page_key);
                 }

@@ -328,18 +328,17 @@
 
 <template>
     <div>
-        <!-- <button @click="handleGetOrderImage" :disabled="loading">
-            {{ loading ? '请求中...' : '打印' }}
-        </button> -->
         <button @click="visible=true">打印</button>
-        <!--  -->
         <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">
             <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-form-item label="发货地址" name="key1" :rules="[{ required: true, message: '请选择发货地址!' }]">
-                    <a-select ref="select" v-model:value="form.key1" placeholder="请选择发货地址">
-                        <a-select-option :value="item.id" v-for="item in addressList"
-                            :key="item.id">{{item.address}}</a-select-option>
-                    </a-select>
+                    <div style="display: flex; align-items: center;">
+                        <a-select ref="select" style="width: 85%;" v-model:value="form.key1" placeholder="请选择发货地址">
+                            <a-select-option :value="item.id" v-for="item in addressList"
+                                :key="item.id">{{item.address}}</a-select-option>
+                        </a-select>
+                        <div style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置</div>
+                    </div>
                 </a-form-item>
             </a-form>
         </a-modal>
