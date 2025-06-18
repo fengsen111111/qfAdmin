@@ -56,7 +56,7 @@
 
   watch(() => post_params.brand_id, (newVal, oldVal) => {
     del_pp_text.value = false
-    console.log('brand_id 品牌变化:', newVal,ppList.value);
+    console.log('brand_id 品牌变化:', newVal, ppList.value);
     setTimeout(() => {
       const exists = ppList.value.some(item => item.value == newVal);
       if (exists) {
@@ -283,7 +283,7 @@
       });
   }
   getStoreID()
- 
+
   const spflList = ref([])//商品分类列表
   // 商品分类列表
   function getGoodsTypeList() {
@@ -352,12 +352,10 @@
       message.warning('通过店铺初审后才能发布商品')
       return false
     }
-
     if (pay_Obj.value.pay_info || shopObj.value.deposit_money > 0) {
       pay_info_Vis.value = true
       return false
     }
-
     post_params.status = post_params.status == true ? 'Y' : 'N',
       post_params.goods_sizes.map((item) => {
         item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
@@ -377,29 +375,26 @@
       // console.log('item',item);
       post_params.service_ids.push(item.id)
     })
-    console.log('post_params', post_params);
+    // console.log('post_params', post_params);
     //   运费模板不检索
     const requiredFields = ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
     if (!validatePostParams(post_params, requiredFields)) {
       // message.error('表单未填写完整')
       return false
     }
-
     let yzsl = 0
-    post_params.attributes.map((iss)=>{
-      if(iss.is_must=='Y'){
-        if(!iss.value){
+    post_params.attributes.map((iss) => {
+      if (iss.is_must == 'Y') {
+        if (!iss.value) {
           yzsl = 1
           return false
         }
       }
     })
-
-    if(yzsl==1){
+    if (yzsl == 1) {
       message.error('请检查属性是否填写')
       return false
     }
-
     const goodsSizes = post_params.goods_sizes;
     const incompleteItems = goodsSizes.filter(item => {
       // || !item.commission; 佣金
@@ -412,36 +407,185 @@
     } else {
       console.log('所有规格已填写完整');
     }
-
-    loading()
-    global.axios
-      .post('decoration/Goods/webAddGoods', post_params, global)
-      .then((res) => {
-        console.log('提交数据结果', res);
-        if (props.pageData.data.id) {
-          global.Modal.confirm({
-            title: global.findLanguage(
-              "保存成功，点击确定返回上一页！"
-            ),
-            okText: global.findLanguage("确定"),
-            cancelText: global.findLanguage("取消"),
-            okType: "primary",
-            onOk: function () {
-              emit("closeChildPage", pageData.page_key);
-            },
-          });
-        } else {
-          // 没有id就是新增商品
-          // emit("closeChildPageTwo", pageData.page_key);
+    console.log('post_params', post_params);
+    if (post_params.id) {
+      // 说明是编辑商品
+      pdsfzbjgg(post_params)//判断是否只编辑了规格
+    } else {
+      // 发布商品不需要判断
+      loading()
+      global.axios
+        .post('decoration/Goods/webAddGoods', post_params, global)
+        .then((res) => {
+          console.log('提交数据结果', res);
           message.success('操作成功');
           setTimeout(() => {
             emit('editType')
           }, 2000);
-        }
-      });
+        });
+    }
+    return false
   }
 
 
+  // 判断是否只编辑了规格
+  function pdsfzbjgg(post_params) {
+    global.axios
+      .post('decoration/Goods/webGetGoodsDetail', {
+        id: post_params.id
+      }, global)
+      .then((res) => {
+        console.log('商品数据', res.goods_datas);
+        const result = compareObjects(post_params, res.goods_datas);
+        console.log('不同', result);
+        if (result.changedKeys.length == 0) {
+          // 未修改任何东西
+        } else if (result.changedKeys.length == 1) {
+          if (result.kcjgbh) {
+            // 调另一个接口
+            const { from } = result.diff.goods_sizes
+            let params = []
+            from.map((item) => {
+              params.push({
+                goods_size_id: item.id,
+                price: item.price,
+                stock: item.stock
+              })
+            })
+            loading()
+            params.map((item) => {
+              global.axios
+                .post('decoration/GoodsSize/webChangePriceOrStock', item, global)
+                .then((res) => {
+                  console.log('提交数据结果', res);
+                });
+            })
+            setTimeout(() => {
+              global.Modal.confirm({
+                title: global.findLanguage(
+                  "保存成功，点击确定返回上一页！"
+                ),
+                okText: global.findLanguage("确定"),
+                cancelText: global.findLanguage("取消"),
+                okType: "primary",
+                onOk: function () {
+                  emit("closeChildPage", pageData.page_key);
+                },
+              });
+            })
+
+          } else {
+            // 调修改商品接口
+            loading()
+            global.axios
+              .post('decoration/Goods/webAddGoods', post_params, global)
+              .then((res) => {
+                console.log('提交数据结果', res);
+                if (props.pageData.data.id) {
+                  global.Modal.confirm({
+                    title: global.findLanguage(
+                      "保存成功，点击确定返回上一页！"
+                    ),
+                    okText: global.findLanguage("确定"),
+                    cancelText: global.findLanguage("取消"),
+                    okType: "primary",
+                    onOk: function () {
+                      emit("closeChildPage", pageData.page_key);
+                    },
+                  });
+                } else {
+                  // 没有id就是新增商品
+                  // emit("closeChildPageTwo", pageData.page_key);
+                  message.success('操作成功');
+                  setTimeout(() => {
+                    emit('editType')
+                  }, 2000);
+                }
+              });
+          }
+        } else {
+          // 调修改商品接口
+          loading()
+          global.axios
+            .post('decoration/Goods/webAddGoods', post_params, global)
+            .then((res) => {
+              console.log('提交数据结果', res);
+              if (props.pageData.data.id) {
+                global.Modal.confirm({
+                  title: global.findLanguage(
+                    "保存成功，点击确定返回上一页！"
+                  ),
+                  okText: global.findLanguage("确定"),
+                  cancelText: global.findLanguage("取消"),
+                  okType: "primary",
+                  onOk: function () {
+                    emit("closeChildPage", pageData.page_key);
+                  },
+                });
+              } else {
+                // 没有id就是新增商品
+                // emit("closeChildPageTwo", pageData.page_key);
+                message.success('操作成功');
+                setTimeout(() => {
+                  emit('editType')
+                }, 2000);
+              }
+            });
+        }
+      })
+  }
+
+  // 比较两组数据不同
+  function compareObjects(obj1, obj2) {
+    const diff = {};
+    const changedKeys = [];
+    for (const key in obj1) {
+      if (key === 'id') continue; // 忽略 id
+      const val1 = obj1[key];
+      const val2 = obj2[key];
+      if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+        diff[key] = { from: val1, to: val2 };
+        changedKeys.push(key);
+      }
+    }
+    let kcjgbh = false
+    // 判断是否仅 goods_sizes 发生变化
+    if (changedKeys.length === 1 && changedKeys[0] === 'goods_sizes') {
+      const sizes1 = obj1.goods_sizes || [];
+      const sizes2 = obj2.goods_sizes || [];
+      const onlyPriceStockChanged = sizes1.length === sizes2.length && sizes1.every((item1, index) => {
+        const item2 = sizes2[index];
+        if (!item2) return false;
+        const keys1 = Object.keys(item1).filter(k => item1[k] !== undefined);
+        const keys2 = Object.keys(item2).filter(k => item2[k] !== undefined);
+        // 所有 key 都相同
+        const allKeys = Array.from(new Set([...keys1, ...keys2]));
+        // 排除 price 和 stock 后，是否还存在其他字段变化
+        const otherKeyChanged = allKeys.some(k => {
+          if (k === 'price' || k === 'stock') return false;
+          return JSON.stringify(item1[k]) !== JSON.stringify(item2[k]);
+        });
+        return !otherKeyChanged;
+      });
+      if (onlyPriceStockChanged) {
+        console.log("✅ 仅有库存或价格变化");
+      } else {
+        console.log("⚠️ goods_sizes 字段中存在除价格/库存外的其他字段变化");
+      }
+      kcjgbh = onlyPriceStockChanged
+    } else if (changedKeys.length > 0) {
+      console.log("变化字段：", changedKeys);
+      console.log("详细差异：", diff);
+    } else {
+      console.log("无字段变化");
+    }
+
+    return {
+      changedKeys,
+      diff,
+      kcjgbh: kcjgbh
+    };
+  }
   // 检索字段填写情况
   function validatePostParams(post_params, requiredFields = []) {
     for (const field of requiredFields) {
@@ -802,7 +946,7 @@
     });
     post_params.goods_sizes = newList;
     post_params.goods_sizes.map((item, index) => {
-      item.order = index + 1
+      item.order = index + 1 + ''
     })
     // console.log('newList', newList);
   }
@@ -1655,8 +1799,8 @@
                   <div class="b10">
                     <div class="b11">
                       <div class="b12">
-                        <div>
-                          <div style="color: #ff7300;">请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规</div>
+                        <div style="color: #ff7300;">
+                          <div>注意事项：(1)请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规。(2)修改规格的拼单价和库存后无需二次审核，仅限拼单价和库存。</div>
                         </div>
                         <div style="color: #407cff;" @click="addGG">添加规格</div>
                       </div>
