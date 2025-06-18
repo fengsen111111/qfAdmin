@@ -307,15 +307,15 @@
 										{{is_ptsj=='平台'?(Number(userInfo.all_get_money||0).toLocaleString()):'*'}}</div>
 								</div>
 							</div>
-							<!-- <div class="a44">
+							<div class="a44">
 								<div class="a45">
 									<AuditOutlined class="a46" />
 								</div>
 								<div>
-									<div>收益余额</div>
-									<div class="a47">{{Number(11111).toLocaleString()}}</div>
+									<div>用户曝光量</div>
+									<div class="a47">{{Number(userInfo.power).toLocaleString()}}</div>
 								</div>
-							</div> -->
+							</div>
 						</div>
 					</div>
 				</div>
