@@ -45,7 +45,6 @@
   const bfb = ref(0)//填写进度
 
   watch(() => post_params.type_id, (newVal, oldVal) => {
-    // console.log('type_id 分类变化:', newVal);
     bfb.value = 50
     if (post_params.brand_id) {
       bfb.value = 100
@@ -56,7 +55,6 @@
 
   watch(() => post_params.brand_id, (newVal, oldVal) => {
     del_pp_text.value = false
-    console.log('brand_id 品牌变化:', newVal, ppList.value);
     setTimeout(() => {
       const exists = ppList.value.some(item => item.value == newVal);
       if (exists) {
@@ -72,63 +70,8 @@
     }, 2000);
   });
 
-  // 删除服务
-  function delFw(index) {
-    post_params.services.splice(index, 1)
-  }
-  // 删除属性
-  function delSx(index) {
-    post_params.attributes.splice(index, 1)
-  }
-  // 删除轮播图
-  function delImgLb(index) {
-    post_params.images.splice(index, 1)
-  }
-
-  // 添加规格
-  function addGG() {
-    post_params.goods_sizes.push({
-      id: '',//
-      size_image: '',//商品规格图片  
-      name: '',//名称  
-      stock: '',//库存
-      old_price: '',//原价
-      price: '',//价格
-      uper_status: false,//是否需要推荐官推荐
-      integral_price: '',//可以积分抵扣的最大金额  
-      commission: '',//佣金
-      status: false,//启用状态
-      order: '',//排序  
-    })
-    zztext()
-  }
-  // 删除规格
-  function delGG(index) {
-    post_params.goods_sizes.splice(index, 1)
-  }
-
-  function setRangePicker(time1, time2) {
-    // 支持秒级时间戳（自动转毫秒）
-    const toDayjs = (val) => {
-      if (!val) return null;
-      if (typeof val === 'number' && val.toString().length === 10) {
-        return dayjs(val * 1000);
-      }
-      return dayjs(val);
-    };
-    const start = toDayjs(time1);
-    const end = toDayjs(time2);
-    if (start && end && start.isValid() && end.isValid()) {
-      timeStaEnd.value = [start, end];
-    } else {
-      timeStaEnd.value = []; // 清空不合法的情况
-    }
-    console.log('timeStaEnd', timeStaEnd.value);
-  }
-
   let props = defineProps(["pageData"]);
   const pageData = props.pageData;
-  // console.log('props数据', props.pageData.data);
   // 查看当前数据
   function lookData() {
     global.axios
@@ -136,7 +79,6 @@
         id: props.pageData.data.id
       }, global)
       .then((res) => {
-        console.log('商品数据', res.goods_datas);
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
@@ -194,95 +136,18 @@
         isUrlimg: hasImage // ✅ 如果当前规格下任意项有图，就设置为 true
       });
     }
-
     return result;
   }
-
-  // 有数据，编辑数据
-  if (props.pageData.data.id) {
-    setTimeout(() => {
-      lookData()
-    }, 1000);
-  } else {
-    // 没有id就是新增商品
-    post_params.type_id = props.pageData.data.typeId[3]
-  }
+  setTimeout(() => {
+    lookData()
+  }, 1000);
   //固定属性
   const visibleSx = ref(false)
   const SxName = ref('')//添加的属性名
-  // 添加属性
-  function addSx() {
-    console.log('name', SxName.value);
-    if (!SxName.value) {
-      message.error('请填写属性')
-      return false
-    }
-    post_params.attributes.push({
-      key: SxName.value,
-      value: '',
-      type: 'input',
-      is_del: true,
-      is_must: 'N'//是否必填
-    })
-    SxName.value = ''
-    visibleSx.value = false
-  }
 
 
   const sqJbxx = ref(false)//商品信息收起展开
   const ser_sqJbxx = ref(false)//服务信息收起展开
-
-  let uploadQueue = []; // 保存要上传的文件
-  let isUploading = false; //用于指示上传进度的标志
-  // 批量上传
-  function upload(options) {
-    uploadQueue.push(options);
-    if (!isUploading) {
-      processQueue();
-    }
-  }
-  async function processQueue() {
-    isUploading = true;
-    while (uploadQueue.length > 0) {
-      const currentOptions = uploadQueue.shift(); // 从队列中删除第一个文件
-      try {
-        // 等待当前文件上传
-        await uploadFileWrapper(global, currentOptions.file, 'image', 'shopImg', true, completeList);
-        console.log('上传成功');
-      } catch (error) {
-        console.log('上传失败');
-      }
-    }
-    isUploading = false; // 队列处理完成时重置标志
-  }
-  function uploadFileWrapper(global, file, type, category, flag, callback) {
-    return new Promise((resolve, reject) => {
-      global.file.uploadFile(global, file, type, category, flag, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-        completeList(err)
-      });
-    });
-  }
-  // 上传回调
-  function completeList(response) {
-    console.log('商品图片回调', response);
-    post_params.images.push(response.url)
-    post_params.cover_image = post_params.images[0]
-  }
-  // 商家id
-  function getStoreID() {
-    global.axios
-      .post('decoration/Store/getStoreID', {}, global)
-      .then((res) => {
-        // console.log('商家id', res);
-        post_params.store_id = res.store_id
-        getGoodsTypeList()
-        getGoodsBrandList()
-        _shopInfo()
-      });
-  }
-  getStoreID()
 
   const spflList = ref([])//商品分类列表
   // 商品分类列表
@@ -291,12 +156,9 @@
       .post('decoration/GoodsType/getGoodsTypeList', {
       }, global)
       .then((res) => {
-        console.log('商品分类列表', res.list, post_params.type_id);
-        console.log('res.list', res.list);
         spflList.value = res.list
         // 根据分类id找到对应分类，并设置固定属性，只有新增
         let result = findItemById(res.list, post_params.type_id)
-        console.log('result.default_attributes', result);
         post_params.attributes = []
         if (result) {
           result.default_attributes.map((item) => {
@@ -312,6 +174,8 @@
         }
       }, 1000);
   }
+  getGoodsTypeList()
+
   function findItemById(list, targetId) {
     for (const item of list) {
       if (item.id === targetId) {
@@ -334,368 +198,25 @@
         store_id: post_params.store_id
       }, global)
       .then((res) => {
-        // console.log('商品品牌列表', res);
         ppList.value = res.list
       });
   }
-
-  function loading() {
-    console.log('加载');
-  }
-  // 提交商品数据
-  function tjShopData() {
-    // console.log('提交',post_params);
-    //a待审核 b 已通过 c已拒绝
-    if (check_status.value == 'b') {
-      console.log('店铺通过审核');
-    } else {
-      message.warning('通过店铺初审后才能发布商品')
-      return false
-    }
-    if (pay_Obj.value.pay_info || shopObj.value.deposit_money > 0) {
-      pay_info_Vis.value = true
-      return false
-    }
-    post_params.status = post_params.status == true ? 'Y' : 'N',
-      post_params.goods_sizes.map((item) => {
-        item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
-          item.status = item.status ? 'Y' : 'N'//启用状态
-      })
-    if (post_params.type_id.value) {
-      // 有值就重新拿
-      post_params.type_id = post_params.type_id.value.length > 2 ? post_params.type_id.value[2] : post_params.type_id.value
-    } else {
-      // 没得值说明没动
-    }
-    // service_ids:[],//服务数组
-    post_params.service_ids = []
-    // post_params.services = 
-    delete post_params.services
-    wgxdcn.value.map((item) => {
-      // console.log('item',item);
-      post_params.service_ids.push(item.id)
-    })
-    // console.log('post_params', post_params);
-    //   运费模板不检索
-    const requiredFields = ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
-    if (!validatePostParams(post_params, requiredFields)) {
-      // message.error('表单未填写完整')
-      return false
-    }
-    let yzsl = 0
-    post_params.attributes.map((iss) => {
-      if (iss.is_must == 'Y') {
-        if (!iss.value) {
-          yzsl = 1
-          return false
-        }
-      }
-    })
-    if (yzsl == 1) {
-      message.error('请检查属性是否填写')
-      return false
-    }
-    const goodsSizes = post_params.goods_sizes;
-    const incompleteItems = goodsSizes.filter(item => {
-      // || !item.commission; 佣金
-      return !item.name || !item.price || !item.stock
-    });
-    if (incompleteItems.length > 0) {
-      console.log('以下规格未填写完整：', incompleteItems);
-      message.error('商品规格未填写完整')
-      return false
-    } else {
-      console.log('所有规格已填写完整');
-    }
-    console.log('post_params', post_params);
-    if (post_params.id) {
-      // 说明是编辑商品
-      pdsfzbjgg(post_params)//判断是否只编辑了规格
-    } else {
-      // 发布商品不需要判断
-      loading()
-      global.axios
-        .post('decoration/Goods/webAddGoods', post_params, global)
-        .then((res) => {
-          console.log('提交数据结果', res);
-          message.success('操作成功');
-          setTimeout(() => {
-            emit('editType')
-          }, 2000);
-        });
-    }
-    return false
-  }
-
-
-  // 判断是否只编辑了规格
-  function pdsfzbjgg(post_params) {
-    global.axios
-      .post('decoration/Goods/webGetGoodsDetail', {
-        id: post_params.id
-      }, global)
-      .then((res) => {
-        console.log('商品数据', res.goods_datas);
-        const result = compareObjects(post_params, res.goods_datas);
-        console.log('不同', result);
-        if (result.changedKeys.length == 0) {
-          // 未修改任何东西
-        } else if (result.changedKeys.length == 1) {
-          if (result.kcjgbh) {
-            // 调另一个接口
-            const { from } = result.diff.goods_sizes
-            let params = []
-            from.map((item) => {
-              params.push({
-                goods_size_id: item.id,
-                price: item.price,
-                stock: item.stock
-              })
-            })
-            loading()
-            params.map((item) => {
-              global.axios
-                .post('decoration/GoodsSize/webChangePriceOrStock', item, global)
-                .then((res) => {
-                  console.log('提交数据结果', res);
-                });
-            })
-            setTimeout(() => {
-              global.Modal.confirm({
-                title: global.findLanguage(
-                  "保存成功，点击确定返回上一页！"
-                ),
-                okText: global.findLanguage("确定"),
-                cancelText: global.findLanguage("取消"),
-                okType: "primary",
-                onOk: function () {
-                  emit("closeChildPage", pageData.page_key);
-                },
-              });
-            })
-
-          } else {
-            // 调修改商品接口
-            loading()
-            global.axios
-              .post('decoration/Goods/webAddGoods', post_params, global)
-              .then((res) => {
-                console.log('提交数据结果', res);
-                if (props.pageData.data.id) {
-                  global.Modal.confirm({
-                    title: global.findLanguage(
-                      "保存成功，点击确定返回上一页！"
-                    ),
-                    okText: global.findLanguage("确定"),
-                    cancelText: global.findLanguage("取消"),
-                    okType: "primary",
-                    onOk: function () {
-                      emit("closeChildPage", pageData.page_key);
-                    },
-                  });
-                } else {
-                  // 没有id就是新增商品
-                  // emit("closeChildPageTwo", pageData.page_key);
-                  message.success('操作成功');
-                  setTimeout(() => {
-                    emit('editType')
-                  }, 2000);
-                }
-              });
-          }
-        } else {
-          // 调修改商品接口
-          loading()
-          global.axios
-            .post('decoration/Goods/webAddGoods', post_params, global)
-            .then((res) => {
-              console.log('提交数据结果', res);
-              if (props.pageData.data.id) {
-                global.Modal.confirm({
-                  title: global.findLanguage(
-                    "保存成功，点击确定返回上一页！"
-                  ),
-                  okText: global.findLanguage("确定"),
-                  cancelText: global.findLanguage("取消"),
-                  okType: "primary",
-                  onOk: function () {
-                    emit("closeChildPage", pageData.page_key);
-                  },
-                });
-              } else {
-                // 没有id就是新增商品
-                // emit("closeChildPageTwo", pageData.page_key);
-                message.success('操作成功');
-                setTimeout(() => {
-                  emit('editType')
-                }, 2000);
-              }
-            });
-        }
-      })
-  }
-
-  // 比较两组数据不同
-  function compareObjects(obj1, obj2) {
-    const diff = {};
-    const changedKeys = [];
-    for (const key in obj1) {
-      if (key === 'id') continue; // 忽略 id
-      const val1 = obj1[key];
-      const val2 = obj2[key];
-      if (JSON.stringify(val1) !== JSON.stringify(val2)) {
-        diff[key] = { from: val1, to: val2 };
-        changedKeys.push(key);
-      }
-    }
-    let kcjgbh = false
-    // 判断是否仅 goods_sizes 发生变化
-    if (changedKeys.length === 1 && changedKeys[0] === 'goods_sizes') {
-      const sizes1 = obj1.goods_sizes || [];
-      const sizes2 = obj2.goods_sizes || [];
-      const onlyPriceStockChanged = sizes1.length === sizes2.length && sizes1.every((item1, index) => {
-        const item2 = sizes2[index];
-        if (!item2) return false;
-        const keys1 = Object.keys(item1).filter(k => item1[k] !== undefined);
-        const keys2 = Object.keys(item2).filter(k => item2[k] !== undefined);
-        // 所有 key 都相同
-        const allKeys = Array.from(new Set([...keys1, ...keys2]));
-        // 排除 price 和 stock 后，是否还存在其他字段变化
-        const otherKeyChanged = allKeys.some(k => {
-          if (k === 'price' || k === 'stock') return false;
-          return JSON.stringify(item1[k]) !== JSON.stringify(item2[k]);
-        });
-        return !otherKeyChanged;
-      });
-      if (onlyPriceStockChanged) {
-        console.log("✅ 仅有库存或价格变化");
-      } else {
-        console.log("⚠️ goods_sizes 字段中存在除价格/库存外的其他字段变化");
-      }
-      kcjgbh = onlyPriceStockChanged
-    } else if (changedKeys.length > 0) {
-      console.log("变化字段：", changedKeys);
-      console.log("详细差异：", diff);
-    } else {
-      console.log("无字段变化");
-    }
-
-    return {
-      changedKeys,
-      diff,
-      kcjgbh: kcjgbh
-    };
-  }
-  // 检索字段填写情况
-  function validatePostParams(post_params, requiredFields = []) {
-    for (const field of requiredFields) {
-      const value = post_params[field];
-      if (value === undefined || value === null || value === '') {
-        // console.warn(`字段 ${field} 是必填项`);
-        // ['name', 'store_id', 'images', 'brand_id', 'carriage_id']; //需要检索的字段
-        if (field == 'name') {
-          message.error('商品名称未填写')
-        } else if (field == 'images') {
-          message.error('商品轮播图未填写')
-        } else if (field == 'brand_id') {
-          message.error('商品品牌未选择')
-        } else if (field == 'carriage_id') {
-          message.error('运费模板未选择')
-        }
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function reset() {
-    global.Modal.confirm({
-      title: global.findLanguage("该操作会导致未保存的数据丢失，请谨慎操作！"),
-      okText: global.findLanguage("确定"),
-      cancelText: global.findLanguage("取消"),
-      okType: "primary",
-      onOk: function () {
-        if (props.pageData.data.id) {
-          lookData()
-        } else {
-          // 没有id就是新增商品
-          post_params.name = ''
-          post_params.cover_image = ''
-          post_params.images = []
-          post_params.detail = []
-          post_params.brand_id = ''
-          post_params.status = true
-          // 重新赋值属性 
-          getGoodsTypeList()
-          post_params.services = [
-            // {
-            //   key: '全网低价',
-            //   value: '多平台对比，优惠力度最大'
-            // },
-            // {
-            //   key: '热销爆款',
-            //   value: '热门商品，大家都在买'
-            // }
-          ]
-          post_params.goods_sizes = [
-            {
-              id: '',//
-              name: '',//名称  
-              stock: '',//库存
-              old_price: '',//原价
-              price: '',//价格
-              uper_status: false,//是否需要推荐官推荐
-              commission: '',//佣金
-              integral_price: '',//可以积分抵扣的最大金额  
-              status: false,//启用状态
-              order: '',//排序  
-            },
-          ]
-          post_params.carriage_id = ''
-          post_params.power_level_id = ''
-          post_params.power_start_time = ''
-          post_params.power_end_time = ''
-          timeStaEnd.value = []
-          post_params.goods_type = 'a'
-          post_params.is_used = 'N'
-          post_params.is_customized = 'N'
-          post_params.is_plan_salled = 'a'
-          post_params.need_send_time = 'a'
-        }
-        loading()//加载
-      },
-    });
-  }
+  getGoodsBrandList()
   // 返回上一页
   function closeChildPage(page_key) {
     emit("closeChildPage", page_key);
   }
-
   const treeData = ref([])
   // 行政区数据
   function getAreas() {
     global.axios
       .post('factory_system/Base/getAreas', {}, global)
       .then((res) => {
-        // console.log('行政区数据',res);
         treeData.value = res.areas
         getStoreCarriageList()//处理模板数据
       });
   }
   getAreas()
-  // 查询对应地区id
-  function findItemByLabel(data, targetLabel) {
-    for (const item of data) {
-      if (item.label === targetLabel) {
-        return item;
-      }
-      if (item.children) {
-        const found = findItemByLabel(item.children, targetLabel);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
   function findItemByAdcode(data, targetAdcode) {
     for (const item of data) {
       if (item.adcode === targetAdcode) {
@@ -708,7 +229,6 @@
     }
     return null;
   }
-
   // 所有运费模板
   const allYfmb = ref([])
   function getStoreCarriageList() {
@@ -737,7 +257,6 @@
             ...item,
             price_city: item.price_city.map((iss) => {
               let price_city = findItemByAdcode(treeData.value, iss.adcode)
-              // console.log('price_city', price_city);
               iss = {
                 ...iss,
                 ...price_city
@@ -763,27 +282,6 @@
       });
   }
 
-  const bgdjList = ref([])
-  // 曝光等级
-  function getPowerLevelList() {
-    global.axios
-      .post('decoration/PowerLevel/getPowerLevelList', {
-        type: 'goods'
-      }, global)
-      .then((res) => {
-        // console.log('曝光等级列表', res);
-        bgdjList.value = res.list
-      });
-  }
-  getPowerLevelList()
-
-  const timeStaEnd = ref()//曝光日期
-
-  function editType() {
-    console.log('修改分类');
-    emit("editType");
-  }
-
   // 承诺 
   const cn_value = ref([])
   // 我勾选的承诺
@@ -795,7 +293,6 @@
       .post('decoration/GoodsService/getGoodsServiceList', {
       }, global)
       .then((res) => {
-        console.log('商品可用服务', res.list);
         cnOption.value = []
         res.list.map((item) => {
           cnOption.value.push({
@@ -805,83 +302,16 @@
             id: item.id
           })
         })
-        // 有数据，编辑数据
-        if (props.pageData.data.id) {
-          console.log('编辑不赋值');
-        } else {
-          // 没有id就是新增商品
-          cn_value.value[0] = cn_value.value[0] ? cn_value.value[0] : res.list[0].name
-        }
         cncChange()
       });
   }
   getGoodsServiceList()
-
-
   // 承诺变化了
   function cncChange() {
-    // console.log('承诺变化了', cn_value.value);
     wgxdcn.value = cnOption.value.filter(item => cn_value.value.includes(item.value));
   }
-
   // 商品规格
-  const shopGuige = ref([
-    // {
-    //   labelValue: '颜色',//
-    //   value: [
-    //     { label: '红', imgurl: '', isCustom: false },
-    //     { label: '黄', imgurl: '', isCustom: false },
-    //     { label: '绿', imgurl: '', isCustom: false },
-    //   ],
-    //   isSort: false,//开始排序
-    //   isUrlimg: false,//默认不上传图片
-    // },
-    // {
-    //   labelValue: '尺寸',
-    //   value: [
-    //     { label: 'S', imgurl: '', isCustom: false },
-    //     { label: 'M', imgurl: '', isCustom: false },
-    //     { label: 'L', imgurl: '', isCustom: false },
-    //   ],
-    //   isSort: false,//开始排序
-    //   isUrlimg: false,//默认不上传图片
-    // }
-  ])
-
-  // 删除
-  function removeItem(index, val_index) {
-    shopGuige.value[index].value.splice(val_index, 1)
-  }
-
-  // 添加定制规格
-  function addDzgg(index) {
-    shopGuige.value[index].value.push({
-      label: '定制',
-      isCustom: true
-    })
-  }
-  // 添加规格
-  function addgg(index) {
-    shopGuige.value[index].value.push({
-      label: '',
-      isCustom: false
-    })
-  }
-  // 上移下移动
-  function downUp(index) {
-    if (index == 0) {
-      // 下移
-      const item = shopGuige.value[index]
-      shopGuige.value.splice(index, 1)
-      shopGuige.value.splice(index + 1, 0, item)
-    } else {
-      // 上移
-      const item = shopGuige.value[index]
-      shopGuige.value.splice(index, 1)
-      shopGuige.value.splice(index - 1, 0, item)
-    }
-  }
-
+  const shopGuige = ref([])
   // 排列出所有组合
   function getAllCombinations(specs) {
     if (!specs.length) return [];
@@ -948,13 +378,11 @@
     post_params.goods_sizes.map((item, index) => {
       item.order = index + 1 + ''
     })
-    // console.log('newList', newList);
   }
   // 监听商品规格变化
   watch(
     shopGuige,
     (newVal, oldVal) => {
-      console.log('newVal', newVal);
       if (newVal.length) {
         zztext()
       }
@@ -962,330 +390,11 @@
     { deep: true },
   )
 
-  // 当前商家审核状态
-  const check_status = ref('')//a待审核 b 已通过 c已拒绝
-  const shopObj = ref({})//商家信息
-  // 当前商家店铺信息
-  function _shopInfo() {
-    global.axios.post('decoration/Store/webGetStoreInfo', {
-      store_id: post_params.store_id
-    }, global)
-      .then(res => {
-        console.log('店铺数据', res);
-        shopObj.value = res
-        check_status.value = res.check_status// a待审核 b 已通过 c已拒绝
-      })
-  }
-
-  const pay_Obj = ref({})//保证金支付数据
-  const type_Pay = ref({})
-  // 当前分类保证金缴纳情况
-  function payTypePrices() {
-    global.axios
-      .post('decoration/Store/payTypePrices', {
-        goods_type_ids: props.pageData.data.typeId,
-        trade_type: 'A_NATIVE',
-      }, global)
-      .then((res) => {
-        console.log('分类保证金缴纳情况', res);
-        type_Pay.value = res
-        pay_Obj.value = res
-        if (res.pay_info) {
-          pay_Obj.value.trans_amt = Number(pay_Obj.value.trans_amt).toFixed(2)
-        } else {
-          console.log('已缴纳');
-        }
-      })
-  }
-  payTypePrices()
-
-  const pay_info_Vis = ref(false)//是否显示提示充值弹框
-  // 
-  function uploadAll(options) {
-    uploadQueue.push(options);
-    if (!isUploading) {
-      processQueue_two();
-    }
-  }
-  async function processQueue_two() {
-    isUploading = true;
-    while (uploadQueue.length > 0) {
-      const currentOptions = uploadQueue.shift(); // 从队列中删除第一个文件
-      try {
-        // 等待当前文件上传
-        await uploadFileWrapperTwo(global, currentOptions.file, 'image', 'shopImg', true, completeList);
-        console.log('上传成功');
-      } catch (error) {
-        console.log('上传失败');
-      }
-    }
-    isUploading = false; // 队列处理完成时重置标志
-  }
-  function uploadFileWrapperTwo(global, file, type, category, flag, callback) {
-    return new Promise((resolve, reject) => {
-      global.file.uploadFile(global, file, type, category, flag, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-        completeDetails(err)
-      });
-    });
-  }
-
-  // 详情图回调
-  function completeDetails(response) {
-    if (post_params.detail) {
-      post_params.detail = post_params.detail
-    } else {
-      post_params.detail = []
-    }
-    post_params.detail.push(response.url)
-  }
-  // 删除详情图片
-  function delImgXq(index) {
-    post_params.detail.splice(index, 1)
-  }
-
   const isYl = ref(true)//是否预览 //默认打开
-
-  const sprmc = ref([])//商品热门词
-  function sprmcList() {
-    global.axios
-      .post('decoration/Setting/getBaseTypes', {}, global)
-      .then((res) => {
-        console.log('商品热门词', res.goods_hot_words);
-        sprmc.value = res.goods_hot_words
-      })
-  }
-  sprmcList()
-  import QRCode from 'qrcode';
-  // 
-  const isPay = ref(false)//支付弹窗
-  let qrCodeData = ref('')//存储生成的二维码数据URL
-  let timer = ref(null);
-  const totalSeconds = ref(5 * 60); // 5 分钟
-  const minute = ref('05');
-  const second = ref('00');
-  const cz_type = ref('')//dpbzj 店铺保证金  flbzj 分类保证金
-  const codeGq = ref(false);//二维码没失效
-  // 支付倒计时
-  const updateTime = () => {
-    codeGq.value = false
-    const mins = Math.floor(totalSeconds.value / 60);
-    const secs = totalSeconds.value % 60;
-    minute.value = String(mins).padStart(2, '0');
-    second.value = String(secs).padStart(2, '0');
-    // if (totalSeconds.value < 290) {
-    //   codeGq.value = true
-    // }
-    if (totalSeconds.value > 0) {
-      totalSeconds.value--;
-    } else {
-      clearInterval(timer.value);
-      // 倒计时结束后的处理逻辑
-      console.log('倒计时结束,二维码过期,清除二维码，关闭弹窗');
-      // qrCodeData.value = ''
-      // pay_info_Vis.value = false//
-      // isPay.value = false//
-      codeGq.value = true
-    }
-  };
-
-  // 刷新二维码
-  function sxewm() {
-    console.log('当前二维码类型', cz_type.value);
-    // cz_type    //dpbzj 店铺保证金  flbzj 分类保证金
-    if (cz_type.value == 'dpbzj') {
-      czbzj()
-    } else if (cz_type.value == 'flbzj') {
-      handPay()
-    }
-  }
-  // 打开弹窗 分类保证金
-  function handPay() {
-    pay_Obj.value = {}//清除支付数据重新生成
-    pay_info_Vis.value = false//关闭下面那个弹框
-    payTypePrices()
-    setTimeout(() => {
-      cz_type.value = 'flbzj'
-      if (timer.value) {
-        clearInterval(timer.value);
-        timer.value = null;
-        totalSeconds.value = 5 * 60; // 5 分钟
-        minute.value = '05';
-        second.value = '00';
-      }
-      // 支付数据转二维码
-      // console.log('分类生成', pay_Obj.value.pay_info);
-      QRCode.toDataURL(pay_Obj.value.pay_info)
-        .then((url) => {
-          console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-          qrCodeData.value = url
-          timer.value = setInterval(updateTime, 1000);
-        })
-        .catch((err) => {
-          console.error('生成二维码失败', err);
-        });
-      isPay.value = true
-    }, 1000);
-  }
-  // 查询支付结果
-  function handOKCode() {
-    console.log('确定');
-    // 支付成功后刷新缴纳状态
-    payTypePrices()
-    _shopInfo()
-    // 查询支付结果
-    global.axios
-      .post('decoration/Store/payTypePricesResult', {
-        money_log_id: pay_Obj.value.money_log_id
-      }, global)
-      .then((res) => {
-        console.log('查询支付结果', res);
-        // P支付中 S成功 F失败  
-        if (res.result == 'P') {
-          message.error('支付中')
-        } else if (res.result == 'S') {
-          message.success('支付成功')
-          isPay.value = false
-          pay_info_Vis.value = false
-          // 支付成功后刷新缴纳状态
-          // payTypePrices()
-          // _shopInfo()
-        } else if (res.result == 'F') {
-          message.error('支付失败')
-        } else {
-          message.error('未知')
-        }
-      })
-  }
-
-  // 点击直接缴纳版 店铺保证金
-  function czbzj() {
-    pay_Obj.value = {}//清除支付数据重新生成
-    pay_info_Vis.value = false//关闭下面那个弹框
-    if (timer.value) {
-      clearInterval(timer.value);
-      timer.value = null;
-      totalSeconds.value = 5 * 60; // 5 分钟
-      minute.value = '05';
-      second.value = '00';
-    }
-    global.axios
-      .post('decoration/Store/createStoreEnsureMoney', {
-        store_id: post_params.store_id,
-        trade_type: 'A_NATIVE',
-        password: ''
-      }, global)
-      .then((res) => {
-        console.log('结果', res);
-        pay_Obj.value = res
-        if (res.pay_info) {
-          QRCode.toDataURL(res.pay_info)
-            .then((url) => {
-              console.log('生成的二维码', url); // 将生成的二维码图片URL存储到状态中
-              qrCodeData.value = url
-            })
-            .catch((err) => {
-              console.error('生成二维码失败', err);
-            });
-          cz_type.value = 'dpbzj'
-          isPay.value = true
-          timer.value = setInterval(updateTime, 1000);
-        }
-      })
-  }
-
-  // 判断规格拼单价是否大于原价
-  function pdpdjsfdyyj(item, index) {
-    console.log('判断规格拼单价是否大于原价', item.price, item.old_price);
-    if (item.price * 1 < item.old_price * 1) {
-      // 拼单价小于原价
-    } else {
-      // 大于等于原价
-      message.error('拼单价不可大于商品原价')
-      post_params.goods_sizes[index].price = ''//清空拼单价
-    }
-  }
-
-  function formatPrice(value) {
-    // 1. 只能是数字和小数点
-    value = value.replace(/[^0-9.]/g, '');
-    // 2. 只保留第一个小数点
-    value = value.replace(/^\./, ''); // 开头不能是点
-    value = value.replace(/\.{2,}/g, '.'); // 连续点变一个
-    value = value.replace('.', '#').replace(/\./g, '').replace('#', '.');
-    // 3. 最多保留两位小数
-    value = value.replace(/^(\d+)(\.\d{0,2})?.*$/, '$1$2');
-    return value;
-  }
-
-  function _toYfmb() {
-    emit("djtzmk");
-  }
-  // 删除类型
-  function delType(index) {
-    shopGuige.value.splice(index, 1)
-  }
-  // 添加类型
-  function addType(index) {
-    shopGuige.value.push({
-      labelValue: '',//
-      value: [
-        { label: '', imgurl: '', isCustom: false },
-      ],
-      isSort: false,//开始排序
-      isUrlimg: false,//默认不上传图片
-    })
-  }
-
-
-  const jlmpindex = ref('')//记录冒泡的规格index
-  // 点击规格上传规格图冒泡
-  function itemImgIndex(index) {
-    // console.log('index',index);
-    jlmpindex.value = index
-  }
-  // 上传规格图
-  function uploadItem(options) {
-    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeItem)
-  }
-  // 规格图图
-  function completeItem(response) {
-    post_params.goods_sizes[jlmpindex.value].size_image = response.url
-  }
-
-  const jlmpindexTwo = ref([])//记录冒泡的规格index Two
-  // 点击规格上传规格图冒泡
-  function itemImgIndexTwo(index, indexTwo) {
-    jlmpindexTwo.value = [index, indexTwo]
-  }
-  // 上传规格图
-  function uploadItemTwo(options) {
-    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeItemTwo)
-  }
-  // 规格图图
-  function completeItemTwo(response) {
-    console.log('回调', response);
-    shopGuige.value[jlmpindexTwo.value[0]].value[jlmpindexTwo.value[1]].imgurl = response.url
-  }
 
   // 计算字符长度（中文2，英文1）
   function getCharLength(str) {
     return str.replace(/[^\x00-\xff]/g, '**').length
-  }
-
-  // 限制输入长度 ≤ 60
-  function handleInput(e) {
-    let val = e.target.value
-    let result = ''
-    let length = 0
-    for (const char of val) {
-      const charLength = /[^\x00-\xff]/.test(char) ? 2 : 1
-      if (length + charLength > 60) break
-      result += char
-      length += charLength
-    }
-    post_params.name = result
   }
 
 </script>
@@ -1305,12 +414,8 @@
             <a-button class="a2 iconfont button-class" @click="editType()">&#xe6d2;
             </a-button>
           </div>
-          <div class="spbj">商品编辑
+          <div class="spbj">商品详情
           </div>
-        </div>
-        <div class="flex" style="cursor: pointer;">
-          <!-- <div class="tjBtn" @click="tjShopData">提交</div> -->
-          <div class="cz" @click="reset">重置</div>
         </div>
       </div>
       <div class="a3">
@@ -1354,22 +459,6 @@
         </div>
         <!-- 商品信息等 -->
         <div class="a14">
-          <div style="margin-bottom: 10px;">
-            <!-- 新增才有 有id就是编辑-->
-            <div v-if="!props.pageData.data.id" class="a15">
-              <span>商品分类</span>
-              <span style="margin-left: 20px;">{{props.pageData.data.typeName}}</span>
-              <span @click="editType()" class="a16">修改分类</span>
-            </div>
-            <!-- 没给钱才有 -->
-            <div v-if="type_Pay.pay_info||shopObj.deposit_money>0" class="a20">
-              <ExclamationCircleOutlined class="a21" />
-              <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
-              <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
-              <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-              <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
-            </div>
-          </div>
           <div class="a23" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
             <div class="a24">
@@ -1401,21 +490,9 @@
                                 主轮播图
                               </div>
                               <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
-                              <div @click="delImgLb(index)" class="imgClose">
-                                <CloseCircleOutlined />
-                              </div>
                             </div>
                           </template>
                         </Draggable>
-
-                        <div>
-                          <a-upload v-if="post_params.images.length < 10" :customRequest="upload" :multiple="true"
-                            :file-list="[]" list-type="picture-card" class="a30">
-                            <div style="text-align: center;">
-                              <PlusOutlined class="a31" />
-                            </div>
-                          </a-upload>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1428,16 +505,11 @@
                     </div>
                     <div class="a38">
                       <div style="display: flex; align-items: center;">
-                        <a-input type="text" :value="post_params.name" @input="handleInput" style="width: 79.5%;"
+                        <a-input type="text" :value="post_params.name" disabled style="width: 79.5%;"
                           placeholder="商品标题组成：商品描述+规格，最多输入30个汉字,60个字符" />
                         <div style="margin-left: 10px; white-space: nowrap;">
                           {{ getCharLength(post_params.name) }}/60
                         </div>
-                      </div>
-                      <div class="a39">
-                        <span class="a40">热搜词推荐</span>:
-                        <span @click="post_params.name=post_params.name+item" class="a41" v-for="item in sprmc"
-                          :key="item">{{item}}</span>
                       </div>
                     </div>
                   </div>
@@ -1450,7 +522,7 @@
                     </div>
                     <div style="margin-left: 20px;display: flex;">
                       <span>下架</span>
-                      <a-switch v-model:checked="post_params.status" style="margin: 0 5px;" />
+                      <a-switch v-model:checked="post_params.status" disabled style="margin: 0 5px;" />
                       <span>上架</span>
                       <span style="color: #ff0000;margin-left: 20px;">*选择不上架时，提交数据将在“商品管理”保存为草稿。</span>
                     </div>
@@ -1473,10 +545,6 @@
                           <div class="a48">
                             请准确填写属性，有利于商品在搜索和推荐中露出，错误填写可能面临商品下架或流量流失
                           </div>
-                        </div>
-                        <div style="display: flex;">
-                          <div>没有合适属性值？</div>
-                          <div @click="()=>{visibleSx=true}" style="color: #407cff;">点击添加</div>
                         </div>
                       </div>
                       <div class="a49"></div>
@@ -1512,7 +580,7 @@
                                 </div>
                               </div>
                               <div>
-                                <a-select ref="select" v-model:value="post_params.brand_id" class="a57"
+                                <a-select ref="select" disabled v-model:value="post_params.brand_id" class="a57"
                                   placeholder="请选择品牌">
                                   <a-select-option :value="item.value" v-for="item in ppList"
                                     :key="item.value">{{item.label}}</a-select-option>
@@ -1531,10 +599,11 @@
                                   <div>{{item.key}}</div>
                                 </div>
                                 <template v-if="item.type=='input'">
-                                  <a-input type="text" v-model:value="item.value" class="a61" placeholder="请输入具体属性值" />
+                                  <a-input type="text" v-model:value="item.value" disabled class="a61"
+                                    placeholder="请输入具体属性值" />
                                 </template>
                                 <template v-else-if="item.type=='select'">
-                                  <a-select v-model:value="item.value" class="a62" placeholder="请选择">
+                                  <a-select v-model:value="item.value" disabled class="a62" placeholder="请选择">
                                     <a-select-option :value="iss" v-for="iss in item.option"
                                       :key="iss">{{iss}}</a-select-option>
                                   </a-select>
@@ -1649,38 +718,6 @@
                               </div>
                             </div>
                           </div>
-                          <div>
-                            <div class="a85">
-                              <div>
-                                <div style="display: flex;">
-                                  <div>快速编辑</div>
-                                  <div>已上传<span style="color: #f97425;">{{post_params.detail.length}}</span>/50张</div>
-                                </div>
-                                <div>仅支持上传图片，拖拽可调整顺序</div>
-                              </div>
-
-                              <a-upload :customRequest="uploadAll" :multiple="true" :file-list="[]" list-type="text">
-                                <div class="a86">
-                                  本地上传</div>
-                              </a-upload>
-                            </div>
-                            <div class="a87">
-                              <Draggable v-model="post_params.detail" item-key="index" :component-data="{
-                                style: {
-                                  display: 'contents' // 重点！！让 Draggable 自己不占布局
-                                }
-                              }" :animation="200">
-                                <template #item="{ element, index }">
-                                  <div class="a88">
-                                    <a-image :width="90" :height="90" :src="element" :preview="{ src: element }" />
-                                    <div @click="delImgXq(index)" class="imgClose">
-                                      <CloseCircleOutlined />
-                                    </div>
-                                  </div>
-                                </template>
-                              </Draggable>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -1693,15 +730,6 @@
                 <DownCircleOutlined v-else class="a90" />
               </div>
             </div>
-            <!-- 添加属性 -->
-            <a-modal v-model:visible="visibleSx" title="添加属性" @ok="addSx">
-              <div>
-                <div style="display: flex;align-items: center;">
-                  <div>名称</div>
-                  <a-input type="text" v-model:value="SxName" class="a91" placeholder="请填写名称" />
-                </div>
-              </div>
-            </a-modal>
             <!-- 规格与库存 -->
             <div class="a92">
               <div class="a93">
@@ -1716,76 +744,29 @@
                   <div class="a95">
                     <div class="a96">
                       <!-- <div>最多配置2个商品规格类型</div> -->
-                      <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
                       <div v-for="(item,index) in shopGuige" :key="index" class="a97">
                         <div class="a98">
                           <div style="display: flex;align-items: center;">
-                            <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" style="width: 200px;" />
-                            <span @click="item.isUrlimg = !item.isUrlimg"
-                              style="color: #1890FF;margin-left: 10px;">{{item.isUrlimg?'删除规格图':'添加规格图'}}</span>
-                          </div>
-                          <div class="a99">
-                            <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
-                            <span class="a100">|</span>
-                            <span @click="delType(index)">删除规格类型</span>
+                            <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" disabled
+                              style="width: 200px;" />
                           </div>
                         </div>
-                        <!-- 是否点击了开始排序 -->
-                        <div v-if="item.isSort" style="padding: 10px;">
-                          <Draggable v-model="item.value" item-key="label" :component-data="{
-                            style: {
-                              display: 'grid',
-                              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-                              gap: '10px'
-                            }
-                          }">
-                            <template #item="{ element, val_index }">
-                              <div class="b1">
-                                <a-input placeholder="请输入小规格名称" v-model:value="element.label" style="width: 200px;" />
-                                <div @click="removeItem(index,val_index)" class="b2">删除</div>
-                                <div v-if="element.isCustom" class="b3">
-                                  定制
-                                </div>
-                              </div>
-                            </template>
-                          </Draggable>
-                        </div>
-                        <div v-else class="b4">
+                        <div class="b4">
                           <template v-for="(xx,xx_index) in item.value" :key="xx_index">
                             <div class="b5" style="position: relative;">
                               <div v-show="item.isUrlimg" class="itemImg"
                                 style="display: flex;position: absolute;top: 1px;">
                                 <div v-if="xx.imgurl">
                                   <a-image :width="30" :src="xx.imgurl" :preview="{ src: xx.imgurl }" />
-                                  <div @click="xx.imgurl=''"
-                                    style="width: 15px;height: 15px;position: absolute;color: red;left: 20px;top: -8px;">
-                                    <CloseCircleOutlined />
-                                  </div>
-                                </div>
-                                <div v-else @click="itemImgIndexTwo(index,xx_index)">
-                                  <a-upload :customRequest="uploadItemTwo" :multiple="false" :file-list="[]"
-                                    list-type="picture-card">
-                                    <div>
-                                      <PlusOutlined />
-                                    </div>
-                                  </a-upload>
                                 </div>
                               </div>
-                              <a-input placeholder="请输入小规格名称" v-model:value="xx.label"
-                                :style="{'margin-left': item.isUrlimg?'35px':'0px','width': item.isUrlimg?'150px':'200px'}" />
-                              <div @click="removeItem(index,xx_index)" class="b6">删除</div>
+                              <a-input placeholder="请输入小规格名称" v-model:value="xx.label" disabled
+                                :style="{'margin-left': item.isUrlimg?'35px':'35px','width': item.isUrlimg?'165px':'200px'}" />
                               <div v-if="xx.isCustom" class="b7">
                                 定制
                               </div>
                             </div>
                           </template>
-                        </div>
-                        <div class="b8">
-                          <div @click="()=>{shopGuige[index].isSort = !shopGuige[index].isSort}"
-                            style="margin-right: 20px;">{{ shopGuige[index].isSort?'确定':'开始排序'}}</div>
-                          <div @click="addgg(index)" style="margin-right: 20px;">添加规格</div>
-                          <div @click="addDzgg(index)" style="margin-right: 20px;">添加定制规格
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -1802,13 +783,9 @@
                         <div style="color: #ff7300;">
                           <div>注意事项：(1)请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规。(2)修改规格的拼单价和库存后无需二次审核，仅限拼单价和库存。</div>
                         </div>
-                        <div style="color: #407cff;" @click="addGG">添加规格</div>
                       </div>
                       <table class="b13">
-                        <tr class="b14 gridCol10">
-                          <th>
-                            <div style="color: #999999;">操作</div>
-                          </th>
+                        <tr class="b14 gridCol9">
                           <th>
                             <div style="display: flex;">
                               <div style="display: flex;margin: 0 auto;">
@@ -1880,27 +857,12 @@
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol10">
-                              <td>
-                                <div class="b16" @click="delGG(index)">删除</div>
-                              </td>
+                            <tr class="b15 gridCol9">
                               <td>
                                 <div style="display: flex;">
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
                                     <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
                                       <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
-                                      <div @click="post_params.goods_sizes[index].size_image=''"
-                                        style="width: 15px;height: 15px;position: absolute;color: #fff;left: 24px;top: -2px;">
-                                        <CloseCircleOutlined />
-                                      </div>
-                                    </div>
-                                    <div v-else @click="itemImgIndex(index)">
-                                      <a-upload :customRequest="uploadItem" :multiple="false" :file-list="[]"
-                                        list-type="picture-card">
-                                        <div>
-                                          <PlusOutlined />
-                                        </div>
-                                      </a-upload>
                                     </div>
                                   </div>
                                 </div>
@@ -1909,36 +871,31 @@
                                 </div>
                               </td>
                               <td>
-                                <a-input type="text" @input="e => item.stock = formatPrice(e.target.value)"
-                                  v-model:value="item.stock" placeholder="请输入库存" />
+                                <a-input disabled type="text" v-model:value="item.stock" placeholder="请输入库存" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.old_price"
-                                  @input="e => item.old_price = formatPrice(e.target.value)" placeholder="请输入原价" />
+                                <a-input disabled type="text" v-model:value="item.old_price" placeholder="请输入原价" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.price" @blur="pdpdjsfdyyj(item,index)"
-                                  placeholder="输入拼单价" @input="e => item.price = formatPrice(e.target.value)" />
+                                <a-input disabled type="text" v-model:value="item.price" placeholder="输入拼单价" />
                               </td>
                               <td>
-                                <a-switch v-model:checked="item.uper_status" checked-children="是"
+                                <a-switch disabled v-model:checked="item.uper_status" checked-children="是"
                                   un-checked-children="否" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.commission"
-                                  @input="e => item.commission = formatPrice(e.target.value)" placeholder="输入佣金" />
+                                <a-input disabled type="text" v-model:value="item.commission" placeholder="输入佣金" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.integral_price"
-                                  @input="e => item.integral_price = formatPrice(e.target.value)"
+                                <a-input disabled type="text" v-model:value="item.integral_price"
                                   placeholder="积分抵扣最大金额" />
                               </td>
                               <td>
-                                <a-switch v-model:checked="item.status" checked-children="是" un-checked-children="否" />
+                                <a-switch disabled v-model:checked="item.status" checked-children="是"
+                                  un-checked-children="否" />
                               </td>
                               <td>
-                                <a-input type="text" v-model:value="item.order"
-                                  @input="e => item.order = formatPrice(e.target.value)" placeholder="请输入排序" />
+                                <a-input disabled type="text" v-model:value="item.order" placeholder="请输入排序" />
                               </td>
                             </tr>
                           </template>
@@ -1962,7 +919,7 @@
                     <div>商品类型</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.goods_type" name="radioGroup">
+                    <a-radio-group disabled v-model:value="post_params.goods_type" name="radioGroup">
                       <a-radio value="a">普通商品</a-radio>
                       <a-radio value="b">海外进口</a-radio>
                       <a-radio value="c">海外CC个人行邮</a-radio>
@@ -1975,7 +932,7 @@
                     <div>是否二手</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.is_used" name="radioGroup">
+                    <a-radio-group disabled v-model:value="post_params.is_used" name="radioGroup">
                       <a-radio value="N">非二手</a-radio>
                       <a-radio value="Y">二手</a-radio>
                     </a-radio-group>
@@ -1987,7 +944,7 @@
                     <div>是否定制</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.is_customized" name="radioGroup">
+                    <a-radio-group disabled v-model:value="post_params.is_customized" name="radioGroup">
                       <a-radio value="N">非定制</a-radio>
                       <a-radio value="Y">部分库存定制</a-radio>
                     </a-radio-group>
@@ -1999,7 +956,7 @@
                     <div>是否预售</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.is_plan_salled" name="radioGroup">
+                    <a-radio-group disabled v-model:value="post_params.is_plan_salled" name="radioGroup">
                       <a-radio value="a">非预售</a-radio>
                       <a-radio value="b">定时预售</a-radio>
                       <a-radio value="c">时段预售</a-radio>
@@ -2012,7 +969,7 @@
                     <div>承诺发货时间</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.need_send_time" name="radioGroup">
+                    <a-radio-group disabled v-model:value="post_params.need_send_time" name="radioGroup">
                       <a-radio value="a">当日发货</a-radio>
                       <a-radio value="b">24小时
                       </a-radio>
@@ -2027,15 +984,10 @@
                   </div>
                   <div class="b21">
                     <div style="display: flex;">
-                      <a-radio-group v-model:value="post_params.carriage_id" name="radioGroup">
+                      <a-radio-group disabled v-model:value="post_params.carriage_id" name="radioGroup">
                         <a-radio :value="item.id" v-for="(item,index) in allYfmb" :key="item.id">{{item.name}} <span
                             v-if="index==0" style="color: #ff7300;">推荐</span></a-radio>
                       </a-radio-group>
-                      <div style="display: flex;">
-                        <span @click="_toYfmb()" style="color: #1890FF;cursor: pointer;margin-left: 10px;">新增模板</span>
-                        <span @click="getStoreCarriageList()"
-                          style="color: #1890FF;cursor: pointer;margin-left: 10px;">刷新数据</span>
-                      </div>
                     </div>
                     <template v-for="item in allYfmb" :key="item.id">
                       <template v-if="item.id == post_params.carriage_id">
@@ -2081,42 +1033,14 @@
                     支付成功减库存
                   </div>
                 </div>
-                <div v-show="false" class="b27">
-                  <div style="display: flex;">
-                    <div style="color: red;">*</div>
-                    <div>商品曝光等级</div>
-                  </div>
-                  <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.power_level_id" name="radioGroup">
-                      <a-radio :value="item.id" v-for="item in bgdjList"
-                        :key="item.id">{{item.name}}(消耗曝光量：{{item.power}})</a-radio>
-                    </a-radio-group>
-                  </div>
-                </div>
-                <div v-show="false" class="b28">
-                  <div style="display: flex;">
-                    <div style="color: red;">*</div>
-                    <div>曝光时间</div>
-                  </div>
-                  <div style="margin-left: 20px;">
-                    <a-range-picker v-model:value="timeStaEnd" show-time />
-                  </div>
-                </div>
-                <div v-show="false" v-if="props.pageData.data.id" class="b29">
-                  <div class="b30">
-                    <div style="display: flex;">
-                      <div>曝光量</div>
-                    </div>
-                    <a-input-number :min="0" v-model:value="post_params.power" class="b31" placeholder="请输入曝光量" />
-                  </div>
-                </div>
+
                 <div class="b32">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>承诺</div>
                   </div>
                   <div style="margin-left: 20px;">
-                    <a-checkbox-group style="display: grid;" v-model:value="cn_value" :options="cnOption"
+                    <a-checkbox-group disabled style="display: grid;" v-model:value="cn_value" :options="cnOption"
                       @change="cncChange" />
                   </div>
                 </div>
@@ -2127,78 +1051,7 @@
                 <DownCircleOutlined v-else class="b34" />
               </div>
             </div>
-
-            <div class="b35">
-              <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
-            </div>
-            <!-- 需提示缴纳保证金 -->
-            <a-modal v-model:visible="pay_info_Vis" :footer="null" style="z-index: 8;">
-              <div style="position: relative;">
-                <div class="b36">
-                  <ExclamationCircleFilled class="b38" />
-                </div>
-                <div class="b37">
-                  <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-                  <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-                </div>
-                <div class="b39">
-                  <div class="b40" style="cursor: pointer;">
-                    <div class="b41" @click="czbzj" v-if="shopObj.deposit_money>0">缴纳店铺保证金</div>
-                    <div class="b41" @click="handPay" v-else-if="pay_Obj.pay_info">缴纳分类保证金</div>
-                    <div @click="pay_info_Vis=false" class="b42">暂不充值
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a-modal>
-            <!-- 留底高 -->
-            <div style="height: 100px;"></div>
           </div>
-          <!-- 支付弹框 -->
-          <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
-            style="z-index: 999999;" cancel-text="放弃" :maskClosable="false">
-            <div class="container">
-              <div class="pcHeader">
-                <img class="logoImg"
-                  src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025421/tjgvd9d3mr771js7f2o6hqqjsegs2p9b.png"
-                  alt="Logo" title="Logo" />
-                <div class="headerTitle">收银台</div>
-              </div>
-              <div class="price">
-                <span class="priceUnit">¥</span>
-                <span class="priceNumber" v-if="cz_type=='dpbzj'">{{shopObj.deposit_money}}</span>
-                <span class="priceNumber" v-if="cz_type=='flbzj'">{{pay_Obj.trans_amt}}</span>
-              </div>
-              <div class="payTimeRemaining">
-                <span class="payTxt">支付剩余时间</span>
-                <span class="time">
-                  <span class="time">
-                    <span class="timeItem">{{ minute }}</span>
-                    <span class="timeSplit">:</span>
-                    <span class="timeItem">{{ second }}</span>
-                  </span>
-                </span>
-              </div>
-              <div class="payType">
-                <ul class="payTab">
-                  <li class="payItem activePayItem" style="--theme: #0B5AFE" data-type="alipay">
-                    <img class="payIcon"
-                      src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/coverImg/2025421/1lbj3114n1mkb3mt71ak14ajhv5gc5nh.png" />
-                    <span class=" payTitle">支付宝</span>
-                  </li>
-                </ul>
-                <div class="payContent">
-                  <img :src="qrCodeData" alt="支付二维码" :style="{opacity: codeGq?'0.1':'1'}" />
-                  <div v-if="codeGq" style="position: relative;top: -100px;color: #000000;">
-                    二维码已失效
-                    <div style="color: #ff0000;cursor: pointer;" @click="sxewm">刷新</div>
-                  </div>
-                  <div class="conetentTxt"><span class="payDesc"><span id="payName">使用支付宝App扫码完成支付</span></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </a-modal>
         </div>
       </div>
     </div>
@@ -2208,183 +1061,18 @@
 
 <style scoped>
   /*  */
-  .container {
-    width: 100%;
-    max-width: 1080px;
-    height: 100%;
-    max-height: 720px;
-    position: relative;
-    text-align: center;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
-  }
-
-  .pcHeader {
-    margin-left: 24px;
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-  }
-
-  .logoImg {
-    object-fit: contain;
-    height: 30px;
-    margin-right: 10px;
-    max-width: 160px;
-  }
-
-  .headerTitle {
-    font-size: 18px;
-    font-weight: 500;
-    color: #050505;
-  }
-
-  .price {
-    font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    font-family: DINAlternate, DINAlternate-Bold;
-    color: #333333;
-  }
-
-  .priceUnit {
-    font-size: 20px;
-    font-weight: 400;
-    margin-right: 4px;
-  }
-
-  .priceNumber {
-    font-size: 24px;
-    font-weight: 500;
-    margin-left: 4px;
-  }
-
-  .payTimeRemaining {
-    margin-bottom: 6px;
-  }
-
-  .payTxt {
-    color: #999;
-    margin-right: 11px;
-  }
-
-  .time {
-    font-weight: 400;
-    font-size: 14px;
-    color: #000000;
-  }
-
-  .timeItem {
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 2px;
-    padding: 2px;
-  }
-
-  .timeSplit {
-    margin: 0 4px;
-  }
-
-  .payTab {
-    margin-top: 20px;
-    display: flex;
-    border-bottom: 1px solid #e9e6e6;
-  }
-
-  .payItem {
-    padding: 10px 20px;
-    background: #ffffff;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    margin-right: 20px;
-    box-sizing: border-box;
-  }
-
-  .payItem:last-of-type {
-    margin-right: 0;
-  }
-
-  .payIcon {
-    height: 20px;
-    object-fit: contain;
-    margin-right: 10px;
-  }
-
-  .activePayItem {
-    border-radius: 6px 6px 0px 0px;
-    border: 1px solid #e9e6e6;
-    border-bottom: none;
-  }
-
-  .payItem:first-of-type::after {
-    position: absolute;
-    content: '推荐';
-    right: -18px;
-    top: -11px;
-    width: 36px;
-    height: 22px;
-    text-align: center;
-    line-height: 22px;
-    border-radius: 10px 0 10px 0;
-    background: #E74E4E;
-    color: #ffffff;
-    z-index: 999;
-    font-size: 12px;
-  }
-
-  .activePayItem::before {
-    position: absolute;
-    content: '';
-    right: 0;
-    bottom: -1px;
-    width: 100%;
-    height: 3px;
-    background: #ffffff;
-    z-index: 999;
-  }
-
-  .payContent {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .conetentTxt {
-    text-align: center;
-    font-weight: 400;
-    color: #000000;
-    /* margin-bottom: 55px; */
-  }
-
-
   ::v-deep(.itemImg .ant-upload.ant-upload-select-picture-card) {
     width: 30px !important;
     height: 30px !important;
   }
-
   ::v-deep(.ant-upload.ant-upload-select-picture-card) {
     width: 90px !important;
     height: 90px !important;
   }
-
   th,
   td {
     border: 1px solid #f0f2f5;
     padding: 8px 10px;
-  }
-
-  .imgClose {
-    width: 15px;
-    height: 15px;
-    position: absolute;
-    right: 5px;
-    top: 4px;
-    color: #fff;
   }
 
 
@@ -2395,30 +1083,12 @@
   }
 
   .spbj {
-    /* color: #1890ff; */
-    /* font-weight: bold; */
     font-size: 18px;
-  }
-
-  .cz {
-    background-color: #f97425;
-    color: white;
-    padding: 5px 20px;
-    border-radius: 5px
   }
 
   .flex {
     display: flex;
   }
-
-  .tjBtn {
-    margin-right: 20px;
-    background-color: #0ccd00;
-    color: white;
-    padding: 5px 20px;
-    border-radius: 5px;
-  }
-
   .a1 {
     display: flex;
     align-items: center;

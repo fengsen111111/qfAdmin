@@ -169,8 +169,8 @@
   function getRecords() {
     const rqtz_store_id = localStorage.getItem('rqtz_store_id')
     if (rqtz_store_id) {
-      table_state.searchStructure.map((item)=>{
-        if(item.field=='store_id'){
+      table_state.searchStructure.map((item) => {
+        if (item.field == 'store_id') {
           item.value = rqtz_store_id
           // 打开搜索
           controlSearch()
@@ -540,15 +540,24 @@
         data: requestParams,
         parent_page_key: pageData.page_key,
       });
-    }else if(handleInfo.handleType == "pcLookGoodsDetails"){
-      openChildPage({
-        type: 'pcLookGoodsDetails',
-        url: '',
-        data: {
-          id:requestParams.goods_id
-        },
-        parent_page_key: pageData.page_key,
-      });
+    } else if (handleInfo.handleType == "pcLookGoodsDetails") {
+
+      // 阅读商家新商品提醒列表
+      global.axios
+        .post('decoration/Goods/readNewGoodsNotice', {
+          goods_id: requestParams.goods_id
+        }, global)
+        .then((res) => {
+          console.log('阅读商家新订单提醒列表', res);
+          openChildPage({
+            type: 'pcLookGoodsDetails',
+            url: '',
+            data: {
+              id: requestParams.goods_id
+            },
+            parent_page_key: pageData.page_key,
+          });
+        })
     }
 
     //导入
