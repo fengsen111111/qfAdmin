@@ -388,11 +388,6 @@
 		webGetStoreMoneyLog()
 	}, 1500);
 
-	
-	// 退回保证金
-	function thbzj() {
-		message.success('退店进程 a未申请 b公示中 c材料通过 d商家确认退店 e退款中  f已退款  当前状态' + shopObj.value.out_process)
-	}
 
 	// 热区跳转
 	function rqtz(key1, key2, key3) {
@@ -562,9 +557,6 @@
 										<img src="../../../../public/resource/image/yj.png" class="a69" alt="">
 									</div>
 									<div class="a70">{{Number(zjxqtj.store_money).toLocaleString()}}</div>
-									<a-popconfirm title="请确定是否退回保证金?" ok-text="确定" cancel-text="取消" @confirm="thbzj()">
-										<a-button type="primary" style="margin-left: 20px;">退回保证金</a-button>
-									</a-popconfirm>
 								</div>
 								<div style="display: flex;">
 									<div>商家保证金：{{Number(shopObj.pay_deposit_money).toLocaleString()}}</div>
@@ -605,7 +597,6 @@
 								<div style="padding: 20px;cursor: pointer;" v-if="shopObj.open_h_store_account=='c'">
 									<div class="a77" @click="czvisopen(2)">充值</div>
 									<div class="a78" @click="czvisopen(3)">提现</div>
-									<a-button>退回保证金（暂无接口）</a-button>
 								</div>
 								<div v-else style="padding: 20px;cursor: pointer;">
 									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">充值</div>
