@@ -30,6 +30,7 @@ import userDetails from '@/components/app_page_components/decoration/userDetails
 import orderDetails from '@/components/app_page_components/decoration/orderDetails.vue'//订单详情
 
 import pcLookGoodsDetails from '@/components/app_page_components/decoration/pcLookGoodsDetails.vue'//平台查看商品详情
+import EditStoreInfo from '@/components/app_page_components/decoration/EditStoreInfo.vue'//修改商家信息
 
 export const allPageComponents = {
     capitalAccount,
@@ -40,7 +41,8 @@ export const allPageComponents = {
     // newShop,
     AddNewGoodsPage,myInfo,addressManage,
     userDetails,orderDetails,
-    pcLookGoodsDetails
+    pcLookGoodsDetails,
+    EditStoreInfo
 }
 
 // 项目名称：快鹿送酒

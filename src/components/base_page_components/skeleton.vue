@@ -8,6 +8,9 @@
 
   const global = inject("global").value;
 
+  const login_store_id = ref('')//登陆商家id
+  login_store_id.value = localStorage.getItem('storeId')
+
   const skeleton_state = reactive({
     author: "", //开发者信息
     admin: {}, //管理员信息
@@ -433,20 +436,7 @@
 
   // 前往店铺详情
   function toShopDetails() {
-    openPage({
-      checked: true,
-      checked_status: true,
-      open_status: true,
-      icon: "",
-      label: "店铺信息",
-      order: "1",
-      page_id: "0",
-      pid: "706154120674803773",
-      type: "myInfo",
-      url: "",
-      value: "333333",
-      page_key: "e06ac6e73a5db3b8f010acb4213123213",
-    }, true)
+    djtzmk('商家信息','商家资料')
   }
   // 前往订单详情
   function orderLook(item) {
@@ -619,6 +609,21 @@
     })
   }
 
+  // 修改商家信息
+  function editStoreInfo(){
+    console.log('修改商家信息');
+    let page = {
+      value: "editInfoStore",
+      label: global.findLanguage("修改密码"),
+      page_id: "editInfoStore",
+      type: "EditStoreInfo",
+      parent_page_key: "index_page_store_info",
+      data: {},
+      url: "",
+    };
+    openPage(page);
+  }
+
 </script>
 
 <template>
@@ -718,10 +723,17 @@
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item  @click="changePassword" v-if="skeleton_state.admin.id != -1">
-                  <span>修改信息</span>
-                </a-menu-item>
-                <a-menu-item  @click="logout">
+                <template v-if="login_store_id!==1">
+                  <a-menu-item @click="editStoreInfo">
+                    <span>修改商家信息</span>
+                  </a-menu-item>
+                </template>
+                <template v-else>
+                  <a-menu-item @click="changePassword" v-if="skeleton_state.admin.id != -1">
+                    <span>修改信息</span>
+                  </a-menu-item>
+                </template>
+                <a-menu-item @click="logout">
                   <span>退出登陆</span>
                 </a-menu-item>
               </a-menu>
