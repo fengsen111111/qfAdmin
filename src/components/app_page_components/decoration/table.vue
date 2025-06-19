@@ -548,7 +548,7 @@
           goods_id: requestParams.goods_id
         }, global)
         .then((res) => {
-          console.log('阅读商家新订单提醒列表', res);
+          console.log('阅读商家新商品提醒列表', res);
           openChildPage({
             type: 'pcLookGoodsDetails',
             url: '',
