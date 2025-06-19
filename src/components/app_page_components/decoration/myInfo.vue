@@ -1236,7 +1236,8 @@
 							<!-- 个人汇付,银行卡 -->
 							<template v-if="shopObj.type=='b'">
 								<div class="a33">
-									<div class="a34">个人账户（汇付）:</div>
+									<!-- <div class="a34">个人账户（汇付）:</div> -->
+									<div class="a34">店铺账户:</div>
 									<div class="a35" @click="userhf_vis= true" style="cursor: pointer;color: #0c96f1;">
 										点击开通
 									</div>
@@ -1276,7 +1277,8 @@
 							<!-- 商家汇付,银行卡 -->
 							<template v-else>
 								<div class="a33">
-									<div class="a34">商家账户（汇付）:</div>
+									<!-- <div class="a34">商家账户（汇付）:</div> -->
+									<div class="a34">店铺账户:</div>
 									<div v-if="is_ptsj == '平台'">
 										<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
 											style="cursor: pointer;color: #ff0000;">暂未开通</div>

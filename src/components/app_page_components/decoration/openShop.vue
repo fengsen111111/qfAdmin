@@ -247,7 +247,12 @@
 
 	const value1 = ref()
 	function handUrl(url) {
-		global.router.push(url)
+		if(url == '/login'){
+			localStorage.removeItem('Authorization')
+			global.router.push(url)
+		}else{
+			global.router.push(url)
+		}
 	}
 
 	// 关闭地图
@@ -450,7 +455,7 @@
 			})
 	}
 
-	const shopRzType = ref('a')//商户类型 a本地商家 b网店商家 c个体工商户  d企业店
+	const shopRzType = ref('a')//商户类型 a个人店 c个体工商户  d企业店
 	const buzhou_type = ref(1)//1选择类型 2填写信息
 
 	if (route.query.type) {
@@ -675,30 +680,10 @@
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 									<span style="font-size: 12px;">（适合无营业执照的商家）</span>
 								</div>
-								<!-- <div @click="()=>{shopRzType='a',huifu_Type='user'}"
+								<div @click="()=>{shopRzType='a',huifu_Type='user'}"
 									:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
-									<a-radio :checked="false" v-else></a-radio>
-									<div style="margin-left: 10px;">
-										<div>本地商家（个人实体店）</div>
-										<div>有实体店铺，开通个人汇付，提供「个人身份证」即可入驻</div>
-									</div>
-								</div>
-								<div @click="()=>{shopRzType='b',huifu_Type='user'}"
-									:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
-									<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
-									<a-radio :checked="false" v-else></a-radio>
-									<div style="margin-left: 10px;">
-										<div>网店商家（个人网店）</div>
-										<div>无实体店铺，开通个人汇付，提供「个人身份证」即可入驻</div>
-									</div>
-								</div> -->
-								<div @click="()=>{shopRzType='b',huifu_Type='user'}"
-									:style="{ 'border': shopRzType=='b' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
-									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
-									<a-radio :checked="true" v-if="shopRzType=='b'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>个人店</div>
@@ -1130,7 +1115,8 @@
 								<div style="display: flex;align-items: end;">
 									<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
 										<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
-										{{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通
+										<!-- {{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通 -->
+										货款账户开通
 									</div>
 									<div style="font-size: 12px;color: red;margin-left: 5px">
 										注意：资料将用于“汇付支付”账户开户使用，便于使用完整功能</div>
@@ -1285,10 +1271,6 @@
 												@click="handOpen('store_privacy_rule')">《商家隐私协议》</span>
 											<span style="color: #1890FF;"
 												@click="handOpen('store_rule')">《商家服务协议》</span>
-											<span style="color: #1890FF;"
-												@click="()=>{message.error('改协议添加中')}">《开户协议》</span>
-											<span style="color: #1890FF;"
-												@click="handOpen('privacy_rich')">《隐私协议》</span>
 										</div>
 									</div>
 								</div>

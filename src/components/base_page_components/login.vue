@@ -105,7 +105,7 @@
 
             // 获取权限列表
             global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
-              console.log('after',after);
+              console.log('after', after);
               if (isJb.value) { //是否廉政举报
                 global.router.push("/lzjb")
               } else {
@@ -152,8 +152,8 @@
           if (res) {
             localStorage.setItem('Authorization', res.token);
             errorMsg.value = '' //清空报错信息
-             global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
-              console.log('after',after);
+            global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
+              console.log('after', after);
               if (isJb.value) { //是否廉政举报
                 global.router.push("/lzjb")
               } else {
@@ -501,7 +501,7 @@
 </script>
 
 <template>
-  <div class="login">
+  <div v-if="admin_login_back_image" class="login">
     <div style="position: fixed;right: 20px;top: 12vh;text-align: center;">
       <img src="/resource/image/jpn.png" style="width: 40px;height: 38px;" alt="">
       <a-popover v-model:visible="visible" trigger="click" placement="leftTop">
