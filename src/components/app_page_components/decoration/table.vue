@@ -540,6 +540,15 @@
         data: requestParams,
         parent_page_key: pageData.page_key,
       });
+    }else if(handleInfo.handleType == "pcLookGoodsDetails"){
+      openChildPage({
+        type: 'pcLookGoodsDetails',
+        url: '',
+        data: {
+          id:requestParams.goods_id
+        },
+        parent_page_key: pageData.page_key,
+      });
     }
 
     //导入

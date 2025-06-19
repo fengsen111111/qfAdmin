@@ -29,6 +29,8 @@ import addressManage from '@/components/app_page_components/decoration/addressMa
 import userDetails from '@/components/app_page_components/decoration/userDetails.vue'//用户详情
 import orderDetails from '@/components/app_page_components/decoration/orderDetails.vue'//订单详情
 
+import pcLookGoodsDetails from '@/components/app_page_components/decoration/pcLookGoodsDetails.vue'//平台查看商品详情
+
 export const allPageComponents = {
     capitalAccount,
     TablePage, FormPage, DetailPage, IndexPage,
@@ -37,7 +39,8 @@ export const allPageComponents = {
     EditCarriagePage,
     // newShop,
     AddNewGoodsPage,myInfo,addressManage,
-    userDetails,orderDetails
+    userDetails,orderDetails,
+    pcLookGoodsDetails
 }
 
 // 项目名称：快鹿送酒

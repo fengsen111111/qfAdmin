@@ -156,7 +156,10 @@
 	const dataType = ref([])
 	function getGoodsTypeList() {
 		global.axios
-			.post('decoration/GoodsType/getGoodsTypeList', {}, global)
+			.post('decoration/GoodsType/getGoodsTypeList', {
+				store_id: localStorage.getItem("storeId"),
+				handle_type:'add'
+			}, global)
 			.then((res) => {
 				console.log('商品分类列表', res.list);
 				dataType.value = res.list.map((item) => {
