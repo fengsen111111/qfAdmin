@@ -346,6 +346,10 @@
   function tjShopData() {
     // console.log('提交',post_params);
     //a待审核 b 已通过 c已拒绝
+    if (shopObj.value.open_h_store_account == 'a') {
+      message.warning('开通汇付后才能发布商品')
+      return false
+    }
     if (check_status.value == 'b') {
       console.log('店铺通过审核');
     } else {
@@ -1361,14 +1365,25 @@
               <span style="margin-left: 20px;">{{props.pageData.data.typeName}}</span>
               <span @click="editType()" class="a16">修改分类</span>
             </div>
-            <!-- 没给钱才有 -->
-            <div v-if="type_Pay.pay_info||shopObj.deposit_money>0" class="a20">
-              <ExclamationCircleOutlined class="a21" />
-              <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
-              <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
-              <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
-              <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">店铺保证金</span>
+            <!-- 未开通汇付 -->
+            <div v-if="shopObj.open_h_store_account=='a'">
+              <div class="a20">
+                <ExclamationCircleOutlined class="a21" />
+                商家账户未开通！请开通后发布商品
+              </div>
             </div>
+            <div v-else>
+              <!-- 没给钱才有 -->
+              <div v-if="type_Pay.pay_info||shopObj.deposit_money>0" class="a20">
+                <ExclamationCircleOutlined class="a21" />
+                结合店铺经营情况，还需要缴纳
+                <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
+                <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
+                <span v-if="shopObj.deposit_money>0">店铺保证金{{shopObj.deposit_money}}元</span>
+                <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">去缴纳</span>
+              </div>
+            </div>
+
           </div>
           <div class="a23" :style="{ 'height': props.pageData.data.id ? '92%' : false?'91%':'85%' }">
             <!-- 基本信息 -->
@@ -2138,8 +2153,9 @@
                   <ExclamationCircleFilled class="b38" />
                 </div>
                 <div class="b37">
+                  <span>结合店铺经营情况，还需要缴纳</span>
                   <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-                  <span v-if="shopObj.deposit_money>0">结合店铺经营情况，还需要缴纳{{shopObj.deposit_money}}元店铺保证金</span>
+                  <span v-if="shopObj.deposit_money>0">店铺保证金{{shopObj.deposit_money}}元</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">
