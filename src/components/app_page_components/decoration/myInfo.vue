@@ -1141,10 +1141,7 @@
 									{{shopObj.store_name}}</span>
 								<span style="margin-left: 40px;">
 									<span style="margin-right: 30px;">店铺类型</span>
-									<span v-if="shopObj.type=='a'">本地商家</span>
-									<span v-if="shopObj.type=='b'">网店商家</span>
-									<span v-if="shopObj.type=='c'">个体工商户</span>
-									<span v-if="shopObj.type=='d'">企业店</span>
+									<span>个人店/个体工商户/个体工商户</span>
 								</span>
 							</div>
 						</div>
@@ -1223,7 +1220,9 @@
 									<div class="a26">
 										{{item.name}}:</div>
 									<div class="a28" v-if="item.key=='type'">
-										{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}</div>
+										<!-- {{shopObj[item.key]=='a'?'本地商家':'网店商家'}} -->
+										<span>个人店/个体工商户/个体工商户</span>
+									</div>
 									<div class="a29" v-else>
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
 								</div>
@@ -1232,7 +1231,6 @@
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
 							</div>
-							<!-- a本地商家 b网店商家 c个体工商户  d企业店  网店商家无营业执照,需要个人汇付-->
 							<div class="a33">
 								<!-- <div class="a34">商家账户（汇付）:</div> -->
 								<div class="a34">店铺账户:</div>

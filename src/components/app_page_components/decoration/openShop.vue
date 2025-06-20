@@ -1309,10 +1309,11 @@
 										<div style="display: flex;margin-top: 10px;">
 											<div style="width: 180px;text-align: right;">店铺类型： </div>
 											<div>
-												<span v-if="type=='a'">本地商家</span>
+												<span>个人店/个体工商户/企业店</span>
+												<!-- <span v-if="type=='a'">本地商家</span>
 												<span v-if="type=='b'">网店商家</span>
 												<span v-if="type=='c'">个体工商户</span>
-												<span v-if="type=='d'">企业店</span>
+												<span v-if="type=='d'">企业店</span> -->
 											</div>
 										</div>
 										<div style="display: flex;margin-top: 20px;">

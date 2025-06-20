@@ -713,7 +713,7 @@
           <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
-            <span>学习中心{{login_store_id}}</span>
+            <span>学习中心</span>
           </div>
         </div>
         <div class="admin-msg">
