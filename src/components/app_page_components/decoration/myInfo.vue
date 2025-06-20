@@ -28,8 +28,13 @@
 				logo.value = res.logo
 				// a待审核 b 已通过 c已拒绝
 				shType.value = res.check_status
-				if (shType.value == 'b') {
+				if (shType.value == 'b' && shopObj.open_h_store_account != 'a') {
 					getGoodsTypeList()
+					// 生成分类表格数据
+					const flattened = flattenCategories(shopObj.value.goods_types);
+					setTimeout(() => {
+						renderTable(flattened);
+					}, 1000);
 				}
 				if (shType.value == 'c') {
 					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
@@ -40,11 +45,7 @@
 					})
 				}
 
-				// 生成分类表格数据
-				const flattened = flattenCategories(shopObj.value.goods_types);
-				setTimeout(() => {
-					renderTable(flattened);
-				}, 1000);
+
 			})
 	}
 	function _shopInfoPc() {
@@ -61,6 +62,11 @@
 				shType.value = res.check_status
 				if (shType.value == 'b') {
 					getGoodsTypeList()
+					// 生成分类表格数据
+					const flattened = flattenCategories(shopObj.value.goods_types);
+					setTimeout(() => {
+						renderTable(flattened);
+					}, 1000);
 				}
 				if (shType.value == 'c') {
 					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
@@ -70,12 +76,6 @@
 						check_remark.value = res.check_remark
 					})
 				}
-
-				// 生成分类表格数据
-				const flattened = flattenCategories(shopObj.value.goods_types);
-				setTimeout(() => {
-					renderTable(flattened);
-				}, 1000);
 			})
 	}
 	console.log('pageData', pageData.data);
@@ -231,30 +231,22 @@
 
 	// 渲染到 HTML 表格
 	function renderTable(data) {
-		console.log('渲染表格');
-
+		// console.log('渲染表格');
 		const table = document.querySelector(".table");
-
 		// 清除旧 tbody
 		const oldTbody = table.querySelector("tbody");
 		if (oldTbody) {
 			table.removeChild(oldTbody);
 		}
-
 		const tbody = document.createElement("tbody");
-
 		// 找出最大层级数（列数）
 		const levelCount = Math.max(...data.map(row => row.length));
-
 		// 计算每列的 rowspan 信息
 		const rowspanMap = calculateRowspan(data, levelCount);
-
 		data.forEach((row, rowIndex) => {
 			const tr = document.createElement("tr");
-
 			for (let colIndex = 0; colIndex < levelCount; colIndex++) {
 				const col = row[colIndex]; // 有可能是 undefined（本行没有这一层级）
-
 				if (col) {
 					const { id, name } = col;
 					const map = rowspanMap[colIndex].get(id);
@@ -272,10 +264,8 @@
 					tr.appendChild(document.createElement("td"));
 				}
 			}
-
 			tbody.appendChild(tr);
 		});
-
 		table.appendChild(tbody);
 	}
 
@@ -1031,7 +1021,7 @@
 		formRefSjwg.value.validate().then((values) => {
 			console.log('提交的内容：', values)
 			global.axios
-				.post('decoration/Store/webGetStoreMoneyLog', formSjwg, global)
+				.post('decoration/StoreMsg/addStoreMsg', formSjwg, global)
 				.then((res) => {
 					console.log('商家违规确定', res);
 					if (res.code == 1) {
@@ -1105,76 +1095,9 @@
 
 <template>
 	<!--搜索-->
-	<div>
-		<!-- <div>审核中状态</div> -->
-		<div v-if="is_ptsj == '商家'">
-			<div v-if="shType=='a'||shType=='c'">
-				<div style="display: flex;align-items: center;">
-					<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
-						style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
-						@click="closeChildPage()">&#xe6d2;
-					</a-button>
-					<div style="font-size: 18px;">
-						店铺信息
-					</div>
-				</div>
-				<div class="a1">
-					<div class="a2">
-						<ClockCircleFilled class="a3" />
-						<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
-						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span>
-						</div>
-					</div>
-					<div style="font-size: 12px;">
-						<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
-						<div class="a8">
-							<span>审核进度：</span>
-							<div v-if="shType=='a'" class="a9"></div>
-							<div v-if="shType=='c'" class="a10"></div>
-						</div>
-						<div class="a11">
-							<div>店铺信息：</div>
-							<div class="a12">
-								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺编号</span>
-									{{shopObj.id}}</span>
-								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
-									{{shopObj.store_name}}</span>
-								<span style="margin-left: 40px;">
-									<span style="margin-right: 30px;">店铺类型</span>
-									<span>个人店/个体工商户/个体工商户</span>
-								</span>
-							</div>
-						</div>
-					</div>
-					<div v-if="is_ptsj == '商家'">
-						<a-dropdown>
-							<a-button class="a13">
-								<span>更多</span>
-								<DownOutlined style="font-size: 10px;" />
-							</a-button>
-							<template #overlay>
-								<a-menu>
-									<a-menu-item>
-										<span @click="cancelRz()" class="a14">取消入驻</span>
-									</a-menu-item>
-									<a-menu-item v-if="shType=='c'">
-										<span @click="cxrz" class="a14">重新入驻</span>
-									</a-menu-item>
-								</a-menu>
-							</template>
-						</a-dropdown>
-
-					</div>
-				</div>
-				<div style="margin-top: 40px;">
-					<img class="a15"
-						src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025424/5njwtnlml419mj9la4lbvidvelv2fq85.png"
-						alt="">
-				</div>
-			</div>
-		</div>
-		<!-- <div>审核通过</div> -->
-		<div v-if="shType=='b'||is_ptsj == '平台'">
+	<div v-if="shopObj.open_h_store_account">
+		<!-- <div>通过且已开通汇付  平台</div> -->
+		<div v-if="(shType=='b'&&shopObj.open_h_store_account!='a')||is_ptsj == '平台'">
 			<!--搜索-->
 			<div style="padding: 20px;">
 				<div class="a16">
@@ -1190,26 +1113,7 @@
 						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22B" @click="handSjwg()">发布违规通知</div>
 					</div>
 				</div>
-				<!-- 商家违规弹窗 -->
-				<a-modal v-model:visible="sjwgVis" title="商家违规" @ok="handsjwgOk" @cancel="sjwgVis = false">
-					<div>
-						<a-form :model="formSjwg" ref="formRefSjwg" name="formRefSjwg" :label-col="{ span: 4 }"
-							:wrapper-col="{ span: 19 }">
-							<a-form-item label="标题" name="title" :rules="[{ required: true, message: '请输入标题' }]">
-								<a-input v-model:value="formSjwg.title" />
-							</a-form-item>
-							<a-form-item label="违规类型" name="type" :rules="[{ required: true, message: '请选择违规类型' }]">
-								<a-radio-group v-model:value="formSjwg.type" name="radioGroup">
-									<a-radio value="d">违规预警</a-radio>
-									<a-radio value="f">店铺违规</a-radio>
-								</a-radio-group>
-							</a-form-item>
-							<a-form-item label="违规详情" name="content" :rules="[{ required: true, message: '请输入违规详情' }]">
-								<RichTextContent ref="RichTextContentRef" />
-							</a-form-item>
-						</a-form>
-					</div>
-				</a-modal>
+
 				<!-- 店铺信息 -->
 				<div v-if="titleType=='店铺信息'" style="overflow: auto;height: 80vh;">
 					<div class="a23" style="margin-top: 10px;">店铺信息</div>
@@ -1220,8 +1124,7 @@
 									<div class="a26">
 										{{item.name}}:</div>
 									<div class="a28" v-if="item.key=='type'">
-										<!-- {{shopObj[item.key]=='a'?'本地商家':'网店商家'}} -->
-										<span>个人店/个体工商户/个体工商户</span>
+										{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}
 									</div>
 									<div class="a29" v-else>
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
@@ -1235,14 +1138,14 @@
 								<!-- <div class="a34">商家账户（汇付）:</div> -->
 								<div class="a34">店铺账户:</div>
 								<div v-if="is_ptsj == '平台'">
-									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'"
 										style="cursor: pointer;color: #ff0000;">暂未开通</div>
 									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
 										style="cursor: pointer;color: #0c96f1;">已开通</div>
 									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
 								</div>
 								<div v-else>
-									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'"
 										style="cursor: pointer;color: #0c96f1;">点击开通</div>
 									<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
 										style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
@@ -1258,7 +1161,6 @@
 									<div v-if="is_ptsj == '平台'">
 										<div class="a35"
 											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-											@click="bank_vis= true;bank_type='store'"
 											style="cursor: pointer;color: #ff0000;">暂未绑定
 										</div>
 										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
@@ -1280,269 +1182,18 @@
 									</div>
 								</div>
 							</div>
-
-							<div v-if="shopObj.type=='a'" class="a33">
-								<div class="a34">店铺主体:</div>
-								<div class="a35"><img :src="shopObj.logo" alt="" class="a36"></div>
-							</div>
 						</div>
 						<div style="text-align: center;" v-if="shopObj.logo">
 							<img :src="shopObj.logo" alt="" class="a36">
 							<div class="a37">店铺logo</div>
 						</div>
 					</div>
-					<!-- 开通个人汇付 -->
-					<a-modal v-model:visible="userhf_vis" title="开通个人汇付" @ok="handUserHfOk">
-						<div>
-							<a-form :model="formUserState" ref="formUserRef" name="basic" :label-col="{ span: 9 }"
-								:wrapper-col="{ span: 14 }">
-								<a-form-item label="姓名" name="name" :rules="[{ required: true, message: '请输入姓名' }]">
-									<a-input v-model:value="formUserState.name" />
-								</a-form-item>
-								<a-form-item label="电话" name="mobile" :rules="[{ required: true, message: '请输入电话' }]">
-									<a-input v-model:value="formUserState.mobile" />
-								</a-form-item>
-								<a-form-item label="身份证" name="cert_no"
-									:rules="[{ required: true, message: '请输入身份证' }]">
-									<a-input v-model:value="formUserState.cert_no" />
-								</a-form-item>
-								<a-form-item label="身份证有效期" name="cert_validity_type"
-									:rules="[{ required: true, message: '请输入身份证有效期' }]">
-									<a-radio-group v-model:value="formUserState.cert_validity_type" name="radioGroup">
-										<a-radio value="1">长期有效</a-radio>
-										<a-radio value="0">非长期有效</a-radio>
-									</a-radio-group>
-								</a-form-item>
-								<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
-									:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-									<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_begin_date"
-										style="width: 100%;" />
-								</a-form-item>
-								<a-form-item label="身份证有效期结束时间" name="cert_end_date">
-									<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_end_date"
-										style="width: 100%;" />
-								</a-form-item>
-							</a-form>
-						</div>
-					</a-modal>
-					<!-- 开通商家汇付 -->
-					<a-modal v-model:visible="hf_vis" title="开通商家汇付" width="1000px" @ok="handHfOk">
-						<div>
-							<a-form :model="formState" ref="formRef" name="basic" :label-col="{ span: 10 }"
-								:wrapper-col="{ span: 14 }">
-								<a-row>
-									<a-col :span="12">
-										<a-form-item label="企业名称" name="reg_name"
-											:rules="[{ required: true, message: '请输入企业名称' }]">
-											<a-input v-model:value="formState.reg_name" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="营业执照编号" name="license_code"
-											:rules="[{ required: true, message: '请输入营业执照编号' }]">
-											<a-input v-model:value="formState.license_code" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="营业执照有效期" name="license_validity_type"
-											:rules="[{ required: true, message: '请输入营业执照有效期' }]">
-											<a-radio-group v-model:value="formState.license_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
-											:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.license_begin_date" style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="营业执照有效期结束日期" name="license_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.license_end_date" style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="注册地址" name="regAddress"
-											:rules="[{ required: true, message: '请输入注册地址' }]">
-											<a-cascader v-model:value="formState.regAddress" :options="treeData"
-												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
-												placeholder="请输入注册地址" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="注册地址(详细信息)" name="reg_detail"
-											:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
-											<a-input v-model:value="formState.reg_detail" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="法人姓名" name="legal_name"
-											:rules="[{ required: true, message: '请输入法人姓名' }]">
-											<a-input v-model:value="formState.legal_name" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="法人身份证号码" name="legal_cert_np"
-											:rules="[{ required: true, message: '请输入法人身份证号码' }]">
-											<a-input v-model:value="formState.legal_cert_np" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
-											:rules="[{ required: true, message: '请输入身份证有效期' }]">
-											<a-radio-group v-model:value="formState.legal_cert_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
-											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.legal_cert_begin_date" style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="联系人姓名" name="contract_name"
-											:rules="[{ required: true, message: '请输入联系人姓名' }]">
-											<a-input v-model:value="formState.contract_name" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="联系人手机号" name="contract_mobile"
-											:rules="[{ required: true, message: '请输入联系人手机号' }]">
-											<a-input v-model:value="formState.contract_mobile" />
-										</a-form-item>
-									</a-col>
-								</a-row>
-							</a-form>
-						</div>
-					</a-modal>
-					<!-- 绑定商家银行卡 -->
-					<a-modal v-model:visible="bank_vis" :title="'绑定商家提现银行卡'"
-						width="1000px" @ok="handBankOk">
-						<div>
-							<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"
-								:wrapper-col="{ span: 14 }">
-								<a-row>
-									<a-col :span="12">
-										<a-form-item label="卡户名" name="card_name"
-											:rules="[{ required: true, message: '请输入卡户名' }]">
-											<a-input v-model:value="formStateBank.card_name" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item v-if="bank_type=='store'" label="商家对公卡号" name="card_no"
-											:rules="[{ required: true, message: '请输入商家对公卡号' }]">
-											<a-input v-model:value="formStateBank.card_no" />
-										</a-form-item>
-										<a-form-item v-else label="个人对私卡号" name="card_no"
-											:rules="[{ required: true, message: '请输入个人对私卡号' }]">
-											<a-input v-model:value="formStateBank.card_no" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="银行所在地址" name="regAddress"
-											:rules="[{ required: true, message: '请输入银行所在地址' }]">
-											<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
-												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
-												placeholder="请输入银行所在地址" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="银行号" name="bank_code"
-											:rules="[{ required: true, message: '请输入银行号' }]">
-											<a-select ref="select" v-model:value="formStateBank.bank_code"
-												style="width: 100%">
-												<a-select-option :value="item.value" v-for="item in bankCodes"
-													:key="item.value">{{item.text}}</a-select-option>
-											</a-select>
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="支行联行号" name="branch_code"
-											:rules="[{ required: true, message: '请输入支行联行号' }]">
-											<div style="display: flex;align-items: center;">
-												<a-input v-model:value="formStateBank.branch_code" />
-												<div @click="xzlhh()"
-													style="margin-left: 10px;color: #0c96f1;white-space: nowrap;cursor: pointer;">
-													查询</div>
-											</div>
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="持卡人身份证号码" name="cert_no"
-											:rules="[{ required: true, message: '请输入持卡人身份证号码' }]">
-											<a-input v-model:value="formStateBank.cert_no" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
-											:rules="[{ required: true, message: '请输入身份证有效期' }]">
-											<a-radio-group v-model:value="formStateBank.legal_cert_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
-											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formStateBank.legal_cert_begin_date"
-												style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-									<a-col :span="12">
-										<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formStateBank.legal_cert_end_date"
-												style="width: 100%;" />
-										</a-form-item>
-									</a-col>
-								</a-row>
-							</a-form>
-						</div>
-					</a-modal>
+
 					<div class="a38">认证商品类目</div>
 					<div style="margin-top: 10px;">
-						<div style="margin-bottom: 10px;cursor: pointer;">
+						<div v-if="is_ptsj!='平台'" style="margin-bottom: 10px;cursor: pointer;">
 							<a-button type="primary" @click="addFlbzj">添加分类</a-button>
 						</div>
-						<!-- 添加分类 -->
-						<a-modal v-model:visible="add_type_vis" title="添加分类" @ok="handTypeOk">
-							<div style="display: flex;">
-								<div style="display: flex;margin: 0 auto;">
-									<div style="margin-top: 5px;">商品分类：</div>
-									<div>
-										<a-tree-select @change="onChange" v-model:value="typeVal" show-search
-											style="width: 350px;"
-											:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-											placeholder="请输入关键词搜索分类" allow-clear tree-default-expand-all
-											:tree-data="dataType" tree-node-filter-prop="label">
-											<template #title="{ value: val, label }">
-												<b v-if="val === 'parent 1-1'" style="color: #08c">sss</b>
-												<template v-else>{{ label }}</template>
-											</template>
-										</a-tree-select>
-									</div>
-								</div>
-							</div>
-						</a-modal>
 						<div>
 							<table class="table" border="1">
 								<thead>
@@ -1668,7 +1319,7 @@
 										<div>曝光量余额</div>
 										<div style="display: flex;align-items: center;">
 											<div class="a47">{{Number(shopObj.power).toLocaleString()}}</div>
-											<a-button @click.stop="titleType='资金日志'"
+											<a-button v-if="is_ptsj!='平台'" @click.stop="titleType='资金日志'"
 												style="margin-left: 10px;">去充值</a-button>
 										</div>
 									</div>
@@ -1720,20 +1371,7 @@
 								</div>
 								<a-empty v-if="sptlphlist.length==0" style="margin-top: 20%;" />
 							</div>
-							<!-- 投流商品弹窗，商品销量弹窗 -->
-							<a-modal v-model:visible="lookAll" :title="allTitle" :footer="null"
-								:width="allTitle=='商品销量排行'?'600px':'800px'">
-								<div>
-									<a-table :columns="allTitle=='商品销量排行'?columns_spxl_all:columns_tlsp_all"
-										:data-source="allList">
-										<template #bodyCell="{ column, record }">
-											<template v-if="column.key === 'name'">
-												<span>{{ record.name }}</span>
-											</template>
-										</template>
-									</a-table>
-								</div>
-							</a-modal>
+
 						</div>
 					</div>
 				</div>
@@ -1775,41 +1413,12 @@
 								</div>
 								<div style="display: flex;">
 									<div>{{shopObj.power}}</div>
-									<div @click="czvisopen(1)"
+									<div v-if="is_ptsj!='平台'" @click="czvisopen(1)"
 										style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
 								</div>
 							</div>
 						</div>
-						<!-- 充值 -->
-						<a-modal v-model:visible="bgl_vis"
-							:title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'" @ok="bglOk"
-							@cancel="handCancel">
-							<div>
-								<div style="display: flex;">
-									<div style="display: flex;margin: 0 auto;">
-										<div style="margin-top: 5px;">充值金额：</div>
-										<div>
-											<a-input prefix="￥" suffix="RMB" v-model:value="czje"
-												style="width: 300px;" />
-											<!-- 曝光量 -->
-											<div v-if="allcz_type==1">
-												<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量
-												</div>
-												<div style="color: #ff0000;" v-else>
-													{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div style="display: flex;margin-top: 10px;">
-									<div v-if="allcz_type==3" style="display: flex;margin: 0 auto;">
-										<div style="margin-top: 5px;">提现密码：</div>
-										<a-input v-model:value="txpassword" style="width: 300px;" />
-									</div>
-								</div>
-							</div>
-						</a-modal>
+
 						<div style="display: flex;align-items: center;">
 							<div v-if="is_ptsj=='平台'" style="margin: 0 auto;">
 								<div class="a68">
@@ -1958,6 +1567,373 @@
 				</div>
 			</div>
 		</div>
+		<!-- 拒绝 审核中 未开通汇付 -->
+		<div v-else>
+			<div>
+				<div style="display: flex;align-items: center;">
+					<a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
+						style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+						@click="closeChildPage()">&#xe6d2;
+					</a-button>
+					<div style="font-size: 18px;">
+						店铺信息
+					</div>
+				</div>
+				<div class="a1">
+					<div class="a2">
+						<ClockCircleFilled class="a3" />
+						<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
+						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span>
+						</div>
+					</div>
+					<div style="font-size: 12px;">
+						<div style="margin-top: 15px;">提交时间：{{shopObj.create_time}}</div>
+						<div class="a8">
+							<span>审核进度：</span>
+							<div v-if="shType=='a'" class="a9"></div>
+							<div v-if="shType=='c'" class="a10"></div>
+						</div>
+						<div class="a11">
+							<div>店铺信息：</div>
+							<div class="a12">
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺编号</span>
+									{{shopObj.id}}</span>
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
+									{{shopObj.store_name}}</span>
+								<span style="margin-left: 40px;">
+									<span style="margin-right: 30px;">店铺类型</span>
+									<span>{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}</span>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div v-if="is_ptsj != '平台'">
+						<a-dropdown>
+							<a-button class="a13">
+								<span>更多</span>
+								<DownOutlined style="font-size: 10px;" />
+							</a-button>
+							<template #overlay>
+								<a-menu>
+									<a-menu-item v-if="shType=='a'">
+										<span @click="cancelRz()" class="a14">取消入驻</span>
+									</a-menu-item>
+									<a-menu-item v-if="shType=='c'">
+										<span @click="cxrz" class="a14">重新入驻</span>
+									</a-menu-item>
+									<a-menu-item v-if="shopObj.open_h_store_account=='a'">
+										<span @click="userhf_vis= true" class="a14">开通个人汇付</span>
+									</a-menu-item>
+									<a-menu-item v-if="shopObj.open_h_store_account=='a'">
+										<span @click="hf_vis= true" class="a14">开通商家汇付</span>
+									</a-menu-item>
+								</a-menu>
+							</template>
+						</a-dropdown>
+					</div>
+				</div>
+				<div style="margin-top: 40px;">
+					<img class="a15"
+						src="https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/goods/2025424/5njwtnlml419mj9la4lbvidvelv2fq85.png"
+						alt="">
+				</div>
+			</div>
+		</div>
+
+		<!-- 充值 -->
+		<a-modal v-model:visible="bgl_vis" :title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'"
+			@ok="bglOk" @cancel="handCancel">
+			<div>
+				<div style="display: flex;">
+					<div style="display: flex;margin: 0 auto;">
+						<div style="margin-top: 5px;">充值金额：</div>
+						<div>
+							<a-input prefix="￥" suffix="RMB" v-model:value="czje" style="width: 300px;" />
+							<!-- 曝光量 -->
+							<div v-if="allcz_type==1">
+								<div style="color: #ff0000;" v-if="!czje">1RMB={{jbpz.charge_power}}曝光量
+								</div>
+								<div style="color: #ff0000;" v-else>
+									{{czje}}RMB={{czje*jbpz.charge_power}}曝光量
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="display: flex;margin-top: 10px;">
+					<div v-if="allcz_type==3" style="display: flex;margin: 0 auto;">
+						<div style="margin-top: 5px;">提现密码：</div>
+						<a-input v-model:value="txpassword" style="width: 300px;" />
+					</div>
+				</div>
+			</div>
+		</a-modal>
+		<!-- 添加分类 -->
+		<a-modal v-model:visible="add_type_vis" title="添加分类" @ok="handTypeOk">
+			<div style="display: flex;">
+				<div style="display: flex;margin: 0 auto;">
+					<div style="margin-top: 5px;">商品分类：</div>
+					<div>
+						<a-tree-select @change="onChange" v-model:value="typeVal" show-search style="width: 350px;"
+							:dropdown-style="{ maxHeight: '400px', overflow: 'auto' }" placeholder="请输入关键词搜索分类"
+							allow-clear tree-default-expand-all :tree-data="dataType" tree-node-filter-prop="label">
+							<template #title="{ value: val, label }">
+								<b v-if="val === 'parent 1-1'" style="color: #08c">sss</b>
+								<template v-else>{{ label }}</template>
+							</template>
+						</a-tree-select>
+					</div>
+				</div>
+			</div>
+		</a-modal>
+		<!-- 商家违规弹窗 -->
+		<a-modal v-model:visible="sjwgVis" title="商家违规" @ok="handsjwgOk" @cancel="sjwgVis = false">
+			<div>
+				<a-form :model="formSjwg" ref="formRefSjwg" name="formRefSjwg" :label-col="{ span: 4 }"
+					:wrapper-col="{ span: 19 }">
+					<a-form-item label="标题" name="title" :rules="[{ required: true, message: '请输入标题' }]">
+						<a-input v-model:value="formSjwg.title" />
+					</a-form-item>
+					<a-form-item label="违规类型" name="type" :rules="[{ required: true, message: '请选择违规类型' }]">
+						<a-radio-group v-model:value="formSjwg.type" name="radioGroup">
+							<a-radio value="d">违规预警</a-radio>
+							<a-radio value="f">店铺违规</a-radio>
+						</a-radio-group>
+					</a-form-item>
+					<a-form-item label="违规详情" name="content" :rules="[{ required: true, message: '请输入违规详情' }]">
+						<RichTextContent ref="RichTextContentRef" />
+					</a-form-item>
+				</a-form>
+			</div>
+		</a-modal>
+		<!-- 开通个人汇付 -->
+		<a-modal v-model:visible="userhf_vis" title="开通个人汇付" @ok="handUserHfOk">
+			<div>
+				<a-form :model="formUserState" ref="formUserRef" name="basic" :label-col="{ span: 9 }"
+					:wrapper-col="{ span: 14 }">
+					<a-form-item label="姓名" name="name" :rules="[{ required: true, message: '请输入姓名' }]">
+						<a-input v-model:value="formUserState.name" />
+					</a-form-item>
+					<a-form-item label="电话" name="mobile" :rules="[{ required: true, message: '请输入电话' }]">
+						<a-input v-model:value="formUserState.mobile" />
+					</a-form-item>
+					<a-form-item label="身份证" name="cert_no" :rules="[{ required: true, message: '请输入身份证' }]">
+						<a-input v-model:value="formUserState.cert_no" />
+					</a-form-item>
+					<a-form-item label="身份证有效期" name="cert_validity_type"
+						:rules="[{ required: true, message: '请输入身份证有效期' }]">
+						<a-radio-group v-model:value="formUserState.cert_validity_type" name="radioGroup">
+							<a-radio value="1">长期有效</a-radio>
+							<a-radio value="0">非长期有效</a-radio>
+						</a-radio-group>
+					</a-form-item>
+					<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
+						:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+						<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_begin_date"
+							style="width: 100%;" />
+					</a-form-item>
+					<a-form-item label="身份证有效期结束时间" name="cert_end_date">
+						<a-date-picker :format="dateFormat" v-model:value="formUserState.cert_end_date"
+							style="width: 100%;" />
+					</a-form-item>
+				</a-form>
+			</div>
+		</a-modal>
+		<!-- 开通商家汇付 -->
+		<a-modal v-model:visible="hf_vis" title="开通商家汇付" width="1000px" @ok="handHfOk">
+			<div>
+				<a-form :model="formState" ref="formRef" name="basic" :label-col="{ span: 10 }"
+					:wrapper-col="{ span: 14 }">
+					<a-row>
+						<a-col :span="12">
+							<a-form-item label="企业名称" name="reg_name" :rules="[{ required: true, message: '请输入企业名称' }]">
+								<a-input v-model:value="formState.reg_name" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="营业执照编号" name="license_code"
+								:rules="[{ required: true, message: '请输入营业执照编号' }]">
+								<a-input v-model:value="formState.license_code" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="营业执照有效期" name="license_validity_type"
+								:rules="[{ required: true, message: '请输入营业执照有效期' }]">
+								<a-radio-group v-model:value="formState.license_validity_type" name="radioGroup">
+									<a-radio value="1">长期有效</a-radio>
+									<a-radio value="0">非长期有效</a-radio>
+								</a-radio-group>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
+								:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
+								<a-date-picker :format="dateFormat" v-model:value="formState.license_begin_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="营业执照有效期结束日期" name="license_end_date">
+								<a-date-picker :format="dateFormat" v-model:value="formState.license_end_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="注册地址" name="regAddress"
+								:rules="[{ required: true, message: '请输入注册地址' }]">
+								<a-cascader v-model:value="formState.regAddress" :options="treeData"
+									:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+									placeholder="请输入注册地址" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="注册地址(详细信息)" name="reg_detail"
+								:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
+								<a-input v-model:value="formState.reg_detail" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="法人姓名" name="legal_name"
+								:rules="[{ required: true, message: '请输入法人姓名' }]">
+								<a-input v-model:value="formState.legal_name" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="法人身份证号码" name="legal_cert_np"
+								:rules="[{ required: true, message: '请输入法人身份证号码' }]">
+								<a-input v-model:value="formState.legal_cert_np" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+								:rules="[{ required: true, message: '请输入身份证有效期' }]">
+								<a-radio-group v-model:value="formState.legal_cert_validity_type" name="radioGroup">
+									<a-radio value="1">长期有效</a-radio>
+									<a-radio value="0">非长期有效</a-radio>
+								</a-radio-group>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+								:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+								<a-date-picker :format="dateFormat" v-model:value="formState.legal_cert_begin_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+								<a-date-picker :format="dateFormat" v-model:value="formState.legal_cert_end_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="联系人姓名" name="contract_name"
+								:rules="[{ required: true, message: '请输入联系人姓名' }]">
+								<a-input v-model:value="formState.contract_name" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="联系人手机号" name="contract_mobile"
+								:rules="[{ required: true, message: '请输入联系人手机号' }]">
+								<a-input v-model:value="formState.contract_mobile" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-form>
+			</div>
+		</a-modal>
+		<!-- 绑定商家银行卡 -->
+		<a-modal v-model:visible="bank_vis" :title="'绑定商家提现银行卡'" width="1000px" @ok="handBankOk">
+			<div>
+				<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"
+					:wrapper-col="{ span: 14 }">
+					<a-row>
+						<a-col :span="12">
+							<a-form-item label="卡户名" name="card_name" :rules="[{ required: true, message: '请输入卡户名' }]">
+								<a-input v-model:value="formStateBank.card_name" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item v-if="bank_type=='store'" label="商家对公卡号" name="card_no"
+								:rules="[{ required: true, message: '请输入商家对公卡号' }]">
+								<a-input v-model:value="formStateBank.card_no" />
+							</a-form-item>
+							<a-form-item v-else label="个人对私卡号" name="card_no"
+								:rules="[{ required: true, message: '请输入个人对私卡号' }]">
+								<a-input v-model:value="formStateBank.card_no" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="银行所在地址" name="regAddress"
+								:rules="[{ required: true, message: '请输入银行所在地址' }]">
+								<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
+									:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+									placeholder="请输入银行所在地址" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="银行号" name="bank_code" :rules="[{ required: true, message: '请输入银行号' }]">
+								<a-select ref="select" v-model:value="formStateBank.bank_code" style="width: 100%">
+									<a-select-option :value="item.value" v-for="item in bankCodes"
+										:key="item.value">{{item.text}}</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="支行联行号" name="branch_code"
+								:rules="[{ required: true, message: '请输入支行联行号' }]">
+								<div style="display: flex;align-items: center;">
+									<a-input v-model:value="formStateBank.branch_code" />
+									<div @click="xzlhh()"
+										style="margin-left: 10px;color: #0c96f1;white-space: nowrap;cursor: pointer;">
+										查询</div>
+								</div>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="持卡人身份证号码" name="cert_no"
+								:rules="[{ required: true, message: '请输入持卡人身份证号码' }]">
+								<a-input v-model:value="formStateBank.cert_no" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+								:rules="[{ required: true, message: '请输入身份证有效期' }]">
+								<a-radio-group v-model:value="formStateBank.legal_cert_validity_type" name="radioGroup">
+									<a-radio value="1">长期有效</a-radio>
+									<a-radio value="0">非长期有效</a-radio>
+								</a-radio-group>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+								:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+								<a-date-picker :format="dateFormat" v-model:value="formStateBank.legal_cert_begin_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="身份证有效期结束时间" name="legal_cert_end_date">
+								<a-date-picker :format="dateFormat" v-model:value="formStateBank.legal_cert_end_date"
+									style="width: 100%;" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-form>
+			</div>
+		</a-modal>
+		<!-- 投流商品弹窗，商品销量弹窗 -->
+		<a-modal v-model:visible="lookAll" :title="allTitle" :footer="null" :width="allTitle=='商品销量排行'?'600px':'800px'">
+			<div>
+				<a-table :columns="allTitle=='商品销量排行'?columns_spxl_all:columns_tlsp_all" :data-source="allList">
+					<template #bodyCell="{ column, record }">
+						<template v-if="column.key === 'name'">
+							<span>{{ record.name }}</span>
+						</template>
+					</template>
+				</a-table>
+			</div>
+		</a-modal>
 		<!-- 支付弹框 -->
 		<a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" ok-text="已支付"
 			cancel-text="放弃" :maskClosable="false">
