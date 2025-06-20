@@ -158,7 +158,7 @@
 		global.axios
 			.post('decoration/GoodsType/getGoodsTypeList', {
 				store_id: localStorage.getItem("storeId"),
-				handle_type:'add'
+				handle_type: 'add'
 			}, global)
 			.then((res) => {
 				console.log('商品分类列表', res.list);
@@ -1233,99 +1233,55 @@
 								<div class="a35">{{shopObj.address}}</div>
 							</div>
 							<!-- a本地商家 b网店商家 c个体工商户  d企业店  网店商家无营业执照,需要个人汇付-->
-							<!-- 个人汇付,银行卡 -->
-							<template v-if="shopObj.type=='b'">
-								<div class="a33">
-									<!-- <div class="a34">个人账户（汇付）:</div> -->
-									<div class="a34">店铺账户:</div>
-									<div class="a35" @click="userhf_vis= true" style="cursor: pointer;color: #0c96f1;">
-										点击开通
-									</div>
-									<div @click="bank_vis= true;bank_type='user'">绑定银行卡</div>
-									<div> 缺少个人汇付字段</div>
+							<div class="a33">
+								<!-- <div class="a34">商家账户（汇付）:</div> -->
+								<div class="a34">店铺账户:</div>
+								<div v-if="is_ptsj == '平台'">
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+										style="cursor: pointer;color: #ff0000;">暂未开通</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+										style="cursor: pointer;color: #0c96f1;">已开通</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
 								</div>
-								<!-- 开通了个人汇付才能绑定银行卡 -->
-								<div v-if="shopObj.open_h_user_account">
-									<div class="a33" v-if="shopObj.open_h_user_account!='a'">
-										<div class="a34">商家提现银行卡:</div>
-										<div v-if="is_ptsj == '平台'">
-											<div class="a35"
-												v-if="shopObj.open_h_user_account=='b'||shopObj.open_h_user_account=='a'"
-												@click="bank_vis= true;bank_type='user'"
-												style="cursor: pointer;color: #ff0000;">暂未绑定
-											</div>
-											<div class="a35" v-else-if="shopObj.open_h_user_account=='c'"
-												style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
-											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-												银行卡审核中</div>
-										</div>
-										<div v-else>
-											<div class="a35"
-												v-if="shopObj.open_h_user_account=='b'||shopObj.open_h_user_account=='a'"
-												@click="bank_vis= true;bank_type='user'"
-												style="cursor: pointer;color: #0c96f1;">点击绑定
-											</div>
-											<div @click="bank_vis= true;bank_type='user'" class="a35"
-												v-else-if="shopObj.open_h_user_account=='c'"
-												style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
-											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-												审核中</div>
-										</div>
-									</div>
+								<div v-else>
+									<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
+										style="cursor: pointer;color: #0c96f1;">点击开通</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
+										style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
+									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
+										style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">银行卡审核中</div>
 								</div>
-							</template>
-							<!-- 商家汇付,银行卡 -->
-							<template v-else>
-								<div class="a33">
-									<!-- <div class="a34">商家账户（汇付）:</div> -->
-									<div class="a34">店铺账户:</div>
+							</div>
+							<!-- 开通了商家汇付才允许绑定提现银行卡 -->
+							<div v-if="shopObj.open_h_store_account">
+								<div class="a33" v-if="shopObj.open_h_store_account!='a'">
+									<div class="a34">商家提现银行卡:</div>
 									<div v-if="is_ptsj == '平台'">
-										<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
-											style="cursor: pointer;color: #ff0000;">暂未开通</div>
-										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-											style="cursor: pointer;color: #0c96f1;">已开通</div>
-										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
-									</div>
-									<div v-else>
-										<div class="a35" v-if="shopObj.open_h_store_account=='a'" @click="hf_vis= true"
-											style="cursor: pointer;color: #0c96f1;">点击开通</div>
-										<div class="a35" v-else-if="shopObj.open_h_store_account=='b'"
-											style="cursor: pointer;color: #0c96f1;">已开通,未绑提现卡</div>
+										<div class="a35"
+											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+											@click="bank_vis= true;bank_type='store'"
+											style="cursor: pointer;color: #ff0000;">暂未绑定
+										</div>
 										<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
 											style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
-										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">银行卡审核中</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+											银行卡审核中</div>
+									</div>
+									<div v-else>
+										<div class="a35"
+											v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
+											@click="bank_vis= true;bank_type='store'"
+											style="cursor: pointer;color: #0c96f1;">点击绑定
+										</div>
+										<div @click="bank_vis= true;bank_type='store'" class="a35"
+											v-else-if="shopObj.open_h_store_account=='c'"
+											style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
+										<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
+											审核中</div>
 									</div>
 								</div>
-								<!-- 开通了商家汇付才允许绑定提现银行卡 -->
-								<div v-if="shopObj.open_h_store_account">
-									<div class="a33" v-if="shopObj.open_h_store_account!='a'">
-										<div class="a34">商家提现银行卡:</div>
-										<div v-if="is_ptsj == '平台'">
-											<div class="a35"
-												v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-												@click="bank_vis= true;bank_type='store'"
-												style="cursor: pointer;color: #ff0000;">暂未绑定
-											</div>
-											<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-												style="cursor: pointer;color: #0c96f1;">已开通,已绑提现卡</div>
-											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-												银行卡审核中</div>
-										</div>
-										<div v-else>
-											<div class="a35"
-												v-if="shopObj.open_h_store_account=='b'||shopObj.open_h_store_account=='a'"
-												@click="bank_vis= true;bank_type='store'"
-												style="cursor: pointer;color: #0c96f1;">点击绑定
-											</div>
-											<div @click="bank_vis= true;bank_type='store'" class="a35"
-												v-else-if="shopObj.open_h_store_account=='c'"
-												style="cursor: pointer;color: #0c96f1;">已绑定,点击换绑</div>
-											<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">
-												审核中</div>
-										</div>
-									</div>
-								</div>
-							</template>
+							</div>
 
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺主体:</div>
@@ -1478,7 +1434,7 @@
 						</div>
 					</a-modal>
 					<!-- 绑定商家银行卡 -->
-					<a-modal v-model:visible="bank_vis" :title="bank_type=='store'?'绑定商家提现银行卡(商家汇付)':'绑定商家提现银行卡(个人汇付)'"
+					<a-modal v-model:visible="bank_vis" :title="'绑定商家提现银行卡'"
 						width="1000px" @ok="handBankOk">
 						<div>
 							<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"

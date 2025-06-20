@@ -416,7 +416,8 @@
             } else {
               // console.log('iss', iss);
               // deleteChildrenPage(iss.page_key);
-              if (strTwo == '商家资料' || strTwo == '订单管理') {
+              // if (strTwo == '商家资料' || strTwo == '订单管理') {
+              if (strTwo == '订单管理') {
                 if (localStorage.getItem('indexGoShop')) {
                   // 首页点击商家管理，不操作，保留记录
                 } else {
@@ -436,7 +437,7 @@
 
   // 前往店铺详情
   function toShopDetails() {
-    djtzmk('商家信息','商家资料')
+    djtzmk('商家信息', '商家资料')
   }
   // 前往订单详情
   function orderLook(item) {
@@ -610,7 +611,7 @@
   }
 
   // 修改商家信息
-  function editStoreInfo(){
+  function editStoreInfo() {
     console.log('修改商家信息');
     let page = {
       value: "editInfoStore",
@@ -712,7 +713,7 @@
           <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
-            <span>学习中心</span>
+            <span>学习中心{{login_store_id}}</span>
           </div>
         </div>
         <div class="admin-msg">
@@ -723,7 +724,7 @@
             </a>
             <template #overlay>
               <a-menu>
-                <template v-if="login_store_id!==1">
+                <template v-if="login_store_id!=1">
                   <a-menu-item @click="editStoreInfo">
                     <span>修改商家信息</span>
                   </a-menu-item>
