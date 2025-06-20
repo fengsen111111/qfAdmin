@@ -49,6 +49,7 @@
 				store_name.value = res.store_name
 				logo.value = res.logo
 				type.value = res.type
+				store_type.value = res.store_type
 				id_card_images.value = res.id_card_images ? res.id_card_images : []
 				license_image.value = res.license_image
 				id_card_number.value = res.id_card_number
@@ -247,10 +248,10 @@
 
 	const value1 = ref()
 	function handUrl(url) {
-		if(url == '/login'){
+		if (url == '/login') {
 			localStorage.removeItem('Authorization')
 			global.router.push(url)
-		}else{
+		} else {
 			global.router.push(url)
 		}
 	}
@@ -267,8 +268,13 @@
 	// 提交入驻申请
 	function _submitEntryApply() {
 		if (localStorage.getItem('Authorization')) {
-			// 已开通商家，汇付提交失败，重新提交汇付
-			kaitonghuifu()
+			// true 商家已开通，汇付已开通  ，被拒绝的商户
+			if(is_open_h_store_account){
+				kaitongshangjia() //重新入驻
+			}else{
+				// 已提交商家，汇付提交失败，重新提交汇付
+		    	kaitonghuifu()
+			}
 		} else {
 			// 开通商家
 			kaitongshangjia()
@@ -304,7 +310,7 @@
 			return false
 		}
 		// 本地商家需要营业执照
-		if (type.value == 'c' || type.value == 'd') {
+		if (store_type.value == 'b' || store_type.value == 'c') {
 			if (!license_image.value) {
 				message.error('请上传营业执照')
 				return false
@@ -354,6 +360,7 @@
 				"id": id.value,
 				"user_id": '',
 				"type": type.value,
+				"store_type": store_type.value,
 				"name": name.value,
 				"mobile": mobile.value,
 				"id_card_number": id_card_number.value,
@@ -376,7 +383,11 @@
 					.then(res => {
 						console.log('登陆成功');
 						localStorage.setItem('Authorization', res.token);
-						kaitonghuifu()
+						if(is_open_h_store_account){
+							resule_vis.value = true //提示信息
+						}else{
+							kaitonghuifu()
+						}
 					})
 			})
 	}
@@ -455,11 +466,15 @@
 			})
 	}
 
-	const shopRzType = ref('a')//商户类型 a个人店 c个体工商户  d企业店
+	const store_type = ref('a')//商户类型 a个人店 c个体工商户  d企业店
 	const buzhou_type = ref(1)//1选择类型 2填写信息
 
+
+	const is_open_h_store_account = ref(false)//是否已开通汇付
+
 	if (route.query.type) {
-		shopRzType.value = route.query.type
+		type.value = route.query.type
+		is_open_h_store_account.value = route.query.open_h_store_account == 'a' ? false : true
 		buzhou_type.value = 2
 	}
 
@@ -470,7 +485,6 @@
 			return false
 		}
 		// 切换店铺信息页面
-		type.value = shopRzType.value
 		buzhou_type.value = 2
 	}
 
@@ -680,10 +694,10 @@
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 									<span style="font-size: 12px;">（适合无营业执照的商家）</span>
 								</div>
-								<div @click="()=>{shopRzType='a',huifu_Type='user'}"
-									:style="{ 'border': shopRzType=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								<div @click="()=>{store_type='a',huifu_Type='user'}"
+									:style="{ 'border': store_type=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
-									<a-radio :checked="true" v-if="shopRzType=='a'"></a-radio>
+									<a-radio :checked="true" v-if="store_type=='a'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>个人店</div>
@@ -691,10 +705,10 @@
 									</div>
 								</div>
 
-								<div @click="()=>{shopRzType='c',huifu_Type='store'}"
-									:style="{ 'border': shopRzType=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								<div @click="()=>{store_type='c',huifu_Type='store'}"
+									:style="{ 'border': store_type=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
-									<a-radio :checked="true" v-if="shopRzType=='c'"></a-radio>
+									<a-radio :checked="true" v-if="store_type=='c'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>个体工商户</div>
@@ -705,10 +719,10 @@
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">企业店</span>
 									<span style="font-size: 12px;">（适合企业入驻，可以提交企业工商户营业执照）</span>
 								</div>
-								<div @click="()=>{shopRzType='d',huifu_Type='store'}"
-									:style="{ 'border': shopRzType=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
+								<div @click="()=>{store_type='d',huifu_Type='store'}"
+									:style="{ 'border': store_type=='d' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
-									<a-radio :checked="true" v-if="shopRzType=='d'"></a-radio>
+									<a-radio :checked="true" v-if="store_type=='d'"></a-radio>
 									<a-radio :checked="false" v-else></a-radio>
 									<div style="margin-left: 10px;">
 										<div>企业店</div>
@@ -723,7 +737,7 @@
 									<span style="font-size: 12px;">（若您拥有对公账户，请开通商家汇付，若您没有对公账户，请开通个人汇付）</span>
 								</div>
 								<span style="font-size: 12px;color: #ff0000;">注意：开通的汇付影响到您以后的提现相关，请谨慎选择！</span>
-								<div v-if="shopRzType=='c'||shopRzType=='d'" @click="()=>{huifu_Type='store'}"
+								<div v-if="store_type=='c'||store_type=='d'" @click="()=>{huifu_Type='store'}"
 									:style="{ 'border': huifu_Type=='store' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="huifu_Type=='store'"></a-radio>
@@ -733,7 +747,7 @@
 										<div>有营业执照和对公账户，请开通商家汇付</div>
 									</div>
 								</div>
-								<div v-if="shopRzType=='a'||shopRzType=='b'||shopRzType=='c'||shopRzType=='d'"
+								<div v-if="store_type=='a'||store_type=='b'||store_type=='c'||store_type=='d'"
 									@click="()=>{huifu_Type='user'}"
 									:style="{ 'border': huifu_Type=='user' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
@@ -820,8 +834,8 @@
 									</div>
 									<div style="margin-left: 10px;">
 										<a-radio-group v-model:value="type" name="radioGroup">
-											<a-radio value="a" >本地商家</a-radio>
-											<a-radio value="b" >网店商家</a-radio>
+											<a-radio value="a">本地商家</a-radio>
+											<a-radio value="b">网店商家</a-radio>
 										</a-radio-group>
 									</div>
 									<a-popover v-if="type=='a'" title="规范" placement="rightTop">
@@ -923,7 +937,8 @@
 													</div>
 												</a-upload>
 											</div>
-											<div v-if="type=='c'||type=='d'" style="display: flex;margin-left: 20px;">
+											<div v-if="store_type=='b'||store_type=='c'"
+												style="display: flex;margin-left: 20px;">
 												<div style="display: flex;white-space:nowrap;">
 													<span style="color: red;">*</span>
 													<span>营业执照</span>
@@ -1111,153 +1126,153 @@
 											style="margin-left: 10px;width: 300px;" />
 									</div>
 								</a-popover>
-								<!--  -->
-								<div style="display: flex;align-items: end;">
-									<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
-										<!-- {{huifu_Type}}//store商家 user用户  汇付类型 -->
-										<!-- {{huifu_Type=='store'?'商家汇付':'个人汇付'}}开通 -->
-										货款账户开通
+
+								<div v-if="!is_open_h_store_account">
+									<!--  -->
+									<div style="display: flex;align-items: end;">
+										<div style="border-left: 2px solid #1890FF;padding-left: 10px;font-size: 16px;">
+											货款账户开通
+										</div>
+										<div style="font-size: 12px;color: red;margin-left: 5px">
+											注意：资料将用于“汇付支付”账户开户使用，便于使用完整功能</div>
 									</div>
-									<div style="font-size: 12px;color: red;margin-left: 5px">
-										注意：资料将用于“汇付支付”账户开户使用，便于使用完整功能</div>
-								</div>
-								<!-- 商家汇付 -->
-								<div v-if="huifu_Type=='store'">
-									<a-form :model="formState" ref="formRef" name="basic" :colon="false"
-										style="margin-left: -10px;" :label-col="{ span: 6 }"
-										:wrapper-col="{ span: 14 }">
-
-										<a-form-item label="企业名称" name="reg_name"
-											:rules="[{ required: true, message: '请输入企业名称' }]">
-											<a-input v-model:value="formState.reg_name" placeholder="请输入企业名称" />
-										</a-form-item>
-
-										<a-form-item label="营业执照编号" name="license_code"
-											:rules="[{ required: true, message: '请输入营业执照编号' }]">
-											<a-input v-model:value="formState.license_code" placeholder="请输入营业执照编号" />
-										</a-form-item>
-
-										<a-form-item label="营业执照有效期" name="license_validity_type"
-											:rules="[{ required: true, message: '请输入营业执照有效期' }]">
-											<a-radio-group v-model:value="formState.license_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-
-										<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
-											:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.license_begin_date" style="width: 100%;" />
-										</a-form-item>
-
-										<a-form-item v-if="formState.license_validity_type==1" label="营业执照有效期结束日期"
-											name="license_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.license_end_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item v-else label="营业执照有效期结束日期" name="license_end_date"
-											:rules="[{ required: true, message: '请输入营业执照有效期结束日期' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.license_end_date" style="width: 100%;" />
-										</a-form-item>
-
-										<a-form-item label="注册地址" name="regAddress"
-											:rules="[{ required: true, message: '请输入注册地址' }]">
-											<a-cascader v-model:value="formState.regAddress" :options="treeData"
-												:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
-												placeholder="请输入注册地址" />
-										</a-form-item>
-
-										<a-form-item label="注册地址(详细信息)" name="reg_detail"
-											:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
-											<a-input v-model:value="formState.reg_detail" placeholder="请输入注册地址(详细信息)" />
-										</a-form-item>
-
-										<a-form-item label="法人姓名" name="legal_name"
-											:rules="[{ required: true, message: '请输入法人姓名' }]">
-											<a-input v-model:value="formState.legal_name" placeholder="请输入法人姓名" />
-										</a-form-item>
-
-										<a-form-item label="法人身份证号码" name="legal_cert_np"
-											:rules="[{ required: true, message: '请输入法人身份证号码' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
-											<a-input v-model:value="formState.legal_cert_np" placeholder="请输入法人身份证号码" />
-										</a-form-item>
-										<a-form-item label="身份证有效期" name="legal_cert_validity_type"
-											:rules="[{ required: true, message: '请输入身份证有效期' }]">
-											<a-radio-group v-model:value="formState.legal_cert_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-										<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
-											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.legal_cert_begin_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item v-if="formState.legal_cert_validity_type==1" label="身份证有效期结束时间"
-											name="legal_cert_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item v-else label="身份证有效期结束时间" name="legal_cert_end_date"
-											:rules="[{ required: true, message: '请输入身份证身份证有效期结束时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formState.legal_cert_end_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item label="联系人姓名" name="contract_name"
-											:rules="[{ required: true, message: '请输入联系人姓名' }]">
-											<a-input v-model:value="formState.contract_name" placeholder="请输入联系人姓名" />
-										</a-form-item>
-										<a-form-item label="联系人手机号" name="contract_mobile"
-											:rules="[{ required: true, message: '请输入联系人手机号' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
-											<a-input v-model:value="formState.contract_mobile"
-												placeholder="请输入联系人手机号" />
-										</a-form-item>
-									</a-form>
-								</div>
-								<div v-else="huifu_Type=='user'">
-									<a-form :colon="false" :model="formUserState" ref="formUserRef" name="basic"
-										style="margin-left: -10px;" :label-col="{ span: 6 }"
-										:wrapper-col="{ span: 14 }">
-										<a-form-item label="姓名" name="name"
-											:rules="[{ required: true, message: '请输入姓名' }]">
-											<a-input v-model:value="formUserState.name" placeholder="请输入姓名" />
-										</a-form-item>
-										<a-form-item label="电话" name="mobile"
-											:rules="[{ required: true, message: '请输入电话' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
-											<a-input v-model:value="formUserState.mobile" placeholder="请输入电话" />
-										</a-form-item>
-										<a-form-item label="身份证" name="cert_no"
-											:rules="[{ required: true, message: '请输入身份证' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
-											<a-input v-model:value="formUserState.cert_no" placeholder="请输入身份证" />
-										</a-form-item>
-										<a-form-item label="身份证有效期" name="cert_validity_type"
-											:rules="[{ required: true, message: '请输入身份证有效期' }]">
-											<a-radio-group v-model:value="formUserState.cert_validity_type"
-												name="radioGroup">
-												<a-radio value="1">长期有效</a-radio>
-												<a-radio value="0">非长期有效</a-radio>
-											</a-radio-group>
-										</a-form-item>
-										<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
-											:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formUserState.cert_begin_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item v-if="formUserState.cert_validity_type==1" label="身份证有效期结束时间"
-											name="cert_end_date">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formUserState.cert_end_date" style="width: 100%;" />
-										</a-form-item>
-										<a-form-item v-else label="身份证有效期结束时间" name="cert_end_date"
-											:rules="[{ required: true, message: '请输入身份证有效期结束时间' }]">
-											<a-date-picker :format="dateFormat"
-												v-model:value="formUserState.cert_end_date" style="width: 100%;" />
-										</a-form-item>
-									</a-form>
+									<!-- 商家汇付 -->
+									<div v-if="huifu_Type=='store'">
+										<a-form :model="formState" ref="formRef" name="basic" :colon="false"
+											style="margin-left: -10px;" :label-col="{ span: 6 }"
+											:wrapper-col="{ span: 14 }">
+											<a-form-item label="企业名称" name="reg_name"
+												:rules="[{ required: true, message: '请输入企业名称' }]">
+												<a-input v-model:value="formState.reg_name" placeholder="请输入企业名称" />
+											</a-form-item>
+											<a-form-item label="营业执照编号" name="license_code"
+												:rules="[{ required: true, message: '请输入营业执照编号' }]">
+												<a-input v-model:value="formState.license_code"
+													placeholder="请输入营业执照编号" />
+											</a-form-item>
+											<a-form-item label="营业执照有效期" name="license_validity_type"
+												:rules="[{ required: true, message: '请输入营业执照有效期' }]">
+												<a-radio-group v-model:value="formState.license_validity_type"
+													name="radioGroup">
+													<a-radio value="1">长期有效</a-radio>
+													<a-radio value="0">非长期有效</a-radio>
+												</a-radio-group>
+											</a-form-item>
+											<a-form-item label="营业执照有效期起始日期" name="license_begin_date"
+												:rules="[{ required: true, message: '请输入营业执照有效期起始日期' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.license_begin_date" style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-if="formState.license_validity_type==1" label="营业执照有效期结束日期"
+												name="license_end_date">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.license_end_date" style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-else label="营业执照有效期结束日期" name="license_end_date"
+												:rules="[{ required: true, message: '请输入营业执照有效期结束日期' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.license_end_date" style="width: 100%;" />
+											</a-form-item>
+											<a-form-item label="注册地址" name="regAddress"
+												:rules="[{ required: true, message: '请输入注册地址' }]">
+												<a-cascader v-model:value="formState.regAddress" :options="treeData"
+													:field-names="{ label: 'label', value: 'adcode', children: 'children' }"
+													placeholder="请输入注册地址" />
+											</a-form-item>
+											<a-form-item label="注册地址(详细信息)" name="reg_detail"
+												:rules="[{ required: true, message: '请输入注册地址(详细信息)' }]">
+												<a-input v-model:value="formState.reg_detail"
+													placeholder="请输入注册地址(详细信息)" />
+											</a-form-item>
+											<a-form-item label="法人姓名" name="legal_name"
+												:rules="[{ required: true, message: '请输入法人姓名' }]">
+												<a-input v-model:value="formState.legal_name" placeholder="请输入法人姓名" />
+											</a-form-item>
+											<a-form-item label="法人身份证号码" name="legal_cert_np"
+												:rules="[{ required: true, message: '请输入法人身份证号码' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
+												<a-input v-model:value="formState.legal_cert_np"
+													placeholder="请输入法人身份证号码" />
+											</a-form-item>
+											<a-form-item label="身份证有效期" name="legal_cert_validity_type"
+												:rules="[{ required: true, message: '请输入身份证有效期' }]">
+												<a-radio-group v-model:value="formState.legal_cert_validity_type"
+													name="radioGroup">
+													<a-radio value="1">长期有效</a-radio>
+													<a-radio value="0">非长期有效</a-radio>
+												</a-radio-group>
+											</a-form-item>
+											<a-form-item label="身份证有效期开始时间" name="legal_cert_begin_date"
+												:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.legal_cert_begin_date"
+													style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-if="formState.legal_cert_validity_type==1" label="身份证有效期结束时间"
+												name="legal_cert_end_date">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.legal_cert_end_date"
+													style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-else label="身份证有效期结束时间" name="legal_cert_end_date"
+												:rules="[{ required: true, message: '请输入身份证身份证有效期结束时间' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formState.legal_cert_end_date"
+													style="width: 100%;" />
+											</a-form-item>
+											<a-form-item label="联系人姓名" name="contract_name"
+												:rules="[{ required: true, message: '请输入联系人姓名' }]">
+												<a-input v-model:value="formState.contract_name"
+													placeholder="请输入联系人姓名" />
+											</a-form-item>
+											<a-form-item label="联系人手机号" name="contract_mobile"
+												:rules="[{ required: true, message: '请输入联系人手机号' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
+												<a-input v-model:value="formState.contract_mobile"
+													placeholder="请输入联系人手机号" />
+											</a-form-item>
+										</a-form>
+									</div>
+									<div v-else="huifu_Type=='user'">
+										<a-form :colon="false" :model="formUserState" ref="formUserRef" name="basic"
+											style="margin-left: -10px;" :label-col="{ span: 6 }"
+											:wrapper-col="{ span: 14 }">
+											<a-form-item label="姓名" name="name"
+												:rules="[{ required: true, message: '请输入姓名' }]">
+												<a-input v-model:value="formUserState.name" placeholder="请输入姓名" />
+											</a-form-item>
+											<a-form-item label="电话" name="mobile"
+												:rules="[{ required: true, message: '请输入电话' },{ pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号!' }]">
+												<a-input v-model:value="formUserState.mobile" placeholder="请输入电话" />
+											</a-form-item>
+											<a-form-item label="身份证" name="cert_no"
+												:rules="[{ required: true, message: '请输入身份证' },{ pattern: /(^\d{15}$)|(^\d{17}([0-9Xx])$)/, message: '身份证格式不正确' }]">
+												<a-input v-model:value="formUserState.cert_no" placeholder="请输入身份证" />
+											</a-form-item>
+											<a-form-item label="身份证有效期" name="cert_validity_type"
+												:rules="[{ required: true, message: '请输入身份证有效期' }]">
+												<a-radio-group v-model:value="formUserState.cert_validity_type"
+													name="radioGroup">
+													<a-radio value="1">长期有效</a-radio>
+													<a-radio value="0">非长期有效</a-radio>
+												</a-radio-group>
+											</a-form-item>
+											<a-form-item label="身份证有效期开始时间" name="cert_begin_date"
+												:rules="[{ required: true, message: '请输入身份证有效期开始时间' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formUserState.cert_begin_date"
+													style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-if="formUserState.cert_validity_type==1" label="身份证有效期结束时间"
+												name="cert_end_date">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formUserState.cert_end_date" style="width: 100%;" />
+											</a-form-item>
+											<a-form-item v-else label="身份证有效期结束时间" name="cert_end_date"
+												:rules="[{ required: true, message: '请输入身份证有效期结束时间' }]">
+												<a-date-picker :format="dateFormat"
+													v-model:value="formUserState.cert_end_date" style="width: 100%;" />
+											</a-form-item>
+										</a-form>
+									</div>
 								</div>
 
 								<div style="text-align: center;margin-bottom: 20px;display: flex;cursor: pointer;">
@@ -1307,13 +1322,18 @@
 										<a-alert message="您离开店成功还差一步,请点击确认提交" type="warning" show-icon
 											style="padding: 5px 10px !important;margin-top: 10px;" />
 										<div style="display: flex;margin-top: 10px;">
+											<div style="width: 180px;text-align: right;">入驻类型： </div>
+											<div>
+												<span v-if="store_type=='a'">个人店</span>
+												<span v-if="store_type=='b'">个体工商户</span>
+												<span v-if="store_type=='c'">企业店</span>
+											</div>
+										</div>
+										<div style="display: flex;margin-top: 10px;">
 											<div style="width: 180px;text-align: right;">店铺类型： </div>
 											<div>
-												<span>个人店/个体工商户/企业店</span>
-												<!-- <span v-if="type=='a'">本地商家</span>
+												<span v-if="type=='a'">本地商家</span>
 												<span v-if="type=='b'">网店商家</span>
-												<span v-if="type=='c'">个体工商户</span>
-												<span v-if="type=='d'">企业店</span> -->
 											</div>
 										</div>
 										<div style="display: flex;margin-top: 20px;">

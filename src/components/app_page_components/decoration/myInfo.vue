@@ -89,7 +89,7 @@
 	}
 	// 重新入驻
 	function cxrz() {
-		global.router.push('/openShop?type=' + shopObj.value.type + '&mobile=' + shopObj.value.mobile + '&password=' + shopObj.value.password)
+		global.router.push('/openShop?type=' + shopObj.value.type + '&mobile=' + shopObj.value.mobile + '&password=' + shopObj.value.password+'&open_h_store_account=' + shopObj.value.open_h_store_account)
 	}
 
 	// 复制店铺编号
@@ -1598,9 +1598,11 @@
 									{{shopObj.id}}</span>
 								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
 									{{shopObj.store_name}}</span>
+									<span style="margin-left: 40px;"><span style="margin-right: 30px;">入驻类型</span>
+									{{shopObj.store_type=='a'?'个人店':shopObj.store_type=='b'?'个体工商户':shopObj.store_type=='c'?'企业店':''}}</span>
 								<span style="margin-left: 40px;">
 									<span style="margin-right: 30px;">店铺类型</span>
-									<span>{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}</span>
+									<span>{{shopObj.type=='a'?'本地商家':'网店商家'}}</span>
 								</span>
 							</div>
 						</div>
@@ -2265,7 +2267,7 @@
 	.a12 {
 		width: 94%;
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		background-color: #f0f2f5;
 		padding: 10px;
 	}
