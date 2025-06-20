@@ -146,6 +146,7 @@
 		{ key: 'create_time', name: '开店时间' },
 		{ key: 'mobile', name: '手机号' },
 		{ key: 'store_name', name: '店铺名称' },
+		{ key: 'store_type', name: '入驻类型' },
 		{ key: 'type', name: '店铺类型' },
 		{ key: 'name', name: '联系人' },
 		// { key: '', name: '店铺主体' },
@@ -1123,13 +1124,21 @@
 								<div class="a27">
 									<div class="a26">
 										{{item.name}}:</div>
-									<div class="a28" v-if="item.key=='type'">
+									<div class="a28" v-if="item.key=='store_type'">
+										{{shopObj[item.key]=='a'?'个人店':shopObj[item.key]=='b'?'个体工商户':shopObj[item.key]=='c'?'企业店':''}}
+									</div>
+									<div class="a28" v-else-if="item.key=='type'">
 										{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}
 									</div>
 									<div class="a29" v-else>
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
 								</div>
 							</template>
+							<!-- 个体工商户 c企业店 有营业执照 -->
+							<div v-if="shopObj.store_type!='a'" class="a33">
+								<div class="a34">营业执照:</div>
+								<div class="a35">{{shopObj.license_image}}</div>
+							</div>
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺地址:</div>
 								<div class="a35">{{shopObj.address}}</div>
@@ -1581,6 +1590,7 @@
 					<div class="a2">
 						<ClockCircleFilled class="a3" />
 						<div v-if="shType=='a'" class="a4">店铺信息审核中，预计在<span class="a5">2-3个工作日</span>审核完成</div>
+						<div v-if="shType=='b'" class="a6">店铺信息审核通过,汇付未开通</div>
 						<div v-if="shType=='c'" class="a6">店铺信息审核失败，<span class="a7">拒绝入驻原因：{{check_remark}}</span>
 						</div>
 					</div>
@@ -1589,6 +1599,7 @@
 						<div class="a8">
 							<span>审核进度：</span>
 							<div v-if="shType=='a'" class="a9"></div>
+							<div v-if="shType=='b'" class="aok"></div>
 							<div v-if="shType=='c'" class="a10"></div>
 						</div>
 						<div class="a11">
@@ -2250,6 +2261,12 @@
 		height: 12px;
 		border-radius: 20px;
 		background-color: #0c96f1;
+	}
+	.aok{
+		width: 200px;
+		height: 12px;
+		border-radius: 20px;
+		background-color: #00d521;
 	}
 
 	.a10 {

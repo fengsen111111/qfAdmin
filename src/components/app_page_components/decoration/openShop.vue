@@ -381,9 +381,9 @@
 					password: admin_login_password.value
 				}, global)
 					.then(res => {
-						console.log('登陆成功');
+						console.log('登陆成功',is_open_h_store_account.value);
 						localStorage.setItem('Authorization', res.token);
-						if(is_open_h_store_account){
+						if(is_open_h_store_account.value){
 							resule_vis.value = true //提示信息
 						}else{
 							kaitonghuifu()
@@ -474,8 +474,12 @@
 
 	if (route.query.type) {
 		type.value = route.query.type
-		is_open_h_store_account.value = route.query.open_h_store_account == 'a' ? false : true
 		buzhou_type.value = 2
+	}
+	if (route.query.open_h_store_account) {
+		is_open_h_store_account.value = route.query.open_h_store_account == 'a' ? false : true
+	}else{
+		is_open_h_store_account.value = false
 	}
 
 	// 下一步
