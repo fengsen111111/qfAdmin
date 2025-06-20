@@ -155,9 +155,9 @@
     // 获取自己的角色ID和聊天状态
     global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
       console.log('自己商家id和禁言状态', res_one);
-      store_id.value = res_one.joiner_sign
-      type.value = res_one.joiner_sign == 1 ? "平台" : '商家'
-      localStorage.setItem("storeId", res_one.joiner_sign);
+      store_id.value = res_one.joiner_sign?res_one.joiner_sign:1
+      type.value = store_id.value == 1 ? "平台" : '商家'
+      localStorage.setItem("storeId", store_id.value);
       if (type.value == '平台') {
         tamplateSta()//统计
         getStoreMoneyTopList() // 获取商家营业额排行列表
@@ -166,8 +166,7 @@
         getArticleStarTopList() // 获取作品点赞排行列表
         getArticleStarTopListVideo()  //获取视频点赞排行列表
 
-      } else {
-      }
+      } 
     })
   }
 

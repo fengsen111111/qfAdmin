@@ -10,7 +10,7 @@
 
   const login_store_id = ref('')//登陆商家id
   setTimeout(() => {
-    login_store_id.value = localStorage.getItem('storeId')
+    login_store_id.value = localStorage.getItem('storeId')*1?localStorage.getItem('storeId'):1
   }, 1000);
 
   const skeleton_state = reactive({
@@ -726,16 +726,17 @@
             </a>
             <template #overlay>
               <a-menu>
-                <template v-if="login_store_id!=1">
-                  <a-menu-item @click="editStoreInfo">
-                    <span>修改商家信息</span>
-                  </a-menu-item>
-                </template>
-                <template v-else>
+                <template v-if="login_store_id==1">
                   <a-menu-item @click="changePassword" v-if="skeleton_state.admin.id != -1">
                     <span>修改信息</span>
                   </a-menu-item>
                 </template>
+                <template v-else>
+                  <a-menu-item @click="editStoreInfo">
+                    <span>修改商家信息</span>
+                  </a-menu-item>
+                </template>
+                
                 <a-menu-item @click="logout">
                   <span>退出登陆</span>
                 </a-menu-item>
