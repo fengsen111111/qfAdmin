@@ -840,7 +840,7 @@
 			okType: "primary",
 			onOk: function () {
 				// 退店进来的店铺详情
-				if (localStorage.getItem('is_out_shop')) {
+				if (localStorage.getItem('is_out_shop')||is_ptsj.value=='平台') {
 					emit("closeChildPage", pageData.page_key);
 				} else {
 					//其余情况 返回商家列表页
@@ -1140,9 +1140,7 @@
 								<div v-if="is_ptsj == '平台'">
 									<div class="a35" v-if="shopObj.open_h_store_account=='a'"
 										style="cursor: pointer;color: #ff0000;">暂未开通</div>
-									<div class="a35" v-else-if="shopObj.open_h_store_account=='c'"
-										style="cursor: pointer;color: #0c96f1;">已开通</div>
-									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">开通中</div>
+									<div class="a35" v-else style="cursor: pointer;color: #0c96f1;">已开通</div>
 								</div>
 								<div v-else>
 									<div class="a35" v-if="shopObj.open_h_store_account=='a'"
