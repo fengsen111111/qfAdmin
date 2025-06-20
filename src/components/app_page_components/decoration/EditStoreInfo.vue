@@ -112,16 +112,17 @@
 			message.error('验证不通过，请修改')
 			return false
 		}
-		let params = {}
+		let params = {} 
 		params[type.value] = form.value[type.value]
-		global.axios.post('decoration/Store/submitEditStoreMsg', params, global)
+		global.axios.post('decoration/StoreMsgCheck/submitEditStoreMsg', params, global)
 			.then(res => {
 				shopObj.value = res
-				message.success('操作成功')
+				message.success('提交成功')
 				cancelVis()
 				_shopInfo()
 			})
 	}
+
 
 
 	const danger_words = ref([])//铭感词列表
@@ -148,7 +149,7 @@
 		} else {
 			msgValue.value = ''
 		}
-		// 验证店铺名称是否重复
+		// 验证店铺名称是否重复 
 		global.axios.post('decoration/Store/checkStoreName', {
 			store_name: form.value.store_name,
 		}, global)
@@ -172,7 +173,6 @@
 			msgValue.value = ''
 		}
 	}
-
 </script>
 
 <template>
@@ -193,9 +193,8 @@
 	<div class="table">
 		<div class="a20">
 			<ExclamationCircleOutlined class="a21" />
-			重要提示：店铺logo、店铺名称会直接展示给买家，请认真填写。
+			重要提示：(1)店铺logo、店铺名称会直接展示给买家，请认真填写。(2)提交修改后，当前沿用提交前店铺数据，审核通过后，自动生效。
 		</div>
-		<div>check_status:{{shopObj.check_status}}</div>
 		<div
 			style="width: 100%;border: 2px solid #f5f5f5;border-radius: 5px;margin-top: 10px;padding: 20px;font-size: 16px;">
 			<div style="font-size: 18px;font-weight: bold;">基础信息</div>
@@ -276,7 +275,7 @@
 			<div>
 				<div class="a20">
 					<ExclamationCircleOutlined class="a21" />
-					重要提示：修改店铺信息，需要重新等待审核，请谨慎操作。
+					重要提示：修改店铺信息，需要等待审核通过后生效。
 				</div>
 				<div style="margin-top: 20px;">
 					<a-row>

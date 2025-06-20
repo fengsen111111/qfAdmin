@@ -84,13 +84,18 @@
 	const orderList = ref([])//订单数据
 	const order_count = ref('')//订单总数
 	const current = ref(1)// 分页
+
+	watch(() => current.value, (newVal, oldVal) => {
+		console.log('current变化:', newVal);
+		webGetUserOrderList()
+	});
 	// 后台获取用户订单列表
 	function webGetUserOrderList() {
 		// 后台获取用户订单列表
 		global.axios.post('decoration/Order/webGetUserOrderList', {
 			user_id: pageData.data.id,
-			id: order_sux.value.id?order_sux.value.id:'',
-			status: order_sux.value.status?order_sux.value.status:'',
+			id: order_sux.value.id ? order_sux.value.id : '',
+			status: order_sux.value.status ? order_sux.value.status : '',
 			start_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[0],
 			end_time: order_sux.value.time.map(date => Math.floor(new Date(date).getTime() / 1000))[1],
 			currentPage: current.value,
@@ -376,7 +381,8 @@
 					</div>
 					<div style="overflow: auto;height: 38vh;">
 						<div v-for="item in orderList" :key="item.id" class="a89">
-							<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情</div>
+							<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情
+							</div>
 							<div class="w15_100">{{item.id}}</div>
 							<div class="w5_100">
 								<span v-if="item.status=='a'">待支付</span>
@@ -569,6 +575,7 @@
 		display: flex;
 		text-align: left;
 		border-bottom: 1px solid #f5f5f5;
+		align-items: center;
 	}
 
 	.a90 {

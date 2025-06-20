@@ -9,7 +9,9 @@
   const global = inject("global").value;
 
   const login_store_id = ref('')//登陆商家id
-  login_store_id.value = localStorage.getItem('storeId')
+  setTimeout(() => {
+    login_store_id.value = localStorage.getItem('storeId')
+  }, 1000);
 
   const skeleton_state = reactive({
     author: "", //开发者信息
