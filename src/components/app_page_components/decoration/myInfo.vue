@@ -1137,7 +1137,10 @@
 							<!-- 个体工商户 c企业店 有营业执照 -->
 							<div v-if="shopObj.store_type!='a'" class="a33">
 								<div class="a34">营业执照:</div>
-								<div class="a35">{{shopObj.license_image}}</div>
+								<div class="a35">
+									<a-image :width="90" :height="90" :src="shopObj.license_image" :preview="{ src: shopObj.license_image }" />
+									<!-- {{shopObj.license_image}} -->
+								</div>
 							</div>
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺地址:</div>
@@ -1191,7 +1194,8 @@
 							</div>
 						</div>
 						<div style="text-align: center;" v-if="shopObj.logo">
-							<img :src="shopObj.logo" alt="" class="a36">
+							<!-- <img :src="shopObj.logo" alt="" class="a36"> -->
+							<a-image :width="90" :height="90" :src="shopObj.logo" :preview="{ src: shopObj.logo }" />
 							<div class="a37">店铺logo</div>
 						</div>
 					</div>
