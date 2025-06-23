@@ -1,5 +1,5 @@
 <script setup>
-	import { inject, onBeforeMount, reactive, ref } from "vue";
+	import { inject, onBeforeMount, reactive, ref, watch } from "vue";
 	import { ExclamationCircleOutlined, CloseCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 
 	let props = defineProps(["pageData"]);
@@ -112,15 +112,29 @@
 			message.error('验证不通过，请修改')
 			return false
 		}
-		let params = {} 
-		params[type.value] = form.value[type.value]
-		global.axios.post('decoration/StoreMsgCheck/submitEditStoreMsg', params, global)
-			.then(res => {
-				shopObj.value = res
-				message.success('提交成功')
-				cancelVis()
-				_shopInfo()
-			})
+		// 校验验证码
+		global.axios.post('decoration/User/checkMobileCode', {
+			mobile: shopObj.value.mobile,
+			mobile_code: mobile_code.value
+		}, global).then(res => {
+			console.log('res', res);
+			if (res.result == 'Y') {
+				// message.success('验证码校验成功')
+				let params = {}
+				params[type.value] = form.value[type.value]
+				global.axios.post('decoration/StoreMsgCheck/submitEditStoreMsg', params, global)
+					.then(res => {
+						shopObj.value = res
+						message.success('提交成功')
+						cancelVis()
+						_shopInfo()
+					})
+			} else {
+				message.error(res.message)
+			}
+		})
+
+
 	}
 
 
@@ -172,6 +186,38 @@
 		} else {
 			msgValue.value = ''
 		}
+	}
+
+	const mobile_code = ref('')//验证码
+	const showDjs = ref(false)//显示倒计时
+	const timeData = ref(60)//倒计时
+	const timer = ref(null)//计时器 
+
+	// 页面还要定时器，清除
+	if (timer.value) {
+		clearInterval(timer.value); //清除定时器
+	}
+	watch(() => [timeData.value], (newVal, oldVal) => {
+		console.log('时间变化', newVal[0]); //
+		if (newVal[0] == 0) {
+			showDjs.value = false
+			clearInterval(timer.value); //清除定时器
+		}
+	});
+	// 发送验证码
+	function sendCode() {
+		console.log('发送验证码');
+		global.axios.post('decoration/User/getMobileCode', {
+			mobile: shopObj.value.mobile
+		}, global).then(res => {
+			console.log('验证码', res.code);
+			mobile_code.value = res.code
+			showDjs.value = true
+			timeData.value = 60
+			timer.value = setInterval(() => {
+				timeData.value = timeData.value - 1
+			}, 1000);
+		})
 	}
 </script>
 
@@ -279,15 +325,15 @@
 				</div>
 				<div style="margin-top: 20px;">
 					<a-row>
-						<a-col
-							:span="4" style="margin-top: 5px;">{{type=='store_name'?'店铺名称':type=='logo'?'店铺logo':type=='mobile'?'手机号':''}}</a-col>
+						<a-col :span="4"
+							style="margin-top: 5px;">{{type=='store_name'?'店铺名称':type=='logo'?'店铺logo':type=='mobile'?'手机号':''}}</a-col>
 						<a-col :span="18">
 							<div v-if="type=='store_name'">
 								<a-input v-model:value="form.store_name" @change="nameChange" placeholder="请输入店铺名称" />
 								<div style="color: #ff0000;font-size: 12px;">{{msgValue}}</div>
 							</div>
 							<div v-else-if="type=='logo'">
-								<div style="margin-left: 10px;display: flex;">
+								<div style="display: flex;">
 									<div v-if="form.logo"
 										style="position: relative;display: flex;overflow: hidden;border-radius: 4px;">
 										<a-image :width="90" :src="form.logo" :preview="{ src: form.logo }" />
@@ -308,6 +354,18 @@
 									@input="e => form.mobile = e.target.value.replace(/[^0-9]/g, '')" maxlength="11"
 									placeholder="请输入手机号" />
 								<div style="color: #ff0000;font-size: 12px;">{{msgValue}}</div>
+							</div>
+						</a-col>
+					</a-row>
+					<a-row style="margin-top: 10px;">
+						<a-col :span="4" style="margin-top: 5px;">验证码</a-col>
+						<a-col :span="18">
+							<div>
+								<a-input v-model:value="mobile_code"
+									@input="e => mobile_code = e.target.value.replace(/[^0-9]/g, '')" maxlength="11"
+									placeholder="请输入验证码" style="width: 150px;margin-right: 10px;" />
+								<a-button @click="sendCode" v-if="!showDjs" style="font-size: 14px;">获取验证码</a-button>
+								<a-button v-else>还剩{{timeData}}秒</a-button>
 							</div>
 						</a-col>
 					</a-row>

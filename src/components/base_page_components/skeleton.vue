@@ -817,6 +817,8 @@
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知 </div>
                     <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
                       style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广 </div>
+                    <div @click="editMsgKey('h')" :class="msgKey=='h'?'checkKey':''"
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">曝光下架 </div>
                   </div>
                   <div style="width: 80%;height: 300px;overflow: auto;">
                     <div>
