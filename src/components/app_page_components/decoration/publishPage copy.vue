@@ -20,20 +20,19 @@
     status: true,//启用状态 Y上架 N下架    
     attributes: [],//商品属性  
     services: [],//商品服务  
-    goods_size_json_arr: [
-      {
-        name: '',
-        sizes: [{
-          label: '',
-          order: ''
-        }]
-      }
-    ],
     goods_sizes: [
       {
         id: '',//
         size_image: '',//商品规格图片  
-        names: [],//名称  
+        name: '',//名称  
+        stock: '',//库存
+        old_price: '',//原价
+        price: '',//价格
+        uper_status: false,//是否需要推荐官推荐
+        integral_price: '',//可以积分抵扣的最大金额
+        commission: '',//佣金
+        status: false,//启用状态
+        order: '',//排序  
       },
     ],//商品规格  post_params
     goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
@@ -84,6 +83,24 @@
   // 删除轮播图
   function delImgLb(index) {
     post_params.images.splice(index, 1)
+  }
+
+  // 添加规格
+  function addGG() {
+    post_params.goods_sizes.push({
+      id: '',//
+      size_image: '',//商品规格图片  
+      name: '',//名称  
+      stock: '',//库存
+      old_price: '',//原价
+      price: '',//价格
+      uper_status: false,//是否需要推荐官推荐
+      integral_price: '',//可以积分抵扣的最大金额  
+      commission: '',//佣金
+      status: false,//启用状态
+      order: '',//排序  
+    })
+    zztext()
   }
   // 删除规格
   function delGG(index) {
@@ -327,18 +344,7 @@
   }
   // 提交商品数据
   function tjShopData() {
-    console.log('提交', post_params, shopGuige.value);
-    post_params.goods_size_json_arr = shopGuige.value.map((item) => {
-      return {
-        name: item.labelValue,
-        sizes: item.value.map((iss, index) => {
-          return {
-            label: iss.label,
-            order: index + 1
-          }
-        })
-      }
-    })
+    // console.log('提交',post_params);
     //a待审核 b 已通过 c已拒绝
     if (shopObj.value.open_h_store_account == 'a') {
       message.warning('开通汇付后才能发布商品')
@@ -393,35 +399,22 @@
       message.error('请检查属性是否填写')
       return false
     }
+    const goodsSizes = post_params.goods_sizes;
+    const incompleteItems = goodsSizes.filter(item => {
+      // || !item.commission; 佣金
+      return !item.name || !item.price || !item.stock
+    });
+    if (incompleteItems.length > 0) {
+      console.log('以下规格未填写完整：', incompleteItems);
+      message.error('商品规格未填写完整')
+      return false
+    } else {
+      console.log('所有规格已填写完整');
+    }
     console.log('post_params', post_params);
     if (post_params.id) {
       // 说明是编辑商品
-      loading()
-      global.axios
-        .post('decoration/Goods/webAddGoods', post_params, global)
-        .then((res) => {
-          console.log('提交数据结果', res);
-          if (props.pageData.data.id) {
-            global.Modal.confirm({
-              title: global.findLanguage(
-                "保存成功，点击确定返回上一页！"
-              ),
-              okText: global.findLanguage("确定"),
-              cancelText: global.findLanguage("取消"),
-              okType: "primary",
-              onOk: function () {
-                emit("closeChildPage", pageData.page_key);
-              },
-            });
-          } else {
-            // 没有id就是新增商品
-            // emit("closeChildPageTwo", pageData.page_key);
-            message.success('操作成功');
-            setTimeout(() => {
-              emit('editType')
-            }, 2000);
-          }
-        });
+      pdsfzbjgg(post_params)//判断是否只编辑了规格
     } else {
       // 发布商品不需要判断
       loading()
@@ -438,6 +431,165 @@
     return false
   }
 
+
+  // 判断是否只编辑了规格
+  function pdsfzbjgg(post_params) {
+    global.axios
+      .post('decoration/Goods/webGetGoodsDetail', {
+        id: post_params.id
+      }, global)
+      .then((res) => {
+        console.log('商品数据', res.goods_datas);
+        const result = compareObjects(post_params, res.goods_datas);
+        console.log('不同', result);
+        if (result.changedKeys.length == 0) {
+          // 未修改任何东西
+        } else if (result.changedKeys.length == 1) {
+          if (result.kcjgbh) {
+            // 调另一个接口
+            const { from } = result.diff.goods_sizes
+            let params = []
+            from.map((item) => {
+              params.push({
+                goods_size_id: item.id,
+                price: item.price,
+                stock: item.stock
+              })
+            })
+            loading()
+            params.map((item) => {
+              global.axios
+                .post('decoration/GoodsSize/webChangePriceOrStock', item, global)
+                .then((res) => {
+                  console.log('提交数据结果', res);
+                });
+            })
+            setTimeout(() => {
+              global.Modal.confirm({
+                title: global.findLanguage(
+                  "保存成功，点击确定返回上一页！"
+                ),
+                okText: global.findLanguage("确定"),
+                cancelText: global.findLanguage("取消"),
+                okType: "primary",
+                onOk: function () {
+                  emit("closeChildPage", pageData.page_key);
+                },
+              });
+            })
+
+          } else {
+            // 调修改商品接口
+            loading()
+            global.axios
+              .post('decoration/Goods/webAddGoods', post_params, global)
+              .then((res) => {
+                console.log('提交数据结果', res);
+                if (props.pageData.data.id) {
+                  global.Modal.confirm({
+                    title: global.findLanguage(
+                      "保存成功，点击确定返回上一页！"
+                    ),
+                    okText: global.findLanguage("确定"),
+                    cancelText: global.findLanguage("取消"),
+                    okType: "primary",
+                    onOk: function () {
+                      emit("closeChildPage", pageData.page_key);
+                    },
+                  });
+                } else {
+                  // 没有id就是新增商品
+                  // emit("closeChildPageTwo", pageData.page_key);
+                  message.success('操作成功');
+                  setTimeout(() => {
+                    emit('editType')
+                  }, 2000);
+                }
+              });
+          }
+        } else {
+          // 调修改商品接口
+          loading()
+          global.axios
+            .post('decoration/Goods/webAddGoods', post_params, global)
+            .then((res) => {
+              console.log('提交数据结果', res);
+              if (props.pageData.data.id) {
+                global.Modal.confirm({
+                  title: global.findLanguage(
+                    "保存成功，点击确定返回上一页！"
+                  ),
+                  okText: global.findLanguage("确定"),
+                  cancelText: global.findLanguage("取消"),
+                  okType: "primary",
+                  onOk: function () {
+                    emit("closeChildPage", pageData.page_key);
+                  },
+                });
+              } else {
+                // 没有id就是新增商品
+                // emit("closeChildPageTwo", pageData.page_key);
+                message.success('操作成功');
+                setTimeout(() => {
+                  emit('editType')
+                }, 2000);
+              }
+            });
+        }
+      })
+  }
+
+  // 比较两组数据不同
+  function compareObjects(obj1, obj2) {
+    const diff = {};
+    const changedKeys = [];
+    for (const key in obj1) {
+      if (key === 'id') continue; // 忽略 id
+      const val1 = obj1[key];
+      const val2 = obj2[key];
+      if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+        diff[key] = { from: val1, to: val2 };
+        changedKeys.push(key);
+      }
+    }
+    let kcjgbh = false
+    // 判断是否仅 goods_sizes 发生变化
+    if (changedKeys.length === 1 && changedKeys[0] === 'goods_sizes') {
+      const sizes1 = obj1.goods_sizes || [];
+      const sizes2 = obj2.goods_sizes || [];
+      const onlyPriceStockChanged = sizes1.length === sizes2.length && sizes1.every((item1, index) => {
+        const item2 = sizes2[index];
+        if (!item2) return false;
+        const keys1 = Object.keys(item1).filter(k => item1[k] !== undefined);
+        const keys2 = Object.keys(item2).filter(k => item2[k] !== undefined);
+        // 所有 key 都相同
+        const allKeys = Array.from(new Set([...keys1, ...keys2]));
+        // 排除 price 和 stock 后，是否还存在其他字段变化
+        const otherKeyChanged = allKeys.some(k => {
+          if (k === 'price' || k === 'stock') return false;
+          return JSON.stringify(item1[k]) !== JSON.stringify(item2[k]);
+        });
+        return !otherKeyChanged;
+      });
+      if (onlyPriceStockChanged) {
+        console.log("✅ 仅有库存或价格变化");
+      } else {
+        console.log("⚠️ goods_sizes 字段中存在除价格/库存外的其他字段变化");
+      }
+      kcjgbh = onlyPriceStockChanged
+    } else if (changedKeys.length > 0) {
+      console.log("变化字段：", changedKeys);
+      console.log("详细差异：", diff);
+    } else {
+      console.log("无字段变化");
+    }
+
+    return {
+      changedKeys,
+      diff,
+      kcjgbh: kcjgbh
+    };
+  }
   // 检索字段填写情况
   function validatePostParams(post_params, requiredFields = []) {
     for (const field of requiredFields) {
@@ -763,8 +915,7 @@
       oldMap.set(JSON.stringify(item.name), item); // 不再使用 ggInfo
     });
     result.forEach(item => {
-      // const name = shopGuige.value.map(spec => `${spec.labelValue}：${item[spec.labelValue]}`);
-      const name = shopGuige.value.map(spec => `${item[spec.labelValue]}`);
+      const name = shopGuige.value.map(spec => `${spec.labelValue}：${item[spec.labelValue]}`);
       let sizeImage = '';
       for (const spec of shopGuige.value) {
         if (spec.isUrlimg) {
@@ -784,7 +935,15 @@
       } else {
         newList.push({
           id: '',
-          names: name,
+          name,
+          stock: '',
+          old_price: '',
+          price: '',
+          uper_status: false,
+          commission: '',
+          integral_price: '',
+          status: false,
+          order: '',
           size_image: sizeImage,
         });
       }
@@ -793,6 +952,7 @@
     post_params.goods_sizes.map((item, index) => {
       item.order = index + 1 + ''
     })
+    // console.log('newList', newList);
   }
   // 监听商品规格变化
   watch(
@@ -1039,6 +1199,29 @@
       })
   }
 
+  // 判断规格拼单价是否大于原价
+  function pdpdjsfdyyj(item, index) {
+    console.log('判断规格拼单价是否大于原价', item.price, item.old_price);
+    if (item.price * 1 < item.old_price * 1) {
+      // 拼单价小于原价
+    } else {
+      // 大于等于原价
+      message.error('拼单价不可大于商品原价')
+      post_params.goods_sizes[index].price = ''//清空拼单价
+    }
+  }
+
+  function formatPrice(value) {
+    // 1. 只能是数字和小数点
+    value = value.replace(/[^0-9.]/g, '');
+    // 2. 只保留第一个小数点
+    value = value.replace(/^\./, ''); // 开头不能是点
+    value = value.replace(/\.{2,}/g, '.'); // 连续点变一个
+    value = value.replace('.', '#').replace(/\./g, '').replace('#', '.');
+    // 3. 最多保留两位小数
+    value = value.replace(/^(\d+)(\.\d{0,2})?.*$/, '$1$2');
+    return value;
+  }
 
   function _toYfmb() {
     emit("djtzmk");
@@ -1404,6 +1587,12 @@
                                   <div style="display: flex;">
                                     <img :src="img" class="a72" v-for="img in post_params.images" :key="img" alt="">
                                   </div>
+                                  <div class="a73">
+                                    <div class="a74">
+                                      ￥{{post_params.goods_sizes[0].price}}</div>
+                                    <div style="color: #333333;">规格：{{post_params.goods_sizes[0].name}}</div>
+                                  </div>
+                                  <div style="font-weight: bold;">{{post_params.name}}</div>
                                   <div class="a75">
                                     <div v-if="post_params.goods_type=='a'" class="a76">
                                       普通商品</div>
@@ -1435,6 +1624,17 @@
                                     </div>
                                     <div v-if="post_params.need_send_time=='c'" class="a76">
                                       48小时
+                                    </div>
+                                  </div>
+                                  <div style="display: flex;">
+                                    <div style="display: flex;">
+                                      <div class="a77">销量</div>
+                                      <div class="a78">0</div>
+                                    </div>
+                                    <div class="a79">
+                                      <div class="a80">库存</div>
+                                      <div class="a81">
+                                        {{post_params.goods_sizes[0].stock}}</div>
                                     </div>
                                   </div>
                                   <div style="margin: 10px 0px;">
@@ -1607,57 +1807,153 @@
                   </div>
                 </div>
                 <div class="b9">
-                  <!-- <div style="display: flex;">
+                  <div style="display: flex;">
                     <div style="color: red;">*</div>
                     <div>价格及库存</div>
-                  </div> -->
-                  <div class="b10" style="margin-left: 95px;">
+                  </div>
+                  <div class="b10">
                     <div class="b11">
+                      <div class="b12">
+                        <div style="color: #ff7300;">
+                          <div>注意事项：(1)请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规。(2)修改规格的拼单价和库存后无需二次审核，仅限拼单价和库存。</div>
+                        </div>
+                        <div style="color: #407cff;" @click="addGG">添加规格</div>
+                      </div>
                       <table class="b13">
-                        <tr class="b14 gridCol3">
+                        <tr class="b14 gridCol10">
                           <th>
                             <div style="color: #999999;">操作</div>
                           </th>
                           <th>
                             <div style="display: flex;">
                               <div style="display: flex;margin: 0 auto;">
-                                <!-- <div style="color: red;">*</div> -->
-                                <div style="color: #999999;">规格名称</div>
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">规格</div>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
-                                <!-- <div style="color: red;">*</div> -->
-                                <div style="color: #999999;">规格图片</div>
+                              <div style="display: flex;margin: 0 auto;align-items: center;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">库存</div>
+                                <a-popover placement="rightTop">
+                                  <template #content>
+                                    <div>上架商品库存须大于0</div>
+                                  </template>
+                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                </a-popover>
                               </div>
                             </div>
                           </th>
-
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;align-items: center;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">原价</div>
+                                <a-popover placement="rightTop">
+                                  <template #content>
+                                    <div>商品的指导价格</div>
+                                  </template>
+                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                </a-popover>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;align-items: center;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">拼单价</div>
+                                <a-popover placement="rightTop">
+                                  <template #content>
+                                    <div>用户拼单时价格,不可大于原价</div>
+                                  </template>
+                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
+                                </a-popover>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="color: #999999;">推荐管推荐</div>
+                          </th>
+                          <th>
+                            <div style="color: #999999;">佣金</div>
+                          </th>
+                          <th>
+                            <div style="color: #999999;">积分抵扣最大金额</div>
+                          </th>
+                          <th>
+                            <div style="color: #999999;">启用状态</div>
+                          </th>
+                          <th>
+                            <div style="color: #999999;">排序</div>
+                          </th>
                         </tr>
                         <template v-if="post_params.goods_sizes.length==0">
                           <a-empty />
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol3">
+                            <tr class="b15 gridCol10">
                               <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
-                              </td>
-                              <td>
-                                <div>
-                                  <div v-for="iss in item.names" :key="iss">{{iss}}</div>
-                                </div>
                               </td>
                               <td>
                                 <div style="display: flex;">
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
                                     <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
                                       <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
+                                      <div @click="post_params.goods_sizes[index].size_image=''"
+                                        style="width: 15px;height: 15px;position: absolute;color: #fff;left: 24px;top: -2px;">
+                                        <CloseCircleOutlined />
+                                      </div>
+                                    </div>
+                                    <div v-else @click="itemImgIndex(index)">
+                                      <a-upload :customRequest="uploadItem" :multiple="false" :file-list="[]"
+                                        list-type="picture-card">
+                                        <div>
+                                          <PlusOutlined />
+                                        </div>
+                                      </a-upload>
                                     </div>
                                   </div>
                                 </div>
+                                <div>
+                                  <div v-for="iss in item.name" :key="iss">{{iss}}</div>
+                                </div>
+                              </td>
+                              <td>
+                                <a-input type="text" @input="e => item.stock = formatPrice(e.target.value)"
+                                  v-model:value="item.stock" placeholder="请输入库存" />
+                              </td>
+                              <td>
+                                <a-input type="text" v-model:value="item.old_price"
+                                  @input="e => item.old_price = formatPrice(e.target.value)" placeholder="请输入原价" />
+                              </td>
+                              <td>
+                                <a-input type="text" v-model:value="item.price" @blur="pdpdjsfdyyj(item,index)"
+                                  placeholder="输入拼单价" @input="e => item.price = formatPrice(e.target.value)" />
+                              </td>
+                              <td>
+                                <a-switch v-model:checked="item.uper_status" checked-children="是"
+                                  un-checked-children="否" />
+                              </td>
+                              <td>
+                                <a-input type="text" v-model:value="item.commission"
+                                  @input="e => item.commission = formatPrice(e.target.value)" placeholder="输入佣金" />
+                              </td>
+                              <td>
+                                <a-input type="text" v-model:value="item.integral_price"
+                                  @input="e => item.integral_price = formatPrice(e.target.value)"
+                                  placeholder="积分抵扣最大金额" />
+                              </td>
+                              <td>
+                                <a-switch v-model:checked="item.status" checked-children="是" un-checked-children="否" />
+                              </td>
+                              <td>
+                                <a-input type="text" v-model:value="item.order"
+                                  @input="e => item.order = formatPrice(e.target.value)" placeholder="请输入排序" />
                               </td>
                             </tr>
                           </template>
@@ -2853,10 +3149,6 @@
 
   .gridCol9 {
     grid-template-columns: repeat(9, minmax(0, 1fr));
-  }
-
-  .gridCol3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .gridCol10 {
