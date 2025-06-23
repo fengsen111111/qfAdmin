@@ -31,8 +31,11 @@ import orderDetails from '@/components/app_page_components/decoration/orderDetai
 
 import pcLookGoodsDetails from '@/components/app_page_components/decoration/pcLookGoodsDetails.vue'//平台查看商品详情
 import EditStoreInfo from '@/components/app_page_components/decoration/EditStoreInfo.vue'//修改商家信息
+import SubmitInvoice from '@/components/app_page_components/decoration/SubmitInvoice.vue'//地址管理
+
 
 export const allPageComponents = {
+    SubmitInvoice,
     capitalAccount,
     TablePage, FormPage, DetailPage, IndexPage,
     StatisticsPage,publishPage,AddStorePage,shopOut,

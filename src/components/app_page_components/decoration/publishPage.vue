@@ -1195,7 +1195,7 @@
                 <ExclamationCircleOutlined class="a21" />
                 结合店铺经营情况，还需要缴纳
                 <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元，</span>
-                <span v-if="shopObj.deposit_money>0">店铺保证金{{shopObj.deposit_money}}元</span>
+                <span v-if="shopObj.deposit_money>0">其中包含店铺保证金{{shopObj.deposit_money}}元</span>
                 <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
                 <!-- <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">去缴纳</span> -->
               </div>
@@ -1859,12 +1859,12 @@
                 <div class="b37">
                   <span>结合店铺经营情况，还需要缴纳</span>
                   <span v-if="pay_Obj.pay_info">类目保证金{{pay_Obj.trans_amt}}元,</span>
-                  <span v-if="shopObj.deposit_money>0">店铺保证金{{shopObj.deposit_money}}元</span>
+                  <span v-if="shopObj.deposit_money>0">其中包含店铺保证金{{shopObj.deposit_money}}元</span>
                 </div>
                 <div class="b39">
                   <div class="b40" style="cursor: pointer;">
-                    <div class="b41" @click="czbzj" v-if="shopObj.deposit_money>0">缴纳店铺保证金</div>
-                    <div class="b41" @click="handPay" v-else-if="pay_Obj.pay_info">缴纳分类保证金</div>
+                    <!-- <div class="b41" @click="czbzj" v-if="shopObj.deposit_money>0">缴纳店铺保证金</div> -->
+                    <div class="b41" @click="handPay" v-if="pay_Obj.pay_info">缴纳分类保证金</div>
                     <div @click="pay_info_Vis=false" class="b42">暂不充值
                     </div>
                   </div>
