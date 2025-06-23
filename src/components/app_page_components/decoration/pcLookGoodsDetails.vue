@@ -24,15 +24,7 @@
       {
         id: '',//
         size_image: '',//商品规格图片  
-        name: '',//名称  
-        stock: '',//库存
-        old_price: '',//原价
-        price: '',//价格
-        uper_status: false,//是否需要推荐官推荐
-        integral_price: '',//可以积分抵扣的最大金额
-        commission: '',//佣金
-        status: false,//启用状态
-        order: '',//排序  
+        names: '',//名称  
       },
     ],//商品规格  post_params
     goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
@@ -82,10 +74,6 @@
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
-          res.goods_datas.goods_sizes.map((item) => {
-            item.status = item.status == 'Y' ? true : false
-            item.uper_status = item.uper_status == 'Y' ? true : false
-          })
           Object.assign(post_params, res.goods_datas);
           let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
           cn_value.value = []
@@ -93,51 +81,10 @@
             cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
-          shopGuige.value = JSON.parse(JSON.stringify(parseGoodsSizesToGuige(post_params.goods_sizes)));
         }
       })
   }
 
-  function parseGoodsSizesToGuige(goods_sizes) {
-    const specMap = new Map();
-
-    goods_sizes.forEach(item => {
-      item.name.forEach(entry => {
-        const [labelValue, label] = entry.split('：');
-        if (!specMap.has(labelValue)) {
-          specMap.set(labelValue, new Map());
-        }
-        const valueMap = specMap.get(labelValue);
-        if (!valueMap.has(label)) {
-          valueMap.set(label, {
-            label,
-            imgurl: item.size_image || '',
-            isCustom: false
-          });
-        } else {
-          // 如果已存在但当前 item.size_image 有值，更新 imgurl
-          const existing = valueMap.get(label);
-          if (!existing.imgurl && item.size_image) {
-            existing.imgurl = item.size_image;
-          }
-        }
-      });
-    });
-
-    // 转为响应式友好格式
-    const result = [];
-    for (const [labelValue, valueMap] of specMap.entries()) {
-      const valuesArray = Array.from(valueMap.values());
-      const hasImage = valuesArray.some(v => v.imgurl);
-      result.push({
-        labelValue,
-        value: valuesArray,
-        isSort: false,
-        isUrlimg: hasImage // ✅ 如果当前规格下任意项有图，就设置为 true
-      });
-    }
-    return result;
-  }
   setTimeout(() => {
     lookData()
   }, 1000);
@@ -361,15 +308,7 @@
       } else {
         newList.push({
           id: '',
-          name,
-          stock: '',
-          old_price: '',
-          price: '',
-          uper_status: false,
-          commission: '',
-          integral_price: '',
-          status: false,
-          order: '',
+          names: name,
           size_image: sizeImage,
         });
       }
@@ -737,127 +676,46 @@
                 <div style="margin-left: 5px;">规格与库存</div>
               </div>
               <div>
-                <div class="a94">
-                  <div style="display: flex;">
-                    <div>商品规格</div>
-                  </div>
-                  <div class="a95">
-                    <div class="a96">
-                      <!-- <div>最多配置2个商品规格类型</div> -->
-                      <div v-for="(item,index) in shopGuige" :key="index" class="a97">
-                        <div class="a98">
-                          <div style="display: flex;align-items: center;">
-                            <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" disabled
-                              style="width: 200px;" />
-                          </div>
-                        </div>
-                        <div class="b4">
-                          <template v-for="(xx,xx_index) in item.value" :key="xx_index">
-                            <div class="b5" style="position: relative;">
-                              <div v-show="item.isUrlimg" class="itemImg"
-                                style="display: flex;position: absolute;top: 1px;">
-                                <div v-if="xx.imgurl">
-                                  <a-image :width="30" :src="xx.imgurl" :preview="{ src: xx.imgurl }" />
-                                </div>
-                              </div>
-                              <a-input placeholder="请输入小规格名称" v-model:value="xx.label" disabled
-                                :style="{'margin-left': item.isUrlimg?'35px':'35px','width': item.isUrlimg?'165px':'200px'}" />
-                              <div v-if="xx.isCustom" class="b7">
-                                定制
-                              </div>
-                            </div>
-                          </template>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div class="b9">
-                  <div style="display: flex;">
-                    <div style="color: red;">*</div>
-                    <div>价格及库存</div>
-                  </div>
-                  <div class="b10">
+                  <div class="b10" style="margin-left: 95px;">
                     <div class="b11">
-                      <div class="b12">
-                        <div style="color: #ff7300;">
-                          <div>注意事项：(1)请如实填写库存信息，以确保商品可以在承诺时间内发出，避免出现违规。(2)修改规格的拼单价和库存后无需二次审核，仅限拼单价和库存。</div>
-                        </div>
-                      </div>
                       <table class="b13">
-                        <tr class="b14 gridCol9">
+                        <tr class="b14 gridCol2">
+                          <!-- <th>
+                            <div style="color: #999999;">操作</div>
+                          </th> -->
                           <th>
                             <div style="display: flex;">
                               <div style="display: flex;margin: 0 auto;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">规格</div>
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">规格名称</div>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;align-items: center;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">库存</div>
-                                <a-popover placement="rightTop">
-                                  <template #content>
-                                    <div>上架商品库存须大于0</div>
-                                  </template>
-                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
-                                </a-popover>
+                              <div style="display: flex;margin: 0 auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">规格图片</div>
                               </div>
                             </div>
                           </th>
-                          <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;align-items: center;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">原价</div>
-                                <a-popover placement="rightTop">
-                                  <template #content>
-                                    <div>商品的指导价格</div>
-                                  </template>
-                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
-                                </a-popover>
-                              </div>
-                            </div>
-                          </th>
-                          <th>
-                            <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;align-items: center;">
-                                <div style="color: red;">*</div>
-                                <div style="color: #999999;">拼单价</div>
-                                <a-popover placement="rightTop">
-                                  <template #content>
-                                    <div>用户拼单时价格,不可大于原价</div>
-                                  </template>
-                                  <QuestionCircleOutlined style="margin-left: 5px;color: #999999;" />
-                                </a-popover>
-                              </div>
-                            </div>
-                          </th>
-                          <th>
-                            <div style="color: #999999;">推荐管推荐</div>
-                          </th>
-                          <th>
-                            <div style="color: #999999;">佣金</div>
-                          </th>
-                          <th>
-                            <div style="color: #999999;">积分抵扣最大金额</div>
-                          </th>
-                          <th>
-                            <div style="color: #999999;">启用状态</div>
-                          </th>
-                          <th>
-                            <div style="color: #999999;">排序</div>
-                          </th>
+
                         </tr>
                         <template v-if="post_params.goods_sizes.length==0">
                           <a-empty />
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol9">
+                            <tr class="b15 gridCol2">
+                              <!-- <td>
+                                <div class="b16" @click="delGG(index)">删除</div>
+                              </td> -->
+                              <td>
+                                <div>
+                                  <div v-for="iss in item.names" :key="iss">{{iss}}</div>
+                                </div>
+                              </td>
                               <td>
                                 <div style="display: flex;">
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
@@ -866,36 +724,6 @@
                                     </div>
                                   </div>
                                 </div>
-                                <div>
-                                  <div v-for="iss in item.name" :key="iss">{{iss}}</div>
-                                </div>
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.stock" placeholder="请输入库存" />
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.old_price" placeholder="请输入原价" />
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.price" placeholder="输入拼单价" />
-                              </td>
-                              <td>
-                                <a-switch disabled v-model:checked="item.uper_status" checked-children="是"
-                                  un-checked-children="否" />
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.commission" placeholder="输入佣金" />
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.integral_price"
-                                  placeholder="积分抵扣最大金额" />
-                              </td>
-                              <td>
-                                <a-switch disabled v-model:checked="item.status" checked-children="是"
-                                  un-checked-children="否" />
-                              </td>
-                              <td>
-                                <a-input disabled type="text" v-model:value="item.order" placeholder="请输入排序" />
                               </td>
                             </tr>
                           </template>
@@ -977,10 +805,10 @@
                     </a-radio-group>
                   </div>
                 </div>
-                <div class="b19">
+                <!-- <div class="b19">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
-                    <div>运费模板</div>
+                    <div>运费模板{{post_params.carriage_id}}</div>
                   </div>
                   <div class="b21">
                     <div style="display: flex;">
@@ -1024,7 +852,7 @@
                       </template>
                     </template>
                   </div>
-                </div>
+                </div> -->
                 <div class="b26">
                   <div style="display: flex;">
                     <div>库存计件</div>
@@ -1804,7 +1632,9 @@
   .gridCol9 {
     grid-template-columns: repeat(9, minmax(0, 1fr));
   }
-
+  .gridCol2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .gridCol10 {
     grid-template-columns: repeat(10, minmax(0, 1fr));
   }

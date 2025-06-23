@@ -123,10 +123,6 @@
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
-          res.goods_datas.goods_sizes.map((item) => {
-            item.status = item.status == 'Y' ? true : false
-            item.uper_status = item.uper_status == 'Y' ? true : false
-          })
           Object.assign(post_params, res.goods_datas);
           let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
           cn_value.value = []
@@ -134,52 +130,10 @@
             cn_value.value.push(item.value)
           })
           cncChange()//更新左边显示
-          shopGuige.value = JSON.parse(JSON.stringify(parseGoodsSizesToGuige(post_params.goods_sizes)));
         }
       })
   }
 
-  function parseGoodsSizesToGuige(goods_sizes) {
-    const specMap = new Map();
-
-    goods_sizes.forEach(item => {
-      item.name.forEach(entry => {
-        const [labelValue, label] = entry.split('：');
-        if (!specMap.has(labelValue)) {
-          specMap.set(labelValue, new Map());
-        }
-        const valueMap = specMap.get(labelValue);
-        if (!valueMap.has(label)) {
-          valueMap.set(label, {
-            label,
-            imgurl: item.size_image || '',
-            isCustom: false
-          });
-        } else {
-          // 如果已存在但当前 item.size_image 有值，更新 imgurl
-          const existing = valueMap.get(label);
-          if (!existing.imgurl && item.size_image) {
-            existing.imgurl = item.size_image;
-          }
-        }
-      });
-    });
-
-    // 转为响应式友好格式
-    const result = [];
-    for (const [labelValue, valueMap] of specMap.entries()) {
-      const valuesArray = Array.from(valueMap.values());
-      const hasImage = valuesArray.some(v => v.imgurl);
-      result.push({
-        labelValue,
-        value: valuesArray,
-        isSort: false,
-        isUrlimg: hasImage // ✅ 如果当前规格下任意项有图，就设置为 true
-      });
-    }
-
-    return result;
-  }
 
   // 有数据，编辑数据
   if (props.pageData.data.id) {
@@ -479,28 +433,12 @@
           post_params.status = true
           // 重新赋值属性 
           getGoodsTypeList()
-          post_params.services = [
-            // {
-            //   key: '全网低价',
-            //   value: '多平台对比，优惠力度最大'
-            // },
-            // {
-            //   key: '热销爆款',
-            //   value: '热门商品，大家都在买'
-            // }
-          ]
+          post_params.services = []
           post_params.goods_sizes = [
             {
               id: '',//
-              name: '',//名称  
-              stock: '',//库存
-              old_price: '',//原价
-              price: '',//价格
-              uper_status: false,//是否需要推荐官推荐
-              commission: '',//佣金
-              integral_price: '',//可以积分抵扣的最大金额  
-              status: false,//启用状态
-              order: '',//排序  
+              names: '',//名称  
+              size_image: '',//规格图
             },
           ]
           post_params.carriage_id = ''
@@ -1531,7 +1469,10 @@
                   <div class="a95">
                     <div class="a96">
                       <!-- <div>最多配置2个商品规格类型</div> -->
-                      <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
+                      <div style="display: flex;justify-content: space-between;">
+                        <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
+                        <div style="color: #ff0000;">注意：重新填加商品规格类型会重置已有数据！</div>
+                      </div>
                       <div v-for="(item,index) in shopGuige" :key="index" class="a97">
                         <div class="a98">
                           <div style="display: flex;align-items: center;">
