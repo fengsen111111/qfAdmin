@@ -1194,10 +1194,10 @@
               <div v-if="type_Pay.pay_info||shopObj.deposit_money>0" class="a20">
                 <ExclamationCircleOutlined class="a21" />
                 结合店铺经营情况，还需要缴纳
-                <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元,</span>
-                <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
+                <span v-if="type_Pay.pay_info">类目保证金{{type_Pay.trans_amt}}元，</span>
                 <span v-if="shopObj.deposit_money>0">店铺保证金{{shopObj.deposit_money}}元</span>
-                <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">去缴纳</span>
+                <span v-if="type_Pay.pay_info" class="c22" @click="handPay()">去缴纳</span>
+                <!-- <span v-if="shopObj.deposit_money>0" class="a22" @click="czbzj">去缴纳</span> -->
               </div>
             </div>
 
