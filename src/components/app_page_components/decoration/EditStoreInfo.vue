@@ -17,8 +17,8 @@
 			cancelText: global.findLanguage("取消"),
 			okType: "primary",
 			onOk: function () {
-				console.log('返回按钮');
-				emit("djtzmk", '商家信息', '商家资料');
+				// console.log('返回按钮',pageData.page_key);
+				emit("closeChildPage", '111111');
 			},
 		});
 	}

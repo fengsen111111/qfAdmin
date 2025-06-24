@@ -89,7 +89,7 @@
 	}
 	// 重新入驻
 	function cxrz() {
-		global.router.push('/openShop?type=' + shopObj.value.type + '&mobile=' + shopObj.value.mobile + '&password=' + shopObj.value.password+'&open_h_store_account=' + shopObj.value.open_h_store_account)
+		global.router.push('/openShop?type=' + shopObj.value.type + '&mobile=' + shopObj.value.mobile + '&password=' + shopObj.value.password + '&open_h_store_account=' + shopObj.value.open_h_store_account)
 	}
 
 	// 复制店铺编号
@@ -841,7 +841,7 @@
 			okType: "primary",
 			onOk: function () {
 				// 退店进来的店铺详情
-				if (localStorage.getItem('is_out_shop')||is_ptsj.value=='平台') {
+				if (localStorage.getItem('is_out_shop') || is_ptsj.value == '平台') {
 					emit("closeChildPage", pageData.page_key);
 				} else {
 					//其余情况 返回商家列表页
@@ -1092,6 +1092,62 @@
 		localStorage.setItem('rqtz_store_id', shopObj.value.id)
 		emit("djtzmk", key1, key2, key3);
 	}
+
+
+
+	const formzdcz = ref({
+		auto_power_line: '',
+		one_power_money: '',
+		day_max_power_money: '',
+		is_checked: false
+	})
+
+	// 自动充值
+	const zdcz_vis = ref(false)
+
+	function zdczCancel() {
+		formzdcz.value.auto_power_line = ''//低于多少曝光量时自动充值
+		formzdcz.value.one_power_money = ''//单次自动充值金额 仅限整数
+		formzdcz.value.day_max_power_money = ''//每天自动最大充值金额
+		zdcz_vis.value = false
+	}
+	function zdczOk() {
+		if (formzdcz.value.auto_power_line < 1 || formzdcz.value.one_power_money < 1 || formzdcz.value.day_max_power_money < 1) {
+			message.error('请检查输入')
+			return false
+		}
+		global.axios
+			.post('decoration/Setting/setPowerSetting', {
+				store_id: store_id.value,
+				user_id: '',
+				auto_power_line: formzdcz.value.auto_power_line,
+				one_power_money: formzdcz.value.one_power_money,
+				day_max_power_money: formzdcz.value.day_max_power_money,
+			}, global)
+			.then((res) => {
+				console.log('修改曝光配置', res);
+				// message.success('操作成功')
+				// zdczCancel()
+			});
+	}
+	const zdcz_visible = ref(false)
+	const zdcz_content = ref('')
+	// 自动充值协议
+	function zdczFunc() {
+		global.axios
+			.post('decoration/Setting/getRichTextContent', {
+				type: 'auto_charge_power_rule'
+			}, global)
+			.then((res) => {
+				console.log('自动充值协议', res);
+				zdcz_visible.value = true
+				zdcz_content.value = res
+			});
+	}
+	function zdczChange(e) {
+		console.log('e', e.target.checked);
+		formzdcz.value.is_checked = e.target.checked
+	}
 </script>
 
 <template>
@@ -1138,7 +1194,8 @@
 							<div v-if="shopObj.store_type!='a'" class="a33">
 								<div class="a34">营业执照:</div>
 								<div class="a35">
-									<a-image :width="90" :height="90" :src="shopObj.license_image" :preview="{ src: shopObj.license_image }" />
+									<a-image :width="90" :height="90" :src="shopObj.license_image"
+										:preview="{ src: shopObj.license_image }" />
 									<!-- {{shopObj.license_image}} -->
 								</div>
 							</div>
@@ -1321,8 +1378,9 @@
 										<div class="a47">{{Number(shopObj.month_order_number).toLocaleString()}}</div>
 									</div>
 								</div>
-								<div class="a52" @click="rqtz('运营管理','投流与推荐','曝光管理')">
-									<div class="a45">
+
+								<div class="a52">
+									<div class="a45" @click="rqtz('运营管理','投流与推荐','曝光管理')">
 										<img src="../../../../public/resource/image/home/icon8.png"
 											style="width: 24px;height: 24px;position: relative;top:0px;" alt="">
 									</div>
@@ -1333,6 +1391,11 @@
 											<a-button v-if="is_ptsj!='平台'" @click.stop="titleType='资金日志'"
 												style="margin-left: 10px;">去充值</a-button>
 										</div>
+										<div>自动充值曝光量：<span @click="zdcz_vis=true"
+												style="cursor: pointer; color: #0c96f1;">重新设置</span></div>
+										<div>低于{{shopObj.auto_power_line}}曝光量时自动充值; </div>
+										<div>单次自动充值金额{{shopObj.auto_power_line}};</div>
+										<div>每天自动最大充值金额 {{shopObj.auto_power_line}} </div>
 									</div>
 								</div>
 							</div>
@@ -1613,7 +1676,7 @@
 									{{shopObj.id}}</span>
 								<span style="margin-left: 40px;"><span style="margin-right: 30px;">店铺名称</span>
 									{{shopObj.store_name}}</span>
-									<span style="margin-left: 40px;"><span style="margin-right: 30px;">入驻类型</span>
+								<span style="margin-left: 40px;"><span style="margin-right: 30px;">入驻类型</span>
 									{{shopObj.store_type=='a'?'个人店':shopObj.store_type=='b'?'个体工商户':shopObj.store_type=='c'?'企业店':''}}</span>
 								<span style="margin-left: 40px;">
 									<span style="margin-right: 30px;">店铺类型</span>
@@ -1654,6 +1717,41 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- 自动充值协议 -->
+		<a-drawer v-model:visible="zdcz_visible" class="custom-class" title="自动充值协议" placement="right">
+			<div>
+				<span v-html="zdcz_content"></span>
+			</div>
+		</a-drawer>
+		<!-- 设置自动充值 -->
+		<a-modal v-model:visible="zdcz_vis" title="设置自动充值" @ok="zdczOk" @cancel="zdczCancel">
+			<div>
+				<div style="display: flex;align-items: center;margin-top: 10px;">
+					<span style="width: 200px;text-align: right;"><span
+							style="color: #ff0000;">*</span>低于多少曝光量时自动充值：</span>
+					<a-input v-model:value="formzdcz.auto_power_line" type="number" style="width: 200px;" />
+				</div>
+				<div style="display: flex;align-items: center;margin-top: 10px;">
+					<span style="width: 200px;text-align: right;"><span style="color: #ff0000;">*</span>单次自动充值金额
+						仅限整数：</span>
+					<a-input v-model:value="formzdcz.one_power_money" type="number" style="width: 200px;" />
+				</div>
+				<div style="display: flex;align-items: center;margin-top: 10px;">
+					<span style="width: 200px;text-align: right;"><span
+							style="color: #ff0000;">*</span>每天自动最大充值金额：</span>
+					<a-input v-model:value="formzdcz.day_max_power_money" type="number" style="width: 200px;" />
+				</div>
+
+				<div style="display: flex;margin-top: 15px;">
+					<div style="display: flex;align-items: center;margin: 0 auto;">
+						<a-checkbox v-model:checked="formzdcz.is_checked" @change="zdczChange" />
+						<div style="margin-left: 10px;">我已阅读并同意</div>
+						<div @click="zdczFunc" style="color: #1890FF;">《曝光自动充值协议协议》</div>
+					</div>
+				</div>
+			</div>
+		</a-modal>
 
 		<!-- 充值 -->
 		<a-modal v-model:visible="bgl_vis" :title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'"
@@ -2266,7 +2364,8 @@
 		border-radius: 20px;
 		background-color: #0c96f1;
 	}
-	.aok{
+
+	.aok {
 		width: 200px;
 		height: 12px;
 		border-radius: 20px;

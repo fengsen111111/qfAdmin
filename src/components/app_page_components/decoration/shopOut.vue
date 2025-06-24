@@ -4,14 +4,8 @@
 		onBeforeMount,
 		reactive,
 		ref,
-		watch
+		watch,
 	} from "vue";
-	import {
-		FormComponents
-	} from "../../form_components/form";
-	import {
-		TableComponents
-	} from "../../table_components/table";
 	import {
 		message
 	} from 'ant-design-vue';
@@ -153,12 +147,16 @@
 
 	const tz_visible = ref(false) //退店公告弹窗
 
-	let emit = defineEmits(["goLookTD"])
+	let emit = defineEmits(["goLookTD","editMobile"])
 
 	const qtyy = ref('')//退店其他原因
 	// 查看退店
 	function lookTD() {
 		emit("goLookTD");
+	}
+	// 修改手机号
+	function editPhone(){
+		emit("editMobile");
 	}
 	// 撤销退店
 	function outShop() {
@@ -356,7 +354,8 @@
 									<div style="margin-left: 10px;display: flex;align-items: center;">
 										<a-input v-model:value="shopObj.mobile" disabled
 											style="width: 200px;"></a-input>
-										<span style="color: #1890FF;margin-left: 10px;cursor: pointer;">修改手机号</span>
+										<span @click="editPhone"
+											style="color: #1890FF;margin-left: 10px;cursor: pointer;">修改手机号</span>
 									</div>
 								</div>
 								<div style="display: flex;margin-top: 20px;align-items: center;">

@@ -10,7 +10,7 @@
 
   const login_store_id = ref('')//登陆商家id
   setTimeout(() => {
-    login_store_id.value = localStorage.getItem('storeId')*1?localStorage.getItem('storeId'):1
+    login_store_id.value = localStorage.getItem('storeId') * 1 ? localStorage.getItem('storeId') : 1
   }, 1000);
 
   const skeleton_state = reactive({
@@ -214,18 +214,27 @@
 
   //关闭子页面
   function closeChildPage(page_key) {
-    skeleton_state.openedPages.forEach((item, index) => {
-      if (item.page_key === page_key) {
-        skeleton_state.openedPages.splice(index, 1);
-        skeleton_state.openedPages.forEach((parent) => {
-          if (item.parent_page_key === parent.page_key) {
-            setTimeout(function () {
-              setNowPage(parent);
-            }, 50);
-          }
-        });
-      }
-    });
+    // console.log('skeleton_state.openedPages', skeleton_state.openedPages);
+    // console.log('page_key', page_key);
+    // 等于111111，是自定义子页面，删除最后一项记录，打开倒数第二个记录
+    if (page_key == '111111') {
+      skeleton_state.openedPages.splice(skeleton_state.openedPages.length-1, 1);
+      setNowPage(skeleton_state.openedPages[skeleton_state.openedPages.length - 1]);
+    } else {
+      skeleton_state.openedPages.forEach((item, index) => {
+        if (item.page_key === page_key) {
+          skeleton_state.openedPages.splice(index, 1);
+          skeleton_state.openedPages.forEach((parent) => {
+            if (item.parent_page_key === parent.page_key) {
+              setTimeout(function () {
+                setNowPage(parent);
+              }, 50);
+            }
+          });
+        }
+      });
+    }
+
   }
 
   //打开tag
@@ -736,7 +745,7 @@
                     <span>修改商家信息</span>
                   </a-menu-item>
                 </template>
-                
+
                 <a-menu-item @click="logout">
                   <span>退出登陆</span>
                 </a-menu-item>
@@ -768,7 +777,7 @@
           <keep-alive>
             <component :is="allPageComponents[page.type]" :pageData="page" @closeChildPage="closeChildPage"
               @openChildPage="openChildPage" @goLookTD="goLookTD" @djtzmk="djtzmk" @toShopDetails="toShopDetails"
-              @orderLook="orderLook" :skeleton_state="skeleton_state" />
+              @orderLook="orderLook" :skeleton_state="skeleton_state" @editMobile="editStoreInfo" />
           </keep-alive>
         </div>
       </a-layout-content>
