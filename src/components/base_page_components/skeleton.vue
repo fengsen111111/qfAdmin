@@ -838,7 +838,10 @@
                             <div style="font-weight: bold;width: 255px;">{{item.title}}</div>
                             <div>{{item.create_time}}</div>
                           </div>
-                          <div style="margin: 5px 0px;">{{item.content}}</div>
+                          <div style="margin: 5px 0px;">
+                            <!-- {{item.content}} -->
+                             <span v-html="item.content"></span>
+                          </div>
                           <div style="height: 1px;width: 100%;background-color: #f5f5f5;"></div>
                         </div>
                       </div>

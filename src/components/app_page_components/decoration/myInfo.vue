@@ -1017,7 +1017,7 @@
 	const RichTextContentRef = ref()//富文本
 	// 商家违规确定
 	function handsjwgOk() {
-		formSjwg.id = store_id.value
+		formSjwg.store_id = store_id.value
 		formSjwg.content = RichTextContentRef.value.getContent()
 		formRefSjwg.value.validate().then((values) => {
 			console.log('提交的内容：', values)
@@ -1025,13 +1025,11 @@
 				.post('decoration/StoreMsg/addStoreMsg', formSjwg, global)
 				.then((res) => {
 					console.log('商家违规确定', res);
-					if (res.code == 1) {
-						message.success('提交成功')
-						sjwgVis.value = false
-						formSjwg.title = ''
-						formSjwg.content = ''
-						RichTextContentRef.value.clearContent()
-					}
+					message.success('提交成功')
+					sjwgVis.value = false
+					formSjwg.title = ''
+					formSjwg.content = ''
+					RichTextContentRef.value.clearContent()
 				})
 		}).catch(error => {
 			console.log('校验失败:', error)

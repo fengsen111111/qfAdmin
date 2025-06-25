@@ -115,7 +115,7 @@
 			});
 	}
 
-	const shopStatus = ref()
+	const shopStatus = ref({})
 	// 查看当前店铺状态
 	function getOutMsg() {
 		global.axios
@@ -157,17 +157,6 @@
 	// 修改手机号
 	function editPhone(){
 		emit("editMobile");
-	}
-	// 撤销退店
-	function outShop() {
-		global.axios
-			.post('decoration/Store/closeOutApply', {
-				store_id: store_id.value
-			}, global)
-			.then((res) => {
-				console.log('撤销退店', res);
-				getOutMsg()
-			});
 	}
 	// 确认退店
 	function outShopOk() {
@@ -218,7 +207,7 @@
 
 	// 取消退店
 	function _closeOutApply() {
-		if (shopStatus.value.out_process == 'a') {
+		if (shopStatus.value.out_process == 'a'|| !shopStatus.value.out_process) {
 			message.error('当前未申请退店')
 			return false
 		}
@@ -227,18 +216,8 @@
 				store_id: store_id.value
 			}, global)
 			.then((res) => {
-				// message.success('操作成功')
-				global.Modal.confirm({
-					title: global.findLanguage(
-						"操作成功？是否返回上一页！"
-					),
-					okText: global.findLanguage("确定"),
-					cancelText: global.findLanguage("取消"),
-					okType: "primary",
-					onOk: function () {
-						emit("closeChildPage", pageData.page_key);
-					},
-				});
+				message.success('操作成功')
+				getOutMsg()
 			});
 	}
 
@@ -389,8 +368,8 @@
 								<div style="margin-top: 20px;display: flex;">
 									<div style="margin: 0 auto;">
 										<a-button @click="handTo" type="primary">下一步</a-button>
-										<a-button @click="_closeOutApply" type="primary" danger
-											style="margin-left: 20px;">取消退店</a-button>
+										<!-- <a-button v-if="shopStatus.out_process != 'a'&& shopStatus.out_process" @click="_closeOutApply" type="primary" danger
+											style="margin-left: 20px;">取消退店</a-button> -->
 									</div>
 								</div>
 								<!-- 弹框 -->
@@ -604,7 +583,7 @@
 						</div>
 						<div style="display: flex;margin-top: 20px;">
 							<div style="margin: 0 auto;">
-								<a-button @click="outShop">撤销退店申请</a-button>
+								<a-button @click="_closeOutApply">撤销退店申请</a-button>
 							</div>
 						</div>
 					</div>
