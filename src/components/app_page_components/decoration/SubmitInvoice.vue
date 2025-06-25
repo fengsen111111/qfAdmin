@@ -48,11 +48,15 @@
 				console.log('商家提交开票', res);
 			});
 	}
-
+    const page = ref(1)
+    const limit = ref(10)
 	// 商家服务费日志
 	function getStoreMoneyLogList() {
 		global.axios
-			.post('decoration/MoneyLog/getStoreMoneyLogList', {}, global)
+			.post('decoration/MoneyLog/getStoreMoneyLogList', {
+				currentPage:page.value,
+				perPage:limit.value,
+			}, global)
 			.then((res) => {
 				console.log('商家服务费日志', res);
 				dataSource.value = res.list
