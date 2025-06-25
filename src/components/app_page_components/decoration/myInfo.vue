@@ -1489,6 +1489,13 @@
 										style="cursor: pointer;color: #0c96f1;margin-left: 10px;">点击充值</div>
 								</div>
 							</div>
+							<div style="display: flex;">
+								<div class="a67">商家余额：
+								</div>
+								<div style="display: flex;">
+									<div>{{shopObj.avl_bal}}</div>
+								</div>
+							</div>
 						</div>
 
 						<div style="display: flex;align-items: center;">
