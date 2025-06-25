@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, watchEffect, nextTick, onMounted, reactive, inject, defineProps } from 'vue'
+    import { ref, watchEffect, nextTick, onMounted, reactive, inject, defineProps, watch } from 'vue'
     import axios from 'axios'
     import md5 from 'blueimp-md5'
     import JsBarcode from 'jsbarcode'
@@ -16,19 +16,17 @@
     const props = defineProps({
         details: {
             type: Object,
+        },
+        visPrint: {
+            type: Boolean,
+        },
+        orderListDetails: {
+            type: Array
         }
     });
-    setTimeout(() => {
-        console.log('接收到的参数', props.details.id); //接收到的订单详情数据
-        global.axios
-            .post('decoration/Order/printOrder', {
-                order_id: props.details.id
-            }, global)
-            .then((res) => {
-                console.log('当前数据', res.list);
-            });
-    }, 2000);
-
+    watch(() => props.visPrint, (newVal, oldVal) => {
+        visible.value = props.visPrint ? props.visPrint : false
+    });
 
     // 所有可用地址
     const addressList = ref([])
@@ -234,6 +232,7 @@
 
     // 打印快递单弹窗
     const visible = ref(false)
+
     const form = reactive({
         key1: '',
     });
@@ -243,7 +242,7 @@
             const values = await formref.value.validateFields();
             console.log('Success:', values);
             const obj = addressList.value.filter((item) => item.id == form.key1)
-            // console.log('obj', obj[0]);
+            console.log('props.details', props.details);
             // 设置收货地址和发货地址
             paramObj.value.recMan = {
                 name: props.details.address_name,
@@ -255,9 +254,11 @@
                 mobile: obj[0].sender_mobile + '', // 注意是字符串
                 printAddr: obj[0].address + '', // 注意是字符串
             }
-            props.details.goods_list.map((item) => {
-                paramObj.value.cargo = paramObj.value.cargo + item.goods_name + ' ' + item.size_name
-            })
+            if (props.details.goods_list) {
+                props.details.goods_list.map((item) => {
+                    paramObj.value.cargo = paramObj.value.cargo + item.goods_name + ' ' + item.size_name
+                })
+            }
             visible.value = false
             visJc.value = true
         } catch (errorInfo) {
@@ -305,7 +306,8 @@
                             <a-select-option :value="item.id" v-for="item in addressList"
                                 :key="item.id">{{item.address}}</a-select-option>
                         </a-select>
-                        <div @click="handTz('快递物流','商家地址')" style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置</div>
+                        <div @click="handTz('快递物流','商家地址')" style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置
+                        </div>
                     </div>
                 </a-form-item>
             </a-form>
@@ -389,18 +391,6 @@
         <a-modal v-model:visible="visPrint" title="打印快递单" :footer="null" width="800px">
             <div>
                 <div>
-                    <!-- <div style="display: flex;align-items: center;">
-                        <div style="width: 100px;">快递名称</div>
-                        <a-select ref="select" v-model:value="kdmc" placeholder="请选择快递"
-                            style="width: 200px;margin-right: 10px;">
-                            <a-select-option :value="item" v-for="item in ['中通快递','顺丰快递','顺丰同城','极兔速递']"
-                                :key="item">{{item}}</a-select-option>
-                        </a-select>
-                    </div> -->
-                    <!-- <div style="display: flex;margin-top: 10px;">
-                        <div style="width: 100px;">面单余额</div>
-                        <div>33</div>
-                    </div> -->
                     <div style="display: flex;align-items: center;margin-top: 10px;">
                         <div style="width: 100px;">选择打印机</div>
                         <div>
@@ -418,15 +408,26 @@
                             <th scope="col">联系方式</th>
                             <th scope="col">收件地址</th>
                             <th scope="col">备注</th>
-                            <th scope="col">快递单号(暂无)</th>
+                            <th scope="col">快递单号和大写头(暂无)</th>
                         </tr>
-                        <tr>
+                        <!-- 单订单 -->
+                        <tr v-if="details">
                             <td>{{details.address_name}}</td>
                             <td>{{details.address_mobile}}</td>
                             <td>{{details.address}}</td>
                             <td></td>
                             <td></td>
                         </tr>
+                        <!-- 多订单 -->
+                        <template v-if="orderListDetails">
+                            <tr v-for="item in orderListDetails" :key="item.id" >
+                                <td>{{details.address_name}}</td>
+                                <td>{{details.address_mobile}}</td>
+                                <td>{{details.address}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </template>
                     </table>
                 </div>
                 <div style="margin-top: 10px;display: flex;">

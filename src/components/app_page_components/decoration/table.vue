@@ -9,7 +9,7 @@
   const pageData = props.pageData;
   const skeleton_state = props.skeleton_state //
 
-  let emit = defineEmits(["openChildPage", "closeChildPage"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk"]);
 
   function openChildPage(pageData) {
     emit("openChildPage", pageData);
@@ -434,39 +434,6 @@
         });
       }
     }
-    //批量操作
-    if (handleInfo.handleType == "moreRequest") {
-      requestParams = Object.assign({}, requestParams, {
-        selectKeys: table_state.selectKeys,
-      });
-      if (handleInfo.warning) {
-        global.Modal.confirm({
-          title: handleInfo.warning,
-          okText: global.findLanguage("确定"),
-          cancelText: global.findLanguage("取消"),
-          okType: "primary",
-          onOk: function () {
-            global.axios.post(
-              handleInfo.requestUrl,
-              requestParams,
-              global,
-              false,
-              true,
-              refresh
-            );
-          },
-        });
-      } else {
-        global.axios.post(
-          handleInfo.requestUrl,
-          requestParams,
-          global,
-          false,
-          true,
-          refresh
-        );
-      }
-    }
 
     //跳转
     if (handleInfo.handleType == "jump") {
@@ -541,7 +508,6 @@
         parent_page_key: pageData.page_key,
       });
     } else if (handleInfo.handleType == "pcLookGoodsDetails") {
-
       // 阅读商家新商品提醒列表
       global.axios
         .post('decoration/Goods/readNewGoodsNotice', {
@@ -570,8 +536,72 @@
     //弹窗表单
     if (handleInfo.handleType == "openForm") {
     }
+    //批量操作
+    if (handleInfo.handleType == "moreRequest") {
+      requestParams = Object.assign({}, requestParams, {
+        selectKeys: table_state.selectKeys,
+      });
+      if (handleInfo.warning) {
+        global.Modal.confirm({
+          title: handleInfo.warning,
+          okText: global.findLanguage("确定"),
+          cancelText: global.findLanguage("取消"),
+          okType: "primary",
+          onOk: function () {
+            if (handleInfo.buttonType == 'PrintMore') {
+              // 批量打印
+              console.log('批量打印', table_state.selectKeys);
+              orderListDetails.value = []
+              table_state.selectKeys.map((item) => {
+                global.axios.post('decoration/Order/webGetOrderDetail', {
+                  order_id: item,
+                }, global, true).then((res) => {
+                  orderListDetails.value.push(res)
+                })
+              })
+              visPrint.value = false
+              visPrint.value = true
+            } else {
+              global.axios.post(
+                handleInfo.requestUrl,
+                requestParams,
+                global,
+                false,
+                true,
+                refresh
+              );
+            }
+          },
+        });
+      } else {
+        global.axios.post(
+          handleInfo.requestUrl,
+          requestParams,
+          global,
+          false,
+          true,
+          refresh
+        );
+      }
+    }
+    //重新打印
+    if (handleInfo.handleType == "Print") {
+      console.log('重新打印');
+      const obj = table_state.tableData.find((item) => item.id == requestParams.id)
+      console.log('obj', obj);
+      orderDetails.value = obj
+      visPrint.value = false
+      visPrint.value = true
+    }
   }
-
+  import Print from './print.vue'
+  const orderDetails = ref({})//订单信息
+  const orderListDetails = ref([])//订单列表信息
+  const visPrint = ref(false)//打开弹窗
+  // 
+  function sondjtzmk(str, strTwo, strThree) {
+    emit("djtzmk", str, strTwo, strThree);
+  }
   //展开搜索抽屉
   function controlSearch() {
     table_state.search = !table_state.search;
@@ -884,6 +914,11 @@
     </div>
   </a-drawer>
   <!--导出-->
+
+  <!-- 打印 -->
+  <div v-show="false">
+    <Print :details=orderDetails @djtzmk="sondjtzmk" :visPrint="visPrint" :orderListDetails="orderListDetails" />
+  </div>
 
   <!-- 支付弹框 -->
   <a-modal v-model:visible="isPay" :centered="true" @ok="handOKCode" :keyboard="false" title="支付二维码" ok-text="已支付"
