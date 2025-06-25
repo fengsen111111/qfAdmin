@@ -491,14 +491,14 @@
       .then((res) => {
         console.log('获取商家消息列表', res);
         msgList.value = res.list
-        msgTj.value.a = res.list.filter(item => item.type == 'a').length
-        msgTj.value.b = res.list.filter(item => item.type == 'b').length
-        msgTj.value.c = res.list.filter(item => item.type == 'c').length
-        msgTj.value.d = res.list.filter(item => item.type == 'd').length
-        msgTj.value.e = res.list.filter(item => item.type == 'e').length
-        msgTj.value.f = res.list.filter(item => item.type == 'f').length
-        msgTj.value.g = res.list.filter(item => item.type == 'g').length
-        msgTj.value.h = res.list.filter(item => item.type == 'h').length
+        // msgTj.value.a = res.list.filter(item => item.type == 'a').length
+        // msgTj.value.b = res.list.filter(item => item.type == 'b').length
+        // msgTj.value.c = res.list.filter(item => item.type == 'c').length
+        // msgTj.value.d = res.list.filter(item => item.type == 'd').length
+        // msgTj.value.e = res.list.filter(item => item.type == 'e').length
+        // msgTj.value.f = res.list.filter(item => item.type == 'f').length
+        // msgTj.value.g = res.list.filter(item => item.type == 'g').length
+        // msgTj.value.h = res.list.filter(item => item.type == 'h').length
       })
   }
   const sjwdfxxs = ref(0)
@@ -830,25 +830,25 @@
             <a-tabs v-model:activeKey="msgType">
               <a-tab-pane key="1" tab="消息盒子">
                 <div style="display: flex;">
-                  <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;cursor: pointer;">
-                    <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">站内信<span style="color: red;">{{msgTj.a?'('+msgTj.a+')':''}}</span></div>
-                    <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知<span style="color: red;">{{msgTj.b?'('+msgTj.b+')':''}}</span></div>
-                    <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">帐户资金<span style="color: red;">{{msgTj.c?'('+msgTj.c+')':''}}</span></div>
-                    <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警<span style="color: red;">{{msgTj.d?'('+msgTj.d+')':''}}</span></div>
-                    <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规<span style="color: red;">{{msgTj.e?'('+msgTj.e+')':''}}</span></div>
-                    <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知<span style="color: red;">{{msgTj.f?'('+msgTj.f+')':''}}</span></div>
-                    <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广<span style="color: red;">{{msgTj.g?'('+msgTj.g+')':''}}</span></div>
-                    <div @click="editMsgKey('h')" :class="msgKey=='h'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">曝光下架<span style="color: red;">{{msgTj.h?'('+msgTj.h+')':''}}</span></div>
+                  <div class="msgHz">
+                    <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''" class="msgItem">站内信<span
+                        style="color: red;">{{msgTj.a?'('+msgTj.a+')':''}}</span></div>
+                    <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''" class="msgItem">店铺通知<span
+                        style="color: red;">{{msgTj.b?'('+msgTj.b+')':''}}</span></div>
+                    <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''" class="msgItem">帐户资金<span
+                        style="color: red;">{{msgTj.c?'('+msgTj.c+')':''}}</span></div>
+                    <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''" class="msgItem">违规预警<span
+                        style="color: red;">{{msgTj.d?'('+msgTj.d+')':''}}</span></div>
+                    <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''" class="msgItem">店铺违规<span
+                        style="color: red;">{{msgTj.e?'('+msgTj.e+')':''}}</span></div>
+                    <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''" class="msgItem">订单通知<span
+                        style="color: red;">{{msgTj.f?'('+msgTj.f+')':''}}</span></div>
+                    <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''" class="msgItem">店铺推广<span
+                        style="color: red;">{{msgTj.g?'('+msgTj.g+')':''}}</span></div>
+                    <div @click="editMsgKey('h')" :class="msgKey=='h'?'checkKey':''" class="msgItem">曝光下架<span
+                        style="color: red;">{{msgTj.h?'('+msgTj.h+')':''}}</span></div>
                   </div>
-                  <div style="width: 80%;height: 300px;overflow: auto;">
+                  <div style="width: 80%;height: 335px;overflow: auto;">
                     <div>
                       <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id"
                         style="padding: 5px 20px;">
@@ -903,6 +903,18 @@
 </template>
 
 <style lang="less" scoped>
+  .msgHz {
+    width: 20%;
+    border: solid 1px #e8e8e8;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .msgItem {
+    border-bottom: 1px solid #e8e8e8;
+    padding: 10px 0px;
+  }
+
   /* 消息选中样式 */
   .checkKey {
     background-color: #f0f7ff;

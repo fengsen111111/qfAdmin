@@ -1815,7 +1815,7 @@
 					<a-form-item label="违规类型" name="type" :rules="[{ required: true, message: '请选择违规类型' }]">
 						<a-radio-group v-model:value="formSjwg.type" name="radioGroup">
 							<a-radio value="d">违规预警</a-radio>
-							<a-radio value="f">店铺违规</a-radio>
+							<a-radio value="e">店铺违规</a-radio>
 						</a-radio-group>
 					</a-form-item>
 					<a-form-item label="违规详情" name="content" :rules="[{ required: true, message: '请输入违规详情' }]">
