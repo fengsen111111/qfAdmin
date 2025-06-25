@@ -218,7 +218,7 @@
     // console.log('page_key', page_key);
     // 等于111111，是自定义子页面，删除最后一项记录，打开倒数第二个记录
     if (page_key == '111111') {
-      skeleton_state.openedPages.splice(skeleton_state.openedPages.length-1, 1);
+      skeleton_state.openedPages.splice(skeleton_state.openedPages.length - 1, 1);
       setNowPage(skeleton_state.openedPages[skeleton_state.openedPages.length - 1]);
     } else {
       skeleton_state.openedPages.forEach((item, index) => {
@@ -470,6 +470,17 @@
     }, true)
   }
   const msgList = ref([])
+  const msgTj = ref({
+    // a站内信 b店铺通知 c帐户资金 d违规预警 e店铺违规  f订单通知 g店铺推广 h曝光下架  
+    a: 0,//
+    b: 0,//
+    c: 0,//
+    d: 0,//
+    e: 0,//
+    f: 0,//
+    g: 0,//
+    h: 0,//
+  })
   // 获取商家消息列表
   function getUserMsgList() {
     global.axios
@@ -480,6 +491,14 @@
       .then((res) => {
         console.log('获取商家消息列表', res);
         msgList.value = res.list
+        msgTj.value.a = res.list.filter(item => item.type == 'a').length
+        msgTj.value.b = res.list.filter(item => item.type == 'b').length
+        msgTj.value.c = res.list.filter(item => item.type == 'c').length
+        msgTj.value.d = res.list.filter(item => item.type == 'd').length
+        msgTj.value.e = res.list.filter(item => item.type == 'e').length
+        msgTj.value.f = res.list.filter(item => item.type == 'f').length
+        msgTj.value.g = res.list.filter(item => item.type == 'g').length
+        msgTj.value.h = res.list.filter(item => item.type == 'h').length
       })
   }
   const sjwdfxxs = ref(0)
@@ -813,21 +832,21 @@
                 <div style="display: flex;">
                   <div style="width: 20%;border: solid 1px #e8e8e8;text-align: center;cursor: pointer;">
                     <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">站内信</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">站内信<span style="color: red;">{{msgTj.a?'('+msgTj.a+')':''}}</span></div>
                     <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺通知<span style="color: red;">{{msgTj.b?'('+msgTj.b+')':''}}</span></div>
                     <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">帐户资金</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">帐户资金<span style="color: red;">{{msgTj.c?'('+msgTj.c+')':''}}</span></div>
                     <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警</div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">违规预警<span style="color: red;">{{msgTj.d?'('+msgTj.d+')':''}}</span></div>
                     <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规 </div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺违规<span style="color: red;">{{msgTj.e?'('+msgTj.e+')':''}}</span></div>
                     <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知 </div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">订单通知<span style="color: red;">{{msgTj.f?'('+msgTj.f+')':''}}</span></div>
                     <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广 </div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">店铺推广<span style="color: red;">{{msgTj.g?'('+msgTj.g+')':''}}</span></div>
                     <div @click="editMsgKey('h')" :class="msgKey=='h'?'checkKey':''"
-                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">曝光下架 </div>
+                      style="border-bottom: 1px solid #e8e8e8;padding: 10px 0px;">曝光下架<span style="color: red;">{{msgTj.h?'('+msgTj.h+')':''}}</span></div>
                   </div>
                   <div style="width: 80%;height: 300px;overflow: auto;">
                     <div>
@@ -840,7 +859,7 @@
                           </div>
                           <div style="margin: 5px 0px;">
                             <!-- {{item.content}} -->
-                             <span v-html="item.content"></span>
+                            <span v-html="item.content"></span>
                           </div>
                           <div style="height: 1px;width: 100%;background-color: #f5f5f5;"></div>
                         </div>
