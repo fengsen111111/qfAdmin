@@ -104,7 +104,11 @@
       } else {
         type.value = "商家"
         toShopDetails()//前往店铺详情
-        _getUnReadStoreMsgNum()//获取未读商家消息数
+        // _getUnReadStoreMsgNum()//获取未读商家消息数
+        // 设置定时器，每 5 秒执行一次
+        setInterval(() => {
+          _getUnReadStoreMsgNum();
+        }, 5000);
       }
     }, 1000);
   });
@@ -491,14 +495,17 @@
       .then((res) => {
         console.log('获取商家消息列表', res);
         msgList.value = res.list
-        // msgTj.value.a = res.list.filter(item => item.type == 'a').length
-        // msgTj.value.b = res.list.filter(item => item.type == 'b').length
-        // msgTj.value.c = res.list.filter(item => item.type == 'c').length
-        // msgTj.value.d = res.list.filter(item => item.type == 'd').length
-        // msgTj.value.e = res.list.filter(item => item.type == 'e').length
-        // msgTj.value.f = res.list.filter(item => item.type == 'f').length
-        // msgTj.value.g = res.list.filter(item => item.type == 'g').length
-        // msgTj.value.h = res.list.filter(item => item.type == 'h').length
+        if(res.list.length>0){
+          editMsgKey(res.list[0].type)
+        }
+        msgTj.value.a = res.list.filter(item => item.type == 'a').length
+        msgTj.value.b = res.list.filter(item => item.type == 'b').length
+        msgTj.value.c = res.list.filter(item => item.type == 'c').length
+        msgTj.value.d = res.list.filter(item => item.type == 'd').length
+        msgTj.value.e = res.list.filter(item => item.type == 'e').length
+        msgTj.value.f = res.list.filter(item => item.type == 'f').length
+        msgTj.value.g = res.list.filter(item => item.type == 'g').length
+        msgTj.value.h = res.list.filter(item => item.type == 'h').length
       })
   }
   const sjwdfxxs = ref(0)
@@ -511,10 +518,29 @@
         sjwdfxxs.value = res.number
       })
   }
+
+
+
+  const lookMsgObj = ref({})
   // 查看商家消息详情
   function lookDetails(item) {
-    console.log('点击的消息', item);
+    // console.log('点击的消息', item);
     // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
+    global.axios
+      .post('decoration/StoreMsg/getStoreMsgDetail', {
+        id: item.id
+      }, global)
+      .then((res) => {
+        // console.log('查看商家消息详情', res);
+        // a站内信 b店铺通知 c帐户资金 d违规预警 e店铺违规  f订单通知 g店铺推广 h曝光下架  
+        // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
+        if (res.type == 'f') {
+          djtzmk('购物商城', '订单管理')
+          msgVisible.value = false
+        } else {
+          lookMsgObj.value = item
+        }
+      })
   }
 
   const msgCount = ref(0)//未读消息总数
@@ -832,35 +858,36 @@
                 <div style="display: flex;">
                   <div class="msgHz">
                     <div @click="editMsgKey('a')" :class="msgKey=='a'?'checkKey':''" class="msgItem">站内信<span
-                        style="color: red;">{{msgTj.a?'('+msgTj.a+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.a?'('+msgTj.a+')':''}}</span></div>
                     <div @click="editMsgKey('b')" :class="msgKey=='b'?'checkKey':''" class="msgItem">店铺通知<span
-                        style="color: red;">{{msgTj.b?'('+msgTj.b+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.b?'('+msgTj.b+')':''}}</span></div>
                     <div @click="editMsgKey('c')" :class="msgKey=='c'?'checkKey':''" class="msgItem">帐户资金<span
-                        style="color: red;">{{msgTj.c?'('+msgTj.c+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.c?'('+msgTj.c+')':''}}</span></div>
                     <div @click="editMsgKey('d')" :class="msgKey=='d'?'checkKey':''" class="msgItem">违规预警<span
-                        style="color: red;">{{msgTj.d?'('+msgTj.d+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.d?'('+msgTj.d+')':''}}</span></div>
                     <div @click="editMsgKey('e')" :class="msgKey=='e'?'checkKey':''" class="msgItem">店铺违规<span
-                        style="color: red;">{{msgTj.e?'('+msgTj.e+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.e?'('+msgTj.e+')':''}}</span></div>
                     <div @click="editMsgKey('f')" :class="msgKey=='f'?'checkKey':''" class="msgItem">订单通知<span
-                        style="color: red;">{{msgTj.f?'('+msgTj.f+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.f?'('+msgTj.f+')':''}}</span></div>
                     <div @click="editMsgKey('g')" :class="msgKey=='g'?'checkKey':''" class="msgItem">店铺推广<span
-                        style="color: red;">{{msgTj.g?'('+msgTj.g+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.g?'('+msgTj.g+')':''}}</span></div>
                     <div @click="editMsgKey('h')" :class="msgKey=='h'?'checkKey':''" class="msgItem">曝光下架<span
-                        style="color: red;">{{msgTj.h?'('+msgTj.h+')':''}}</span></div>
+                        style="color: #666666;">{{msgTj.h?'('+msgTj.h+')':''}}</span></div>
                   </div>
                   <div style="width: 80%;height: 335px;overflow: auto;">
                     <div>
                       <div @click="lookDetails(item)" v-for="item in dq_type_msgList" :key="item.id"
                         style="padding: 5px 20px;">
+                        <!-- #666666 -->
                         <div style="color: #666666;">
                           <div style="display: flex;justify-content: space-between;">
                             <div style="font-weight: bold;width: 255px;">{{item.title}}</div>
                             <div>{{item.create_time}}</div>
                           </div>
-                          <div style="margin: 5px 0px;">
-                            <!-- {{item.content}} -->
+                          <div style="margin: 5px 0px;" v-if="lookMsgObj.id == item.id">
                             <span v-html="item.content"></span>
                           </div>
+                          <div v-else style="margin: 5px 0px;cursor: pointer;">查看详情</div>
                           <div style="height: 1px;width: 100%;background-color: #f5f5f5;"></div>
                         </div>
                       </div>
