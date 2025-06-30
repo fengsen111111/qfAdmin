@@ -466,7 +466,7 @@
 			})
 	}
 
-	const store_type = ref('a')//商户类型 a个人店 c个体工商户  d企业店
+	const store_type = ref('c')//商户类型 a个人店 c个体工商户  d企业店
 	const buzhou_type = ref(1)//1选择类型 2填写信息
 
 
@@ -698,7 +698,7 @@
 									<span style="font-size: 16px;margin-right: 3px;color: #000000CC;">个人店</span>
 									<span style="font-size: 12px;">（适合无营业执照的商家）</span>
 								</div>
-								<div @click="()=>{store_type='a',huifu_Type='user'}"
+								<!-- <div @click="()=>{store_type='a',huifu_Type='user'}"
 									:style="{ 'border': store_type=='a' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"
 									style="display: flex;align-items: center;padding: 20px;width: 583px;border-radius: 4px;margin-top: 10px;">
 									<a-radio :checked="true" v-if="store_type=='a'"></a-radio>
@@ -707,7 +707,7 @@
 										<div>个人店</div>
 										<div>开通个人汇付，提供「个人身份证」即可入驻</div>
 									</div>
-								</div>
+								</div> -->
 
 								<div @click="()=>{store_type='c',huifu_Type='store'}"
 									:style="{ 'border': store_type=='c' ? '1px solid #407CFF' : '1px solid #e5e5e5' }"

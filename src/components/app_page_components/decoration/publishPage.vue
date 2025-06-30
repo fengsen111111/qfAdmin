@@ -30,11 +30,18 @@
       }
     ],
     goods_sizes: [
-      {
-        id: '',//
-        size_image: '',//商品规格图片  
-        names: [],//名称  
-      },
+      // {
+      //   id: '',//
+      //   size_image: '',//商品规格图片  
+      //   names: [],//名称  
+      //   status: true,//启用状态  
+      //   old_price: 0,//原价  
+      //   price: 0,//价格  
+      //   stock: 0,//库存  
+      //   integral_price: 0,//可以积分抵扣的最大金额  
+      //   uper_status: false,//推荐管是否可推荐  
+      //   commission: 0,//佣金  
+      // },
     ],//商品规格  post_params
     goods_type: 'a',//商品类型 a普通商品 b海外进口 c海外CC个人行邮  
     is_used: 'N',//是否二手 Y是 N不是  
@@ -123,6 +130,10 @@
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
+          res.goods_datas.goods_sizes.map((item) => {
+            item.status = item.status == 'Y' ? true : false
+            item.uper_status = item.uper_status == 'Y' ? true : false
+          })
           Object.assign(post_params, res.goods_datas);
           let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
           cn_value.value = []
@@ -281,7 +292,9 @@
   }
   // 提交商品数据
   function tjShopData() {
-    console.log('提交', post_params, shopGuige.value);
+    // console.log('提交', post_params, shopGuige.value);
+
+
     post_params.goods_size_json_arr = shopGuige.value.map((item) => {
       return {
         name: item.labelValue,
@@ -308,11 +321,24 @@
       pay_info_Vis.value = true
       return false
     }
-    post_params.status = post_params.status == true ? 'Y' : 'N',
-      post_params.goods_sizes.map((item) => {
-        item.uper_status = item.uper_status ? 'Y' : 'N',//是否需要推荐官推荐
-          item.status = item.status ? 'Y' : 'N'//启用状态
-      })
+
+
+    post_params.goods_sizes.map((item) => {
+      if (item.commission > item.price) {
+        message.error('佣金不可大于商品价')
+        return false
+      }
+      if (item.integral_price > item.price) {
+        message.error('积分抵扣最大金额不可大于商品价')
+        return false
+      }
+    })
+
+    post_params.status = post_params.status == true ? 'Y' : 'N'
+    post_params.goods_sizes.map((item) => {
+      item.status = item.status == true ? 'Y' : 'N'//启用状态
+      item.uper_status = item.uper_status == true ? 'Y' : 'N';//是否需要推荐官推荐
+    })
     if (post_params.type_id.value) {
       // 有值就重新拿
       post_params.type_id = post_params.type_id.value.length > 2 ? post_params.type_id.value[2] : post_params.type_id.value
@@ -347,7 +373,8 @@
       message.error('请检查属性是否填写')
       return false
     }
-    console.log('post_params', post_params);
+    // console.log('post_params', post_params);
+
     if (post_params.id) {
       // 说明是编辑商品
       loading()
@@ -435,11 +462,11 @@
           getGoodsTypeList()
           post_params.services = []
           post_params.goods_sizes = [
-            {
-              id: '',//
-              names: '',//名称  
-              size_image: '',//规格图
-            },
+            // {
+            //   id: '',//
+            //   names: '',//名称  
+            //   size_image: '',//规格图
+            // },
           ]
           post_params.carriage_id = ''
           post_params.power_level_id = ''
@@ -1222,7 +1249,7 @@
                       <span>下架</span>
                       <a-switch v-model:checked="post_params.status" style="margin: 0 5px;" />
                       <span>上架</span>
-                      <span style="color: #ff0000;margin-left: 20px;">*选择不上架时，提交数据将在“商品管理”保存为草稿。</span>
+                      <!-- <span style="color: #ff0000;margin-left: 20px;">*选择不上架时，提交数据将在“商品管理”保存为草稿。</span> -->
                     </div>
                   </div>
                 </div>
@@ -1555,14 +1582,14 @@
                   <div class="b10" style="margin-left: 95px;">
                     <div class="b11">
                       <table class="b13">
-                        <tr class="b14 gridCol3">
+                        <tr class="b14 gridCol10">
                           <th>
                             <div style="color: #999999;">操作</div>
                           </th>
                           <th>
                             <div style="display: flex;">
                               <div style="display: flex;margin: 0 auto;">
-                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: red;">*</div>
                                 <div style="color: #999999;">规格名称</div>
                               </div>
                             </div>
@@ -1575,14 +1602,76 @@
                               </div>
                             </div>
                           </th>
-
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">启用状态</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">原价</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">价格</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">库存</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">积分抵扣最大金额</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">推荐官推荐</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">佣金</div>
+                              </div>
+                            </div>
+                          </th>
+                          <!-- <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: #999999;">排序</div>
+                              </div>
+                            </div>
+                          </th> -->
                         </tr>
                         <template v-if="post_params.goods_sizes.length==0">
                           <a-empty />
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol3">
+                            <tr class="b15 gridCol10">
                               <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
                               </td>
@@ -1600,6 +1689,35 @@
                                   </div>
                                 </div>
                               </td>
+                              <td>
+                                <!-- <a-input placeholder="请输入状态"></a-input> -->
+                                <a-switch v-model:checked="item.status" />
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.old_price" :min="0"
+                                  placeholder="原价"></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.price" :min="0" placeholder="价格"></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.stock" :min="0" placeholder="库存"></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.integral_price" :min="0"
+                                  placeholder="积分抵扣的最大金额"></a-input-number>
+                              </td>
+                              <td>
+                                <!-- <a-input  placeholder="请输入推荐管是否可推荐"></a-input> -->
+                                <a-switch v-model:checked="item.uper_status" />
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.commission" :min="0"
+                                  placeholder="佣金"></a-input-number>
+                              </td>
+                              <!-- <td>
+                                <a-input-number v-model:value="item.order" :min="0" placeholder="排序"></a-input-number>
+                              </td> -->
                             </tr>
                           </template>
                         </template>
@@ -1741,35 +1859,6 @@
                     支付成功减库存
                   </div>
                 </div>
-                <div v-show="false" class="b27">
-                  <div style="display: flex;">
-                    <div style="color: red;">*</div>
-                    <div>商品曝光等级</div>
-                  </div>
-                  <div style="margin-left: 20px;">
-                    <a-radio-group v-model:value="post_params.power_level_id" name="radioGroup">
-                      <a-radio :value="item.id" v-for="item in bgdjList"
-                        :key="item.id">{{item.name}}(消耗曝光量：{{item.power}})</a-radio>
-                    </a-radio-group>
-                  </div>
-                </div>
-                <div v-show="false" class="b28">
-                  <div style="display: flex;">
-                    <div style="color: red;">*</div>
-                    <div>曝光时间</div>
-                  </div>
-                  <div style="margin-left: 20px;">
-                    <a-range-picker v-model:value="timeStaEnd" show-time />
-                  </div>
-                </div>
-                <div v-show="false" v-if="props.pageData.data.id" class="b29">
-                  <div class="b30">
-                    <div style="display: flex;">
-                      <div>曝光量</div>
-                    </div>
-                    <a-input-number :min="0" v-model:value="post_params.power" class="b31" placeholder="请输入曝光量" />
-                  </div>
-                </div>
                 <div class="b32">
                   <div style="display: flex;">
                     <div style="color: red;">*</div>
@@ -1789,7 +1878,9 @@
             </div>
 
             <div class="b35">
-              <a-button type="primary" @click="tjShopData()">提交商品数据</a-button>
+              <!-- <a-button type="primary" @click="tjShopData()">提交商品数据</a-button> -->
+              <a-button type="primary" @click="tjShopData()">提交</a-button>
+              <a-button style="margin-left: 20px;">返回</a-button>
             </div>
             <!-- 需提示缴纳保证金 -->
             <a-modal v-model:visible="pay_info_Vis" :footer="null" style="z-index: 8;">
@@ -2802,6 +2893,10 @@
 
   .gridCol10 {
     grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
+  .gridCol11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
   }
 
   .b15 {
