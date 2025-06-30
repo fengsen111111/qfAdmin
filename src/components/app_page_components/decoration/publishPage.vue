@@ -293,8 +293,6 @@
   // 提交商品数据
   function tjShopData() {
     // console.log('提交', post_params, shopGuige.value);
-
-
     post_params.goods_size_json_arr = shopGuige.value.map((item) => {
       return {
         name: item.labelValue,
@@ -417,6 +415,28 @@
         });
     }
     return false
+  }
+
+  // 返回
+  function fhsyy() {
+    if (props.pageData.data.id) {
+      global.Modal.confirm({
+        title: global.findLanguage(
+          "保存成功，点击确定返回上一页！"
+        ),
+        okText: global.findLanguage("确定"),
+        cancelText: global.findLanguage("取消"),
+        okType: "primary",
+        onOk: function () {
+          emit("closeChildPage", pageData.page_key);
+        },
+      });
+    } else {
+      // 没有id就是新增商品
+      setTimeout(() => {
+        emit('editType')
+      }, 2000);
+    }
   }
 
   // 检索字段填写情况
@@ -1880,7 +1900,7 @@
             <div class="b35">
               <!-- <a-button type="primary" @click="tjShopData()">提交商品数据</a-button> -->
               <a-button type="primary" @click="tjShopData()">提交</a-button>
-              <a-button style="margin-left: 20px;">返回</a-button>
+              <a-button @click="fhsyy()" style="margin-left: 20px;">返回</a-button>
             </div>
             <!-- 需提示缴纳保证金 -->
             <a-modal v-model:visible="pay_info_Vis" :footer="null" style="z-index: 8;">

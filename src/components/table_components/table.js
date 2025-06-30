@@ -21,6 +21,8 @@ import TableSimpleForm from './simple-form.vue'
 import TableMore from './more.vue'
 import TableMap from './map.vue'
 import TableGoodsList from './GoodsList.vue'
+import TableStoreMsgContent from './StoreMsgContent.vue'
+
 
 import Input from '../form_components/input.vue'
 import Radio from '../form_components/radio.vue'
@@ -38,5 +40,6 @@ export const TableComponents = {
     TableVarchar, TableCountdown, TableIcon, TableButtons, TableInput, TableTextarea, TableNumber
     , TableImages, TableSwitch, TableSelect, TableMedia, TableLink, TableMore,TableColor,TableMap
     , TableOrder, TableRate, TableRichText, TableRichTextContent, Input, Radio, Date, Time, TableFile,
-    Select, Cascader, Number, Search, Rate, TreeSelect, TableSimpleForm,WebView,TableGoodsList
+    Select, Cascader, Number, Search, Rate, TreeSelect, TableSimpleForm,WebView,TableGoodsList,
+    TableStoreMsgContent
 };
