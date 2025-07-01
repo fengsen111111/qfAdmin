@@ -86,8 +86,10 @@
 
   // });
 
+  let unreadMsgTimer = null;
+
   onMounted(() => {
-    //打开首页
+    // 打开首页
     openPage(
       { value: -1, label: "首页", type: "IndexPage", page_key: "index_page" },
       true
@@ -95,20 +97,20 @@
     setTimeout(() => {
       console.log('global.adminMsg.id', global.adminMsg.id);
       if (global.adminMsg.id == -1) {
-        return false //超管登录
+        return false; // 超管登录
       }
       if (global.adminMsg.id.length == 1) {
-        // 超管id
-        type.value = "平台"
-        return false
+        type.value = "平台";
+        return false;
       } else {
-        type.value = "商家"
-        toShopDetails()//前往店铺详情
-        // _getUnReadStoreMsgNum()//获取未读商家消息数
-        // 设置定时器，每 5 秒执行一次
-        setInterval(() => {
-          _getUnReadStoreMsgNum();
-        }, 5000);
+        type.value = "商家";
+        toShopDetails();
+        // ✅ 如果未设置定时器，则设置一个
+        if (!unreadMsgTimer) {
+          unreadMsgTimer = setInterval(() => {
+            _getUnReadStoreMsgNum();
+          }, 10000);
+        }
       }
     }, 1000);
   });
@@ -495,7 +497,7 @@
       .then((res) => {
         console.log('获取商家消息列表', res);
         msgList.value = res.list
-        if(res.list.length>0){
+        if (res.list.length > 0) {
           editMsgKey(res.list[0].type)
         }
         msgTj.value.a = res.list.filter(item => item.type == 'a').length

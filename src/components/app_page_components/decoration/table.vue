@@ -4,7 +4,7 @@
   import { TableComponents } from "@/components/table_components/table";
   import buttons from './buttons.vue' //表格按钮组
   TableComponents['TableButtons'] = buttons  //替换原来的
-
+  import { Modal } from 'ant-design-vue';
   let props = defineProps(["pageData", "skeleton_state"]);
   const pageData = props.pageData;
   const skeleton_state = props.skeleton_state //
@@ -496,6 +496,34 @@
         return false
       } else if (handleInfo.name == '查看') {
         localStorage.setItem('is_out_shop', true) //退店页面点击查看进入，记录个缓存
+      } else if (handleInfo.name == '发货') {
+        console.log('发货');
+        global.axios
+          .post('decoration/StoreAddress/getStoreAddressList', {
+            store_id: localStorage.getItem('storeId')
+          }, global)
+          .then((res) => {
+            // console.log('商家发货地址', res);
+            let arr = res.list.filter((item) => item.type == 'a')
+            arr = arr.filter((item) => item.status == 'Y')
+            console.log('arr', arr);
+            if (arr.length > 0) {
+              // 有发货地址
+            } else {
+              // 没有发货地址
+              Modal.confirm({
+                title: '您还没有设置发货地址，立即设置?',
+                onOk() {
+                  // console.log('OK');
+                  emit('djtzmk', '快递物流', '商家地址')
+                },
+                onCancel() {
+                  console.log('Cancel');
+                },
+              });
+              return false
+            }
+          })
       } else {
         localStorage.removeItem('is_out_shop') //相反其余页面进入就清除
       }
