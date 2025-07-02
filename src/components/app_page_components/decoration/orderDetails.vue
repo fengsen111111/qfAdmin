@@ -324,9 +324,9 @@
 				</div>
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
-			<div style="padding: 20px;display: flex;">
+			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">
 				<div style="display: flex;margin: 0 auto;">
-					<Print :details=orderDetails @djtzmk="sondjtzmk" />
+					<Print :orderListDetails="[orderDetails]" @djtzmk="sondjtzmk" />
 				</div>
 			</div>
 		</div>

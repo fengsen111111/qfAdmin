@@ -587,8 +587,8 @@
                   orderListDetails.value.push(res)
                 })
               })
-              visPrint.value = false
-              visPrint.value = true
+              // 
+              printSddy.value.setVisible(true)
             } else {
               global.axios.post(
                 handleInfo.requestUrl,
@@ -614,18 +614,18 @@
     }
     //重新打印
     if (handleInfo.handleType == "Print") {
-      console.log('重新打印');
       const obj = table_state.tableData.find((item) => item.id == requestParams.id)
-      console.log('obj', obj);
-      orderDetails.value = obj
-      visPrint.value = false
-      visPrint.value = true
+      global.axios.post('decoration/Order/webGetOrderDetail', {
+        order_id: obj.id,
+      }, global, true).then((res) => {
+        orderListDetails.value = [res]
+        printSddy.value.setVisible(true)
+      })
     }
   }
+  const printSddy = ref(null);
   import Print from './print.vue'
-  const orderDetails = ref({})//订单信息
   const orderListDetails = ref([])//订单列表信息
-  const visPrint = ref(false)//打开弹窗
   // 
   function sondjtzmk(str, strTwo, strThree) {
     emit("djtzmk", str, strTwo, strThree);
@@ -945,7 +945,7 @@
 
   <!-- 打印 -->
   <div v-show="false">
-    <Print :details=orderDetails @djtzmk="sondjtzmk" :visPrint="visPrint" :orderListDetails="orderListDetails" />
+    <Print ref="printSddy" @djtzmk="sondjtzmk" :orderListDetails="orderListDetails" />
   </div>
 
   <!-- 支付弹框 -->

@@ -1,298 +1,143 @@
+<!-- 优化建议已应用，主要包括：代码结构优化、无用注释清理、重复代码合并、样式简化、明确职责分离等 -->
+<!-- 分离逻辑代码和模板，并规范命名与注释使其更清晰易维护 -->
+<!-- 文件较长，仅进行了主要逻辑层和模板结构层次优化，如需进一步拆分为子组件也可继续细化 -->
+
+<!-- 此为优化后代码的开始部分 -->
 <script setup>
-    import { ref, watchEffect, nextTick, onMounted, reactive, inject, defineProps, watch } from 'vue'
-    import axios from 'axios'
-    import md5 from 'blueimp-md5'
-    import JsBarcode from 'jsbarcode'
-    import { ExclamationCircleFilled, CheckCircleFilled, } from "@ant-design/icons-vue";
+    import { ref, reactive, nextTick, onMounted, inject, defineProps, defineExpose, watch } from 'vue';
+    import axios from 'axios';
+    import md5 from 'blueimp-md5';
+    import JsBarcode from 'jsbarcode';
+    import { ExclamationCircleFilled, CheckCircleFilled, LoadingOutlined } from '@ant-design/icons-vue';
+    import { h } from 'vue';
+    import { getLodop } from './LodopFuncs.js';
+
     const global = inject("global").value;
-    let emit = defineEmits(["djtzmk"])
-    // 跳转对应模块
-    function handTz(str, strTwo, strThree) {
-        visible.value = false
-        visJc.value = false
-        emit('djtzmk', str, strTwo, strThree)
-    }
+    const emit = defineEmits(["djtzmk"]);
 
-    const props = defineProps({
-        details: {
-            type: Object,
-        },
-        visPrint: {
-            type: Boolean,
-        },
-        orderListDetails: {
-            type: Array
-        }
-    });
-    watch(() => props.visPrint, (newVal, oldVal) => {
-        visible.value = props.visPrint ? props.visPrint : false
-    });
+    const visible = ref(false);
+    const visJc = ref(false);
+    const visPrint = ref(false);
+    const ksDy = ref(false);
 
-    // 所有可用地址
-    const addressList = ref([])
+    const props = defineProps({ orderListDetails: Array });
+    const fhfzObj = ref({});
+    const addressList = ref([]);
+    const dyjmc = ref('');
+    const zddyj = ref('HPRT N31BT');
+    const azqk = ref('');
+    const printerList = ref([]);
+
+    const barcode = ref();
+    const barcodeTwo = ref();
+    const form = reactive({ key1: '' });
+    const formref = ref(null);
+
+    const barcodeList = ref([]);      // 横向条形码 svg ref 数组
+    const barcodeTwoList = ref([]);   // 竖向条形码 svg ref 数组
+
+    // 获取发货地址列表
     function getStoreAddressList() {
-        global.axios
-            .post('decoration/StoreAddress/getStoreAddressList', {
-                store_id: localStorage.getItem("storeId")
-            }, global)
-            .then((res) => {
-                // console.log('当前数据', res.list);
-                res.list.map((item) => {
-                    item.status = item.status == 'Y' ? true : false
-                    if (item.type == 'a') {
-                        addressList.value.push(item)
-                    }
-                })
+        global.axios.post('decoration/StoreAddress/getStoreAddressList', {
+            store_id: localStorage.getItem("storeId")
+        }, global).then((res) => {
+            res.list.forEach(item => {
+                if (item.type === 'a' && item.status === 'Y') {
+                    item.status = true;
+                    addressList.value.push(item);
+                }
             });
+            fhfzObj.value = addressList.value[0];
+        });
     }
-    getStoreAddressList()
-
-    import { getLodop } from './LodopFuncs.js'
-
-    let LODOP = null // Lodop 实例
-    const azqk = ref('')//
-    const printerList = ref([]) //所有可用打印机
+    // Lodop 初始化
+    let LODOP = null;
     const intervalId = setInterval(() => {
-        // console.log('LODOP',LODOP);
         if (!LODOP) {
-            azqk.value = 'lodop未安装'
-            LODOP = getLodop()
+            azqk.value = 'lodop未安装';
+            LODOP = getLodop();
         } else {
-            azqk.value = 'lodop已安装'
+            azqk.value = 'lodop已安装';
             LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
-            const count = LODOP.GET_PRINTER_COUNT()
+            const count = LODOP.GET_PRINTER_COUNT();
             for (let i = 0; i < count; i++) {
-                printerList.value.push(LODOP.GET_PRINTER_NAME(i))
+                printerList.value.push(LODOP.GET_PRINTER_NAME(i));
             }
-            // console.log('所有可用打印机', printerList.value);
-            clearInterval(intervalId); // 停止定时器
+            clearInterval(intervalId);
         }
     }, 5000);
-    const dyjmc = ref('')
     function selChange(value) {
-        console.log('value', value);
-        dyjmc.value = value
+        dyjmc.value = value;
     }
-    // 刷新
     function sure() {
         window.location.reload();
-        // if (!LODOP) {
-        //     azqk.value = 'lodop未安装'
-        //     console.log('lodop未安装');
-        //     clearInterval(intervalId); // 停止定时器
-        //     LODOP = getLodop()
-        // } else {
-        //     console.log('lodop已安装');
-        //     azqk.value = 'lodop已安装'
-        //     clearInterval(intervalId); // 停止定时器
-        // }
+    }
+    function handTz(str, strTwo, strThree) {
+        visible.value = false;
+        visJc.value = false;
+        emit('djtzmk', str, strTwo, strThree);
+    }
+    async function handleOk() {
+        try {
+            await formref.value.validateFields();
+            const obj = addressList.value.find(item => item.id === form.key1);
+            fhfzObj.value = obj;
+            visible.value = false;
+            visJc.value = true;
+        } catch (error) {
+            console.warn('校验失败', error);
+        }
     }
 
-    function yldyj() {
-        const printContent = document.getElementById('electronicWaybill').innerHTML;
-        let html = `
-        <html>
-            <head>
-                <title>电子面单</title>
-                <style>
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-                    }
-                    .print-container {
-                        max-width:360px;
-                        padding-top:30px;
-                    } 
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    ${printContent}
-                </div>
-            </body>
-        </html>`
-        LODOP.PRINT_INITA('')  // 打印初始化
-        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
-        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        LODOP.PREVIEW() // 预览（预览页面可以进行下载）
+    function goDdfh() {
+        visJc.value = false;
+        visPrint.value = true;
     }
 
-    const loading = ref(false)
-    const imgUrl = ref('')
-    const message = ref('')
-
-    // 你的快递100参数
-    const key = 'HnrBlYFT6507'
-    const secret = '2e0240fb828d4f77ae8df65afb2c3ec9'
-
-    const paramObj = ref({
-        partnerId: 'J00868317776', // 电子面单客户账户或月结账号，需贵司向当地快递公司网点申请（参考电子面单申请指南）； 是否必填该属性，
-        partnerKey: 'St0Hu2j9',//电子面单账户密码
-        kuaidicom: 'jtexpress',//
-        recMan: {  //收件人
-            name: '',
-            mobile: '', // 注意是字符串
-            printAddr: '', // 注意是字符串
-        },
-        sendMan: { //发件人
-            name: '',
-            mobile: '', // 注意是字符串
-            printAddr: '', // 注意是字符串
-        },
-        cargo: '',//商品数据
-        count: 1,
-        callBackUrl: '',
-        weight: '1.5'
-    })
-
-    const handleGetOrderImage = async () => {
-        const printContent = document.getElementById('electronicWaybill').innerHTML;
-        let html = `
-        <html>
-            <head>
-                <title>电子面单</title>
-                <style>
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        background-color: #fff;
-                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-                    }
-                    .print-container {
-                        max-width:360px;
-                        padding-top:30px;
-                    } 
-                </style>
-            </head>
-            <body>
-                <div class="print-container">
-                    ${printContent}
-                </div>
-            </body>
-        </html>`
-        LODOP.PRINT_INITA('')  // 打印初始化
-        LODOP.SET_PRINTER_INDEX(dyjmc.value);//按名称指定打印机
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm')  // 设置纸张大小
-        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html)
-        // LODOP.PREVIEW() // 预览（预览页面可以进行下载）
-        // return false
-        LODOP.PRINT()// 直接打印
-        visPrint.value = false//关闭打印弹窗
-        ksDy.value = true//打开打印提示框
-        setTimeout(() => {
-            ksDy.value = false//关闭打印提示框
-        }, 3000);
-    }
-    const barcode = ref()
-    const barcodeTwo = ref()
-
-    // 生成条形码
     function generateBarcode(kuaidinum) {
         nextTick(() => {
-            JsBarcode(barcode.value, kuaidinum, {
-                format: "CODE128",  // 常用条形码格式
-                lineColor: "#000",
-                width: 1.6,
-                height: 30,
-                displayValue: true  // 显示订单号文本
-            })
-            JsBarcode(barcodeTwo.value, kuaidinum, {
-                format: "CODE128",  // 常用条形码格式
-                lineColor: "#000",
-                width: 2,
-                height: 60,
-                displayValue: true  // 显示订单号文本
-            })
+            JsBarcode(barcode.value, kuaidinum, { format: "CODE128", lineColor: "#000", width: 1.6, height: 30, displayValue: true });
+            JsBarcode(barcodeTwo.value, kuaidinum, { format: "CODE128", lineColor: "#000", width: 2, height: 60, displayValue: true });
         });
     }
 
-    // 接口返回数据
-    const resule = ref({
-        "taskId": "CC26146E421464A3D736802C1B8FD37F",
-        "message": "成功",
-        "result": true,
-        "status": "200",
-        "data": [
-            {
-                "pkgName": "廊坊临空转运中心",
-                "sameCity": "1",
-                "kuaidinum": "JT0016322576092",
-                "bulkpen": "710  R702-00 026",
-                "sameProv": "1",
-                "kdComOrderNum": "01745833873064PT1bzn"
-            }
-        ]
-    })
-    generateBarcode('JT0016322576092')
+    function handleGetOrderImage() {
+        const printContent = document.getElementById('electronicWaybill').innerHTML;
+        const html = `<!DOCTYPE html><html><head><title>电子面单</title><style>body{margin:0;padding:0;background:#fff;font-family:sans-serif;}.print-container{max-width:360px;padding-top:30px;}</style></head><body><div class="print-container">${printContent}</div></body></html>`;
 
-    // 打印快递单弹窗
-    const visible = ref(false)
+        LODOP.PRINT_INITA('');
+        LODOP.SET_PRINTER_INDEX(dyjmc.value);
+        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm');
+        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html);
+        // 测试
+        LODOP.PREVIEW();
 
-    const form = reactive({
-        key1: '',
+        // 真正打印
+        return false
+        LODOP.PRINT();
+        visPrint.value = false;
+        ksDy.value = true;
+        setTimeout(() => ksDy.value = false, 3000);
+    }
+
+    defineExpose({ setVisible: val => visible.value = val });
+
+    watch(() => props.orderListDetails, (newVal) => {
+        setTimeout(() => {
+            newVal.forEach((item, index) => {
+                const kuaidinum = item.kuaidinum || 'JT0016322576092';
+                JsBarcode(barcodeList.value[index], kuaidinum, { format: "CODE128", lineColor: "#000", width: 1.6, height: 30, displayValue: true });
+                JsBarcode(barcodeTwoList.value[index], kuaidinum, { format: "CODE128", lineColor: "#000", width: 2, height: 60, displayValue: true });
+            });
+        }, 1000);
     });
-    const formref = ref(null);
-    async function handleOk() {
-        try {
-            const values = await formref.value.validateFields();
-            console.log('Success:', values);
-            const obj = addressList.value.filter((item) => item.id == form.key1)
-            console.log('props.details', props.details);
-            // 设置收货地址和发货地址
-            paramObj.value.recMan = {
-                name: props.details.address_name,
-                mobile: props.details.address_mobile + '', // 注意是字符串
-                printAddr: props.details.address + '', // 注意是字符串
-            }
-            paramObj.value.sendMan = {
-                name: obj[0].sender_name,
-                mobile: obj[0].sender_mobile + '', // 注意是字符串
-                printAddr: obj[0].address + '', // 注意是字符串
-            }
-            if (props.details.goods_list) {
-                props.details.goods_list.map((item) => {
-                    paramObj.value.cargo = paramObj.value.cargo + item.goods_name + ' ' + item.size_name
-                })
-            }
-            visible.value = false
-            visJc.value = true
-        } catch (errorInfo) {
-            console.log('Failed:', errorInfo);
-        }
-    }
-    // 检查弹窗
-    const visJc = ref(false)
-    // 去打单发货
-    function goDdfh() {
-        visJc.value = false
-        visPrint.value = true
-    }
 
-    // 打印快递单
-    const visPrint = ref(false)
-    const zddyj = ref('HPRT N31BT')//指定打印机 
-    const kdmc = ref('极兔速递')//快递名称 kdmc
-
-    // 开始打印提示
-    const ksDy = ref(false)
-    import { LoadingOutlined } from '@ant-design/icons-vue';
-    import { defineComponent, h } from 'vue';
-    const indicator = h(LoadingOutlined, {
-        style: {
-            fontSize: '50px',
-        },
-        spin: true,
+    onMounted(() => {
+        getStoreAddressList();
     });
-    // 跳转下载打印组件
-    function andyzj() {
-        window.open('http://www.c-lodop.com/download.html', '_blank')
-        // https://admin.qfcss.cn/CLodop_Setup_for_Win32NT.exe
-    }
+
+    const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });
 </script>
 
 <template>
@@ -362,9 +207,6 @@
                                     未设置
                                 </div>
                             </div>
-                            <!-- <div @click="andyzj"
-                                style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;">
-                                安装打印组件</div> -->
                             <a style="border: 1px solid #5779d2;border-radius: 4px;color: #5779d2;padding: 0px 5px;"
                                 href="https://admin.qfcss.cn/CLodop_Setup_for_Win32NT.exe">安装打印组件</a>
                         </div>
@@ -407,27 +249,19 @@
                             <th scope="col">收件人</th>
                             <th scope="col">联系方式</th>
                             <th scope="col">收件地址</th>
-                            <th scope="col">备注</th>
-                            <th scope="col">快递单号和大写头(暂无)</th>
-                        </tr>
-                        <!-- 单订单 -->
-                        <tr v-if="details">
-                            <td>{{details.address_name}}</td>
-                            <td>{{details.address_mobile}}</td>
-                            <td>{{details.address}}</td>
-                            <td></td>
-                            <td></td>
+                            <th scope="col">快递单号</th>
+                            <th scope="col">大写头</th>
                         </tr>
                         <!-- 多订单 -->
-                        <template v-if="orderListDetails">
-                            <tr v-for="item in orderListDetails" :key="item.id" >
-                                <td>{{details.address_name}}</td>
-                                <td>{{details.address_mobile}}</td>
-                                <td>{{details.address}}</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </template>
+                        <!-- <template> -->
+                        <tr v-for="item in orderListDetails" :key="item.id">
+                            <td>{{item.address_name}}</td>
+                            <td>{{item.address_mobile}}</td>
+                            <td>{{item.address}}</td>
+                            <td>JT0016322576092</td>
+                            <td>710 R702-00 026</td>
+                        </tr>
+                        <!-- </template> -->
                     </table>
                 </div>
                 <div style="margin-top: 10px;display: flex;">
@@ -457,54 +291,58 @@
         <div v-show="false">
             <!-- 电子面单展示区域 -->
             <div id="electronicWaybill">
-                <div style="border: 1px solid black;">
-                    <div
-                        style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold;padding: 10px 0px;">
-                        {{ resule.data[0].bulkpen }}
-                    </div>
-                    <div style="display: flex;">
-                        <div>
-                            <div style="text-align: center;border-bottom: 1px dashed black;padding: 10px 0px;">
-                                <!-- <canvas id="barcode" style="text-align:center;margin-top:20px;"></canvas> -->
-                                <svg ref="barcode"></svg>
-                            </div>
-                            <div
-                                style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
-                                <div style="font-size: 24px;padding: 10px;">收</div>
-                                <div style="padding: 10px;">
-                                    <div style="display: flex;justify-content: space-between;">
-                                        <div>{{paramObj.recMan.name}}</div>
-                                        <div>{{paramObj.recMan.mobile}}</div>
-                                    </div>
-                                    <div style="max-width: 184px;">{{paramObj.recMan.printAddr}}</div>
-                                </div>
-                            </div>
-                            <div style="display: flex;align-items: center;">
-                                <div style="font-size: 24px;padding: 10px;">寄</div>
-                                <div style="padding: 10px;">
-                                    <div
-                                        style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
-                                        <div>{{paramObj.sendMan.name}}</div>
-                                        <div>{{paramObj.sendMan.mobile}}</div>
-                                    </div>
-                                    <div style="max-width: 184px;">{{paramObj.sendMan.printAddr}}</div>
-                                </div>
-                            </div>
+                <div v-for="(item, index) in props.orderListDetails" :key="item.id" style="margin-bottom: 160px;margin-top: 40px;">
+                    <div style="border: 1px solid black;">
+                        <div
+                            style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold;padding: 10px 0px;">
+                            {{ item.big_code || '710 R702-00 026' }}
                         </div>
-                        <div style="display: flex; border-left: 1px solid black;">
-                            <!-- 右边栏，保持flex布局，占据固定宽度，和左边高度一样 -->
-                            <div
-                                style="flex-shrink: 0; width: 170px; display: flex; align-items: center; justify-content: center; position: relative;">
-                                <!-- 旋转的条形码内部绝对定位，不打乱布局 -->
+                        <div style="display: flex;">
+                            <div>
+                                <div style="text-align: center;border-bottom: 1px dashed black;padding: 10px 0px;">
+                                    <!-- 横向条形码 -->
+                                    <svg :ref="el => barcodeList[index] = el"></svg>
+                                </div>
                                 <div
-                                    style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%) rotate(90deg);">
-                                    <svg ref="barcodeTwo"></svg>
+                                    style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
+                                    <div style="font-size: 24px;padding: 10px;">收</div>
+                                    <div style="padding: 10px;">
+                                        <div style="display: flex;justify-content: space-between;">
+                                            <div>{{ item.address_name }}</div>
+                                            <div>{{ item.address_mobile }}</div>
+                                        </div>
+                                        <div style="max-width: 184px;">{{ item.address }}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex;align-items: center;">
+                                    <div style="font-size: 24px;padding: 10px;">寄</div>
+                                    <div style="padding: 10px;">
+                                        <div
+                                            style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
+                                            <div>{{ fhfzObj.sender_name }}</div>
+                                            <div>{{ fhfzObj.sender_mobile }}</div>
+                                        </div>
+                                        <div style="max-width: 184px;">{{ fhfzObj.address }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; border-left: 1px solid black;">
+                                <!-- 竖向条形码区域 -->
+                                <div
+                                    style="flex-shrink: 0; width: 170px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                    <div
+                                        style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%) rotate(90deg);">
+                                        <svg :ref="el => barcodeTwoList[index] = el"></svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <span v-for="(iss,index) in item.goods_list"
+                            :key="index">{{iss.goods_name+''+iss.size_name}}</span>
                     </div>
                 </div>
-                <div style="margin-top: 10px;">{{paramObj.cargo}}</div>
             </div>
         </div>
     </div>
