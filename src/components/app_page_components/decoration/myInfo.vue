@@ -2002,9 +2002,9 @@
 								:rules="[{ required: true, message: '请输入支行联行号' }]">
 								<div style="display: flex;align-items: center;">
 									<a-input v-model:value="formStateBank.branch_code" />
-									<div @click="xzlhh()"
+									<!-- <div @click="xzlhh()"
 										style="margin-left: 10px;color: #0c96f1;white-space: nowrap;cursor: pointer;">
-										查询</div>
+										查询</div> -->
 								</div>
 							</a-form-item>
 						</a-col>
