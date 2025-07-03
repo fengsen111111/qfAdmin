@@ -269,11 +269,11 @@
 	function _submitEntryApply() {
 		if (localStorage.getItem('Authorization')) {
 			// true 商家已开通，汇付已开通  ，被拒绝的商户
-			if (is_open_h_store_account) {
+			if(is_open_h_store_account){
 				kaitongshangjia() //重新入驻
-			} else {
+			}else{
 				// 已提交商家，汇付提交失败，重新提交汇付
-				kaitonghuifu()
+		    	kaitonghuifu()
 			}
 		} else {
 			// 开通商家
@@ -354,7 +354,6 @@
 		} else {
 			console.log('通过校验');
 		}
-		spinning.value = true
 		global.axios
 			.post('decoration/Store/submitEntryApply', {
 				"check_status": 'b',
@@ -376,18 +375,17 @@
 				"admin_login_password": admin_login_password.value
 			}, global)
 			.then((res) => {
-				spinning.value = false
 				console.log('申请入驻', res);
 				global.axios.post('factory_system/Base/login', {
 					account: mobile.value,
 					password: admin_login_password.value
 				}, global)
 					.then(res => {
-						console.log('登陆成功', is_open_h_store_account.value);
+						console.log('登陆成功',is_open_h_store_account.value);
 						localStorage.setItem('Authorization', res.token);
-						if (is_open_h_store_account.value) {
+						if(is_open_h_store_account.value){
 							resule_vis.value = true //提示信息
-						} else {
+						}else{
 							kaitonghuifu()
 						}
 					})
@@ -416,10 +414,8 @@
 					if (params.legal_cert_end_date) {
 						params.legal_cert_end_date = params.legal_cert_end_date.format('YYYYMMDD')
 					}
-					spinning.value = true
 					global.axios.post('decoration/Store/openStoreHAccount', params, global, true).then((res) => {
 						// 跳转首页
-						spinning.value = false
 						resule_vis.value = true
 					})
 
@@ -440,9 +436,7 @@
 					if (params.cert_end_date) {
 						params.cert_end_date = params.cert_end_date.format('YYYYMMDD')
 					}
-					spinning.value = true
 					global.axios.post('decoration/User/openUserHAccount', params, global, true).then((res) => {
-						spinning.value = false
 						resule_vis.value = true
 					})
 				})
@@ -484,7 +478,7 @@
 	}
 	if (route.query.open_h_store_account) {
 		is_open_h_store_account.value = route.query.open_h_store_account == 'a' ? false : true
-	} else {
+	}else{
 		is_open_h_store_account.value = false
 	}
 
@@ -658,85 +652,11 @@
 			});
 	}
 	getAreas()
-
-	const isQyrz = ref(false)//是否企业认证
-	const rztcVis = ref(false)//确认认证弹窗
-	// 打开认证
-	function openRzVis() {
-		// name  id_card_number
-		if (!name.value) {
-			message.error('请输入开店人姓名')
-			return false
-		}
-		if (!id_card_number.value) {
-			message.error('请输入开店人身份证号')
-			return false
-		}
-		if (!formState.license_code) {
-			message.error('请输入营业执照编号')
-			return false
-		}
-		if (!formState.reg_name) {
-			message.error('请输入企业名称')
-			return false
-		}
-		rztcVis.value = true
-	}
-	// 企业认证
-	function _qyrz() {
-		spinning.value = true
-		// 身份认证
-		global.axios
-			.post('aly/api-mall/api/id_card/check', {
-				"name": name.value,//姓名
-				"idcard": id_card_number.value,//身份证号
-			}, global)
-			.then((res) => {
-				console.log('身份校验', res);
-				if (res.code != 200) {
-					spinning.value = false
-					message.error(res.msg)
-					return false
-				}
-				if (res.data.result == '0') {
-					message.success('身份认证通过')
-					setTimeout(() => {
-						// 企业二要素校验
-						global.axios
-							.post('aly/company_two/check', {
-								"creditCode ": formState.license_code,//统一社会信用代码
-								"companyName ": formState.reg_name,//企业名称
-							}, global)
-							.then((res) => {
-								spinning.value = false
-								console.log('企业二要素校验', res);
-								if (res.code != 200) {
-									message.error(res.msg)
-									return false
-								}
-								if (res.data.result == '1') {
-									message.success('企业认证通过')
-									rztcVis.value = false
-									isQyrz.value = true
-								} else if (res.data.result == '0') {
-									message.error('统一社会信用代码有误')
-								} else if (res.data.result == '2') {
-									message.error('营业执照与企业名称不一致')
-								}
-							})
-					}, 1000);
-				} else if (res.data.result == '1') {
-					spinning.value = false
-					message.error('姓名身份证号不一致')
-				}
-			})
-	}
-
 </script>
 
 <template>
+	<!--搜索-->
 	<a-spin :spinning="spinning">
-		<!--搜索-->
 		<div>
 			<div v-if="route.path!='/'" style="background-color: #323242;height: 8vh;display: flex;">
 				<div
@@ -1210,7 +1130,7 @@
 											style="margin-left: 10px;width: 300px;" />
 									</div>
 								</a-popover>
-
+								
 
 								<div v-if="!is_open_h_store_account">
 									<!--  -->
@@ -1388,54 +1308,11 @@
 									<div @click="buzhou_type=1" style="color: #1890FF;">
 										<LeftOutlined style="color: #1890FF;" />上一步
 									</div>
-
-									<div v-if="isQyrz">
-										<a-button @click="_submitEntryApply" type="primary"
-											style="font-size: 15px !important;padding: 8px 40px;"
-											size="large">提交</a-button>
-									</div>
-									<div v-else>
-										<a-button @click="openRzVis" type="primary"
-											style="font-size: 15px !important;padding: 8px 40px;"
-											size="large">开始认证</a-button>
-									</div>
+									<a-button @click="_submitEntryApply" type="primary"
+										style="font-size: 15px !important;padding: 8px 40px;" size="large">提交</a-button>
 									<div></div>
 								</div>
 								<!-- <div @click="resule_vis=true">入驻成功</div> -->
-								<!-- 确认信息开始认证 -->
-								<a-modal :visible="rztcVis" @ok="_qyrz" width="450px" centered @cancel="rztcVis=false">
-									<a-spin :spinning="spinning">
-										<div style="display: flex;">
-											<div style="margin: 0 auto;display: flex;align-items: center;">
-												<div style="font-size: 20px;">确认认证资料</div>
-											</div>
-										</div>
-										<a-alert message="确认资料无误后请点击确认提交" type="warning" show-icon
-											style="padding: 5px 10px !important;margin-top: 10px;" />
-										<div style="display: flex;margin-top: 20px;">
-											<span style="width: 180px;text-align: right;">企业名称： </span>
-											<div>
-												<div>{{formState.reg_name}}</div>
-											</div>
-										</div>
-										<div style="display: flex;margin-top: 10px;">
-											<div style="width: 180px;text-align: right;">营业执照编号： </div>
-											<div>{{formState.license_code}}</div>
-										</div>
-										<div style="display: flex;margin-top: 20px;">
-											<span style="width: 180px;text-align: right;">开店人姓名： </span>
-											<div>
-												<div>{{name}}</div>
-											</div>
-										</div>
-										<div style="display: flex;margin-top: 20px;">
-											<span style="width: 180px;text-align: right;">开店人身份证号： </span>
-											<div>
-												<div>{{id_card_number}}</div>
-											</div>
-										</div>
-									</a-spin>
-								</a-modal>
 								<!-- 入驻成功弹框 -->
 								<a-modal v-model:visible="resule_vis" @ok="toHome" width="450px" centered
 									@cancel="handUrl('/login')" cancelText="返回登录">

@@ -13,8 +13,16 @@ const httpService = axios.create();
 httpService.interceptors.request.use(
     (config) => {
         // 让每个请求携带token
-        config.headers["Authorization"] = localStorage.getItem("Authorization");
-        config.headers["Content-Type"] = "application/json;charset=UTF-8";
+        console.log('config',config);
+        
+        if (config.url == 'https://kzcptwo.market.alicloudapi.com/company_two/check'||config.url == 'https://kzidcardv1.market.alicloudapi.com/api-mall/api/id_card/check') { // 阿里云企业认证二要素
+            config.headers["Authorization"] = 'APPCODE ' + '366b25062af24d76b52e60924ba0c7fc'
+            config.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+        }else {
+            config.headers["Authorization"] = localStorage.getItem("Authorization");
+            config.headers["Content-Type"] = "application/json;charset=UTF-8";
+        }
+
         return config;
     },
     (error) => {
@@ -26,6 +34,13 @@ httpService.interceptors.request.use(
 // respone拦截器
 httpService.interceptors.response.use(
     (response) => {
+        console.log('response',response);
+        if(response.config.url == 'https://kzcptwo.market.alicloudapi.com/company_two/check'){
+            return response.data; //企业认证
+        }
+        if(response.config.url == 'https://kzidcardv1.market.alicloudapi.com/api-mall/api/id_card/check'){
+            return response.data;//开店人认证
+        }
         let res = null;
         if (APPConfig.RSA === false) {
             res = response.data;
@@ -127,15 +142,35 @@ export function post(url, params = {}, global, loading = true, rsa_status = true
     let rsa_result = rsaEncode(params, rsa_status);
     let response_result = false;
     return new Promise((resolve, reject) => {
+        console.log('请求前', url);
+        let query = {}
+        if (url == 'aly/company_two/check') { //企业认证
+            requestUrl = 'https://kzcptwo.market.alicloudapi.com/company_two/check'
+            query = {
+                ...rsa_result.params,
+                rsa: rsa_result.rsa_params_status,
+            }
+        }else if (url == 'aly/api-mall/api/id_card/check') { //开店人认证
+            requestUrl = 'https://kzidcardv1.market.alicloudapi.com/api-mall/api/id_card/check'
+            query = {
+                ...rsa_result.params,
+                rsa: rsa_result.rsa_params_status,
+            }
+        } else {
+            requestUrl= requestUrl
+            query = {
+                post_params: rsa_result.params,
+                rsa: rsa_result.rsa_params_status,
+            }
+        }
+
         httpService({
             url: requestUrl,
             method: "post",
-            data: {
-                post_params: rsa_result.params,
-                rsa: rsa_result.rsa_params_status,
-            },
+            data: query,
         })
             .then((response) => {
+                // console.log('response111',response);
                 response_result = response;
                 if (action) action(response_result);
                 resolve(response);
@@ -280,7 +315,7 @@ function handleError(error) {
             router.push("/login");
         }
         if (error.status === -2) {
-            message.error(error.message?findLanguageFunction(error.message):'账号删除/禁用，联系管理员');
+            message.error(error.message ? findLanguageFunction(error.message) : '账号删除/禁用，联系管理员');
             setTimeout(() => {
                 localStorage.removeItem("Authorization");
                 router.push("/login");
