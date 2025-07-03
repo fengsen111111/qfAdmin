@@ -34,6 +34,9 @@ import EditStoreInfo from '@/components/app_page_components/decoration/EditStore
 import SubmitInvoice from '@/components/app_page_components/decoration/SubmitInvoice.vue'//地址管理
 
 
+import courierManagement from '@/components/app_page_components/decoration/courierManagement.vue'//快递管理
+
+
 export const allPageComponents = {
     SubmitInvoice,
     capitalAccount,
@@ -45,7 +48,8 @@ export const allPageComponents = {
     AddNewGoodsPage,myInfo,addressManage,
     userDetails,orderDetails,
     pcLookGoodsDetails,
-    EditStoreInfo
+    EditStoreInfo,
+    courierManagement
 }
 
 // 项目名称：快鹿送酒
