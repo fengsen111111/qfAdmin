@@ -124,6 +124,7 @@
 			}, global)
 			.then((res) => {
 				shopStatus.value = res
+				deadline.value = new Date(res.create_time.replace(/-/g, '/')).getTime() + 1000 * 60 * 60 * 24 * 30;
 				console.log('查看当前店铺状态', res);
 				// 进程 a未申请 b公示中 c材料审核中 d待商家确认退店 e待退款  f已退款 
 				if (res.out_process == 'a') {
@@ -147,7 +148,7 @@
 
 	const tz_visible = ref(false) //退店公告弹窗
 
-	let emit = defineEmits(["goLookTD","editMobile"])
+	let emit = defineEmits(["goLookTD", "editMobile"])
 
 	const qtyy = ref('')//退店其他原因
 	// 查看退店
@@ -155,7 +156,7 @@
 		emit("goLookTD");
 	}
 	// 修改手机号
-	function editPhone(){
+	function editPhone() {
 		emit("editMobile");
 	}
 	// 确认退店
@@ -207,7 +208,7 @@
 
 	// 取消退店
 	function _closeOutApply() {
-		if (shopStatus.value.out_process == 'a'|| !shopStatus.value.out_process) {
+		if (shopStatus.value.out_process == 'a' || !shopStatus.value.out_process) {
 			message.error('当前未申请退店')
 			return false
 		}
@@ -218,6 +219,7 @@
 			.then((res) => {
 				message.success('操作成功')
 				getOutMsg()
+				current.value = 0
 			});
 	}
 
@@ -283,7 +285,7 @@
 				<div v-if="current==0">
 					<div style="font-size: 16px;">请验证店铺绑定手机号并填写退店原因</div>
 					<div style="color: #ff7300;margin-top: 10px;">您的贷款余额，保证金，广告账户余额，均将在退店审核成功后全部退还至绑定银行卡，无需额外缴纳保证金</div>
-					<div style="color: #ff7300;">申请退店后所有状态为「推广中」的广告推广，流量将暂停:不支持新建推广、报名活动。不再下发广告红包。撤销退店后，申请退店期间的广告红包不会补发。
+					<div style="color: #ff7300;">申请退店后所有状态为「推广中」的商品推广，流量将暂停；不支持新建推广、报名活动。不再下发广告红包。撤销退店后，申请退店期间的广告红包不会补发。
 					</div>
 					<div>
 						<div style="display: flex;width: 100%;">
@@ -400,12 +402,6 @@
 											</div>
 											<div>在申请退店后需进行30天的退店公示，店铺首页会有退店公告展示;</div>
 										</div>
-										<!-- <div style="display: flex;align-items: center;">
-											<div
-												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
-											</div>
-											<div>未有成团订单的商家在完成退店处理环节后，将跳过材料审核环节，直接进入退款环节，且不可撤销退店;</div>
-										</div> -->
 										<div style="display: flex;align-items: center;">
 											<div
 												style="width: 10px;height: 10px;border-radius: 10px;background-color: #ff7300;margin-right: 5px;">
@@ -476,13 +472,6 @@
 										</td>
 										<td>无</td>
 										<td>无</td>
-										<!-- <td>关闭推广账户</td>
-										<td>请点击此链接<span style="color: #1890FF;">「关闭推广账户」</span>操作，自行前往推广平台暂停或删除推广无法关闭帐户
-										</td>
-									</tr>
-									<tr>
-										<td>店铺存在欠费</td>
-										<td>联系商家客服或者对接运营</td> -->
 									</tr>
 									<tr>
 										<td>
@@ -520,34 +509,13 @@
 										<td>无</td>
 										<td>无</td>
 									</tr>
-									<!-- <tr>
-										<td>
-											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
-												服务已关闭
-											</div>
-										</td>
-										<td>无</td>
-										<td>无</td>
-									</tr>
 									<tr>
 										<td>
 											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
-												活动已结束
-											</div>
-										</td>
-										<td>无</td>
-										<td>无</td>
-									</tr> -->
-									<tr>
-										<td>
-											<div style="display: flex;align-items: center;">
-												<CheckCircleOutlined v-if="shopStatus.notice=='N'"
+												<!-- <CheckCircleOutlined v-if="shopStatus.notice=='N'"
 													style="color: green;margin-right: 5px;" />
-												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" />
+												<CloseCircleOutlined v-else style="color: red;margin-right: 5px;" /> -->
+												<CloseCircleOutlined style="color: red;margin-right: 5px;" />
 												退店已公告
 											</div>
 										</td>
@@ -602,7 +570,7 @@
 						<div style="font-weight: bold;margin-top: 20px;">材料已通过，请确认是否退店！</div>
 						<div style="display: flex;margin-top: 20px;">
 							<div style="margin: 0 auto;">
-								<a-button @click="outShop">撤销退店申请</a-button>
+								<a-button @click="_closeOutApply">撤销退店申请</a-button>
 								<a-button @click="outShopOk" danger style="margin-left: 20px;">确认退店</a-button>
 							</div>
 						</div>
