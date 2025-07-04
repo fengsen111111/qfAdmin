@@ -1961,11 +1961,15 @@
 			</div>
 		</a-modal>
 		<!-- 绑定商家银行卡 -->
-		<a-modal v-model:visible="bank_vis" :title="'绑定商家提现银行卡'" width="1000px" @ok="handBankOk">
+		<a-modal v-model:visible="bank_vis" :title="'绑定商家提现银行卡'" width="800px" @ok="handBankOk">
 			<div>
 				<a-form :model="formStateBank" ref="formRefBank" name="basic" :label-col="{ span: 10 }"
 					:wrapper-col="{ span: 14 }">
 					<a-row>
+						<a-col :span="24">
+							<div style="font-size: 18px;font-weight: bold;">对公账户</div>
+							<div style="background-color: #000000;height: 1px;margin: 10px 0px;"></div>
+						</a-col>
 						<a-col :span="12">
 							<a-form-item label="卡户名" name="card_name" :rules="[{ required: true, message: '请输入卡户名' }]">
 								<a-input v-model:value="formStateBank.card_name" />
@@ -1982,6 +1986,15 @@
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
+							<a-form-item label="开户银行" name="bank_code"
+								:rules="[{ required: true, message: '请输入开户银行' }]">
+								<a-select ref="select" v-model:value="formStateBank.bank_code" style="width: 100%">
+									<a-select-option :value="item.value" v-for="item in bankCodes"
+										:key="item.value">{{item.text}}</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
 							<a-form-item label="银行所在地址" name="regAddress"
 								:rules="[{ required: true, message: '请输入银行所在地址' }]">
 								<a-cascader v-model:value="formStateBank.regAddress" :options="treeData"
@@ -1989,14 +2002,7 @@
 									placeholder="请输入银行所在地址" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
-							<a-form-item label="银行号" name="bank_code" :rules="[{ required: true, message: '请输入银行号' }]">
-								<a-select ref="select" v-model:value="formStateBank.bank_code" style="width: 100%">
-									<a-select-option :value="item.value" v-for="item in bankCodes"
-										:key="item.value">{{item.text}}</a-select-option>
-								</a-select>
-							</a-form-item>
-						</a-col>
+
 						<a-col :span="12">
 							<a-form-item label="支行联行号" name="branch_code"
 								:rules="[{ required: true, message: '请输入支行联行号' }]">
@@ -2007,6 +2013,10 @@
 										查询</div> -->
 								</div>
 							</a-form-item>
+						</a-col>
+						<a-col :span="24">
+							<div style="font-size: 18px;font-weight: bold;">持卡人信息</div>
+							<div style="background-color: #000000;height: 1px;margin: 10px 0px;"></div>
 						</a-col>
 						<a-col :span="12">
 							<a-form-item label="持卡人身份证号码" name="cert_no"
