@@ -1110,6 +1110,10 @@
 		zdcz_vis.value = false
 	}
 	function zdczOk() {
+		if (!formzdcz.value.is_checked) {
+			message.error('请阅读并勾选协议')
+			return false
+		}
 		if (formzdcz.value.auto_power_line < 1 || formzdcz.value.one_power_money < 1 || formzdcz.value.day_max_power_money < 1) {
 			message.error('请检查输入')
 			return false
@@ -1125,12 +1129,10 @@
 			.then((res) => {
 				console.log('修改曝光配置', res);
 				message.success('操作成功')
+				shopObj.value.auto_power_line = formzdcz.value.auto_power_line
+				shopObj.value.one_power_money = formzdcz.value.one_power_money
+				shopObj.value.day_max_power_money = formzdcz.value.day_max_power_money
 				zdczCancel()
-				if (pageData.data) {
-					_shopInfoPc()
-				} else {
-					_shopInfo()
-				}
 			});
 	}
 	const zdcz_visible = ref(false)
@@ -1397,8 +1399,8 @@
 										<div>自动充值曝光量：<span @click="zdcz_vis=true"
 												style="cursor: pointer; color: #0c96f1;">重新设置</span></div>
 										<div>低于{{shopObj.auto_power_line}}曝光量时自动充值; </div>
-										<div>单次自动充值金额{{shopObj.auto_power_line}};</div>
-										<div>每天自动最大充值金额 {{shopObj.auto_power_line}} </div>
+										<div>单次自动充值金额{{shopObj.one_power_money}};</div>
+										<div>每天自动最大充值金额 {{shopObj.day_max_power_money}} </div>
 									</div>
 								</div>
 							</div>
