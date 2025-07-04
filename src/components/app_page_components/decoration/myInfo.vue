@@ -1124,8 +1124,13 @@
 			}, global)
 			.then((res) => {
 				console.log('修改曝光配置', res);
-				// message.success('操作成功')
-				// zdczCancel()
+				message.success('操作成功')
+				zdczCancel()
+				if (pageData.data) {
+					_shopInfoPc()
+				} else {
+					_shopInfo()
+				}
 			});
 	}
 	const zdcz_visible = ref(false)
