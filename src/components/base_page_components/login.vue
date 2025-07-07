@@ -503,7 +503,8 @@
 <template>
   <div v-if="admin_login_back_image" class="login">
     <div style="position: fixed;right: 20px;top: 12vh;text-align: center;">
-      <img src="/resource/image/jpn.png" style="width: 40px;height: 38px;" alt="">
+      <!-- <img src="/resource/image/jpn.png" style="width: 40px;height: 38px;" alt=""> -->
+       <div style="height: 38px;"></div>
       <a-popover v-model:visible="visible" trigger="click" placement="leftTop">
         <template #content>
           <div style="width: 400px;">
