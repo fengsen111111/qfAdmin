@@ -11,7 +11,23 @@
   const login_store_id = ref('')//登陆商家id
   setTimeout(() => {
     login_store_id.value = localStorage.getItem('storeId') * 1 ? localStorage.getItem('storeId') : 1
+    if (login_store_id.value != 1) {
+      _shopInfo()
+    }
   }, 1000);
+
+  const shopObj = ref({})
+  // 店铺信息
+  function _shopInfo() {
+    console.log('店铺信息');
+    global.axios.post('decoration/Store/webGetStoreInfo', {
+      store_id: localStorage.getItem('storeId')
+    }, global)
+      .then(res => {
+        console.log('店铺数据', res);
+        shopObj.value = res
+      })
+  }
 
   const skeleton_state = reactive({
     author: "", //开发者信息
@@ -777,7 +793,10 @@
         <div class="admin-msg">
           <a-dropdown>
             <a class="ant-dropdown-link" href="javascript:;" style="color: #515a6e !important">
-              <img :src="skeleton_state.admin.portrait" alt="" />
+              <!-- <img :src="skeleton_state.admin.portrait" alt="" /> -->
+              <!-- 平台不处理，商家用商家logo -->
+              <img v-if="login_store_id==1" :src="skeleton_state.admin.portrait" alt="" />
+              <img v-else :src="shopObj.logo" alt="" />
               {{ skeleton_state.admin.nickname }}
             </a>
             <template #overlay>

@@ -152,6 +152,28 @@
 		// { key: '', name: '店铺主体' },
 		// { key: 'address', name: '地址' },
 	])
+	// 地址*号
+	function maskAddress(address) {
+		if (!address) return '';
+		const match = address.match(/^(.{2,3}省)?(.{2,3}市)?(.*)$/);
+		if (!match) return '';
+		const province = match[1] || '';
+		const city = match[2] || '';
+		const rest = match[3] || '';
+		const masked = '*'.repeat(rest.length);
+		return province + city + masked;
+	}
+	// 姓名*号
+	function maskName(name) {
+		if (!name) return '';
+		if (name.length === 2) {
+			return name[0] + '*';
+		} else if (name.length > 2) {
+			return name[0] + '*' + name.slice(2);
+		} else {
+			return '*'; // 只有1个字
+		}
+	}
 
 
 	const dataType = ref([])
@@ -1191,6 +1213,15 @@
 									<div class="a28" v-else-if="item.key=='type'">
 										{{shopObj[item.key]=='a'?'本地商家':'网店商家'}}
 									</div>
+									<div class="a28" v-else-if="item.key=='name'">
+										<!-- 联系人{{shopObj[item.key]}} -->
+										{{is_ptsj=='平台'?shopObj[item.key]:maskName(shopObj[item.key]) }}
+									</div>
+									<div class="a28" v-else-if="item.key=='mobile'">
+										<!-- 手机号{{shopObj[item.key]}} -->
+										{{is_ptsj=='平台'?shopObj[item.key]:(shopObj[item.key]?.replace(/^(\d{3})\d{4}(\d{4})$/,
+										'$1****$2') || '') }}
+									</div>
 									<div class="a29" v-else>
 										{{shopObj[item.key]?shopObj[item.key]:'无'}}</div>
 								</div>
@@ -1206,7 +1237,10 @@
 							</div>
 							<div v-if="shopObj.type=='a'" class="a33">
 								<div class="a34">店铺地址:</div>
-								<div class="a35">{{shopObj.address}}</div>
+								<div class="a35">
+									<!-- {{shopObj.address}} -->
+									{{is_ptsj=='平台'?shopObj.address:maskAddress(shopObj.address) }}
+								</div>
 							</div>
 							<div class="a33">
 								<!-- <div class="a34">商家账户（汇付）:</div> -->

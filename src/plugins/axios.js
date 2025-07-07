@@ -13,7 +13,7 @@ const httpService = axios.create();
 httpService.interceptors.request.use(
     (config) => {
         // 让每个请求携带token
-        console.log('config',config);
+        // console.log('config',config);
         
         if (config.url == 'https://kzcptwo.market.alicloudapi.com/company_two/check'||config.url == 'https://kzidcardv1.market.alicloudapi.com/api-mall/api/id_card/check') { // 阿里云企业认证二要素
             config.headers["Authorization"] = 'APPCODE ' + '366b25062af24d76b52e60924ba0c7fc'
@@ -34,7 +34,7 @@ httpService.interceptors.request.use(
 // respone拦截器
 httpService.interceptors.response.use(
     (response) => {
-        console.log('response',response);
+        // console.log('response',response);
         if(response.config.url == 'https://kzcptwo.market.alicloudapi.com/company_two/check'){
             return response.data; //企业认证
         }
@@ -142,7 +142,7 @@ export function post(url, params = {}, global, loading = true, rsa_status = true
     let rsa_result = rsaEncode(params, rsa_status);
     let response_result = false;
     return new Promise((resolve, reject) => {
-        console.log('请求前', url);
+        // console.log('请求前', url);
         let query = {}
         if (url == 'aly/company_two/check') { //企业认证
             requestUrl = 'https://kzcptwo.market.alicloudapi.com/company_two/check'

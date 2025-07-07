@@ -2,9 +2,8 @@
 	import { inject, onBeforeMount, reactive, ref, watch, shallowRef, createVNode, onMounted, onBeforeUnmount } from "vue";
 	import { FormComponents } from "../../form_components/form";
 	import { TableComponents } from "../../table_components/table";
-	import { Row, Col } from 'ant-design-vue';
+	import { Row, Col, message, Modal } from 'ant-design-vue';
 	import { ClockCircleFilled, DownOutlined, CloseCircleOutlined, PlusOutlined, ExclamationCircleOutlined, AuditOutlined, SearchOutlined, ReloadOutlined, CloseCircleFilled, CommentOutlined, MessageFilled } from "@ant-design/icons-vue";
-	import { message } from 'ant-design-vue';
 	import { useRoute } from 'vue-router';
 	import * as echarts from 'echarts'
 	const route = useRoute();
@@ -13,6 +12,24 @@
 	let emit = defineEmits(["openChildPage", "closeChildPage", "orderLook"]);
 	const global = inject("global").value;
 	// console.log('pageData',pageData);
+	import { h } from 'vue'
+	function showUserInfo() {
+		Modal.info({
+			title: '实名认证信息',
+			content: `
+				姓名：${userInfo.value.auth_name || '暂无'}
+				身份证号：${userInfo.value.auth_id_card || '暂无'}
+			`,
+			// content: () => h('div', [
+			// 	h('p', [`姓名：${userInfo.value.auth_name || '暂无'}`]),
+			// 	h('p', [`身份证号：${userInfo.value.auth_id_card || '暂无'}`]),
+			// ]),
+			okText: '知道了',
+			// 可选：让它更像普通提示窗
+			maskClosable: true,
+			centered: true,
+		})
+	}
 
 	const is_ptsj = ref('商家')
 	setTimeout(() => {
@@ -209,16 +226,23 @@
 								{{is_ptsj=='平台'?userInfo.auth_name:maskName(userInfo.auth_name) }}
 							</div>
 						</div>
-						<div></div>
+						<div style="display: flex;">
+							<!-- <div>
+								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
+							</div> -->
+							<div>实名状态：</div>
+							<div>{{userInfo.auth_name?'已实名':'未实名'}} <span v-if="userInfo.auth_name" @click="showUserInfo"
+									style="cursor: pointer;color: #0c96f1;">查看</span></div>
+						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">注册日期：</div>
 							<div>{{userInfo.create_time}}</div>
 						</div>
 						<div style="display: flex;">
-							<div>
+							<!-- <div>
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
-							</div>
-							<div>聊天状态：</div>
+							</div> -->
+							<div>禁止聊天评论：</div>
 							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small"
 									@change="ltztChange" />
 							</div>
@@ -230,7 +254,15 @@
 								'$1****$2') || '') }}
 							</div>
 						</div>
-						<div></div>
+						<div style="display: flex;">
+							<!-- <div>
+								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
+							</div> -->
+							<div>禁止发布：</div>
+							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'"
+									size="small" />
+							</div>
+						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">推荐官状态：</div>
 							<div v-if="userInfo.sharer_status=='a'">未开通</div>
@@ -241,10 +273,10 @@
 							<div v-else-if="userInfo.sharer_status=='z'">审核拒绝</div>
 						</div>
 						<div style="display: flex;">
-							<div>
+							<!-- <div>
 								<CloseCircleFilled style="color: #ff0000;font-size: 17px;margin-right: 10px;" />
-							</div>
-							<div>拉黑状态：</div>
+							</div> -->
+							<div>禁止登陆：</div>
 							<div><a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" /></div>
 						</div>
 						<div style="display: flex;">

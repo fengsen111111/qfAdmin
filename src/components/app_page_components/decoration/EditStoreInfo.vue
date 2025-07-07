@@ -283,7 +283,8 @@
 				<a-col :span="15">
 					<div class="flexml">
 						<!-- <div>{{shopObj.type}}</div> -->
-						<div>个人点/个体工商户/企业店</div>
+						<!-- <div>个人点/个体工商户/企业店</div> -->
+						 <div>{{shopObj.store_type=='a'?'个人店':shopObj.store_type=='b'?'个体工商户':shopObj.store_type=='c'?'企业店':''}}</div>
 					</div>
 				</a-col>
 			</a-row>
@@ -293,9 +294,15 @@
 				</a-col>
 				<a-col :span="15">
 					<div class="flexml">
-						<div><a-image :width="90" :height="90" :src="shopObj.logo" :preview="{ src: shopObj.logo }" />
+						<div>
+							<a-image :width="90" :height="90" :src="shopObj.logo" :preview="{ src: shopObj.logo }" />
 						</div>
-						<div class="cz" @click="editInfo('logo')">修改</div>
+						
+						<div>
+							<!-- <div style="margin-left: 10px;color: #ff0000;">宽：高 = 1：1</div> -->
+							<div style="margin-left: 10px;color: #ff0000;">请上传80*80图片</div>
+							<div class="cz" @click="editInfo('logo')">修改</div>
+						</div>
 					</div>
 				</a-col>
 			</a-row>
@@ -347,6 +354,8 @@
 											<PlusOutlined style="font-size: 30px;color: #999999;margin-top: 35%;" />
 										</div>
 									</a-upload>
+									<!-- <div style="margin-left: 10px;color: #ff0000;">宽：高 = 1：1</div> -->
+									<div style="margin-left: 10px;color: #ff0000;">请上传80*80图片</div>
 								</div>
 							</div>
 							<div v-else-if="type=='mobile'">
