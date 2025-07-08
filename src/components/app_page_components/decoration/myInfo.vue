@@ -1793,7 +1793,7 @@
 					<div style="display: flex;align-items: center;margin: 0 auto;">
 						<a-checkbox v-model:checked="formzdcz.is_checked" @change="zdczChange" />
 						<div style="margin-left: 10px;">我已阅读并同意</div>
-						<div @click="zdczFunc" style="color: #1890FF;">《曝光自动充值协议协议》</div>
+						<div @click="zdczFunc" style="color: #1890FF;">《自动余额充值投流量协议》</div>
 					</div>
 				</div>
 			</div>

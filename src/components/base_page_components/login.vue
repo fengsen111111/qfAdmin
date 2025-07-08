@@ -791,12 +791,17 @@
     </div>
     <div style="display: flex;font-size: 13px;">
       <div style="margin: 0 auto;color: #666666;margin-top: 30px;">
-        <div>Copyright 2025-2035 quanfeng 版权所有 (增值电信业务经营许可证：xxx-xxxxxx)</div>
+        <div>Copyright 2025-2035 辽宁汉安信息技术有限公司版权所有 (增值电信业务经营许可证：辽B2-20241296)</div>
       </div>
     </div>
     <div style="display: flex;font-size: 13px;">
       <div style="margin: 0 auto;color: #666666;margin-top: 10px;">
-        <div>沪公网安备 xxxxxxxxxxxxxxxx-xxxx</div>
+        <div>侵权投诉 quan-feng@qq.com  举报/反馈/帮助（微信号） qf-kffw</div>
+      </div>
+    </div>
+    <div style="display: flex;font-size: 13px;">
+      <div style="margin: 0 auto;color: #666666;margin-top: 10px;">
+        <div>沪公网安备 辽ICP备2024039701号</div>
       </div>
     </div>
   </div>
