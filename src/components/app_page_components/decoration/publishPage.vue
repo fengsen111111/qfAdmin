@@ -1172,6 +1172,7 @@
               <div class="a20">
                 <ExclamationCircleOutlined class="a21" />
                 商家账户未开通！请开通后发布商品
+                <span style="color: #1890FF;margin-left: 10px;" @click="()=>{$emit('toShopInfo')}">去开通</span>
               </div>
             </div>
             <div v-else>
@@ -1394,7 +1395,7 @@
                                     <RightOutlined style="color: #fff;" />
                                   </div>
                                 </div>
-                                <div
+                                <div v-if="post_params.goods_sizes[0]"
                                   style="display: flex;background: linear-gradient(270deg, rgb(31, 181, 41) 0%, rgb(62, 221, 14) 100%);padding: 10px;color: #fff;">
                                   <div>拼单价￥{{post_params.goods_sizes[0].price}} |
                                     原价￥{{post_params.goods_sizes[0].old_price}}</div>
