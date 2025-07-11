@@ -1432,9 +1432,9 @@
 										</div>
 										<div>自动充值曝光量：<span @click="zdcz_vis=true"
 												style="cursor: pointer; color: #0c96f1;">重新设置</span></div>
-										<div>低于{{shopObj.auto_power_line}}曝光量时自动充值; </div>
-										<div>单次自动充值金额{{shopObj.one_power_money}};</div>
-										<div>每天自动最大充值金额 {{shopObj.day_max_power_money}} </div>
+										<div>低于<text style="color: #FF0000;">{{shopObj.auto_power_line}}</text>曝光量时自动充值</div>
+										<div>单次自动充值金额<text style="color: #FF0000;">{{shopObj.one_power_money}}</text></div>
+										<div>每天自动最大充值金额 <text style="color: #FF0000;">{{shopObj.day_max_power_money}}</text></div>
 									</div>
 								</div>
 							</div>
