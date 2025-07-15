@@ -1532,7 +1532,7 @@
 									</div>
 								</div>
 								<div class="a61" v-for="item in sptlphlist" :key="item.id">
-									<div>{{item.name.length>10?item.name.slice(0,10)+'...':item.name}}</div>
+									<div style="width: 160px;">{{item.name.length>10?item.name.slice(0,10)+'...':item.name}}</div>
 									<div>{{item.power_level_name}}</div>
 									<div>{{item.power}}曝光量</div>
 								</div>

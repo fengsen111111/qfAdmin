@@ -29,7 +29,6 @@
 							horizontal: 'left'
 						}
 					}
-
 					if (
 						typeof cell.v === 'string' &&
 						(cell.v.includes('商家数据需求') || cell.v.includes('推荐官数据需求'))
