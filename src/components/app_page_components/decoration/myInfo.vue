@@ -1212,6 +1212,16 @@
 		}
 		return map[type] || ''
 	}
+
+	// 导出表格默认格式
+	import TableExport from './TableExport.vue'
+	const exportRef = ref()
+	// 导出子组件内容
+	function handleExport() {
+		console.log('导出');
+		
+		exportRef.value?.exportExcel()	
+	}
 </script>
 
 <template>
@@ -1226,13 +1236,15 @@
 						<div class="a18" :class="titleType=='店铺信息'?'a18Check':''" @click="titleType='店铺信息'">店铺信息</div>
 						<div class="a19" :class="titleType=='店铺数据'?'a18Check':''" @click="titleType='店铺数据'">店铺数据</div>
 						<div class="a20" :class="titleType=='资金日志'?'a18Check':''" @click="titleType='资金日志'">资金日志</div>
+						<div @click="handleExport" style="margin-left: 100px;">导出表格默认格式(开发中,展示固定在这)</div>
+						<TableExport ref="exportRef" />
 					</div>
 					<div class="a21">
 						<div>店铺详情页</div>
 						<div v-if="is_ptsj == '平台'" class="a22" @click="closeChildPage()">
 							返回</div>
 						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22B" @click="handSjwg()">发布违规通知</div>
-						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22C">导出店铺</div>
+						<div class="a22C">导出详情</div>
 
 					</div>
 				</div>

@@ -71,6 +71,16 @@
             url: "",
             value: "333333",
           },
+          {
+            icon: "",
+            label: "表格",
+            order: "2",
+            page_id: "0",
+            pid: "706154120674803774",
+            type: "TableExport",
+            url: "",
+            value: "44444",
+          },
         ]
       })
       //初始化tabMenu为未选中
