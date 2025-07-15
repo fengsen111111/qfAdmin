@@ -302,6 +302,49 @@
   const detailsVis = ref(false)//是否打开详情弹窗
   const detailsObj = ref({})//弹窗基本数据
 
+  import * as XLSX from 'xlsx'
+  import { saveAs } from 'file-saver'
+  // 导出资金流水日志
+  function exportToExcel(list, type) {
+    if (!list.length) return
+    // 映射数据
+    if (type == 'MerchantInfoExportBtn') {
+      // 商家列表导出
+      // const exportData = list.map(item => ({
+      //   '订单编号': ['f', 'g'].includes(item.type) ? item.order_id : '',
+      //   '流水时间': item.create_time,
+      //   '收入金额': item.in_or_out === 'in' ? item.trans_amt : '',
+      //   '支出金额': item.in_or_out === 'in' ? '' : item.trans_amt,
+      // }))
+      // const worksheet = XLSX.utils.json_to_sheet(exportData)
+      // const workbook = XLSX.utils.book_new()
+      // XLSX.utils.book_append_sheet(workbook, worksheet, '资金流水')
+      // const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+      // const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+      // saveAs(blob, `资金流水明细_${new Date().toLocaleDateString()}.xlsx`)
+    } else {
+      // 推荐官列表导出
+      const exportData = list.map(item => ({
+        '用户ID': item.user_id,
+        '姓名':item.name,
+        '审核状态': item.check_status=='a'?'待审核':item.check_status=='b'?'已通过':'已拒绝',
+        '启用状态': item.status=='Y'?'启用':'禁用',
+        '身份证号': item.cert_no,
+        '身份证正面': item.id_image1[0],
+        '身份证反面': item.id_image2[0],
+        '标签': item.tags,
+        '能力': item.power,
+      }))
+      console.log('exportData',exportData);
+      const worksheet = XLSX.utils.json_to_sheet(exportData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, '资金流水')
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+      saveAs(blob, `推荐官信息_${new Date().toLocaleDateString()}.xlsx`)
+    }
+  }
+
   //列表操作
   function tableHandles(tableHandlesData) {
     console.log('回调', tableHandlesData);
@@ -312,6 +355,13 @@
       requestParams.recycleStatus = true;
     else
       requestParams.recycleStatus = false;
+
+    //导出单个数据 推荐官列表导出按钮
+    if (handleInfo.handleType == "RecommendedOfficialExportBtn" || handleInfo.handleType == "MerchantInfoExportBtn") {
+      console.log('table_state.tableData', table_state.tableData);
+      let list = [table_state.tableData[0]]
+      exportToExcel(list, handleInfo.handleType)
+    }
     //直接修改值
     if (handleInfo.handleType == "editValue") {
       if (handleInfo.hasOwnProperty('order')) {
