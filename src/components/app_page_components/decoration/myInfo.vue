@@ -1183,7 +1183,7 @@
 		<!-- <div>通过且已开通汇付  平台</div> -->
 		<div v-if="(shType=='b'&&shopObj.open_h_store_account!='a')||is_ptsj == '平台'">
 			<!--搜索-->
-			<div style="padding: 20px;">
+			<div style="padding: 10px 20px;">
 				<div class="a16">
 					<div class="a17">
 						<div class="a18" :class="titleType=='店铺信息'?'a18Check':''" @click="titleType='店铺信息'">店铺信息</div>
@@ -1195,6 +1195,8 @@
 						<div v-if="is_ptsj == '平台'" class="a22" @click="closeChildPage()">
 							返回</div>
 						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22B" @click="handSjwg()">发布违规通知</div>
+						<div v-if="is_ptsj == '平台'&&shType=='b'" class="a22C" @click="handSjwg()">导出店铺</div>
+
 					</div>
 				</div>
 
@@ -1510,8 +1512,8 @@
 								<div style="display: flex;">
 									<div>{{Number(zjxqtj.can_withdrawal_money).toLocaleString()}}</div>
 									<div v-if="is_ptsj!='平台'" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">
-										<span v-if="shopObj.open_h_store_account=='c'"  @click="czvisopen(3)">提现</span>
-										<span v-else  @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
+										<span v-if="shopObj.open_h_store_account=='c'" @click="czvisopen(3)">提现</span>
+										<span v-else @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
 									</div>
 								</div>
 							</div>
@@ -1545,11 +1547,11 @@
 								<div style="display: flex;">
 									<div>{{shopObj.avl_bal}}</div>
 									<div v-if="is_ptsj!='平台'" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">
-										<span v-if="shopObj.open_h_store_account=='c'"  @click="czvisopen(3)">提现</span>
-										<span v-else  @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
+										<span v-if="shopObj.open_h_store_account=='c'" @click="czvisopen(3)">提现</span>
+										<span v-else @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
 									</div>
 								</div>
-								
+
 							</div>
 						</div>
 
@@ -1608,7 +1610,12 @@
 							</div>
 						</div>
 					</div>
-					<div class="a79">资金流水日志</div>
+					<!-- <div class="a79">资金流水日志</div> -->
+					<a-tabs v-model:activeKey="activeKey" type="card">
+						<a-tab-pane key="1" tab="全部"></a-tab-pane>
+						<a-tab-pane key="2" tab="日汇总"></a-tab-pane>
+						<a-tab-pane key="3" tab="月汇总"></a-tab-pane>
+					</a-tabs>
 					<div class="a80">
 						<div class="a81">
 							<div>订单编号</div>
@@ -1617,7 +1624,7 @@
 									style="border:none;border-radius: 4px;"></a-input>
 							</div>
 						</div>
-						<div class="a81">
+						<div class="a81" style="margin-left: 20px;">
 							<div>流水类型</div>
 							<div>
 								<a-select ref="select" v-model:value="zjrzParams.type"
@@ -1632,28 +1639,37 @@
 									<a-select-option value="j">购买曝光量</a-select-option>
 									<a-select-option value="k">提现</a-select-option>
 									<a-select-option value="l">退店</a-select-option>
+									<a-select-option value="">平台技术服务费</a-select-option>
+									<a-select-option value="">退款</a-select-option>
+									<a-select-option value="">推荐管分润</a-select-option>
 								</a-select>
 							</div>
 						</div>
-						<div class="a81">
+						<div class="a81" style="margin-left: 20px;">
 							<div>流水时间</div>
 							<div>
 								<a-range-picker v-model:value="zjrzParams.time" class="a82" :format="'YYYY/MM/DD'"
 									:value-format="'YYYY/MM/DD'" style="border:none;border-radius: 4px;" />
 							</div>
 						</div>
-						<div class="a84">
-							<div class="a85" @click="chongz()">
-								<ReloadOutlined style="margin-right: 10px;" />
+						<div class="a84" style="margin-left: 20px;cursor: pointer;">
+							<div class="a86" @click="chaxun()" style="margin-left: 20px;">
+								<SearchOutlined style="margin-right: 5px;" />
+								查询
+							</div>
+							<div class="a85" @click="chongz()" style="margin-left: 20px;">
+								<ReloadOutlined style="margin-right: 5px;" />
 								重置
 							</div>
-							<div class="a86" @click="chaxun()">
-								<SearchOutlined style="margin-right: 10px;" />
-								查询
+							<div class="a85" style="margin-left: 20px;width: 70px;">
+								<span style="margin-left: 10px;">导出</span>
+							</div>
+							<div class="a85" style="margin-left: 20px;width: 80px;color: #0c96f1;">
+								<span>导出历史</span>
 							</div>
 						</div>
 					</div>
-					<div class="a87"></div>
+					<!-- <div class="a87"></div> -->
 					<div>
 						<div class="a88">
 							<div>订单编号</div>
@@ -2386,7 +2402,6 @@
 
 	.a1 {
 		border: 1px solid #f0f2f5;
-		;
 		padding: 20px;
 		margin-top: 20px;
 		border-radius: 4px;
@@ -2533,6 +2548,15 @@
 	.a22B {
 		border-radius: 5px;
 		background-color: #ff0000;
+		color: #fff;
+		padding: 3px 20px;
+		margin-left: 15px;
+		font-size: 14px;
+		cursor: pointer;
+	}
+	.a22C{
+		border-radius: 5px;
+		background-color: #999999;
 		color: #fff;
 		padding: 3px 20px;
 		margin-left: 15px;
@@ -2892,8 +2916,9 @@
 	.a80 {
 		color: #666666;
 		display: flex;
-		justify-content: space-between;
-		margin-top: 10px;
+		/* justify-content: space-between; */
+		/* margin-top: 10px; */
+		margin-bottom: 10px;
 	}
 
 	.a81 {
@@ -2904,19 +2929,19 @@
 	.a82 {
 		margin-left: 10px;
 		background-color: #f7f8f9;
-		width: 15vw;
+		width: 13vw;
 	}
 
 	.a83 {
 		margin-left: 10px;
 		background-color: #f7f8f9 !important;
-		width: 15vw;
+		width: 13vw;
 	}
 
 	.a84 {
 		display: flex;
 		align-items: center;
-		width: 15vw;
+		width: 20vw;
 	}
 
 	.a85 {
@@ -2932,7 +2957,6 @@
 		background-color: #40a9ff;
 		color: #fff;
 		border-radius: 4px;
-		margin-left: 20px;
 		display: flex;
 		align-items: center;
 	}
