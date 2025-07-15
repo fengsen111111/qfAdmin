@@ -1175,6 +1175,43 @@
 		console.log('e', e.target.checked);
 		formzdcz.value.is_checked = e.target.checked
 	}
+
+	import * as XLSX from 'xlsx'
+	import { saveAs } from 'file-saver'
+	// 导出资金流水日志
+	function exportToExcel() {
+		if (!zjrzList.value.length) return
+		// 映射数据
+		const exportData = zjrzList.value.map(item => ({
+			'订单编号': ['f', 'g'].includes(item.type) ? item.order_id : '',
+			'流水时间': item.create_time,
+			'收入金额': item.in_or_out === 'in' ? item.trans_amt : '',
+			'支出金额': item.in_or_out === 'in' ? '' : item.trans_amt,
+			'流水类型': getFlowType(item.type),
+		}))
+		const worksheet = XLSX.utils.json_to_sheet(exportData)
+		const workbook = XLSX.utils.book_new()
+		XLSX.utils.book_append_sheet(workbook, worksheet, '资金流水')
+		const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+		const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
+		saveAs(blob, `资金流水明细_${new Date().toLocaleDateString()}.xlsx`)
+	}
+	// 流水类型文字转换函数
+	const getFlowType = (type) => {
+		const map = {
+			b: '商家余额充值',
+			c: '商家基础保证金',
+			d: '商家分类保证金',
+			f: '普通商品订单',
+			g: '积分商品订单',
+			h: '红包',
+			i: '商家罚金',
+			j: '购买曝光量',
+			k: '提现',
+			l: '退店',
+		}
+		return map[type] || ''
+	}
 </script>
 
 <template>
@@ -1616,7 +1653,8 @@
 						<a-tab-pane key="2" tab="日汇总"></a-tab-pane>
 						<a-tab-pane key="3" tab="月汇总"></a-tab-pane>
 					</a-tabs>
-					<div class="a80">
+					<div class="a80" style="align-items: center;">
+						<div style="margin-right: 10px;color: #000000;font-size: 18px;"><b>资金流水</b></div>
 						<div class="a81">
 							<div>订单编号</div>
 							<div>
@@ -1661,7 +1699,7 @@
 								<ReloadOutlined style="margin-right: 5px;" />
 								重置
 							</div>
-							<div class="a85" style="margin-left: 20px;width: 70px;">
+							<div class="a85" @click="exportToExcel()" style="margin-left: 20px;width: 70px;">
 								<span style="margin-left: 10px;">导出</span>
 							</div>
 							<div class="a85" style="margin-left: 20px;width: 80px;color: #0c96f1;">
@@ -2554,7 +2592,8 @@
 		font-size: 14px;
 		cursor: pointer;
 	}
-	.a22C{
+
+	.a22C {
 		border-radius: 5px;
 		background-color: #999999;
 		color: #fff;
