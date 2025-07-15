@@ -143,7 +143,9 @@
         // localStorage.clear()//
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const key = localStorage.key(i);
-          if (key !== 'login-config' && key !== 'holdLogin.status') {
+          if (key == 'login-config' || key == 'holdLogin.status'|| key == 'holdLogin.account'|| key == 'holdLogin.password') {
+            // 不清除
+          }else{
             localStorage.removeItem(key);
           }
         }

@@ -417,15 +417,22 @@
         <div style="display: flex;justify-content: space-between;margin-bottom: 20px;">
           <div style="display: flex;align-items: center;">
             <a-button v-show="pageData.hasOwnProperty('parent_page_key')" class="iconfont button-class"
-              style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 20px;"
+              style="font-size: 18px !important; padding: 0 10px; float: left;margin-right: 10px;"
               @click="closeChildPage(pageData.page_key)">&#xe6d2;
             </a-button>
-            <div class="a2">运费模板</div>
+            <a-button class="button-class button-success" style="float: left" type="primary" @click="editCarriage">
+              {{ global.findLanguage("提交") }}
+            </a-button>
+            <a-button class="button-class button-warning" style="float: left;margin-left: 10px;" type="primary" @click="setData">
+              {{ global.findLanguage("重置") }}
+            </a-button>
+            <!-- <div class="a2">运费模板</div>
+            <div class="flex" style="cursor: pointer;margin-left: 0px;">
+              <div class="tjBtn" @click="editCarriage">提交</div>
+              <div class="cz" @click="setData">重置</div>
+            </div> -->
           </div>
-          <div class="flex" style="cursor: pointer;">
-            <div class="tjBtn" @click="editCarriage">提交</div>
-            <div class="cz" @click="setData">重置</div>
-          </div>
+
         </div>
 
         <div class="a3">

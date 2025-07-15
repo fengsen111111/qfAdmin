@@ -1432,9 +1432,12 @@
 										</div>
 										<div>自动充值曝光量：<span @click="zdcz_vis=true"
 												style="cursor: pointer; color: #0c96f1;">重新设置</span></div>
-										<div>低于<text style="color: #FF0000;">{{shopObj.auto_power_line}}</text>曝光量时自动充值</div>
-										<div>单次自动充值金额<text style="color: #FF0000;">{{shopObj.one_power_money}}</text></div>
-										<div>每天自动最大充值金额 <text style="color: #FF0000;">{{shopObj.day_max_power_money}}</text></div>
+										<div>低于<text style="color: #FF0000;">{{shopObj.auto_power_line}}</text>曝光量时自动充值
+										</div>
+										<div>单次自动充值金额<text style="color: #FF0000;">{{shopObj.one_power_money}}</text>
+										</div>
+										<div>每天自动最大充值金额 <text
+												style="color: #FF0000;">{{shopObj.day_max_power_money}}</text></div>
 									</div>
 								</div>
 							</div>
@@ -1504,7 +1507,13 @@
 							<div style="display: flex;">
 								<div class="a67">可提现货款：
 								</div>
-								<div>{{Number(zjxqtj.can_withdrawal_money).toLocaleString()}}</div>
+								<div style="display: flex;">
+									<div>{{Number(zjxqtj.can_withdrawal_money).toLocaleString()}}</div>
+									<div v-if="is_ptsj!='平台'" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">
+										<span v-if="shopObj.open_h_store_account=='c'"  @click="czvisopen(3)">提现</span>
+										<span v-else  @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
+									</div>
+								</div>
 							</div>
 							<div style="display: flex;">
 								<div class="a67">待结算货款：
@@ -1535,7 +1544,12 @@
 								</div>
 								<div style="display: flex;">
 									<div>{{shopObj.avl_bal}}</div>
+									<div v-if="is_ptsj!='平台'" style="cursor: pointer;color: #0c96f1;margin-left: 10px;">
+										<span v-if="shopObj.open_h_store_account=='c'"  @click="czvisopen(3)">提现</span>
+										<span v-else  @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">提现</span>
+									</div>
 								</div>
+								
 							</div>
 						</div>
 

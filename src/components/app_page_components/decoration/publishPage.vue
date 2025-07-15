@@ -777,7 +777,17 @@
     post_params.goods_sizes = newList;
     post_params.goods_sizes.map((item, index) => {
       item.order = index + 1 + ''
+      item.status = true
+      item.old_price = ''
+      item.price = ''
+      item.stock = ''
+      item.integral_price = ''
+      item.uper_status = false
+      item.commission = ''
     })
+
+    console.log('post_params.goods_sizes',post_params.goods_sizes);
+    
   }
   // 监听商品规格变化
   watch(
@@ -1034,14 +1044,19 @@
   }
   // 添加类型
   function addType(index) {
-    shopGuige.value.push({
-      labelValue: '',//
-      value: [
-        { label: '', imgurl: '', isCustom: false },
-      ],
-      isSort: false,//开始排序
-      isUrlimg: false,//默认不上传图片
-    })
+    if (shopGuige.value.length < 2) {
+      shopGuige.value.push({
+        labelValue: '',//
+        value: [
+          { label: '', imgurl: '', isCustom: false },
+        ],
+        isSort: false,//开始排序
+        isUrlimg: false,//默认不上传图片
+      })
+    } else {
+      message.error('最多添加两个规格类型')
+    }
+
   }
 
 
@@ -1157,9 +1172,29 @@
               </div>
             </div>
           </div>
+          <div class="a8">
+            <div class="a9_2">
+              推荐官推荐
+            </div>
+            <div style="color: #737373;padding: 10px;">
+              <div>选项开启，若开启此功能，须填写“推荐官佣金”。开启后，若用户若通过推荐官推荐链接进行该商品购买的，交易结算时，则您需要按您填写的“推荐官佣金”支付佣金，请谨慎开启!</div>
+              <div style="color: #ff0000;">注:本功能会与“积分抵扣最大金额”叠加生效!请谨慎使用!</div>
+            </div>
+          </div>
+          <div class="a8">
+            <div class="a9_1">
+              积分抵扣最大金额
+            </div>
+            <div style="color: #737373;padding: 10px;">
+              <div>选填项，若填写则用户可使用平台积分在拼单价基础上抵扣后进行购买，抵扣最大金额为填写金额，拼单价抵扣积分后的金额为用户购买此商品时实际支付金额，请谨慎填写!</div>
+            </div>
+          </div>
+
+          
         </div>
         <!-- 商品信息等 -->
-        <div class="a14">
+        <!-- <div class="a14"> -->
+        <div style="width: 84%;height: 84vh;">
           <div style="margin-bottom: 10px;">
             <!-- 新增才有 有id就是编辑-->
             <div v-if="!props.pageData.data.id" class="a15">
@@ -1446,10 +1481,10 @@
                                       当日发货
                                     </div>
                                     <div v-if="post_params.need_send_time=='b'">
-                                      24小时
+                                      24小时发货
                                     </div>
                                     <div v-if="post_params.need_send_time=='c'">
-                                      48小时
+                                      48小时发货
                                     </div>
                                   </div>
                                 </div>
@@ -1545,14 +1580,17 @@
                     <div class="a96">
                       <!-- <div>最多配置2个商品规格类型</div> -->
                       <div style="display: flex;justify-content: space-between;">
-                        <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
+                        <div style="display: flex;">
+                          <div style="color: #1890FF;" @click="addType">添加商品规格类型</div>
+                          <div style="color: #999999;margin-left: 30px;">最多添加两个商品类型</div>
+                        </div>
                         <div style="color: #ff0000;">注意：重新填加商品规格类型会重置已有数据！</div>
                       </div>
                       <div v-for="(item,index) in shopGuige" :key="index" class="a97">
                         <div class="a98">
                           <div style="display: flex;align-items: center;">
                             <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" style="width: 200px;" />
-                            <span @click="item.isUrlimg = !item.isUrlimg"
+                            <span v-if="index==0" @click="item.isUrlimg = !item.isUrlimg"
                               style="color: #1890FF;margin-left: 10px;">{{item.isUrlimg?'删除规格图':'添加规格图'}}</span>
                           </div>
                           <div class="a99">
@@ -1629,14 +1667,15 @@
                   </div> -->
                   <div class="b10" style="margin-left: 95px;">
                     <div class="b11">
+                      <div style="color: #ff0000;">请如实填写商品规格及库存信息，以确保商品可以正常发出，避免物流违规</div>
                       <table class="b13">
-                        <tr class="b14 gridCol10">
-                          <th>
+                        <tr class="b14 gridCol9">
+                          <!-- <th>
                             <div style="color: #999999;">操作</div>
-                          </th>
+                          </th> -->
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <div style="color: red;">*</div>
                                 <div style="color: #999999;">规格名称</div>
                               </div>
@@ -1644,7 +1683,7 @@
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <!-- <div style="color: red;">*</div> -->
                                 <div style="color: #999999;">规格图片</div>
                               </div>
@@ -1652,9 +1691,9 @@
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <div style="color: red;">*</div>
-                                <div style="color: #999999;">启用状态</div>
+                                <div style="color: #999999;">状态</div>
                               </div>
                             </div>
                           </th>
@@ -1662,21 +1701,24 @@
                             <div style="display: flex;">
                               <div style="display: flex;margin: 0 auto;">
                                 <div style="color: red;">*</div>
-                                <div style="color: #999999;">原价</div>
+                                <div style="color: #999999;">
+                                  <div>原价(元)</div>
+                                  <div>(划线价)</div>
+                                </div>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <div style="color: red;">*</div>
-                                <div style="color: #999999;">价格</div>
+                                <div style="color: #999999;">拼单价(元)</div>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <div style="color: red;">*</div>
                                 <div style="color: #999999;">库存</div>
                               </div>
@@ -1692,7 +1734,7 @@
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <!-- <div style="color: red;">*</div> -->
                                 <div style="color: #999999;">推荐官推荐</div>
                               </div>
@@ -1700,9 +1742,9 @@
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <!-- <div style="color: red;">*</div> -->
-                                <div style="color: #999999;">佣金</div>
+                                <div style="color: #999999;">推荐官佣金</div>
                               </div>
                             </div>
                           </th>
@@ -1719,10 +1761,10 @@
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol10">
-                              <td>
+                            <tr class="b15 gridCol9">
+                              <!-- <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
-                              </td>
+                              </td> -->
                               <td>
                                 <div>
                                   <div v-for="iss in item.names" :key="iss">{{iss}}</div>
@@ -1840,9 +1882,8 @@
                   <div style="margin-left: 20px;">
                     <a-radio-group v-model:value="post_params.need_send_time" name="radioGroup">
                       <a-radio value="a">当日发货</a-radio>
-                      <a-radio value="b">24小时
-                      </a-radio>
-                      <a-radio value="c">48小时</a-radio>
+                      <a-radio value="b">24小时发货</a-radio>
+                      <a-radio value="c">48小时发货</a-radio>
                     </a-radio-group>
                   </div>
                 </div>
@@ -2269,6 +2310,18 @@
 
   .a9 {
     background-color: #407cff;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+  }
+  .a9_1 {
+    background-color: #0ccd00;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+  }
+  .a9_2 {
+    background-color: #f1c442;
     color: #fff;
     text-align: center;
     padding: 10px 20px;

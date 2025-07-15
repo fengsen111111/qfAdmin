@@ -613,10 +613,10 @@
                                       当日发货
                                     </div>
                                     <div v-if="post_params.need_send_time=='b'" class="a76">
-                                      24小时
+                                      24小时发货
                                     </div>
                                     <div v-if="post_params.need_send_time=='c'" class="a76">
-                                      48小时
+                                      48小时发货
                                     </div>
                                   </div>
                                   <div style="display: flex;">
@@ -799,9 +799,9 @@
                   <div style="margin-left: 20px;">
                     <a-radio-group disabled v-model:value="post_params.need_send_time" name="radioGroup">
                       <a-radio value="a">当日发货</a-radio>
-                      <a-radio value="b">24小时
+                      <a-radio value="b">24小时发货
                       </a-radio>
-                      <a-radio value="c">48小时</a-radio>
+                      <a-radio value="c">48小时发货</a-radio>
                     </a-radio-group>
                   </div>
                 </div>

@@ -295,19 +295,6 @@
       } else {
         rzStatus.value = 0//未入驻
         handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-        // global.axios.post('decoration/User/loginAndRegister', {
-        //   mobile: login_state.loginData.mobile,
-        //   mobile_code: login_state.loginData.mobile_code
-        // }, global).then(res => {
-        //   console.log('验证码登陆', res);
-        //   if (res) {
-        //     localStorage.setItem('Authorization', res.token);
-        //     handUrl('/openShop?password=' + login_state.loginData.password + '&mobile=' + login_state.loginData.mobile)
-        //   } else {
-        //     changeCaptcha()
-        //   }
-        // })
-
       }
     })
   }
