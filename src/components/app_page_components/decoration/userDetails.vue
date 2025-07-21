@@ -73,7 +73,8 @@
 		}, global, true).then((res) => {
 			console.log('后台获取用户信息', res);
 			res.chat_status = res.chat_status == 'Y' ? true : false
-			res.status = res.status == 'Y' ? false : true
+			res.status = res.status == 'Y' ? true : false
+			res.submit_status = res.submit_status == 'Y' ? true : false
 			userInfo.value = res
 		})
 	}
@@ -166,7 +167,7 @@
 		}
 		global.axios.post('decoration/User/webUpdateUserInfo', {
 			user_id: pageData.data.id,
-			status: checked ? 'Y' : 'N'
+			submit_status: checked ? 'Y' : 'N'
 		}, global, true).then((res) => {
 			console.log('发帖状态操作', res);
 			message.success('操作成功')
@@ -257,9 +258,10 @@
 							<!-- <div>
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div> -->
-							<div>禁止聊天评论：</div>
-							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small"
-									@change="ltztChange" />
+							<!-- <div>禁止聊天评论：</div> -->
+							<div>聊天状态：</div>
+							<div>禁止<a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small"
+									@change="ltztChange" style="margin: 0 5px;" />允许
 							</div>
 						</div>
 						<div style="display: flex;">
@@ -273,9 +275,10 @@
 							<!-- <div>
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div> -->
-							<div>禁止发布：</div>
-							<div><a-switch v-model:checked="userInfo.submit_status" :disabled="is_ptsj=='商家'"
-									size="small" @change="ftztChange" />
+							<!-- <div>禁止发布：</div> -->
+							<div>发帖状态：</div>
+							<div>禁止<a-switch v-model:checked="userInfo.submit_status" :disabled="is_ptsj=='商家'"
+									size="small" @change="ftztChange" style="margin: 0 5px;" />允许
 							</div>
 						</div>
 						<div style="display: flex;">
@@ -291,8 +294,9 @@
 							<!-- <div>
 								<CloseCircleFilled style="color: #ff0000;font-size: 17px;margin-right: 10px;" />
 							</div> -->
-							<div>禁止登陆：</div>
-							<div><a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" /></div>
+							<!-- <div>禁止登陆：</div> -->
+							<div>登陆状态：</div>
+							<div>禁止<a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" style="margin: 0 5px;" />允许</div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">商家状态：</div>
