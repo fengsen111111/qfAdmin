@@ -255,6 +255,29 @@
   }
   const store_id = ref('')//商家id/平台id
 
+  // 房间去重
+  function deduplicateByNicknameAndType(list) {
+    const map = new Map();
+    list.forEach(item => {
+      const key = `${item.nickname}_${item.joiner_type}`;
+      const current = map.get(key);
+
+      if (!current) {
+        map.set(key, item);
+      } else {
+        // 比较 active_time，保留时间晚的
+        const oldTime = new Date(current.active_time).getTime();
+        const newTime = new Date(item.active_time).getTime();
+        if (newTime > oldTime) {
+          map.set(key, item);
+        }
+      }
+    });
+    let arr = Array.from(map.values()).sort((a, b) => new Date(b.active_time) - new Date(a.active_time));
+    arr = arr.filter((item) => item.new_content)// 过滤掉没有内容的房间
+    return arr
+  }
+
   //获取聊天房间列表
   function getCustomerRoomList() {
     store_id.value = localStorage.getItem("storeId")
@@ -264,7 +287,7 @@
       console.log('聊天房间数据', res.list);
       if (store_id.value == '1') {
         console.log('当前身份为平台客服！');
-        customer_service_state.room_list = res.list
+        customer_service_state.room_list = deduplicateByNicknameAndType(res.list)
         // 自动打开第一个人的聊天房间
         customer_service_state.room = res.list[0] //聊天房间
         customer_service_state.room_id = res.list[0].id //聊天房间id
@@ -280,7 +303,7 @@
           if (res_two.room_id) {
             console.log('有平台房间，处理数据');
             console.log('与平台房间号', res_two.room_id);
-            customer_service_state.room_list = res.list
+            customer_service_state.room_list = deduplicateByNicknameAndType(res.list)
             // 自动打开第一个人的聊天房间
             customer_service_state.room = res.list[0] //聊天房间
             customer_service_state.room_id = res.list[0].id //聊天房间id
@@ -878,9 +901,7 @@
                 <!-- 平台 -->
                 <img v-else-if="item.joiner_type=='c'" src="../../../../public/resource/image/head_img.png" alt="">
                 <!-- 用户或者商家 -->
-                <img v-else
-                  src="../../../../public/resource/image/userImg.png"
-                  alt="">
+                <img v-else src="../../../../public/resource/image/userImg.png" alt="">
               </div>
               <div class="msg">
                 <div class="name">
@@ -925,9 +946,7 @@
                 <div class="left_user" v-if="item.joiner_sign != store_id">
                   <div align="left" style="float: left;margin-right: 12px">
                     <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
-                    <img v-else
-                      src="../../../../public/resource/image/userImg.png"
-                      alt="">
+                    <img v-else src="../../../../public/resource/image/userImg.png" alt="">
                   </div>
                   <div>
                     <div style="text-align: left;margin-bottom: 5px">{{ item.create_time }}</div>
@@ -971,9 +990,7 @@
               <div class="left_user" v-if="item.joiner_sign != store_id">
                 <div align="left" style="float: left;margin-right: 12px">
                   <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
-                  <img v-else
-                    src="../../../../public/resource/image/userImg.png"
-                    alt="">
+                  <img v-else src="../../../../public/resource/image/userImg.png" alt="">
                 </div>
                 <div>
                   <div style="text-align: left;margin-bottom: 5px">{{ item.create_time }}</div>
