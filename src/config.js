@@ -52,7 +52,7 @@ export const allPageComponents = {
 }
 
 // 项目名称：快鹿送酒
-// export const APPConfig = {
+// export const APPConfig = { 
 //     appPageComponentsFolder: 'beverage',
 //     apiURL: 'https://api.kuailusongjiu.com',
 //     WebSocketURL: '',

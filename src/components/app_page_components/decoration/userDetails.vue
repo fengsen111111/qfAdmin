@@ -136,7 +136,7 @@
 	// 拉黑状态变化
 	function lhztChange(checked) {
 		console.log('checked', checked);
-		global.axios.post('decoration/Order/webGetUserOrderList', {
+		global.axios.post('decoration/User/webUpdateUserInfo', {
 			user_id: pageData.data.id,
 			chat_status: checked ? 'Y' : 'N'
 		}, global, true).then((res) => {
@@ -150,7 +150,7 @@
 			message.error('禁止操作')
 			return false
 		}
-		global.axios.post('decoration/Order/webGetUserOrderList', {
+		global.axios.post('decoration/User/webUpdateUserInfo', {
 			user_id: pageData.data.id,
 			status: checked ? 'Y' : 'N'
 		}, global, true).then((res) => {
@@ -158,6 +158,21 @@
 			message.success('操作成功')
 		})
 	}
+	// 发帖状态变化
+	function ftztChange(checked) {
+		if (is_ptsj.value == '商家') {
+			message.error('禁止操作')
+			return false
+		}
+		global.axios.post('decoration/User/webUpdateUserInfo', {
+			user_id: pageData.data.id,
+			status: checked ? 'Y' : 'N'
+		}, global, true).then((res) => {
+			console.log('发帖状态操作', res);
+			message.success('操作成功')
+		})
+	}
+
 
 	// 地址*号
 	function maskAddress(address) {
@@ -259,8 +274,8 @@
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div> -->
 							<div>禁止发布：</div>
-							<div><a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'"
-									size="small" />
+							<div><a-switch v-model:checked="userInfo.submit_status" :disabled="is_ptsj=='商家'"
+									size="small" @change="ftztChange" />
 							</div>
 						</div>
 						<div style="display: flex;">

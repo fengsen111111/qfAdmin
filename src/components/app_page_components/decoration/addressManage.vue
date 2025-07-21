@@ -268,7 +268,7 @@
 <template>
 	<!--搜索-->
 	<div>
-		<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
+		<!-- <div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 			<div style="display: flex;align-items: center;border-left: 2px solid #0c96f1;padding-left: 10px;">
 				电子面单发货地址
 			</div>
@@ -297,7 +297,6 @@
 						</td>
 					</tr>
 				</table>
-				<!-- 新增编辑弹窗 -->
 				<a-modal v-model:visible="fh_vis" title="电子面单发货地址" @ok="handleOk">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 						:wrapper-col="{ span: 16 }">
@@ -317,7 +316,7 @@
 					</a-form>
 				</a-modal>
 			</div>
-		</div>
+		</div> -->
 		<div style="border: 1px solid #f0f2f5;;padding: 20px;margin-top: 20px;border-radius: 4px;">
 			<div style="display: flex;align-items: center;border-left: 2px solid #0c96f1;padding-left: 10px;">
 				退货地址
