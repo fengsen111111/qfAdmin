@@ -882,6 +882,19 @@
     const scrollContainer = document.getElementById('scrollContainer');
   });
 
+  const shopObj = ref({})//店铺信息
+  // 店铺信息
+  function _shopInfo() {
+    shopObj.value = {}
+    global.axios.post('decoration/Store/webGetStoreInfo', {
+      store_id: store_id.value
+    }, global)
+      .then(res => {
+        shopObj.value = res
+      })
+  }
+  _shopInfo()
+
 </script>
 <template>
   <div align="center" class="table">
@@ -1082,7 +1095,8 @@
                   </div>
                 </div>
                 <div align="left" style="float: right;margin-left: 12px">
-                  <img :src="global.adminMsg.portrait">
+                  <img v-if="store_id=='1'" :src="global.adminMsg.portrait">
+                  <img v-else :src="shopObj.logo">
                 </div>
               </div>
             </template>
