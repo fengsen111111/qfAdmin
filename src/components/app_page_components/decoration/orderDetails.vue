@@ -128,7 +128,7 @@
 					<div style="display: flex;align-items: center;">
 						<img v-if="userInfo.head_image" :src="userInfo.head_image"
 							style="width: 50px;height: 50px;border-radius: 50%;" alt="">
-						<img v-else src="../../../../public/resource/image/userImg.png"
+						<img v-else src="../../../../public/resource/image/userImg.jpg"
 							style="width: 50px;height: 50px;border-radius: 50%;" alt="">
 						<div style="margin-left: 20px;">
 							<div style="font-size: 18px;font-weight: bold;">
