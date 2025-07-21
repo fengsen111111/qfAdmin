@@ -140,6 +140,7 @@
   onBeforeMount(() => {
     init()
     getCustomerRoomList()//获取聊天房间列表
+    _shopInfo()
   })
 
   // 查询与平台是否有房间
@@ -887,13 +888,12 @@
   function _shopInfo() {
     shopObj.value = {}
     global.axios.post('decoration/Store/webGetStoreInfo', {
-      store_id: store_id.value
+      store_id: localStorage.getItem("storeId")
     }, global)
       .then(res => {
         shopObj.value = res
       })
   }
-  _shopInfo()
 
 </script>
 <template>
