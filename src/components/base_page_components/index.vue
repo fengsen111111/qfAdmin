@@ -542,7 +542,7 @@
                           style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;" :src="item.head_image"
                           alt="">
                         <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="../../../public/resource/image/userImg.jpg" alt="">
+                          src="../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
@@ -567,7 +567,7 @@
                           style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;" :src="item.head_image"
                           alt="">
                         <img v-else style="width: 20px;height: 20px;border-radius: 50%;margin-right: 10px;"
-                          src="../../../public/resource/image/userImg.jpg" alt="">
+                          src="../../../public/resource/image/userImg.png" alt="">
                         <div>{{item.nickname?item.nickname:'默认昵称'}}</div>
                       </div>
                     </div>
@@ -711,7 +711,7 @@
               <img v-if="record.head_image" :src="record.head_image" 
                 style="width: 30px;height: 30px;border-radius: 50%;" alt="">
               <img v-else style="width: 30px;height: 30px;border-radius: 50%;"
-                src="../../../public/resource/image/userImg.jpg" alt="">
+                src="../../../public/resource/image/userImg.png" alt="">
             </template>
           </template>
         </a-table>

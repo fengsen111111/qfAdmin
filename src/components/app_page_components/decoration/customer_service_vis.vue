@@ -879,7 +879,7 @@
                 <img v-else-if="item.joiner_type=='c'" src="../../../../public/resource/image/head_img.png" alt="">
                 <!-- 用户或者商家 -->
                 <img v-else
-                  src="../../../../public/resource/image/userImg.jpg"
+                  src="../../../../public/resource/image/userImg.png"
                   alt="">
               </div>
               <div class="msg">
@@ -926,7 +926,7 @@
                   <div align="left" style="float: left;margin-right: 12px">
                     <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
                     <img v-else
-                      src="../../../../public/resource/image/userImg.jpg"
+                      src="../../../../public/resource/image/userImg.png"
                       alt="">
                   </div>
                   <div>
@@ -972,7 +972,7 @@
                 <div align="left" style="float: left;margin-right: 12px">
                   <img v-if="customer_service_state.msgObjImg" :src="customer_service_state.msgObjImg" alt="">
                   <img v-else
-                    src="../../../../public/resource/image/userImg.jpg"
+                    src="../../../../public/resource/image/userImg.png"
                     alt="">
                 </div>
                 <div>
