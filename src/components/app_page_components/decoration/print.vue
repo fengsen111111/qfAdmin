@@ -105,10 +105,11 @@
         const printContent = document.getElementById('electronicWaybill').innerHTML;
         const html = `<!DOCTYPE html><html><head><title>电子面单</title><style>body{margin:0;padding:0;background:#fff;font-family:sans-serif;}.print-container{max-width:360px;padding-top:30px;}</style></head><body><div class="print-container">${printContent}</div></body></html>`;
 
-        LODOP.PRINT_INITA('');
-        LODOP.SET_PRINTER_INDEX(dyjmc.value);
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm');
+        LODOP.PRINT_INITA(''); //初始化打印任务
+        LODOP.SET_PRINTER_INDEX(dyjmc.value);//设置使用的打印机
+        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);//设置打印质量
+        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm');//纸张大小
+        LODOP.SET_PRINT_MODE("COLOR_MODE", 1)//0 黑白 1彩印
         LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html);
         // 测试
         LODOP.PREVIEW();
