@@ -124,6 +124,7 @@
     defineExpose({ setVisible: val => visible.value = val });
 
     watch(() => props.orderListDetails, (newVal) => {
+        console.log('orderListDetails',newVal);
         setTimeout(() => {
             newVal.forEach((item, index) => {
                 const kuaidinum = item.kuaidinum || 'JT0016322576092';

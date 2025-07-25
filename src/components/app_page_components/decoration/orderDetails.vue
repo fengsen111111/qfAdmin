@@ -325,7 +325,7 @@
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">
-				<div style="display: flex;margin: 0 auto;">
+				<div style="display: flex;margin: 0 auto;" v-if="orderDetails.id">
 					<Print :orderListDetails="[orderDetails]" @djtzmk="sondjtzmk" />
 				</div>
 			</div>
