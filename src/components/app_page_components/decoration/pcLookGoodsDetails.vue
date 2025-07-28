@@ -570,7 +570,7 @@
                         <div class="a65">
                           <div class="a66">
                             <div class="a67">
-                              <span>页面预览(等待同步前台商品详情，暂时不看)</span>
+                              <span>页面预览</span>
                               <span @click="()=>{isYl=!isYl}" style="color: #407cff;">{{isYl?'关闭':'预览'}}</span>
                             </div>
                             <div class="a68">
@@ -580,16 +580,23 @@
                               </div>
                               <div v-else>
                                 <img :src="post_params.images[0]" class="a70" alt="">
-                                <div class="a71">
-                                  <div style="display: flex;">
+                                <div
+                                  style="display: flex;background-color: #DDDDDD;padding: 10px;align-items: center;justify-content: space-between;">
+                                  <div style="width: 80%;overflow: auto;display: flex;">
                                     <img :src="img" class="a72" v-for="img in post_params.images" :key="img" alt="">
                                   </div>
-                                  <div class="a73">
-                                    <div class="a74">
-                                      ￥{{post_params.goods_sizes[0].price}}</div>
-                                    <div style="color: #333333;">规格：{{post_params.goods_sizes[0].name}}</div>
+                                  <div style="color: #fff;">共{{post_params.images.length}}款
+                                    <RightOutlined style="color: #fff;" />
                                   </div>
-                                  <div style="font-weight: bold;">{{post_params.name}}</div>
+                                </div>
+                                <div v-if="post_params.goods_sizes[0]"
+                                  style="display: flex;background: linear-gradient(270deg, rgb(31, 181, 41) 0%, rgb(62, 221, 14) 100%);padding: 10px;color: #fff;">
+                                  <div>拼单价￥{{post_params.goods_sizes[0].price}} |
+                                    原价￥{{post_params.goods_sizes[0].old_price}}</div>
+                                  <div></div>
+                                </div>
+                                <div class="a71">
+                                  <div>{{post_params.name}}</div>
                                   <div class="a75">
                                     <div v-if="post_params.goods_type=='a'" class="a76">
                                       普通商品</div>
@@ -613,34 +620,37 @@
                                     <div v-if="post_params.is_plan_salled=='d'" class="a76">
                                       规格预售
                                     </div>
-                                    <div v-if="post_params.need_send_time=='a'" class="a76">
-                                      当日发货
-                                    </div>
-                                    <div v-if="post_params.need_send_time=='b'" class="a76">
-                                      24小时发货
-                                    </div>
-                                    <div v-if="post_params.need_send_time=='c'" class="a76">
-                                      48小时发货
-                                    </div>
                                   </div>
-                                  <div style="display: flex;">
-                                    <div style="display: flex;">
-                                      <div class="a77">销量</div>
-                                      <div class="a78">0</div>
-                                    </div>
-                                    <div class="a79">
-                                      <div class="a80">库存</div>
-                                      <div class="a81">
-                                        {{post_params.goods_sizes[0].stock}}</div>
-                                    </div>
-                                  </div>
-                                  <div style="margin: 10px 0px;">
+                                  <div
+                                    style="margin: 10px 0px;border-top: 1px solid #f5f5f5;border-bottom: 1px solid #f5f5f5;padding: 5px 0px;">
                                     <div v-for="item in cn_value" :key="item" class="a82">
-                                      <div style="color: #666666;">{{item}}</div>
+                                      <div style="color: #666666;display: flex;align-items: center;">
+                                        <img src="../../../../public/resource/image/bz.png"
+                                          style="width: 16px;height: 16px;margin-right: 5px;margin-top: -1px;"
+                                          mode="" />
+                                        {{item}}
+                                      </div>
                                       <RightOutlined />
                                     </div>
                                   </div>
+                                  <div style="display: flex;align-items: center;">
+                                    <img src="../../../../public/resource/image/kdc.png"
+                                      style="width: 16px;height: 16px;margin-right: 5px;" mode="" />
+                                    <div v-if="post_params.need_send_time=='a'">
+                                      当日发货
+                                    </div>
+                                    <div v-if="post_params.need_send_time=='b'">
+                                      24小时发货
+                                    </div>
+                                    <div v-if="post_params.need_send_time=='c'">
+                                      48小时发货
+                                    </div>
+                                  </div>
+                                </div>
+                                <div style="height: 10px;width: 100%;background-color: #f5f5f5;"></div>
+                                <div style="padding: 10px;">
                                   <div style="font-weight: bold;">商品详情</div>
+                                  <div style="height: 10px;"></div>
                                   <div class="a83" v-if="post_params.attributes.length>0">
                                     <div v-for="item in post_params.attributes" :key="item.key" class="a84">
                                       <div style="color: #999999;">{{item.key}}</div>
