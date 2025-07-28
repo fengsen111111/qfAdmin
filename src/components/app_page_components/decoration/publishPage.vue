@@ -786,8 +786,8 @@
       item.commission = ''
     })
 
-    console.log('post_params.goods_sizes',post_params.goods_sizes);
-    
+    console.log('post_params.goods_sizes', post_params.goods_sizes);
+
   }
   // 监听商品规格变化
   watch(
@@ -1109,6 +1109,23 @@
     post_params.name = result
   }
 
+
+  const imgTable = ref('')//记录冒泡的规格table
+  // 点击规格上传规格图冒泡 列表
+  function itemImgIndexTable(index) {
+    imgTable.value = index
+  }
+  // 上传规格图 列表
+  function uploadItemTable(options) {
+    global.file.uploadFile(global, options.file, 'image', 'coverImg', true, completeItemTable)
+  }
+  // 规格图图 列表
+  function completeItemTable(response) {
+    // console.log('回调',imgTable.value, response);
+    post_params.goods_sizes[imgTable.value].size_image = response.url
+  }
+
+
 </script>
 
 <template>
@@ -1190,7 +1207,7 @@
             </div>
           </div>
 
-          
+
         </div>
         <!-- 商品信息等 -->
         <!-- <div class="a14"> -->
@@ -1590,8 +1607,8 @@
                         <div class="a98">
                           <div style="display: flex;align-items: center;">
                             <a-input v-model:value="item.labelValue" placeholder="请输入规格名称" style="width: 200px;" />
-                            <span v-if="index==0" @click="item.isUrlimg = !item.isUrlimg"
-                              style="color: #1890FF;margin-left: 10px;">{{item.isUrlimg?'删除规格图':'添加规格图'}}</span>
+                            <!-- <span v-if="index==0" @click="item.isUrlimg = !item.isUrlimg"
+                              style="color: #1890FF;margin-left: 10px;">{{item.isUrlimg?'删除规格图':'添加规格图'}}</span> -->
                           </div>
                           <div class="a99">
                             <span @click="downUp(index)">{{index==0?'下移':'上移'}}</span>
@@ -1775,6 +1792,18 @@
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
                                     <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
                                       <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
+                                      <div @click="item.size_image=''"
+                                        style="width: 15px;height: 15px;position: absolute;color: red;left: 30px;top: -8px;">
+                                        <CloseCircleOutlined />
+                                      </div>
+                                    </div>
+                                    <div v-else @click="itemImgIndexTable(index)">
+                                      <a-upload :customRequest="uploadItemTable" :multiple="false" :file-list="[]"
+                                        list-type="picture-card">
+                                        <div>
+                                          <PlusOutlined />
+                                        </div>
+                                      </a-upload>
                                     </div>
                                   </div>
                                 </div>
@@ -2314,12 +2343,14 @@
     text-align: center;
     padding: 10px 20px;
   }
+
   .a9_1 {
     background-color: #0ccd00;
     color: #fff;
     text-align: center;
     padding: 10px 20px;
   }
+
   .a9_2 {
     background-color: #f1c442;
     color: #fff;
