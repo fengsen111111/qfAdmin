@@ -74,6 +74,10 @@
         if (res.goods_datas) {
           res.goods_datas.id = props.pageData.data.id
           res.goods_datas.status = res.goods_datas.status == 'Y' ? true : false
+          res.goods_datas.goods_sizes.map((item) => {
+            item.status = item.status == 'Y' ? true : false
+            item.uper_status = item.uper_status == 'Y' ? true : false
+          })
           Object.assign(post_params, res.goods_datas);
           let arrSer = cnOption.value.filter(item => res.goods_datas.service_ids.includes(item.id));
           cn_value.value = []
@@ -670,6 +674,7 @@
               </div>
             </div>
             <!-- 规格与库存 -->
+            <!-- 规格与库存 -->
             <div class="a92">
               <div class="a93">
                 <div style="color: #407cff;">2</div>
@@ -677,37 +682,107 @@
               </div>
               <div>
                 <div class="b9">
+                  <!-- <div style="display: flex;">
+                    <div style="color: red;">*</div>
+                    <div>价格及库存</div>
+                  </div> -->
                   <div class="b10" style="margin-left: 95px;">
                     <div class="b11">
+                      <div style="color: #ff0000;">请如实填写商品规格及库存信息，以确保商品可以正常发出，避免物流违规</div>
                       <table class="b13">
-                        <tr class="b14 gridCol2">
+                        <tr class="b14 gridCol9">
                           <!-- <th>
                             <div style="color: #999999;">操作</div>
                           </th> -->
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
-                                <!-- <div style="color: red;">*</div> -->
+                              <div style="display: flex;margin: 10px auto;">
+                                <div style="color: red;">*</div>
                                 <div style="color: #999999;">规格名称</div>
                               </div>
                             </div>
                           </th>
                           <th>
                             <div style="display: flex;">
-                              <div style="display: flex;margin: 0 auto;">
+                              <div style="display: flex;margin: 10px auto;">
                                 <!-- <div style="color: red;">*</div> -->
                                 <div style="color: #999999;">规格图片</div>
                               </div>
                             </div>
                           </th>
-
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 10px auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">状态</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">
+                                  <div>原价(元)</div>
+                                  <div>(划线价)</div>
+                                </div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 10px auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">拼单价(元)</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 10px auto;">
+                                <div style="color: red;">*</div>
+                                <div style="color: #999999;">库存</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">积分抵扣最大金额</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 10px auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">推荐官推荐</div>
+                              </div>
+                            </div>
+                          </th>
+                          <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 10px auto;">
+                                <!-- <div style="color: red;">*</div> -->
+                                <div style="color: #999999;">推荐官佣金</div>
+                              </div>
+                            </div>
+                          </th>
+                          <!-- <th>
+                            <div style="display: flex;">
+                              <div style="display: flex;margin: 0 auto;">
+                                <div style="color: #999999;">排序</div>
+                              </div>
+                            </div>
+                          </th> -->
                         </tr>
                         <template v-if="post_params.goods_sizes.length==0">
                           <a-empty />
                         </template>
                         <template v-else>
                           <template v-for="(item,index) in post_params.goods_sizes" :key="index">
-                            <tr class="b15 gridCol2">
+                            <tr class="b15 gridCol9">
                               <!-- <td>
                                 <div class="b16" @click="delGG(index)">删除</div>
                               </td> -->
@@ -721,10 +796,51 @@
                                   <div class="itemImg" style="display: flex;margin: 0 auto;">
                                     <div v-if="item.size_image" style=" position: relative;margin-right: 4px;">
                                       <a-image :width="40" :src="item.size_image" :preview="{ src: item.size_image }" />
+                                      <!-- <div @click="item.size_image=''"
+                                        style="width: 15px;height: 15px;position: absolute;color: red;left: 30px;top: -8px;">
+                                        <CloseCircleOutlined />
+                                      </div> -->
                                     </div>
+                                    <!-- <div v-else @click="itemImgIndexTable(index)">
+                                      <a-upload :customRequest="uploadItemTable" :multiple="false" :file-list="[]"
+                                        list-type="picture-card">
+                                        <div>
+                                          <PlusOutlined />
+                                        </div>
+                                      </a-upload>
+                                    </div> -->
                                   </div>
                                 </div>
                               </td>
+                              <td>
+                                <!-- <a-input placeholder="请输入状态"></a-input> -->
+                                <a-switch v-model:checked="item.status" disabled />
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.old_price" :min="0" disabled
+                                  placeholder="原价"></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.price" :min="0" placeholder="价格" disabled></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.stock" :min="0" placeholder="库存" disabled></a-input-number>
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.integral_price" :min="0" disabled
+                                  placeholder="积分抵扣的最大金额"></a-input-number>
+                              </td>
+                              <td>
+                                <!-- <a-input  placeholder="请输入推荐管是否可推荐"></a-input> -->
+                                <a-switch v-model:checked="item.uper_status" disabled />
+                              </td>
+                              <td>
+                                <a-input-number v-model:value="item.commission" :min="0" disabled
+                                  placeholder="佣金"></a-input-number>
+                              </td>
+                              <!-- <td>
+                                <a-input-number v-model:value="item.order" :min="0" placeholder="排序"></a-input-number>
+                              </td> -->
                             </tr>
                           </template>
                         </template>
