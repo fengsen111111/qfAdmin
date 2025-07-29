@@ -484,6 +484,9 @@
         });
       }
     }
+    if(handleInfo.page=='EditStoreMsgPage'){
+      handleInfo.page = 'EditStoreInfo'
+    }
 
     //跳转
     if (handleInfo.handleType == "jump") {
