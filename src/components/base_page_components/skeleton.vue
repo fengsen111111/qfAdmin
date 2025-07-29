@@ -73,11 +73,11 @@
           },
           {
             icon: "",
-            label: "表格",
+            label: "曝光添加修改",
             order: "2",
             page_id: "0",
             pid: "706154120674803774",
-            type: "TableExport",
+            type: "bgAddEdit",
             url: "",
             value: "44444",
           },
@@ -412,10 +412,15 @@
     }, false)
     skeleton_state.menuCheckedValues = ['111111']
   }
+  // 点击学习中心
+  function xxzx() {
+    // message.error('功能暂未开通')
+    global.router.push('/ruleCenter?title=学习中心')
+  }
   // 点击规则中心
   function gzzx() {
     // message.error('功能暂未开通')
-    global.router.push('/ruleCenter?title=学习中心')
+    global.router.push('/ruleCenter?title=规则中心')
   }
   const msgVisible = ref(false)//消息弹框开关
   const msgType = ref('1')//消息类型
@@ -795,11 +800,18 @@
             </audio>
           </div>
         </div>
-        <div @click="gzzx()">
-          <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;">
+        <div @click="xxzx()">
+          <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;cursor: pointer;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
             <span>学习中心</span>
+          </div>
+        </div>
+        <div @click="gzzx()">
+          <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;margin-left: 10px;cursor: pointer;">
+            <ContainerOutlined style="font-size: 16px;" />
+            <br>
+            <span>规则中心</span>
           </div>
         </div>
         <div class="admin-msg">

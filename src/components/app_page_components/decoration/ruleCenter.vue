@@ -33,6 +33,8 @@
 		getQandAList()
 	} else if (title.value == '学习中心') {
 		getStudyList()
+	} else if (title.value == '规则中心') {
+		getRulesList()
 	}
 	// 常见问题
 	function getQandAList() {
@@ -56,21 +58,12 @@
 				fwbContent.value = res.answer
 			});
 	}
-	// 点击了某个标题
-	function handleClick(item) {
-		// console.log('点击了某个标题', item);
-		state.selectedKeys = [item.id]
-		if (title.value == '常见问题') {
-			getQandADetail()
-		} else if (title.value == '学习中心') {
-			getStudyDetail()
-		}
-	}
-
 	// 学习中心
 	function getStudyList() {
 		global.axios
-			.post('decoration/Study/getStudyList', {}, global)
+			.post('decoration/Study/getStudyList', {
+				type: 'store'
+			}, global)
 			.then((res) => {
 				// console.log('学习中心', res.list);
 				res.list.map((item) => {
@@ -92,6 +85,51 @@
 				fwbContent.value = res.detail
 			});
 	}
+	// 规则
+	function getRulesList() {
+		global.axios
+			.post('decoration/Rules/getRulesList', {}, global).then((res) => {
+				// console.log('规则', res.list);
+				res.list.map((item) => {
+					item.question = item.name
+				})
+				menuList.value = res.list
+				state.selectedKeys = [res.list[0].id]
+				getRulesVersionDetail()
+			});
+	}
+	// 规则详情
+	function getRulesVersionDetail() {
+		global.axios
+			.post('decoration/RulesVersion/getRulesVersionList', {
+				rule_id: state.selectedKeys[0]
+			}, global)
+			.then((res) => {
+				console.log('版本列表',res);
+				global.axios
+					.post('decoration/RulesVersion/getRulesVersionDetail', {
+						rule_version_id: res.list[0].id
+					}, global)
+					.then((resTwo) => {
+						fwbContent.value = resTwo.content
+					});
+			});
+
+	}
+	// 点击了某个标题
+	function handleClick(item) {
+		// console.log('点击了某个标题', item);
+		state.selectedKeys = [item.id]
+		if (title.value == '常见问题') {
+			getQandADetail()
+		} else if (title.value == '学习中心') {
+			getStudyDetail()
+		} else if (title.value == '规则中心') {
+			getStudyDetail()
+		}
+	}
+
+
 </script>
 
 <template>
