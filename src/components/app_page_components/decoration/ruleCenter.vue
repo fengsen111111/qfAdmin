@@ -88,33 +88,41 @@
 	// 规则
 	function getRulesList() {
 		global.axios
-			.post('decoration/Rules/getRulesList', {}, global).then((res) => {
+			.post('decoration/Rules/getRulesList', {
+				type: 'user'
+			}, global).then((res) => {
 				// console.log('规则', res.list);
-				res.list.map((item) => {
+				res.list.map((item, index) => {
 					item.question = item.name
+					getRulesVersionList(item.id, index)
 				})
 				menuList.value = res.list
-				state.selectedKeys = [res.list[0].id]
-				getRulesVersionDetail()
+				console.log('menuList', menuList.value);
+			});
+	}
+	// 规则版本
+	function getRulesVersionList(id, index) {
+		global.axios
+			.post('decoration/RulesVersion/getRulesVersionList', {
+				rule_id: id
+			}, global)
+			.then((res) => {
+				// console.log('版本列表',res.list);
+				res.list.map((item, index) => {
+					item.question = item.name
+				})
+				menuList.value[index].children = res.list
 			});
 	}
 	// 规则详情
 	function getRulesVersionDetail() {
 		global.axios
-			.post('decoration/RulesVersion/getRulesVersionList', {
-				rule_id: state.selectedKeys[0]
+			.post('decoration/RulesVersion/getRulesVersionDetail', {
+				rule_version_id: state.selectedKeys[0]
 			}, global)
-			.then((res) => {
-				console.log('版本列表',res);
-				global.axios
-					.post('decoration/RulesVersion/getRulesVersionDetail', {
-						rule_version_id: res.list[0].id
-					}, global)
-					.then((resTwo) => {
-						fwbContent.value = resTwo.content
-					});
+			.then((resTwo) => {
+				fwbContent.value = resTwo.content
 			});
-
 	}
 	// 点击了某个标题
 	function handleClick(item) {
@@ -125,7 +133,7 @@
 		} else if (title.value == '学习中心') {
 			getStudyDetail()
 		} else if (title.value == '规则中心') {
-			getStudyDetail()
+			getRulesVersionDetail()
 		}
 	}
 
@@ -152,11 +160,20 @@
 			<div style="padding: 20px;overflow: auto;height: 100%;width: 70vw;margin: 0 auto;">
 				<!-- <div style="font-size: 18px;margin-bottom: 20px;">规则中心</div> -->
 				<div style="display: flex;height: 87vh; width: 100%;">
-					<a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
+					<a-menu v-if="title.value == '学习中心'" v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
 						style="width: 256px" mode="vertical">
-						<a-menu-item v-for="item in menuList" :key="item.id" @click="handleClick(item)">
-							{{item.question}}
-						</a-menu-item>
+							<a-menu-item v-for="item in menuList" :key="item.id" @click="handleClick(item)">
+								{{item.question}}
+							</a-menu-item>
+					</a-menu>
+					<a-menu v-else v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
+						style="width: 256px" mode="inline">
+							<a-sub-menu v-for="item in menuList" :key="item.id">
+								<template #title>{{item.question}}</template>
+								<a-menu-item v-for="iss in item.children" :key="iss.id" @click="handleClick(iss)">
+									{{iss.question}}
+								</a-menu-item>
+							</a-sub-menu>
 					</a-menu>
 					<div style="margin-left: 10px;background-color: #fff;border-radius: 4px;padding: 20px;width: 100%;">
 						<div v-html="fwbContent"></div>
