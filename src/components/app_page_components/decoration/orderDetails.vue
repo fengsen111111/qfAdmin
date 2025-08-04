@@ -60,7 +60,7 @@
 		// 	},
 		// });
 	}
-	function sondjtzmk(str, strTwo, strThree){
+	function sondjtzmk(str, strTwo, strThree) {
 		emit("djtzmk", str, strTwo, strThree);
 	}
 
@@ -148,9 +148,15 @@
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="display: flex;">
 				<div style="width: 35%;padding: 10px 30px;">
-					<div
-						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
-						物流信息</div>
+
+					<div style="display: flex;justify-content: space-between;align-items: center;">
+						<div
+							style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
+							物流信息</div>
+						<div
+							style="margin-top: 10px;">
+							预计到达时间: {{orderDetails.logistics_state =='0'?orderDetails.deliveryExpendTime:'未知'}}</div>
+					</div>
 					<div style="padding: 20px;">
 						<div v-for="(item,index) in orderDetails.logistics_detail" :key="index"
 							style="position: relative;padding-bottom: 10px;"
