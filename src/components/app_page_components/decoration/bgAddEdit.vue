@@ -42,7 +42,7 @@
 		data_id_two: null,
 		power_level_id: null,
 		number: '',
-		adcode: '',
+		adcode: null,
 		page_type: null,//a首页曝光  b社区曝光  c我的  需要注意商品只有a,c  作品只有a,b  
 	});
 	const formRef = ref(null);
@@ -74,10 +74,10 @@
 							id: '',
 							is_platform: localStorage.getItem("storeId") == '1' ? 'Y' : 'N',
 							data_type: values.data_type,
-							data_id: values.data_type=='b'?formState.data_id_two:formState.data_id,
+							data_id: values.data_type == 'b' ? formState.data_id_two : formState.data_id,
 							power_level_id: values.power_level_id,
 							number: values.number,
-							adcode: values.data_type == 'a' ? '0' : formState.adcode,//省/市的adcode  全国就传0  
+							adcode: values.data_type == 'a' ? '0' : formState.adcode[formState.adcode.length-1],//省/市的adcode  全国就传0  
 							page_type: values.page_type
 						}, global)
 						.then((res) => {
@@ -186,6 +186,46 @@
 	}
 	_shopInfo()
 
+	const treeData = ref([])//行政区数据
+	function getAreas() {
+		global.axios
+			.post('factory_system/Base/getAreas', {}, global)
+			.then((res) => {
+				treeData.value = removeThirdLevel(res.areas)
+				treeData.value.unshift({
+					adcode: "0",
+					children: [],
+					id: "0",
+					label: "全国",
+					value: "0",
+				})
+				// console.log('行政区数据1', treeData.value);
+			});
+	}
+	getAreas()
+
+	// 保留省市数据 去除区
+	function removeThirdLevel(data) {
+		return data.map(province => {
+			const cleanedProvince = {
+				id: province.id,
+				value: province.adcode,
+				label: province.label,
+				adcode: province.adcode
+			};
+			if (province.children && Array.isArray(province.children)) {
+				cleanedProvince.children = province.children.map(city => ({
+					id: city.id,
+					value: city.adcode,
+					label: city.label,
+					adcode: city.adcode
+					// ❌ 不保留 city.children
+				}));
+			}
+			return cleanedProvince;
+		});
+	}
+
 
 </script>
 
@@ -223,19 +263,6 @@
 					</a-select>
 				</a-form-item>
 
-				<a-form-item v-show="formState.data_type=='b'" label="曝光作品" name="data_id_two">
-					<a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
-						<a-select-option @click="formState.adcode = item.adcode" v-for="item in twList" :key="item.id"
-							:value="item.id">{{item.title}}</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item v-show="formState.data_type=='a'" label="曝光商品" name="data_id">
-					<a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
-						<a-select-option v-for="item in shopList" :key="item.id"
-							:value="item.id">{{item.name}}</a-select-option>
-					</a-select>
-				</a-form-item>
-
 				<a-form-item label="曝光档次" name="power_level_id" :rules="[{ required: true, message: '请选择!' }]">
 					<a-select ref="select" v-model:value="formState.power_level_id" placeholder="请选择!">
 						<a-select-option v-for="item in bgdj" :key="item.id"
@@ -246,6 +273,22 @@
 				<a-form-item label="曝光次数" name="number" :rules="[{ required: true, message: '请输入曝光次数!' }]">
 					<a-input v-model:value="formState.number" placeholder="请输入曝光次数!"
 						@input="formState.number = $event.target.value.replace(/\D/g, '')" />
+				</a-form-item>
+				<!-- v-show="formState.data_type == 'b'" -->
+				<a-form-item  label="曝光地区" name="adcode" :rules="[{ required: true, message: '请选择地区!' }]">
+					<a-cascader v-model:value="formState.adcode" :change-on-select="true" :options="treeData" placeholder="请选择地区" />
+				</a-form-item>
+				<a-form-item v-show="formState.data_type=='b'" label="曝光作品" name="data_id_two">
+					<a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
+						<a-select-option v-for="item in twList" :key="item.id"
+							:value="item.id">{{item.title}}</a-select-option>
+					</a-select>
+				</a-form-item>
+				<a-form-item v-show="formState.data_type=='a'" label="曝光商品" name="data_id">
+					<a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
+						<a-select-option v-for="item in shopList" :key="item.id"
+							:value="item.id">{{item.name}}</a-select-option>
+					</a-select>
 				</a-form-item>
 
 				<div style="height: 20px;"></div>
