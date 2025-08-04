@@ -56,6 +56,15 @@
 			okType: "primary",
 			onOk: function () {
 				console.log('重置');
+				// formState.id = '';
+				// formState.is_platform = localStorage.getItem("storeId") == '1' ? 'Y' : 'N';
+				formState.data_type = null;//	a 商品   b 作品  
+				formState.data_id = null;
+				formState.data_id_two = null;
+				formState.power_level_id = null;
+				formState.number = '';
+				formState.adcode = null;
+				formState.page_type = null;//a首页曝光  b社区曝光  c我的  需要注意商品只有a,c  作品只有a,b  
 			},
 		});
 	}
@@ -77,7 +86,7 @@
 							data_id: values.data_type == 'b' ? formState.data_id_two : formState.data_id,
 							power_level_id: values.power_level_id,
 							number: values.number,
-							adcode: values.data_type == 'a' ? '0' : formState.adcode[formState.adcode.length-1],//省/市的adcode  全国就传0  
+							adcode: values.data_type == 'a' ? '0' : formState.adcode[formState.adcode.length - 1],//省/市的adcode  全国就传0  
 							page_type: values.page_type
 						}, global)
 						.then((res) => {
@@ -275,8 +284,9 @@
 						@input="formState.number = $event.target.value.replace(/\D/g, '')" />
 				</a-form-item>
 				<!-- v-show="formState.data_type == 'b'" -->
-				<a-form-item  label="曝光地区" name="adcode" :rules="[{ required: true, message: '请选择地区!' }]">
-					<a-cascader v-model:value="formState.adcode" :change-on-select="true" :options="treeData" placeholder="请选择地区" />
+				<a-form-item label="曝光地区" name="adcode" :rules="[{ required: true, message: '请选择地区!' }]">
+					<a-cascader v-model:value="formState.adcode" :change-on-select="true" :options="treeData"
+						placeholder="请选择地区" />
 				</a-form-item>
 				<a-form-item v-show="formState.data_type=='b'" label="曝光作品" name="data_id_two">
 					<a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
