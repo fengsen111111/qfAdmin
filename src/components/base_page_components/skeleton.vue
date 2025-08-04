@@ -71,16 +71,16 @@
             url: "",
             value: "333333",
           },
-          {
-            icon: "",
-            label: "曝光添加修改",
-            order: "2",
-            page_id: "0",
-            pid: "706154120674803774",
-            type: "bgAddEdit",
-            url: "",
-            value: "44444",
-          },
+          // {
+          //   icon: "",
+          //   label: "曝光添加修改",
+          //   order: "2",
+          //   page_id: "0",
+          //   pid: "706154120674803774",
+          //   type: "powerAddEdit",
+          //   url: "",
+          //   value: "44444",
+          // },
         ]
       })
       //初始化tabMenu为未选中

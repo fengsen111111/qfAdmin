@@ -34,7 +34,7 @@ import EditStoreInfo from '@/components/app_page_components/decoration/EditStore
 import SubmitInvoice from '@/components/app_page_components/decoration/SubmitInvoice.vue'//开发票管理
 
 import courierManagement from '@/components/app_page_components/decoration/courierManagement.vue'//快递管理
-import bgAddEdit from '@/components/app_page_components/decoration/bgAddEdit.vue'//曝光添加修改
+import powerAddEdit from '@/components/app_page_components/decoration/bgAddEdit.vue'//曝光添加修改
 
 
 export const allPageComponents = {
@@ -50,7 +50,7 @@ export const allPageComponents = {
     pcLookGoodsDetails,
     EditStoreInfo,
     courierManagement,
-    bgAddEdit
+    powerAddEdit
 }
 
 // 项目名称：快鹿送酒
