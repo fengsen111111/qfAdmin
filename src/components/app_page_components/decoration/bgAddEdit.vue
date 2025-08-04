@@ -39,6 +39,7 @@
 		is_platform: localStorage.getItem("storeId") == '1' ? 'Y' : 'N',
 		data_type: null,//	a 商品   b 作品  
 		data_id: null,
+		data_id_two: null,
 		power_level_id: null,
 		number: '',
 		adcode: '',
@@ -73,10 +74,10 @@
 							id: '',
 							is_platform: localStorage.getItem("storeId") == '1' ? 'Y' : 'N',
 							data_type: values.data_type,
-							data_id: values.data_id,
+							data_id: values.data_type=='b'?formState.data_id_two:formState.data_id,
 							power_level_id: values.power_level_id,
 							number: values.number,
-							adcode: values.data_type == 'a' ? '0' : '',//省/市的adcode  全国就传0  
+							adcode: values.data_type == 'a' ? '0' : formState.adcode,//省/市的adcode  全国就传0  
 							page_type: values.page_type
 						}, global)
 						.then((res) => {
@@ -118,27 +119,54 @@
 	function _shopList() {
 		global.axios.post('decoration/Goods/getGoodsList', {
 			currentPage: 1,
-			pageSize: 100,
+			pageSize: 200,
 			store_id: localStorage.getItem('storeId')
 		}, global, true).then((res) => {
 			console.log('获取自己商品列表', res.list);
 			shopList.value = res.list
 		})
 	}
-	_shopList()
-	// const twList = ref([]) //图文列表
-	// //获取自己商品列表
-	// function _twList() {
-	// 	global.axios.post('decoration/Goods/getGoodsList', {
-	// 		currentPage: 1,
-	// 		pageSize: 100,
-	// 		store_id: localStorage.getItem('storeId')
-	// 	}, global, true).then((res) => {
-	// 		console.log('获取自己图文列表', res.list);
-	// 		twList.value = res.list
-	// 	})
-	// }
-	// _twList()
+	//获取平台商品列表
+	function _pcshopList() {
+		global.axios.post('decoration/Goods/findTableRecords', {
+			currentPage: 1,
+			pageSize: 200,
+			store_id: localStorage.getItem('storeId')
+		}, global, true).then((res) => {
+			console.log('获取平台商品列表', res.list);
+			shopList.value = res.list.map((item) => {
+				if (item.status == 'Y') {
+					return item
+				}
+			})
+		})
+	}
+	const twList = ref([]) //图文列表
+	//获取平台图文列表
+	function _twList() {
+		global.axios.post('decoration/Article/findTableRecords', {
+			currentPage: 1,
+			pageSize: 200,
+			store_id: localStorage.getItem('storeId')
+		}, global, true).then((res) => {
+			console.log('平台图文', res);
+			twList.value = []
+			res.list.map((item) => {
+				if (item.check_status == 'b') {
+					twList.value.push(item)
+				}
+			})
+			console.log('获取平台图文列表', twList.value);
+		})
+	}
+	if (formState.is_platform == 'Y') {
+		console.log('平台');
+		_pcshopList()
+		_twList()
+	} else {
+		console.log('商家');
+		_shopList()
+	}
 	// 热区跳转
 	function rqtz(key1, key2, key3) {
 		emit("djtzmk", key1, key2, key3);
@@ -179,8 +207,6 @@
 		</div>
 		<div class="table">
 			<div style="height: 40px;"></div>
-			<!-- {{formState.is_platform}}
-			{{formState.adcode}} -->
 			<a-form :model="formState" name="basic" :label-col="{ span: 3 }" :wrapper-col="{ span: 6 }" ref="formRef">
 				<a-form-item label="曝光类型" name="data_type" :rules="[{ required: true, message: '请选择!' }]">
 					<a-select ref="select" @change="()=>{formState.page_type = null;formState.data_id=null;}"
@@ -197,14 +223,13 @@
 					</a-select>
 				</a-form-item>
 
-				<a-form-item v-if="formState.data_type=='b'" label="曝光作品" name="data_id"
-					:rules="[{ required: true, message: '请选择!' }]">
-					<a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
-						<a-select-option v-for="item in shopList" :key="item.id"
-							:value="item.id">{{item.name}}</a-select-option>
+				<a-form-item v-show="formState.data_type=='b'" label="曝光作品" name="data_id_two">
+					<a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
+						<a-select-option @click="formState.adcode = item.adcode" v-for="item in twList" :key="item.id"
+							:value="item.id">{{item.title}}</a-select-option>
 					</a-select>
 				</a-form-item>
-				<a-form-item v-else label="曝光商品" name="data_id" :rules="[{ required: true, message: '请选择!' }]">
+				<a-form-item v-show="formState.data_type=='a'" label="曝光商品" name="data_id">
 					<a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
 						<a-select-option v-for="item in shopList" :key="item.id"
 							:value="item.id">{{item.name}}</a-select-option>
@@ -242,7 +267,7 @@
 						</span>
 					</span>
 				</div>
-				<div style="margin-left: 14px;">
+				<div style="margin-left: 14px;" v-if="formState.is_platform == 'N'">
 					<span>剩余曝光量：<span>{{shopObj.power}} </span> 曝光量</span>
 					<a-button type="primary" @click="rqtz('商家信息','商家资料')" style="margin-left: 100px;">去充值</a-button>
 				</div>
