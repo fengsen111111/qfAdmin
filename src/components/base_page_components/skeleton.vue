@@ -546,12 +546,13 @@
   const sjwdfxxs = ref(0)
   // 获取未读商家消息数
   function _getUnReadStoreMsgNum() {
-    global.axios
-      .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
-      .then((res) => {
-        console.log('获取未读商家消息数', res);
-        sjwdfxxs.value = res.number
-      })
+    return false
+    // global.axios
+    //   .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
+    //   .then((res) => {
+    //     console.log('获取未读商家消息数', res);
+    //     sjwdfxxs.value = res.number
+    //   })
   }
 
 

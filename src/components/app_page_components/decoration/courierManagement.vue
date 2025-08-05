@@ -44,51 +44,91 @@
 
 	const columns = [
 		{
-			title: '快递公司',
-			dataIndex: 'key1',
-			key: 'key1',
-		}, {
-			title: '网点名称',
-			dataIndex: 'key2',
-			key: 'key2',
-		}, {
-			title: '发货地址',
-			dataIndex: 'key3',
-			key: 'key3',
-		}, {
-			title: '已使用单号',
-			key: 'key4',
-			dataIndex: 'key4',
-		}, {
-			title: '已取消单号',
-			key: 'key5',
-			dataIndex: 'key5',
-		}, {
-			title: '面单余额',
-			key: 'key6',
-			dataIndex: 'key6',
-		}, {
 			title: '操作',
 			key: 'action',
 			dataIndex: 'action',
-		}];
-	const data = [{
-		key0: 0,
-		key1: '中通快递',
-		key2: '滁州天长,55020',
-		key3: '安徽省#滁州市#天长市|null长兴科创园',
-		key4: '810',
-		key5: '9',
-		key6: '47',
-	}, {
-		key0: 1,
-		key1: '中通快递',
-		key2: '滁州天长,55020',
-		key3: '安徽省#滁州市#天长市|null长兴科创园',
-		key4: '810',
-		key5: '9',
-		key6: '47',
-	},];
+		},
+		// {
+		// 	title: '快递ID',
+		// 	dataIndex: 'id',
+		// 	key: 'id',
+		// },
+		{
+			title: '状态',
+			key: 'status',
+			dataIndex: 'status',
+		},
+		{
+			title: '发货人',
+			key: 'sender_name',
+			dataIndex: 'sender_name',
+		}, {
+			title: '发货电话',
+			key: 'sender_mobile',
+			dataIndex: 'sender_mobile',
+		}, {
+			title: '发货地址',
+			key: 'sender_address',
+			dataIndex: 'sender_address',
+		}, 
+		{
+			title: '快递公司编码',
+			dataIndex: 'company_code',
+			key: 'company_code',
+		}, {
+			title: '快递公司名称',
+			dataIndex: 'company_name',
+			key: 'company_name',
+		}, {
+			title: '电子面单账户号码',
+			dataIndex: 'parterId',
+			key: 'parterId',
+		}, {
+			title: '电子面单账户密码',
+			key: 'partnerKey',
+			dataIndex: 'partnerKey',
+		}, {
+			title: '电子面单密钥',
+			key: 'partnerSecret',
+			dataIndex: 'partnerSecret',
+		}, {
+			title: '电子面单客户账户名称',
+			key: 'partnerName',
+			dataIndex: 'partnerName',
+		}, {
+			title: '网点名称',
+			key: 'net',
+			dataIndex: 'net',
+		}, {
+			title: '电子面单承载编号',
+			key: 'code',
+			dataIndex: 'code',
+		}, {
+			title: '电子面单承载快递员名',
+			key: 'checkMan',
+			dataIndex: 'checkMan',
+		}, {
+			title: '支付方式',
+			key: 'payType',
+			dataIndex: 'payType',
+		}, {
+			title: '第三方授权链接',
+			key: 'url',
+			dataIndex: 'url',
+		},];
+	const dataList = ref([])
+	//商家后台获取门店地址列表
+	function _getExpressList() {
+		global.axios
+			.post('decoration/Express/getExpressList', {
+				store_id: localStorage.getItem('storeId'),
+			}, global)
+			.then((res) => {
+				console.log('生成商家充值支付数据', res);
+				dataList.value = res.list
+			})
+	}
+	_getExpressList()
 </script>
 
 <template>
@@ -127,20 +167,22 @@
 					</a-select>
 				</div>
 			</div>
-			<div v-if="showYxq" style="background-color: #E6F7FF;padding: 10px;">
+			<div v-if="showYxq" style="background-color: #E6F7FF;padding: 10px;width: 100%;">
 				<span style="color: #666666;">授权有效期：2025-12-12 20: 40: 32</span>
 				<span @click="showYxq=false" style="color: #1890ff;margin-left: 10px;cursor: pointer;">删除</span>
 			</div>
 			<!-- 表格数据 -->
-			<a-table :columns="columns" :data-source="data">
-				<template #bodyCell="{ column, record  }">
-					<template v-if="column.dataIndex === 'action'">
-						<div style="cursor: pointer;">
-							<span @click="delItem(record)" style="color: #1890ff;">删除</span>
-						</div>
+			<div style="width: 100%;">
+				<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2000 }">
+					<template #bodyCell="{ column, record  }">
+						<template v-if="column.dataIndex === 'action'">
+							<div style="cursor: pointer;">
+								<span @click="delItem(record)" style="color: #1890ff;">删除</span>
+							</div>
+						</template>
 					</template>
-				</template>
-			</a-table>
+				</a-table>
+			</div>
 			<!-- 添加网店面单 -->
 			<a-modal v-model:visible="fh_vis" title="添加网店面单" @ok="handleOk">
 				<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
