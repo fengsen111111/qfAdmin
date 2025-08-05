@@ -151,7 +151,7 @@
 					<span style="font-size: 28px;margin-left: 5px;color: #fff;font-weight: bold;">{{title}}
 					</span>
 				</div>
-				<div @click="handUrl('/')" style="color: #fff;">
+				<div @click="handUrl('/')" style="color: #fff;cursor: pointer;">
 					返回首页
 				</div>
 			</div>
