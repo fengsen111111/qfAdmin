@@ -89,7 +89,7 @@
 	function getRulesList() {
 		global.axios
 			.post('decoration/Rules/getRulesList', {
-				type: 'user'
+				type: 'store'
 			}, global).then((res) => {
 				// console.log('规则', res.list);
 				res.list.map((item, index) => {
