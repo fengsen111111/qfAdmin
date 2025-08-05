@@ -18,12 +18,12 @@
 	// 店铺信息
 	function _shopInfo() {
 		shopObj.value = {}
-		console.log('店铺信息');
+		// console.log('店铺信息');
 		global.axios.post('decoration/Store/webGetStoreInfo', {
 			store_id: localStorage.getItem('storeId')
 		}, global)
 			.then(res => {
-				console.log('店铺数据', res);
+				// console.log('店铺数据', res);
 				shopObj.value = res
 				logo.value = res.logo
 				// a待审核 b 已通过 c已拒绝
@@ -40,7 +40,7 @@
 					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
 						mobile: shopObj.value.mobile,
 					}, global).then(res => {
-						console.log('商家入驻信息', res);
+						// console.log('商家入驻信息', res);
 						check_remark.value = res.check_remark
 					})
 				}
@@ -50,12 +50,12 @@
 	}
 	function _shopInfoPc() {
 		shopObj.value = {}
-		console.log('平台查询店铺信息');
+		// console.log('平台查询店铺信息');
 		global.axios.post('decoration/Store/webGetStoreInfo', {
 			store_id: pageData.data.id
 		}, global)
 			.then(res => {
-				console.log('店铺数据', res);
+				// console.log('店铺数据', res);
 				shopObj.value = res
 				logo.value = res.logo
 				// a待审核 b 已通过 c已拒绝
@@ -72,13 +72,13 @@
 					global.axios.post('decoration/Store/getSubmitEntryApplyMsg', {
 						mobile: shopObj.value.mobile,
 					}, global).then(res => {
-						console.log('商家入驻信息', res);
+						// console.log('商家入驻信息', res);
 						check_remark.value = res.check_remark
 					})
 				}
 			})
 	}
-	console.log('pageData', pageData.data);
+	// console.log('pageData', pageData.data);
 
 
 	const shType = ref('a')//a待审核 b 已通过 c已拒绝
@@ -416,7 +416,7 @@
 			perPage: 10,
 			store_id: store_id.value
 		}, global, true).then((res) => {
-			console.log('获取商品销量排行列表', res);
+			// console.log('获取商品销量排行列表', res);
 			spxlphlist.value = res.list
 		})
 	}
@@ -427,7 +427,7 @@
 			perPage: 10,
 			store_id: store_id.value
 		}, global, true).then((res) => {
-			console.log('获取商品投流排行列表', res);
+			// console.log('获取商品投流排行列表', res);
 			sptlphlist.value = res.list
 		})
 	}
@@ -438,7 +438,7 @@
 		global.axios
 			.post('factory_system/Base/getAreas', {}, global)
 			.then((res) => {
-				console.log('地址数据', res);
+				// console.log('地址数据', res);
 				treeData.value = res.areas
 			});
 	}
@@ -457,7 +457,7 @@
 	const formUserRef = ref();//表单绑定
 	// 提交汇付
 	function handUserHfOk() {
-		console.log('个人汇付点击确定');
+		// console.log('个人汇付点击确定');
 		formUserRef.value
 			.validateFields()
 			.then(values => {
@@ -761,7 +761,7 @@
 		global.axios
 			.post('decoration/Setting/getSetting', {}, global)
 			.then((res) => {
-				console.log('基本配置', res);
+				// console.log('基本配置', res);
 				jbpz.value = res
 			})
 	}

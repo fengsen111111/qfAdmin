@@ -154,7 +154,7 @@
     localStorage.removeItem("storeId");
     // 获取自己的角色ID和聊天状态
     global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then((res_one) => {
-      console.log('自己商家id和禁言状态', res_one);
+      // console.log('自己商家id和禁言状态', res_one);
       store_id.value = res_one.joiner_sign?res_one.joiner_sign:1
       type.value = store_id.value == 1 ? "平台" : '商家'
       localStorage.setItem("storeId", store_id.value);
@@ -202,7 +202,7 @@
       currentPage: 1,
       perPage: 10
     }, global, true).then((res) => {
-      console.log('商家营业额排行列表', res);
+      // console.log('商家营业额排行列表', res);
       sjyyeList.value = res.list
     })
   }
@@ -212,7 +212,7 @@
       currentPage: 1,
       perPage: 10
     }, global, true).then((res) => {
-      console.log('商家销量排行列表', res);
+      // console.log('商家销量排行列表', res);
       spxlList.value = res.list
     })
   }
@@ -222,7 +222,7 @@
       currentPage: 1,
       perPage: 10
     }, global, true).then((res) => {
-      console.log('获取商品二级分类销量排行列表', res);
+      // console.log('获取商品二级分类销量排行列表', res);
       spejflxlList.value = res.list
     })
   }
@@ -233,7 +233,7 @@
       currentPage: 1,
       perPage: 10
     }, global, true).then((res) => {
-      console.log('获取作品点赞排行列表', res);
+      // console.log('获取作品点赞排行列表', res);
       zpddList.value = res.list
     })
   }
@@ -244,7 +244,7 @@
       currentPage: 1,
       perPage: 10
     }, global, true).then((res) => {
-      console.log('获取视频点赞排行列表', res);
+      // console.log('获取视频点赞排行列表', res);
       spdzList.value = res.list
     })
   }

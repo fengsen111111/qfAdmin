@@ -20,10 +20,20 @@
 
   function handleKeydown(event) {
     if (event.key === 'Enter') {
-      console.log('回车键触发了');
+      // console.log('回车键触发了');
       login()
     }
   };
+
+  // 登录页面暴力清除所有计时器
+  function clearAllTimers() {
+    // 清除所有 setInterval
+    for (let i = 1; i < 99999; i++) {
+      clearInterval(i);
+      clearTimeout(i);
+    }
+  }
+  clearAllTimers()
 
   onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -74,14 +84,14 @@
     if (active.value == 1) {
       // 1账号
       if (login_state.loginData.account) {
-        console.log('有账号');
+        // console.log('有账号');
       } else {
         errorMsg.value = '请填写账号'
         return false
       }
       // 2密码
       if (login_state.loginData.password) {
-        console.log('有密码');
+        // console.log('有密码');
       } else {
         errorMsg.value = '请填写密码'
         return false
@@ -105,7 +115,7 @@
 
             // 获取权限列表
             global.axios.post('factory_system/Base/afterLogin', {}, global, false).then(after => {
-              console.log('after', after);
+              // console.log('after', after);
               if (isJb.value) { //是否廉政举报
                 global.router.push("/lzjb")
               } else {
@@ -401,7 +411,7 @@
 
   setTimeout(() => {
     drawCaptcha()
-  }, 500);
+  }, 1000);
   // 生成随机颜色
   function getRandomColor() {
     const r = Math.floor(Math.random() * 150)
@@ -418,7 +428,7 @@
     global.axios
       .post('decoration/Setting/getSetting', {}, global)
       .then((res) => {
-        console.log('登陆页logo', res);
+        // console.log('登陆页logo', res);
         admin_login_logo.value = res.admin_login_logo[0]
         admin_login_back_image.value = res.admin_login_back_image[0]
       });
@@ -485,7 +495,7 @@
 
   const popoverVisible = ref(false)
 
-  function searchBa(){
+  function searchBa() {
     window.open('https://beian.mps.gov.cn/#/query/webSearch', '_blank');
   }
 
@@ -495,7 +505,7 @@
   <div v-if="admin_login_back_image" class="login">
     <div style="position: fixed;right: 20px;top: 12vh;text-align: center;">
       <!-- <img src="/resource/image/jpn.png" style="width: 40px;height: 38px;" alt=""> -->
-       <div style="height: 38px;"></div>
+      <div style="height: 38px;"></div>
       <a-popover v-model:visible="visible" trigger="click" placement="leftTop">
         <template #content>
           <div style="width: 400px;">
@@ -620,7 +630,7 @@
             <a-form-item>
               <div style="display: flex;justify-content: space-between;align-items: center;margin-top: -5px;">
                 <a-input v-model:value="login_state.loginData.captcha_code" :placeholder="global.findLanguage('图形验证码')"
-                  :style="{width:'calc(100% - 110px)',float:'left',}" @change="onChange" size="large" />
+                  :style="{width:'calc(100% - 110px)',float:'left',}" size="large" />
                 <div @click="drawCaptcha" style="cursor: pointer;padding-top: 5px;">
                   <canvas ref="canvasRef" width="100" height="40"></canvas>
                 </div>
@@ -787,12 +797,14 @@
     </div>
     <div style="display: flex;font-size: 13px;">
       <div style="margin: 0 auto;color: #666666;margin-top: 10px;">
-        <div>侵权投诉(邮箱)：quan-feng@qq.com  <span style="margin-left: 40px;">举报/反馈/帮助(微信号)：qf-kffw</span></div>
+        <div>侵权投诉(邮箱)：quan-feng@qq.com <span style="margin-left: 40px;">举报/反馈/帮助(微信号)：qf-kffw</span></div>
       </div>
     </div>
     <div style="display: flex;font-size: 13px;">
       <div style="margin: 0 auto;color: #666666;margin-top: 10px;display: flex;align-items: center;">
-        <img style="width: 16px;height: 16px;margin-right: 5px;" src="data:image/png;base64,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" alt="">
+        <img style="width: 16px;height: 16px;margin-right: 5px;"
+          src="data:image/png;base64,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"
+          alt="">
         <div @click="searchBa()">辽公网安备 辽ICP备2024039701号</div>
       </div>
     </div>

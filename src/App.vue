@@ -21,7 +21,7 @@
     global.changeLanguage(global.language.code)
     //未登录跳转登录页
     if (!localStorage.getItem('Authorization')) {
-      console.log('win',window.location.pathname);
+      // console.log('win',window.location.pathname);
       if(window.location.pathname=='/openShop'){
         // 不跳转
       }else{

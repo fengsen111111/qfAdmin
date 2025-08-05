@@ -19,12 +19,12 @@
   const shopObj = ref({})
   // 店铺信息
   function _shopInfo() {
-    console.log('店铺信息');
+    // console.log('店铺信息');
     global.axios.post('decoration/Store/webGetStoreInfo', {
       store_id: localStorage.getItem('storeId')
     }, global)
       .then(res => {
-        console.log('店铺数据', res);
+        // console.log('店铺数据', res);
         shopObj.value = res
       })
   }
@@ -131,11 +131,16 @@
       } else {
         type.value = "商家";
         toShopDetails();
-        // ✅ 如果未设置定时器，则设置一个
-        if (!unreadMsgTimer) {
-          unreadMsgTimer = setInterval(() => {
-            _getUnReadStoreMsgNum();
-          }, 10000);
+        // 超管登录
+        if (global.adminMsg.id == -1) {
+
+        } else {
+          // ✅ 如果未设置定时器，则设置一个
+          if (!unreadMsgTimer) {
+            unreadMsgTimer = setInterval(() => {
+              _getUnReadStoreMsgNum();
+            }, 10000);
+          }
         }
       }
     }, 1000);
@@ -153,9 +158,9 @@
         // localStorage.clear()//
         for (let i = localStorage.length - 1; i >= 0; i--) {
           const key = localStorage.key(i);
-          if (key == 'login-config' || key == 'holdLogin.status'|| key == 'holdLogin.account'|| key == 'holdLogin.password') {
+          if (key == 'login-config' || key == 'holdLogin.status' || key == 'holdLogin.account' || key == 'holdLogin.password') {
             // 不清除
-          }else{
+          } else {
             localStorage.removeItem(key);
           }
         }
@@ -450,7 +455,7 @@
   import Print from '@/components/app_page_components/decoration/print.vue'
 
   function djtzmk(str, strTwo, strThree) {
-    console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
+    // console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
     skeleton_state.menuData.map((item) => {
       if (item.label == str) {
         item.children.map((iss) => {
@@ -546,13 +551,12 @@
   const sjwdfxxs = ref(0)
   // 获取未读商家消息数
   function _getUnReadStoreMsgNum() {
-    return false
-    // global.axios
-    //   .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
-    //   .then((res) => {
-    //     console.log('获取未读商家消息数', res);
-    //     sjwdfxxs.value = res.number
-    //   })
+    global.axios
+      .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
+      .then((res) => {
+        console.log('获取未读商家消息数', res);
+        sjwdfxxs.value = res.number
+      })
   }
 
 
@@ -802,14 +806,16 @@
           </div>
         </div>
         <div @click="xxzx()">
-          <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;cursor: pointer;">
+          <div
+            style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;cursor: pointer;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
             <span>学习中心</span>
           </div>
         </div>
         <div @click="gzzx()">
-          <div style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;margin-left: 10px;cursor: pointer;">
+          <div
+            style="text-align: center;line-height: 18px;padding-top: 20px;color: #666666;font-size: 12px;margin-left: 10px;cursor: pointer;">
             <ContainerOutlined style="font-size: 16px;" />
             <br>
             <span>规则中心</span>
@@ -875,7 +881,7 @@
       <!-- 固定标 -->
       <div style="position: fixed;top: 30vh;right: 30px;cursor: pointer;z-index: 999;">
         <div>
-          <a-badge :count="sjwdfxxs">
+          <a-badge v-if="global.adminMsg.id != -1" :count="sjwdfxxs">
             <div @click="openVis(1)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <BellOutlined style="font-size: 18px;" />
