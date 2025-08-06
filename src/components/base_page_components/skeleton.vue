@@ -121,7 +121,7 @@
       true
     );
     setTimeout(() => {
-      console.log('global.adminMsg.id', global.adminMsg.id);
+      // console.log('global.adminMsg.id', global.adminMsg.id);
       if (global.adminMsg.id == -1) {
         return false; // 超管登录
       }
@@ -554,7 +554,7 @@
     global.axios
       .post('decoration/StoreMsg/getUnReadStoreMsgNum', {}, global)
       .then((res) => {
-        console.log('获取未读商家消息数', res);
+        // console.log('获取未读商家消息数', res);
         sjwdfxxs.value = res.number
       })
   }
@@ -708,7 +708,7 @@
 
   // 修改商家信息
   function editStoreInfo() {
-    console.log('修改商家信息');
+    // console.log('修改商家信息');
     let page = {
       value: "editInfoStore",
       label: global.findLanguage("修改密码"),
@@ -720,6 +720,16 @@
     };
     openPage(page);
   }
+
+  // 获取未打印订单
+  function _getUnPrintOrderList() {
+    global.axios.post('decoration/Order/getUnPrintOrderList', {
+      store_id: localStorage.getItem("storeId")
+    }, global, true).then((res) => {
+      console.log('获取未打印订单', res);
+    })
+  }
+  _getUnPrintOrderList()
 
 </script>
 
