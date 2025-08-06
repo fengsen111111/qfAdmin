@@ -256,21 +256,24 @@
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
-					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200 }"
+					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200,y: 640 }"
 						:expandedRowKeys="expandedKeys" rowKey="id">
 						<template #bodyCell="{ column, record  }">
 							<template v-if="column.dataIndex === 'action'">
 								<div style="cursor: pointer;width: 120px;">
 									<!-- 第三方链接授权 -->
-									<div v-if="record.store_id">
+									<div v-if="!record.tbNet">
 										<span @click="delItem(record)" style="color: red;">删除</span>
-										<span v-if="record.status=='N'&&record.children.length==0"
-											@click="_handleStatus(record)"
-											style="color: #1890ff;margin-left: 10px;">默认</span>
+										<span v-if="record.status=='N'">
+											<span v-if="record.children">
+												<span v-if="record.children.length==0" @click="_handleStatus(record)"
+												style="color: #1890ff;margin-left: 10px;">默认</span>
+											</span>
+										</span>
 									</div>
 									<div v-else>
 										<span v-if="record.status=='N'" @click="_handleStatus(record)"
-											style="color: #1890ff;margin-left: 20px;">默认</span>
+											style="color: #1890ff;margin-left: 23px;">默认</span>
 									</div>
 								</div>
 							</template>
@@ -377,5 +380,8 @@
 	</div>
 </template>
 
-<style lang="less" scoped>
+<style scoped>
+	::v-deep(.ant-table-row-indent + .ant-table-row-expand-icon){
+		display: none !important;
+	}
 </style>
