@@ -14,7 +14,7 @@
 	const spinning = ref(false)//加载
 	const company_name = ref(null)//搜索项 快递公司code
 	const partnerName = ref(null)//搜索项  电子面单账户名称
-	
+
 	const formState = reactive({
 		store_id: localStorage.getItem('storeId'),
 		add_type: null,
@@ -27,7 +27,6 @@
 		net: '',
 		code: '',
 		checkMan: '',
-		payType: '',
 		sender_name: '',
 		sender_mobile: '',
 		sender_address: '',
@@ -104,11 +103,15 @@
 			title: '快递公司名称',
 			dataIndex: 'company_name',
 			key: 'company_name',
-		},  {
+		}, {
+			title: '网点名称/网点编号',
+			key: 'net',
+			dataIndex: 'net',
+		}, {
 			title: '电子面单客户账户名称',
 			key: 'partnerName',
 			dataIndex: 'partnerName',
-		},{
+		}, {
 			title: '电子面单账户号码',
 			dataIndex: 'parterId',
 			key: 'parterId',
@@ -120,11 +123,7 @@
 			title: '电子面单密钥',
 			key: 'partnerSecret',
 			dataIndex: 'partnerSecret',
-		}, {
-			title: '网点名称',
-			key: 'net',
-			dataIndex: 'net',
-		}, {
+		},{
 			title: '电子面单承载编号',
 			key: 'code',
 			dataIndex: 'code',
@@ -132,10 +131,6 @@
 			title: '电子面单承载快递员名',
 			key: 'checkMan',
 			dataIndex: 'checkMan',
-		}, {
-			title: '支付方式',
-			key: 'payType',
-			dataIndex: 'payType',
 		}, {
 			title: '发货人',
 			key: 'sender_name',
@@ -153,6 +148,11 @@
 			title: '第三方授权链接',
 			key: 'url',
 			dataIndex: 'url',
+			width: 120
+		}, {
+			title: '授权关联快递',
+			key: 'sonUrl',
+			dataIndex: 'sonUrl',
 			width: 120
 		},];
 	const dataList = ref([])
@@ -198,7 +198,7 @@
 	}
 	// 三方授权地址展开收起
 	const urlIs = ref(false)
-	
+
 </script>
 
 <template>
@@ -242,7 +242,7 @@
 				</div>
 				<div style="display: flex; align-items: center;margin-left: 20px;">
 					<span style="white-space: nowrap;">电子面单账户名称：</span>
-					<a-input v-model:value="partnerName" placeholder="请输入电子面单账户名称" ></a-input>
+					<a-input v-model:value="partnerName" placeholder="请输入电子面单账户名称"></a-input>
 				</div>
 				<a-button type="primary" style="margin-left: 20px;" @click="_getExpressList()">搜索</a-button>
 				<a-button style="margin-left: 20px;" @click="company_code = null;partnerName=null">重置</a-button>
@@ -257,24 +257,45 @@
 					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200 }">
 						<template #bodyCell="{ column, record  }">
 							<template v-if="column.dataIndex === 'action'">
-								<div style="cursor: pointer;">
-									<span @click="delItem(record)" style="color: red;">删除</span>
-									<span v-if="record.status=='N'" @click="_handleStatus(record)"
-										style="color: #1890ff;margin-left: 10px;">默认</span>
+								<div style="cursor: pointer;width: 120px;">
+									<!-- 第三方链接授权 -->
+									<div v-if="record.store_id">
+										<span @click="delItem(record)" style="color: red;">删除</span>
+										<span v-if="record.status=='N'&&record.children.length==0" @click="_handleStatus(record)"
+											style="color: #1890ff;margin-left: 10px;">默认</span>
+									</div>
+									<div v-else>
+										<span v-if="record.status=='N'" @click="_handleStatus(record)"
+											style="color: #1890ff;margin-left: 20px;">默认</span>
+									</div>
 								</div>
 							</template>
 							<template v-if="column.dataIndex === 'status'">
-								<a-tag :color="record.status=='Y'?'green':'red'">
-									{{record.status=='Y'?'默认':'禁用'}}
-								</a-tag>
+								<div v-if="record.children">
+									<div v-if="!record.children.length">
+										<a-tag :color="record.status=='Y'?'green':'red'">
+											{{record.status=='Y'?'默认':'禁用'}}
+										</a-tag>
+									</div>
+								</div>
+								<div v-else>
+									<a-tag :color="record.status=='Y'?'green':'red'">
+										{{record.status=='Y'?'默认':'禁用'}}
+									</a-tag>
+								</div>
 							</template>
 							<template v-if="column.dataIndex === 'partnerKey'">
 								<div style="width: 120px;">{{record.partnerKey}}</div>
 							</template>
+							
+							<template v-if="column.dataIndex === 'net'||column.dataIndex === 'tbNet'">
+								<div style="width: 120px;">{{record.partnerKey}}{{record.tbNet}}</div>
+							</template>
 							<template v-if="column.dataIndex === 'url'">
 								<div style="width: 120px;cursor: pointer;" v-if="record.url && record.url!='已完成授权'">
 									<span>{{urlIs?record.url:record.url.slice(0,20)+'......'}}</span>
-									<span style="color: #1890ff;margin-left: 20px;" @click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
+									<span style="color: #1890ff;margin-left: 20px;"
+										@click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
 								</div>
 							</template>
 						</template>
@@ -306,19 +327,16 @@
 							:rules="[{ required: true, message: '请填写发货地址!' }]">
 							<a-input v-model:value="formState.sender_address" placeholder="请填写发货地址" />
 						</a-form-item>
-						<a-form-item label="快递公司名称" name="company_name" >
-							<a-input v-model:value="formState.company_name"  :rules="[{ required: true, message: '请填写快递公司名称' }]" placeholder="请填写快递公司名称" />
+						<a-form-item label="快递公司名称" name="company_name">
+							<a-input v-model:value="formState.company_name"
+								:rules="[{ required: true, message: '请填写快递公司名称' }]" placeholder="请填写快递公司名称" />
 						</a-form-item>
-							<!-- :rules="[{ required: true, message: '请填写支付方式!' }]" -->
-							<a-form-item label="支付方式" name="payType">
-								<a-input v-model:value="formState.payType" placeholder="请填写支付方式" />
-							</a-form-item>
 						<div v-show="formState.add_type=='handle'">
-						    <!-- :rules="[{ required: true, message: '请输入快递公司' }]" -->
-							<a-form-item label="快递公司编码" name="company_name" >
+							<!-- :rules="[{ required: true, message: '请输入快递公司' }]" -->
+							<a-form-item label="快递公司编码" name="company_name">
 								<a-select ref="select" placeholder="请选择快递公司" v-model:value="formState.company_code">
-									<a-select-option :value="item.code"
-										v-for="item in wlList" :key="item.code">{{item.name}}</a-select-option>
+									<a-select-option :value="item.code" v-for="item in wlList"
+										:key="item.code">{{item.name}}</a-select-option>
 									<!-- <a-select-option value="jack">中通快递</a-select-option>
 								<a-select-option value="lucy">圆通快递</a-select-option> -->
 								</a-select>
