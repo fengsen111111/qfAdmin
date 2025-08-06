@@ -139,7 +139,7 @@
           if (!unreadMsgTimer) {
             unreadMsgTimer = setInterval(() => {
               _getUnReadStoreMsgNum();
-            }, 10000);
+            }, 60000);
           }
         }
       }
@@ -611,7 +611,7 @@
     // 启动新的定时器
     customerRoomTimer = setInterval(() => {
       getCustomerRoomList();
-    }, 10000); // 每 10 秒执行一次
+    }, 60000); // 每 10 秒执行一次
   }
   startCustomerRoomTimer()
 
