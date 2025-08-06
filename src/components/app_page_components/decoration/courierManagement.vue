@@ -123,7 +123,7 @@
 			title: '电子面单密钥',
 			key: 'partnerSecret',
 			dataIndex: 'partnerSecret',
-		},{
+		}, {
 			title: '电子面单承载编号',
 			key: 'code',
 			dataIndex: 'code',
@@ -148,11 +148,6 @@
 			title: '第三方授权链接',
 			key: 'url',
 			dataIndex: 'url',
-			width: 120
-		}, {
-			title: '授权关联快递',
-			key: 'sonUrl',
-			dataIndex: 'sonUrl',
 			width: 120
 		},];
 	const dataList = ref([])
@@ -198,6 +193,13 @@
 	}
 	// 三方授权地址展开收起
 	const urlIs = ref(false)
+
+	const expandedKeys = ref([])
+
+	// 等待数据加载完成后设置默认展开的行（例如全部 ID）
+	watch(dataList, (val) => {
+		expandedKeys.value = val.map(item => item.id)
+	})
 
 </script>
 
@@ -254,14 +256,16 @@
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
-					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200 }">
+					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200 }"
+						:expandedRowKeys="expandedKeys" rowKey="id">
 						<template #bodyCell="{ column, record  }">
 							<template v-if="column.dataIndex === 'action'">
 								<div style="cursor: pointer;width: 120px;">
 									<!-- 第三方链接授权 -->
 									<div v-if="record.store_id">
 										<span @click="delItem(record)" style="color: red;">删除</span>
-										<span v-if="record.status=='N'&&record.children.length==0" @click="_handleStatus(record)"
+										<span v-if="record.status=='N'&&record.children.length==0"
+											@click="_handleStatus(record)"
 											style="color: #1890ff;margin-left: 10px;">默认</span>
 									</div>
 									<div v-else>
@@ -287,7 +291,7 @@
 							<template v-if="column.dataIndex === 'partnerKey'">
 								<div style="width: 120px;">{{record.partnerKey}}</div>
 							</template>
-							
+
 							<template v-if="column.dataIndex === 'net'||column.dataIndex === 'tbNet'">
 								<div style="width: 120px;">{{record.partnerKey}}{{record.tbNet}}</div>
 							</template>
