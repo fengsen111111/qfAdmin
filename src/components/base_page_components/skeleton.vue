@@ -138,7 +138,8 @@
           // ✅ 如果未设置定时器，则设置一个
           if (!unreadMsgTimer) {
             unreadMsgTimer = setInterval(() => {
-              _getUnReadStoreMsgNum();
+              _getUnReadStoreMsgNum();//获取商家未读消息
+              _getUnPrintOrderList()//获取商家未打印订单
             }, 60000);
           }
         }
