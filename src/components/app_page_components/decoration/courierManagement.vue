@@ -174,7 +174,7 @@
 		global.axios
 			.post('decoration/Setting/transportList', {}, global)
 			.then((res) => {
-				console.log('物流公司', res);
+				// console.log('物流公司', res);
 				wlList.value = res
 			})
 	}

@@ -727,6 +727,12 @@
       store_id: localStorage.getItem("storeId")
     }, global, true).then((res) => {
       console.log('获取未打印订单', res);
+      // 打印第一笔订单测试
+      // global.axios.post('decoration/Order/printOrder', {
+      //   order_id: '775954827933910915'
+      // }, global, true).then((res_prt) => {
+      //   console.log('打印订单', res_prt);
+      // })
     })
   }
   _getUnPrintOrderList()

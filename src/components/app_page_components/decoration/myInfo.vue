@@ -184,7 +184,7 @@
 				handle_type: 'add'
 			}, global)
 			.then((res) => {
-				console.log('商品分类列表', res.list);
+				// console.log('商品分类列表', res.list);
 				dataType.value = res.list.map((item) => {
 					return {
 						value: item.id,
@@ -234,7 +234,6 @@
 	// 计算每列的 rowspan
 	function calculateRowspan(data, levelCount) {
 		const rowspanMap = Array.from({ length: levelCount }, () => new Map());
-
 		data.forEach((row, rowIndex) => {
 			row.forEach((col, colIndex) => {
 				const key = col.id;
@@ -254,6 +253,9 @@
 
 	// 渲染到 HTML 表格
 	function renderTable(data) {
+		if(titleType.value != '店铺信息'){
+			return false
+		}
 		// console.log('渲染表格');
 		const table = document.querySelector(".table");
 		// 清除旧 tbody
@@ -969,7 +971,7 @@
 				store_id: store_id.value,
 			}, global)
 			.then((res) => {
-				console.log('后台获取商家资金统计', res);
+				// console.log('后台获取商家资金统计', res);
 				zjxqtj.value = res
 			})
 	}
@@ -1009,7 +1011,7 @@
 
 			}, global)
 			.then((res) => {
-				console.log('后台获取商家资金日志', res);
+				// console.log('后台获取商家资金日志', res);
 				zjrzCount.value = res.count
 				zjrzList.value = res.list
 			})

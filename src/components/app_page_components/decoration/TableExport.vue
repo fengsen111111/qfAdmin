@@ -92,10 +92,10 @@
 					<td>企业名称</td>
 					<td></td>
 					<td colspan="2" rowspan="15">
-						<center>商家</center>
+						<div style="text-align: center;">商家</div>
 					</td>
 					<td colspan="4" rowspan="19">
-						<center>商家后台需要对账中心，可以导出超管后台可以查询、导出商家账单(特定和全部商家)</center>
+						<div style="text-align: center;">商家后台需要对账中心，可以导出超管后台可以查询、导出商家账单(特定和全部商家)</div>
 					</td>
 				</tr>
 				<tr>
@@ -248,10 +248,10 @@
 					<td></td>
 					<td></td>
 					<td colspan="1" rowspan="15">
-						<center>推荐官</center>
+						<div style="text-align: center;">推荐官</div>
 					</td>
 					<td colspan="4" rowspan="15">
-						<center>超管后台可以查询、导出商家账单(特定和全部推荐官)</center>
+						<div style="text-align: center;">超管后台可以查询、导出商家账单(特定和全部推荐官)</div>
 					</td>
 				</tr>
 				<tr>
