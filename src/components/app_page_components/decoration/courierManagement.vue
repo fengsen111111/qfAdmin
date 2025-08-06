@@ -12,7 +12,7 @@
 	const fh_vis = ref(false)//新增编辑
 
 	const spinning = ref(false)//加载
-	const company_code = ref(null)//搜索项 快递公司code
+	const company_name = ref(null)//搜索项 快递公司code
 	const partnerName = ref(null)//搜索项  电子面单账户名称
 	
 	const formState = reactive({
@@ -101,7 +101,11 @@
 			title: '快递公司名称',
 			dataIndex: 'company_name',
 			key: 'company_name',
-		}, {
+		},  {
+			title: '电子面单客户账户名称',
+			key: 'partnerName',
+			dataIndex: 'partnerName',
+		},{
 			title: '电子面单账户号码',
 			dataIndex: 'parterId',
 			key: 'parterId',
@@ -113,10 +117,6 @@
 			title: '电子面单密钥',
 			key: 'partnerSecret',
 			dataIndex: 'partnerSecret',
-		}, {
-			title: '电子面单客户账户名称',
-			key: 'partnerName',
-			dataIndex: 'partnerName',
 		}, {
 			title: '网点名称',
 			key: 'net',
@@ -158,10 +158,11 @@
 		global.axios
 			.post('decoration/Express/getExpressList', {
 				store_id: localStorage.getItem('storeId'),
+				company_name: company_name.value,
+				partnerName: partnerName.value
 			}, global)
 			.then((res) => {
 				spinning.value = false
-				console.log('生成商家充值支付数据', res);
 				dataList.value = res.list
 			})
 	}
@@ -202,7 +203,7 @@
 				电子面单绑定
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
-				<span>绑定电子面单账户：</span>
+				<span style="white-space: nowrap;">绑定电子面单账户：</span>
 				<a-button type="primary" @click="fh_vis=true;formState.partnerName='菜鸟面单'"
 					style="margin-left: 10px;">菜鸟面单</a-button>
 				<a-button type="primary" @click="fh_vis=true;formState.partnerName='网店面单'"
@@ -227,15 +228,16 @@
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<div style="display: flex;align-items: center;">
 					<span>快递公司：</span>
-					<a-select ref="select" placeholder="请选择快递公司" v-model:value="company_code" style="width: 200px">
-						<a-select-option :value="item.code" v-for="item in wlList"
-							:key="item.code">{{item.name}}</a-select-option>
+					<a-select ref="select" placeholder="请选择快递公司" v-model:value="company_name" style="width: 200px">
+						<a-select-option :value="item.name" v-for="item in wlList"
+							:key="item.name">{{item.name}}</a-select-option>
 						<!-- <a-select-option value="lucy">圆通快递</a-select-option> -->
 					</a-select>
 				</div>
 				<div style="display: flex; align-items: center;margin-left: 20px;">
-					<span>电子面单账户名称：</span>
-					<a-select ref="select" placeholder="请选择面单类型" v-model:value="partnerName" style="width: 200px">
+					<span style="white-space: nowrap;">电子面单账户名称：</span>
+					<a-input v-model:value="partnerName" placeholder="请输入电子面单账户名称" ></a-input>
+					<!-- <a-select ref="select" placeholder="请选择面单类型" v-model:value="partnerName" style="width: 200px">
 						<a-select-option value="jack">菜鸟面单</a-select-option>
 						<a-select-option value="lucy">网店面单</a-select-option>
 						<a-select-option value="lucy">拼多多面单</a-select-option>
@@ -246,15 +248,15 @@
 						<a-select-option value="lucy">视频号面单</a-select-option>
 						<a-select-option value="lucy">小红书面单</a-select-option>
 						<a-select-option value="lucy">纸质面单</a-select-option>
-					</a-select>
+					</a-select> -->
 				</div>
 				<a-button type="primary" style="margin-left: 20px;" @click="_getExpressList()">搜索</a-button>
 				<a-button style="margin-left: 20px;" @click="company_code = null;partnerName=null">重置</a-button>
 			</div>
-			<div v-if="showYxq" style="background-color: #E6F7FF;padding: 10px;width: 100%;">
+			<!-- <div v-if="showYxq" style="background-color: #E6F7FF;padding: 10px;width: 100%;">
 				<span style="color: #666666;">授权有效期：2025-12-12 20: 40: 32</span>
 				<span @click="showYxq=false" style="color: #1890ff;margin-left: 10px;cursor: pointer;">删除</span>
-			</div>
+			</div> -->
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
