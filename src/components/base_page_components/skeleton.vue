@@ -121,7 +121,7 @@
       true
     );
     setTimeout(() => {
-      // console.log('global.adminMsg.id', global.adminMsg.id);
+      console.log('global.adminMsg.id111', global.adminMsg.id);
       if (global.adminMsg.id == -1) {
         return false; // 超管登录
       }
@@ -736,7 +736,6 @@
       // })
     })
   }
-  _getUnPrintOrderList()
 
 </script>
 
