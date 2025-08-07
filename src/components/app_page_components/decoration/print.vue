@@ -15,9 +15,6 @@
     const global = inject("global").value;
     const emit = defineEmits(["djtzmk"]);
 
-    // 测试使用链接
-    const sanfanglianjie = "https://api.kuaidi100.com/thirdPlatform/print/download/2FAC179F626C414FA4AADB907EB185C0"
-
     const visible = ref(false);
     const visJc = ref(false);
     const visPrint = ref(false);
@@ -130,7 +127,7 @@
     defineExpose({ setVisible: val => visible.value = val });
 
     watch(() => props.orderListDetails, (newVal) => {
-        console.log('orderListDetails',newVal);
+        console.log('orderListDetails', newVal);
         setTimeout(() => {
             newVal.forEach((item, index) => {
                 const kuaidinum = item.kuaidinum || 'JT0016322576092';
@@ -145,11 +142,35 @@
     });
 
     const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });
+
+    const sanfanglianjie = "https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3"// 测试使用链接
+    function wzzzdy() {
+        const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors' // 如果 CORS 支持
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                // 用 LODOP 打印
+                const LODOP = getLodop();
+                LODOP.PRINT_INIT("打印快递100 PDF");
+                LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", blobUrl);
+                LODOP.PREVIEW(); // 或 LODOP.PRINT()
+            })
+            .catch(err => {
+                console.error("下载 PDF 出错", err);
+            });
+    }
+
 </script>
 
 <template>
     <div>
+        <iframe id="kuaidiFrame" style="display: none;"></iframe>
         <button @click="visible=true">打印</button>
+        <button @click="wzzzdy()">网址直接打印</button>
         <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">
             <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
                 <a-form-item label="发货地址" name="key1" :rules="[{ required: true, message: '请选择发货地址!' }]">
@@ -298,7 +319,8 @@
         <div v-show="false">
             <!-- 电子面单展示区域 -->
             <div id="electronicWaybill">
-                <div v-for="(item, index) in props.orderListDetails" :key="item.id" style="margin-bottom: 160px;margin-top: 40px;">
+                <div v-for="(item, index) in props.orderListDetails" :key="item.id"
+                    style="margin-bottom: 160px;margin-top: 40px;">
                     <div style="border: 1px solid black;">
                         <div
                             style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold;padding: 10px 0px;">
