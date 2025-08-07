@@ -323,6 +323,14 @@
 		expandedKeys.value = val.map(item => item.id)
 	})
 
+	// 跳转开通网页
+	function openUrl() {
+		window.open('https://b.kuaidi100.com/page/epCompany', '_blank');
+	}
+
+	const showDrawer = ref(false)//抽屉开关
+	const textDrawer = ref('抽屉内容')
+
 </script>
 
 <template>
@@ -509,9 +517,10 @@
 					<div style="display: flex;">
 						<div style="display: flex;margin: 0 auto;">
 							<div style="display: flex;">
-								<a-button key="preview" style="background-color: #FF9933;color: #fff;">开通介绍</a-button>
-								<a-button style="margin-left: 10px;color: #0099CC;border: 1px solid #0099CC;"
-									key="reset">开通</a-button>
+								<a-button @click="showDrawer = true"
+									style="background-color: #FF9933;color: #fff;">开通介绍</a-button>
+								<a-button @click="openUrl"
+									style="margin-left: 10px;color: #0099CC;border: 1px solid #0099CC;">开通</a-button>
 							</div>
 							<div style="display: flex;margin-left: 10px;">
 								<a-button style="margin-right: 10px;" @click="handCancel">取消</a-button>
@@ -522,6 +531,12 @@
 				</a-spin>
 			</a-modal>
 		</div>
+		<a-drawer v-model:visible="showDrawer" class="custom-class" title="开通介绍" placement="right">
+			<div>
+				<div v-html="textDrawer"></div>
+				<p>Some contents...</p>
+			</div>
+		</a-drawer>
 	</div>
 </template>
 
