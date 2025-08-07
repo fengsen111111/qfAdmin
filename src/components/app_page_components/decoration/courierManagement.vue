@@ -84,6 +84,7 @@
 			title: '操作',
 			key: 'action',
 			dataIndex: 'action',
+			width:120
 		},
 		// {
 		// 	title: '快递ID',
@@ -94,6 +95,7 @@
 			title: '是否默认',
 			key: 'status',
 			dataIndex: 'status',
+			width:120
 		},
 		{
 			title: '快递公司信息',
@@ -113,48 +115,61 @@
 			title: '网点名称/网点编号',
 			key: 'net',
 			dataIndex: 'net',
-		}, {
-			title: '电子面单客户账户名称',
-			key: 'partnerName',
-			dataIndex: 'partnerName',
-		}, {
-			title: '电子面单账户号码',
-			dataIndex: 'parterId',
-			key: 'parterId',
-		}, {
-			title: '电子面单账户密码',
-			key: 'partnerKey',
-			dataIndex: 'partnerKey',
-		}, {
-			title: '电子面单密钥',
-			key: 'partnerSecret',
-			dataIndex: 'partnerSecret',
-		}, {
-			title: '电子面单承载编号',
-			key: 'code',
-			dataIndex: 'code',
-		}, {
-			title: '电子面单承载快递员名',
-			key: 'checkMan',
-			dataIndex: 'checkMan',
-		}, {
-			title: '发货人',
-			key: 'sender_name',
-			dataIndex: 'sender_name',
-		}, {
-			title: '发货电话',
-			key: 'sender_mobile',
-			dataIndex: 'sender_mobile',
-		}, {
-			title: '发货地址',
-			key: 'sender_address',
-			dataIndex: 'sender_address',
-			width: 120
-		}, {
+		}, 
+		{
+			title: '电子面单信息',
+			key: 'dzmdInfo',
+			dataIndex: 'dzmdInfo',
+		},
+		// {
+		// 	title: '电子面单客户账户名称',
+		// 	key: 'partnerName',
+		// 	dataIndex: 'partnerName',
+		// }, {
+		// 	title: '电子面单账户号码',
+		// 	dataIndex: 'parterId',
+		// 	key: 'parterId',
+		// }, {
+		// 	title: '电子面单账户密码',
+		// 	key: 'partnerKey',
+		// 	dataIndex: 'partnerKey',
+		// }, {
+		// 	title: '电子面单密钥',
+		// 	key: 'partnerSecret',
+		// 	dataIndex: 'partnerSecret',
+		// }, {
+		// 	title: '电子面单承载编号',
+		// 	key: 'code',
+		// 	dataIndex: 'code',
+		// }, {
+		// 	title: '电子面单承载快递员名',
+		// 	key: 'checkMan',
+		// 	dataIndex: 'checkMan',
+		// }, 
+		{
+			title: '发货人信息',
+			key: 'fhrInfo',
+			dataIndex: 'fhrInfo',
+		}, 
+		
+		// {
+		// 	title: '发货人',
+		// 	key: 'sender_name',
+		// 	dataIndex: 'sender_name',
+		// }, {
+		// 	title: '发货电话',
+		// 	key: 'sender_mobile',
+		// 	dataIndex: 'sender_mobile',
+		// }, {
+		// 	title: '发货地址',
+		// 	key: 'sender_address',
+		// 	dataIndex: 'sender_address',
+		// 	width: 120
+		// }, 
+		{
 			title: '第三方授权链接',
 			key: 'url',
 			dataIndex: 'url',
-			width: 120
 		},];
 	const dataList = ref([])
 	//商家后台获取门店地址列表
@@ -343,9 +358,10 @@
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
-					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 2200,y: 640 }"
+					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 1600,y: 640 }"
 						:expandedRowKeys="expandedKeys" rowKey="id">
 						<template #bodyCell="{ column, record  }">
+							<!-- 操作 -->
 							<template v-if="column.dataIndex === 'action'">
 								<div style="cursor: pointer;width: 120px;">
 									<!-- 第三方链接授权 -->
@@ -364,6 +380,7 @@
 									</div>
 								</div>
 							</template>
+							<!-- 状态 -->
 							<template v-if="column.dataIndex === 'status'">
 								<div v-if="record.children">
 									<div v-if="!record.children.length">
@@ -378,9 +395,11 @@
 									</a-tag>
 								</div>
 							</template>
+							<!--  -->
 							<template v-if="column.dataIndex === 'partnerKey'">
 								<div style="width: 120px;">{{record.partnerKey}}</div>
 							</template>
+							<!-- 快递公司信息 -->
 							<template v-if="column.dataIndex === 'company'">
 								<div>
 									<div>名称：{{record.company_name}}</div>
@@ -391,10 +410,30 @@
 							<template v-if="column.dataIndex === 'net'||column.dataIndex === 'tbNet'">
 								<div style="width: 120px;">{{record.partnerKey}}{{record.tbNet}}</div>
 							</template>
+							<!-- 三方授权链接 -->
 							<template v-if="column.dataIndex === 'url'">
-								<div style="width: 120px;cursor: pointer;" v-if="record.url && record.url!='已完成授权'">
+								<div style="cursor: pointer;" v-if="record.url && record.url!='已完成授权'">
 									<span>{{urlIs?record.url:record.url.slice(0,20)+'......'}}</span>
 									<span style="color: #1890ff;" @click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
+								</div>
+							</template>
+							<!-- 电子面单信息 -->
+							<template v-if="column.dataIndex === 'dzmdInfo'">
+								<div>
+									<div>账户名称：{{record.partnerName}}</div>
+									<div>账户号码：{{record.parterId}}</div>
+									<div>账户密码：{{record.partnerKey}}</div>
+									<div>密钥：{{record.partnerSecret}}</div>
+									<div>承载编号：{{record.code}}</div>
+									<div>承载快递员名：{{record.checkMan}}</div>
+								</div>
+							</template>
+							<!-- 发货人信息 -->
+							<template v-if="column.dataIndex === 'fhrInfo'">
+								<div>
+									<div>发货人：{{record.sender_name}}</div>
+									<div>发货电话：{{record.sender_mobile}}</div>
+									<div>发货地址：{{record.sender_address}}</div>
 								</div>
 							</template>
 						</template>
