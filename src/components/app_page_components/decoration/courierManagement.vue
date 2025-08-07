@@ -96,14 +96,20 @@
 			dataIndex: 'status',
 		},
 		{
-			title: '快递公司编码',
-			dataIndex: 'company_code',
-			key: 'company_code',
-		}, {
-			title: '快递公司名称',
-			dataIndex: 'company_name',
-			key: 'company_name',
-		}, {
+			title: '快递公司信息',
+			key: 'company',
+			dataIndex: 'company',
+		},
+		// {
+		// 	title: '快递公司编码',
+		// 	dataIndex: 'company_code',
+		// 	key: 'company_code',
+		// }, {
+		// 	title: '快递公司名称',
+		// 	dataIndex: 'company_name',
+		// 	key: 'company_name',
+		// }, 
+		{
 			title: '网点名称/网点编号',
 			key: 'net',
 			dataIndex: 'net',
@@ -167,17 +173,114 @@
 	}
 	_getExpressList()
 
-	const wlList = ref([])
+	const wlList = ref([
+		{
+			"name": "安能快运",
+			"code": "annengwuliu"
+		},
+		{
+			"name": "德邦快递",
+			"code": "debangkuaidi"
+		},
+		{
+			"name": "德邦物流",
+			"code": "debangwuliu"
+		},
+		{
+			"name": "EMS",
+			"code": "ems"
+		},
+		{
+			"name": "京东快递",
+			"code": "jd"
+		},
+		{
+			"name": "跨越速运",
+			"code": "kuayue"
+		},
+		{
+			"name": "申通快递",
+			"code": "shentong"
+		},
+		{
+			"name": "顺丰（丰密面单）",
+			"code": "shunfeng"
+		},
+		{
+			"name": "顺丰快运",
+			"code": "shunfengkuaiyun"
+		},
+		{
+			"name": "优速快递",
+			"code": "youshuwuliu"
+		},
+		{
+			"name": "邮政快递包裹",
+			"code": "youzhengguonei"
+		},
+		{
+			"name": "圆通速递",
+			"code": "yuantong"
+		},
+		{
+			"name": "圆通国际",
+			"code": "yuantongguoji"
+		},
+		{
+			"name": "韵达快递",
+			"code": "yunda"
+		},
+		{
+			"name": "中通快递",
+			"code": "zhongtong"
+		},
+		{
+			"name": "中通快运",
+			"code": "zhongtongkuaiyun"
+		},
+		{
+			"name": "圆通承诺达",
+			"code": "ytchengnuoda"
+		},
+		{
+			"name": "极兔速递",
+			"code": "jtexpress"
+		},
+		{
+			"name": "汇森速运",
+			"code": "huisenky"
+		},
+		{
+			"name": "顺心捷达",
+			"code": "sxjdfreight"
+		},
+		{
+			"name": "壹米滴答",
+			"code": "yimidida"
+		},
+		{
+			"name": "京东快运",
+			"code": "jingdongkuaiyun"
+		},
+		{
+			"name": "韵达点通达",
+			"code": "yundadiantongda"
+		},
+		{
+			"name": "韵达快运",
+			"code": "yundakuaiyun"
+		},
+	])
 	//物流公司
-	function _transportList() {
-		global.axios
-			.post('decoration/Setting/transportList', {}, global)
-			.then((res) => {
-				// console.log('物流公司', res);
-				wlList.value = res
-			})
-	}
-	_transportList()
+	// function _transportList() {
+	// 	global.axios
+	// 		.post('decoration/Setting/transportList', {}, global)
+	// 		.then((res) => {
+	// 			// console.log('物流公司', res);
+	// 			wlList.value = res
+	// 		})
+	// }
+	// _transportList()
 	// 默认
 	function _handleStatus(item) {
 		spinning.value = true
@@ -212,26 +315,10 @@
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<span style="white-space: nowrap;">绑定电子面单账户：</span>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='菜鸟面单'"
+				<a-button type="primary" @click="fh_vis=true;formState.net='taobao'"
+					style="margin-left: 10px;">淘宝面单</a-button>
+				<a-button type="primary" @click="fh_vis=true;formState.net='cainiao'"
 					style="margin-left: 10px;">菜鸟面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='网店面单'"
-					style="margin-left: 10px;">网店面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='拼多多面单'"
-					style="margin-left: 10px;">拼多多面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='抖音面单'"
-					style="margin-left: 10px;">抖音面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='快手面单'"
-					style="margin-left: 10px;">快手面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='京东无界面单'"
-					style="margin-left: 10px;">京东无界面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='微信物流助手'"
-					style="margin-left: 10px;">微信物流助手</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='视频号面单'"
-					style="margin-left: 10px;">视频号面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='小红书面单'"
-					style="margin-left: 10px;">小红书面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.partnerName='纸质面单'"
-					style="margin-left: 10px;">纸质面单</a-button>
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<div style="display: flex;align-items: center;">
@@ -267,7 +354,7 @@
 										<span v-if="record.status=='N'">
 											<span v-if="record.children">
 												<span v-if="record.children.length==0" @click="_handleStatus(record)"
-												style="color: #1890ff;margin-left: 10px;">默认</span>
+													style="color: #1890ff;margin-left: 10px;">默认</span>
 											</span>
 										</span>
 									</div>
@@ -294,6 +381,12 @@
 							<template v-if="column.dataIndex === 'partnerKey'">
 								<div style="width: 120px;">{{record.partnerKey}}</div>
 							</template>
+							<template v-if="column.dataIndex === 'company'">
+								<div>
+									<div>名称：{{record.company_name}}</div>
+									<div>编码：{{record.company_code}}</div>
+								</div>
+							</template>
 
 							<template v-if="column.dataIndex === 'net'||column.dataIndex === 'tbNet'">
 								<div style="width: 120px;">{{record.partnerKey}}{{record.tbNet}}</div>
@@ -301,16 +394,15 @@
 							<template v-if="column.dataIndex === 'url'">
 								<div style="width: 120px;cursor: pointer;" v-if="record.url && record.url!='已完成授权'">
 									<span>{{urlIs?record.url:record.url.slice(0,20)+'......'}}</span>
-									<span style="color: #1890ff;margin-left: 20px;"
-										@click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
+									<span style="color: #1890ff;" @click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
 								</div>
 							</template>
 						</template>
 					</a-table>
 				</a-spin>
 			</div>
-			<!-- 添加网店面单 -->
-			<a-modal v-model:visible="fh_vis" title="添加网店面单" @ok="handleOk" style="width: 600px;">
+			<!-- 添加网点面单 -->
+			<a-modal v-model:visible="fh_vis" title="添加网点面单" @ok="handleOk" style="width: 600px;" :footer="null">
 				<a-spin :spinning="spinning">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 8 }"
 						:wrapper-col="{ span: 16 }">
@@ -320,8 +412,9 @@
 								<a-select-option value="third">第三方授权</a-select-option>
 							</a-select>
 						</a-form-item>
+						<!-- 淘宝：taobao，菜鸟：cainiao -->
 						<a-form-item label="网点名称" name="net" :rules="[{ required: true, message: '请填写网点名称!' }]">
-							<a-input v-model:value="formState.net" placeholder="请填写网点名称" />
+							<a-input v-model:value="formState.net" disabled placeholder="请填写网点名称" />
 						</a-form-item>
 						<a-form-item label="发货人" name="sender_name" :rules="[{ required: true, message: '请填写发货人!' }]">
 							<a-input v-model:value="formState.sender_name" placeholder="请填写发货人" />
@@ -344,8 +437,6 @@
 								<a-select ref="select" placeholder="请选择快递公司" v-model:value="formState.company_code">
 									<a-select-option :value="item.code" v-for="item in wlList"
 										:key="item.code">{{item.name}}</a-select-option>
-									<!-- <a-select-option value="jack">中通快递</a-select-option>
-								<a-select-option value="lucy">圆通快递</a-select-option> -->
 								</a-select>
 							</a-form-item>
 							<!-- :rules="[{ required: true, message: '请输入电子面单账户号码' }]" -->
@@ -374,6 +465,20 @@
 							</a-form-item>
 						</div>
 					</a-form>
+					<div style="height: 20px;"></div>
+					<div style="display: flex;">
+						<div style="display: flex;margin: 0 auto;">
+							<div style="display: flex;">
+								<a-button key="preview" style="background-color: #FF9933;color: #fff;">开通介绍</a-button>
+								<a-button style="margin-left: 10px;color: #0099CC;border: 1px solid #0099CC;"
+									key="reset">开通</a-button>
+							</div>
+							<div style="display: flex;margin-left: 10px;">
+								<a-button style="margin-right: 10px;" @click="fh_vis = false">取消</a-button>
+								<a-button type="primary" @click="handleOk">确定</a-button>
+							</div>
+						</div>
+					</div>
 				</a-spin>
 			</a-modal>
 		</div>
@@ -381,7 +486,7 @@
 </template>
 
 <style scoped>
-	::v-deep(.ant-table-row-indent + .ant-table-row-expand-icon){
+	::v-deep(.ant-table-row-indent + .ant-table-row-expand-icon) {
 		display: none !important;
 	}
 </style>
