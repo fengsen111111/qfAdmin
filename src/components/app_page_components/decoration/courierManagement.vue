@@ -44,12 +44,17 @@
 				.post('decoration/Express/submitExpress', formState, global)
 				.then((res) => {
 					spinning.value = false
-					fh_vis.value = false
+					handCancel()//关闭弹窗
 					_getExpressList()
 				})
 		} catch (errorInfo) {
 			console.log('Failed:', errorInfo);
 		}
+	}
+	// 关闭弹窗
+	function handCancel() {
+		formRef.value.resetFields();
+		fh_vis.value = false
 	}
 
 	// 删除面单
@@ -83,7 +88,7 @@
 			title: '操作',
 			key: 'action',
 			dataIndex: 'action',
-			width:120
+			width: 120
 		},
 		// {
 		// 	title: '快递ID',
@@ -94,7 +99,7 @@
 			title: '是否默认',
 			key: 'status',
 			dataIndex: 'status',
-			width:120
+			width: 120
 		},
 		{
 			title: '快递公司信息',
@@ -114,7 +119,7 @@
 			title: '网点名称/网点编号',
 			key: 'net',
 			dataIndex: 'net',
-		}, 
+		},
 		{
 			title: '电子面单信息',
 			key: 'dzmdInfo',
@@ -149,8 +154,8 @@
 			title: '发货人信息',
 			key: 'fhrInfo',
 			dataIndex: 'fhrInfo',
-		}, 
-		
+		},
+
 		// {
 		// 	title: '发货人',
 		// 	key: 'sender_name',
@@ -352,7 +357,7 @@
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
-					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 1600,y: 640 }"
+					<a-table :columns="columns" :data-source="dataList" :scroll="{ x: 1600,y: 570 }"
 						:expandedRowKeys="expandedKeys" rowKey="id">
 						<template #bodyCell="{ column, record  }">
 							<!-- 操作 -->
@@ -392,8 +397,8 @@
 							<!-- 快递公司信息 -->
 							<template v-if="column.dataIndex === 'company'">
 								<div>
-									<div>名称：{{record.company_name}}</div>
-									<div>编码：{{record.company_code}}</div>
+									<div v-if="record.company_name">名称：{{record.company_name}}</div>
+									<div v-if="record.company_code">编码：{{record.company_code}}</div>
 								</div>
 							</template>
 
@@ -403,35 +408,41 @@
 							<!-- 三方授权链接 -->
 							<template v-if="column.dataIndex === 'url'">
 								<div style="cursor: pointer;" v-if="record.url && record.url!='已完成授权'">
-									<span>{{urlIs?record.url:record.url.slice(0,20)+'......'}}</span>
+									<span>{{urlIs?record.url:record.url.slice(0,10)+'......'}}</span>
 									<span style="color: #1890ff;" @click="urlIs = !urlIs">{{urlIs?'收起':'展开'}}</span>
 								</div>
 							</template>
 							<!-- 电子面单信息 -->
 							<template v-if="column.dataIndex === 'dzmdInfo'">
-								<div>
-									<div>账户名称：{{record.partnerName}}</div>
-									<div>账户号码：{{record.parterId}}</div>
-									<div>账户密码：{{record.partnerKey}}</div>
-									<div>密钥：{{record.partnerSecret}}</div>
-									<div>承载编号：{{record.code}}</div>
-									<div>承载快递员名：{{record.checkMan}}</div>
+								<div v-if="record.children">
+									<div>
+										<div>账户名称：{{record.partnerName}}</div>
+										<div>账户号码：{{record.parterId}}</div>
+										<div>账户密码：{{record.partnerKey}}</div>
+										<div>密钥：{{record.partnerSecret}}</div>
+										<div>承载编号：{{record.code}}</div>
+										<div>承载快递员名：{{record.checkMan}}</div>
+									</div>
 								</div>
+								<div v-else></div>
 							</template>
 							<!-- 发货人信息 -->
 							<template v-if="column.dataIndex === 'fhrInfo'">
-								<div>
-									<div>发货人：{{record.sender_name}}</div>
-									<div>发货电话：{{record.sender_mobile}}</div>
-									<div>发货地址：{{record.sender_address}}</div>
+								<div v-if="record.children">
+									<div>
+										<div>发货人：{{record.sender_name}}</div>
+										<div>发货电话：{{record.sender_mobile}}</div>
+										<div>发货地址：{{record.sender_address}}</div>
+									</div>
 								</div>
+								<div v-else></div>
 							</template>
 						</template>
 					</a-table>
 				</a-spin>
 			</div>
 			<!-- 添加网点面单 -->
-			<a-modal v-model:visible="fh_vis" title="添加网点面单" @ok="handleOk" style="width: 600px;" :footer="null">
+			<a-modal v-model:visible="fh_vis" title="添加网点面单" style="width: 600px;" :footer="null">
 				<a-spin :spinning="spinning">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 8 }"
 						:wrapper-col="{ span: 16 }">
@@ -503,7 +514,7 @@
 									key="reset">开通</a-button>
 							</div>
 							<div style="display: flex;margin-left: 10px;">
-								<a-button style="margin-right: 10px;" @click="fh_vis = false">取消</a-button>
+								<a-button style="margin-right: 10px;" @click="handCancel">取消</a-button>
 								<a-button type="primary" @click="handleOk">确定</a-button>
 							</div>
 						</div>
