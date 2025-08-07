@@ -8,7 +8,6 @@
 	setTimeout(() => {
 		store_id.value = localStorage.getItem('storeId')
 	}, 500);
-	const showYxq = ref(true)//是否显示有效期
 	const fh_vis = ref(false)//新增编辑
 
 	const spinning = ref(false)//加载
@@ -341,7 +340,6 @@
 					<a-select ref="select" placeholder="请选择快递公司" v-model:value="company_name" style="width: 200px">
 						<a-select-option :value="item.name" v-for="item in wlList"
 							:key="item.name">{{item.name}}</a-select-option>
-						<!-- <a-select-option value="lucy">圆通快递</a-select-option> -->
 					</a-select>
 				</div>
 				<div style="display: flex; align-items: center;margin-left: 20px;">
@@ -351,10 +349,6 @@
 				<a-button type="primary" style="margin-left: 20px;" @click="_getExpressList()">搜索</a-button>
 				<a-button style="margin-left: 20px;" @click="company_code = null;partnerName=null">重置</a-button>
 			</div>
-			<!-- <div v-if="showYxq" style="background-color: #E6F7FF;padding: 10px;width: 100%;">
-				<span style="color: #666666;">授权有效期：2025-12-12 20: 40: 32</span>
-				<span @click="showYxq=false" style="color: #1890ff;margin-left: 10px;cursor: pointer;">删除</span>
-			</div> -->
 			<!-- 表格数据 -->
 			<div style="width: 100%;">
 				<a-spin :spinning="spinning">
@@ -395,10 +389,6 @@
 									</a-tag>
 								</div>
 							</template>
-							<!--  -->
-							<template v-if="column.dataIndex === 'partnerKey'">
-								<div style="width: 120px;">{{record.partnerKey}}</div>
-							</template>
 							<!-- 快递公司信息 -->
 							<template v-if="column.dataIndex === 'company'">
 								<div>
@@ -408,7 +398,7 @@
 							</template>
 
 							<template v-if="column.dataIndex === 'net'||column.dataIndex === 'tbNet'">
-								<div style="width: 120px;">{{record.partnerKey}}{{record.tbNet}}</div>
+								<div>{{record.partnerKey}}{{record.tbNet}}</div>
 							</template>
 							<!-- 三方授权链接 -->
 							<template v-if="column.dataIndex === 'url'">
