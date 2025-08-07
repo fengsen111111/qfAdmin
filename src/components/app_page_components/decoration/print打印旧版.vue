@@ -15,9 +15,6 @@
     const global = inject("global").value;
     const emit = defineEmits(["djtzmk"]);
 
-    // 测试使用链接
-    const sanfanglianjie = "https://api.kuaidi100.com/thirdPlatform/print/download/2FAC179F626C414FA4AADB907EB185C0"
-
     const visible = ref(false);
     const visJc = ref(false);
     const visPrint = ref(false);
@@ -38,8 +35,6 @@
 
     const barcodeList = ref([]);      // 横向条形码 svg ref 数组
     const barcodeTwoList = ref([]);   // 竖向条形码 svg ref 数组
-
-
 
     // 获取发货地址列表
     function getStoreAddressList() {
