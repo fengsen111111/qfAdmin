@@ -34,7 +34,7 @@
         global.axios.post('decoration/Express/getExpressList', {
             store_id: localStorage.getItem("storeId")
         }, global).then((res) => {
-           addressList.value = res.list
+            addressList.value = res.list
         });
     }
     getExpressList();
@@ -83,18 +83,26 @@
 
     defineExpose({ setVisible: val => visible.value = val });
 
-    watch(() => props.orderListDetails, (newVal) => {
-        console.log('orderListDetails', newVal);
-    });
-
+    // const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
     function wzzzdy() {
-        const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
+        console.log('打印iframe');
+        const iframe = document.getElementById('printFrame')
+        if (iframe && iframe.contentWindow) {
+            console.log('打印 iframe')
+            iframe.contentWindow.focus()
+            iframe.contentWindow.print()
+        } else {
+            console.error('iframe 未加载完成或无法访问')
+        }
     }
 
 </script>
 
 <template>
     <div>
+        <div @click="wzzzdy">打印2</div>
+        <iframe id="printFrame"
+            src="https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3"></iframe>
         <button @click="visible=true">打印</button>
         <!-- 打单前检查 -->
         <a-modal v-model:visible="visible" :footer="null">
@@ -125,11 +133,10 @@
                             <div style="font-weight: bold;">打印组件设置</div>
                             <div v-if="azqk=='lodop已安装'">
                                 <div style="color: #666666;font-size: 12px;">已安装并开启打印组件</div>
-                                <div style="color: #666666;font-size: 12px;">已安装显示未设置,请等待程序检索</div>
-                                <!-- <div style="color: #666666;font-size: 12px;">若未添加打印机，请添加打印机</div> -->
+                                <div style="color: #666666;font-size: 12px;">若未添加打印机，请添加打印机</div>
                             </div>
                             <div v-else>
-                                <div style="color: #fb8015;font-size: 12px;">若已安装打印组件，请重启打印组件并点击刷新</div>
+                                <div style="color: #fb8015;font-size: 12px;">若已安装打印组件，请等待检索或点击刷新</div>
                                 <div style="color: #666666;font-size: 12px;">如未安装请先 安装打印组件;若未添加打印机，请添加打印机</div>
                             </div>
                         </div>
