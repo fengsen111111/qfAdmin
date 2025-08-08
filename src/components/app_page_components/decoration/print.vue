@@ -29,7 +29,7 @@
     const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });//打印加载中
 
 
-    // 获取发货地址列表
+    // 获取快递管理列表
     function getExpressList() {
         global.axios.post('decoration/Express/getExpressList', {
             store_id: localStorage.getItem("storeId")
@@ -90,7 +90,6 @@
     function wzzzdy() {
         const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
     }
-    
 
 </script>
 
@@ -102,7 +101,7 @@
             <div>
                 <div style="text-align: center;">
                     <div style="font-size: 18px;font-weight: bold;">开始打单前，您需要完成以下设置</div>
-                    <div style="color: #666666;font-size: 12px;">若对设置有疑问，你可查看多多课堂教程或联系人工客服</div>
+                    <div style="color: #666666;font-size: 12px;">若对设置有疑问，你可查看学习中心教程或联系人工客服</div>
                 </div>
                 <div style="padding:20px;background-color: #f7f8fa;border-radius: 5px;margin-top: 10px;">
                     <div
@@ -126,7 +125,8 @@
                             <div style="font-weight: bold;">打印组件设置</div>
                             <div v-if="azqk=='lodop已安装'">
                                 <div style="color: #666666;font-size: 12px;">已安装并开启打印组件</div>
-                                <div style="color: #666666;font-size: 12px;">若未添加打印机，请添加打印机</div>
+                                <div style="color: #666666;font-size: 12px;">已安装显示未设置,请等待程序检索</div>
+                                <!-- <div style="color: #666666;font-size: 12px;">若未添加打印机，请添加打印机</div> -->
                             </div>
                             <div v-else>
                                 <div style="color: #fb8015;font-size: 12px;">若已安装打印组件，请重启打印组件并点击刷新</div>
