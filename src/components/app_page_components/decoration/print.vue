@@ -16,42 +16,28 @@
     const emit = defineEmits(["djtzmk"]);
 
     const visible = ref(false);
-    const visJc = ref(false);
     const visPrint = ref(false);
     const ksDy = ref(false);
 
     const props = defineProps({ orderListDetails: Array });
-    const fhfzObj = ref({});
     const addressList = ref([]);
     const dyjmc = ref('');
     const zddyj = ref('HPRT N31BT');
     const azqk = ref('');
     const printerList = ref([]);
 
-    const barcode = ref();
-    const barcodeTwo = ref();
-    const form = reactive({ key1: '' });
-    const formref = ref(null);
-
-    const barcodeList = ref([]);      // 横向条形码 svg ref 数组
-    const barcodeTwoList = ref([]);   // 竖向条形码 svg ref 数组
-
+    const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });//打印加载中
 
 
     // 获取发货地址列表
-    function getStoreAddressList() {
-        global.axios.post('decoration/StoreAddress/getStoreAddressList', {
+    function getExpressList() {
+        global.axios.post('decoration/Express/getExpressList', {
             store_id: localStorage.getItem("storeId")
         }, global).then((res) => {
-            res.list.forEach(item => {
-                if (item.type === 'a' && item.status === 'Y') {
-                    item.status = true;
-                    addressList.value.push(item);
-                }
-            });
-            fhfzObj.value = addressList.value[0];
+           addressList.value = res.list
         });
     }
+    getExpressList();
     // Lodop 初始化
     let LODOP = null;
     const intervalId = setInterval(() => {
@@ -68,57 +54,28 @@
             clearInterval(intervalId);
         }
     }, 5000);
+    // 选择打印机
     function selChange(value) {
         dyjmc.value = value;
     }
+    // 刷新网页
     function sure() {
         window.location.reload();
     }
+    // 左侧导航栏跳转
     function handTz(str, strTwo, strThree) {
         visible.value = false;
-        visJc.value = false;
         emit('djtzmk', str, strTwo, strThree);
     }
-    async function handleOk() {
-        try {
-            await formref.value.validateFields();
-            const obj = addressList.value.find(item => item.id === form.key1);
-            fhfzObj.value = obj;
-            visible.value = false;
-            visJc.value = true;
-        } catch (error) {
-            console.warn('校验失败', error);
-        }
-    }
 
+    // 去打单发货
     function goDdfh() {
-        visJc.value = false;
+        visible.value = false;
         visPrint.value = true;
     }
 
-    function generateBarcode(kuaidinum) {
-        nextTick(() => {
-            JsBarcode(barcode.value, kuaidinum, { format: "CODE128", lineColor: "#000", width: 1.6, height: 30, displayValue: true });
-            JsBarcode(barcodeTwo.value, kuaidinum, { format: "CODE128", lineColor: "#000", width: 2, height: 60, displayValue: true });
-        });
-    }
-
     function handleGetOrderImage() {
-        const printContent = document.getElementById('electronicWaybill').innerHTML;
-        const html = `<!DOCTYPE html><html><head><title>电子面单</title><style>body{margin:0;padding:0;background:#fff;font-family:sans-serif;}.print-container{max-width:360px;padding-top:30px;}</style></head><body><div class="print-container">${printContent}</div></body></html>`;
-
-        LODOP.PRINT_INITA(''); //初始化打印任务
-        LODOP.SET_PRINTER_INDEX(dyjmc.value);//设置使用的打印机
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);//设置打印质量
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm');//纸张大小
-        LODOP.SET_PRINT_MODE("COLOR_MODE", 1)//0 黑白 1彩印
-        LODOP.ADD_PRINT_HTML('0', '5', '100%', '100%', html);
-        // 测试
-        LODOP.PREVIEW();
-
-        // 真正打印
-        return false
-        LODOP.PRINT();
+        console.log('开始打印');
         visPrint.value = false;
         ksDy.value = true;
         setTimeout(() => ksDy.value = false, 3000);
@@ -128,65 +85,20 @@
 
     watch(() => props.orderListDetails, (newVal) => {
         console.log('orderListDetails', newVal);
-        setTimeout(() => {
-            newVal.forEach((item, index) => {
-                const kuaidinum = item.kuaidinum || 'JT0016322576092';
-                JsBarcode(barcodeList.value[index], kuaidinum, { format: "CODE128", lineColor: "#000", width: 1.6, height: 30, displayValue: true });
-                JsBarcode(barcodeTwoList.value[index], kuaidinum, { format: "CODE128", lineColor: "#000", width: 2, height: 60, displayValue: true });
-            });
-        }, 1000);
     });
 
-    onMounted(() => {
-        getStoreAddressList();
-    });
-
-    const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });
-
-    const sanfanglianjie = "https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3"// 测试使用链接
     function wzzzdy() {
         const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
-        fetch(url, {
-            method: 'GET',
-            mode: 'cors' // 如果 CORS 支持
-        })
-            .then(response => response.blob())
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);
-                // 用 LODOP 打印
-                const LODOP = getLodop();
-                LODOP.PRINT_INIT("打印快递100 PDF");
-                LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", blobUrl);
-                LODOP.PREVIEW(); // 或 LODOP.PRINT()
-            })
-            .catch(err => {
-                console.error("下载 PDF 出错", err);
-            });
     }
+    
 
 </script>
 
 <template>
     <div>
-        <iframe id="kuaidiFrame" style="display: none;"></iframe>
         <button @click="visible=true">打印</button>
-        <button @click="wzzzdy()">网址直接打印</button>
-        <a-modal v-model:visible="visible" title="打印快递单" @ok="handleOk" okText="打印快递单">
-            <a-form ref="formref" :model="form" name="basic" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
-                <a-form-item label="发货地址" name="key1" :rules="[{ required: true, message: '请选择发货地址!' }]">
-                    <div style="display: flex; align-items: center;">
-                        <a-select ref="select" style="width: 85%;" v-model:value="form.key1" placeholder="请选择发货地址">
-                            <a-select-option :value="item.id" v-for="item in addressList"
-                                :key="item.id">{{item.address}}</a-select-option>
-                        </a-select>
-                        <div @click="handTz('快递物流','商家地址')" style="color: #2d8cf0;margin-left: 5px;cursor: pointer;">去设置
-                        </div>
-                    </div>
-                </a-form-item>
-            </a-form>
-        </a-modal>
         <!-- 打单前检查 -->
-        <a-modal v-model:visible="visJc" :footer="null">
+        <a-modal v-model:visible="visible" :footer="null">
             <div>
                 <div style="text-align: center;">
                     <div style="font-size: 18px;font-weight: bold;">开始打单前，您需要完成以下设置</div>
@@ -196,14 +108,14 @@
                     <div
                         style="display: flex;justify-content: space-between;border-bottom: 1px solid #e0e0e0;padding-bottom: 10px;">
                         <div>
-                            <div style="font-weight: bold;">发货地址设置</div>
-                            <div style="color: #666666;font-size: 12px;">共{{addressList.length}}条发货地址</div>
+                            <div style="font-weight: bold;">快递管理设置</div>
+                            <div style="color: #666666;font-size: 12px;">已添加{{addressList.length}}种快递</div>
                         </div>
                         <div v-if="addressList.length>0" style="display: flex;align-items: center;color: #15b464;">
                             <CheckCircleFilled style="color: #15b464;margin-right: 5px;" />
                             已设置
                         </div>
-                        <div @click="handTz('快递物流','商家地址')" v-else
+                        <div @click="handTz('快递物流','快递管理')" v-else
                             style="display: flex;align-items: center;color: #fb8015;cursor: pointer;">
                             <ExclamationCircleFilled style="color: #fb8015;margin-right: 5px;" />
                             去设置
@@ -250,7 +162,7 @@
                         <div v-else @click="sure()"
                             style="background-color: #5779d2;color: #fff;border-radius: 4px;padding: 2px 15px;">刷新网页
                         </div>
-                        <div @click="visJc=false"
+                        <div @click="visible=false"
                             style="border-radius: 4px;padding: 2px 15px;margin-left: 10px;border: 1px solid #d4d4d7;">
                             稍后再说</div>
                     </div>
@@ -280,8 +192,6 @@
                             <th scope="col">快递单号</th>
                             <th scope="col">大写头</th>
                         </tr>
-                        <!-- 多订单 -->
-                        <!-- <template> -->
                         <tr v-for="item in orderListDetails" :key="item.id">
                             <td>{{item.address_name}}</td>
                             <td>{{item.address_mobile}}</td>
@@ -289,7 +199,6 @@
                             <td>JT0016322576092</td>
                             <td>710 R702-00 026</td>
                         </tr>
-                        <!-- </template> -->
                     </table>
                 </div>
                 <div style="margin-top: 10px;display: flex;">
@@ -316,64 +225,6 @@
                 <div style="margin-top: 5px;color: #666666;font-size: 16px;">请勿关闭本页面</div>
             </div>
         </a-modal>
-        <div v-show="false">
-            <!-- 电子面单展示区域 -->
-            <div id="electronicWaybill">
-                <div v-for="(item, index) in props.orderListDetails" :key="item.id"
-                    style="margin-bottom: 160px;margin-top: 40px;">
-                    <div style="border: 1px solid black;">
-                        <div
-                            style="text-align: center;border-bottom: 1px dashed black;padding: 10px 20px;font-size: 35px;font-weight: bold;padding: 10px 0px;">
-                            {{ item.big_code || '710 R702-00 026' }}
-                        </div>
-                        <div style="display: flex;">
-                            <div>
-                                <div style="text-align: center;border-bottom: 1px dashed black;padding: 10px 0px;">
-                                    <!-- 横向条形码 -->
-                                    <svg :ref="el => barcodeList[index] = el"></svg>
-                                </div>
-                                <div
-                                    style="display: flex;border-bottom: 1px dashed black;align-items: center;padding: 10px 0px;">
-                                    <div style="font-size: 24px;padding: 10px;">收</div>
-                                    <div style="padding: 10px;">
-                                        <div style="display: flex;justify-content: space-between;">
-                                            <div>{{ item.address_name }}</div>
-                                            <div>{{ item.address_mobile }}</div>
-                                        </div>
-                                        <div style="max-width: 184px;">{{ item.address }}</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex;align-items: center;">
-                                    <div style="font-size: 24px;padding: 10px;">寄</div>
-                                    <div style="padding: 10px;">
-                                        <div
-                                            style="display: flex;justify-content: space-between;align-items: center;padding: 10px 0px;">
-                                            <div>{{ fhfzObj.sender_name }}</div>
-                                            <div>{{ fhfzObj.sender_mobile }}</div>
-                                        </div>
-                                        <div style="max-width: 184px;">{{ fhfzObj.address }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display: flex; border-left: 1px solid black;">
-                                <!-- 竖向条形码区域 -->
-                                <div
-                                    style="flex-shrink: 0; width: 170px; display: flex; align-items: center; justify-content: center; position: relative;">
-                                    <div
-                                        style="position: absolute; top: 50%; left: 30%; transform: translate(-50%, -50%) rotate(90deg);">
-                                        <svg :ref="el => barcodeTwoList[index] = el"></svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <span v-for="(iss,index) in item.goods_list"
-                            :key="index">{{iss.goods_name+''+iss.size_name}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
