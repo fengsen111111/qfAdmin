@@ -370,8 +370,8 @@
 
   //递归删除子页面
   function deleteChildrenPage(parent_page_key) {
-    console.log('递归删除子页面', parent_page_key);
-    console.log('skeleton_state.openedPages', skeleton_state.openedPages);
+    // console.log('递归删除子页面', parent_page_key);
+    // console.log('skeleton_state.openedPages', skeleton_state.openedPages);
     // return false
     skeleton_state.openedPages.forEach((item, index) => {
       if (item.parent_page_key == parent_page_key) {
@@ -493,7 +493,8 @@
 
   // 前往店铺详情
   function toShopDetails() {
-    djtzmk('商家信息', '商家资料')
+    // djtzmk('商家信息', '商家资料')
+    djtzmk('购物商城', '订单管理')
   }
   // 前往订单详情
   function orderLook(item) {
@@ -755,7 +756,8 @@
       </div>
       <!--  -->
       <div class="menu-list">
-        <a-menu :inlineCollapsed="true" v-model:selectedKeys="skeleton_state.menuCheckedValues" mode="inline">
+        <!-- :inlineCollapsed="true"  -->
+        <a-menu v-model:selectedKeys="skeleton_state.menuCheckedValues" mode="inline">
           <template v-for="(item, index) in skeleton_state.menuData" :key="index">
             <a-sub-menu v-if="item.hasOwnProperty('children') && item.children.length > 0" :key="item.value">
               <template #title>

@@ -9,7 +9,7 @@
   const pageData = props.pageData;
   const skeleton_state = props.skeleton_state //
 
-  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk"]);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk",'goLookTD', 'toShopDetails', 'orderLook', 'editMobile']);
 
   function openChildPage(pageData) {
     emit("openChildPage", pageData);
@@ -326,16 +326,16 @@
       // 推荐官列表导出
       const exportData = list.map(item => ({
         '用户ID': item.user_id,
-        '姓名':item.name,
-        '审核状态': item.check_status=='a'?'待审核':item.check_status=='b'?'已通过':'已拒绝',
-        '启用状态': item.status=='Y'?'启用':'禁用',
+        '姓名': item.name,
+        '审核状态': item.check_status == 'a' ? '待审核' : item.check_status == 'b' ? '已通过' : '已拒绝',
+        '启用状态': item.status == 'Y' ? '启用' : '禁用',
         '身份证号': item.cert_no,
         '身份证正面': item.id_image1[0],
         '身份证反面': item.id_image2[0],
         '标签': item.tags,
         '能力': item.power,
       }))
-      console.log('exportData',exportData);
+      console.log('exportData', exportData);
       const worksheet = XLSX.utils.json_to_sheet(exportData)
       const workbook = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(workbook, worksheet, '资金流水')
@@ -344,6 +344,7 @@
       saveAs(blob, `推荐官信息_${new Date().toLocaleDateString()}.xlsx`)
     }
   }
+  import { message } from 'ant-design-vue';
 
   //列表操作
   function tableHandles(tableHandlesData) {
@@ -389,6 +390,14 @@
               refresh
             );
           },
+        });
+      } else if (handleInfo.name == '测试模板') {
+        // 单独处理
+        global.axios.post(handleInfo.requestUrl, requestParams, global).then((res) => {
+          // console.log('测试模板数据', res.logistics_label);
+          message.loading('数据生成中请勿离开......', 2.5).then(() => {
+            window.open(res.logistics_label, '_blank')// 跳转开通网页
+          });
         });
       } else {
         global.axios.post(
@@ -484,7 +493,7 @@
         });
       }
     }
-    if(handleInfo.page=='EditStoreMsgPage'){
+    if (handleInfo.page == 'EditStoreMsgPage') {
       handleInfo.page = 'EditStoreInfo'
     }
 

@@ -72,7 +72,7 @@
 		global.axios.post('decoration/User/webGetUserInfo', {
 			user_id: pageData.data.user_id
 		}, global, true).then((res) => {
-			console.log('后台获取用户信息', res);
+			// console.log('后台获取用户信息', res);
 			userInfo.value = res
 		})
 	}
@@ -86,7 +86,7 @@
 		global.axios.post('decoration/Order/webGetOrderDetail', {
 			order_id: pageData.data.id,
 		}, global, true).then((res) => {
-			console.log('后台获取订单详情', res);
+			// console.log('后台获取订单详情', res);
 			orderDetails.value = res
 		})
 	}
