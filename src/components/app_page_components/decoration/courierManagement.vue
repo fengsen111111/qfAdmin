@@ -329,7 +329,18 @@
 	}
 
 	const showDrawer = ref(false)//抽屉开关
-	const textDrawer = ref('抽屉内容')
+	const textDrawer = ref('')
+	function getRichTextContent() {
+		global.axios
+			.post('decoration/Setting/getRichTextContent', {
+				type: 'open_third_express_des'
+			}, global)
+			.then((res) => {
+				console.log('默认抽屉内容', res);
+				textDrawer.value = res
+			})
+	}
+	getRichTextContent()
 
 </script>
 
@@ -534,7 +545,7 @@
 		<a-drawer v-model:visible="showDrawer" class="custom-class" title="开通介绍" placement="right">
 			<div>
 				<div v-html="textDrawer"></div>
-				<p>Some contents...</p>
+				<!-- <p>Some contents...</p> -->
 			</div>
 		</a-drawer>
 	</div>
