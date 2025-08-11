@@ -312,7 +312,7 @@
 			parent_page_key: pageData.page_key,
 		});
 	}
-	// 批量发货
+	// 批量打印
 	function handePl() {
 		console.log('selectedRowKeys', selectedRowKeys.value);
 		fh_vis.value = true
@@ -401,7 +401,7 @@
 				</a-row>
 				<!-- 表格数据 -->
 				<a-button @click="handePl" :disabled="!selectedRowKeys.length" type="primary"
-					style="margin-bottom: 20px;">批量发货</a-button>
+					style="margin-bottom: 20px;">批量打印</a-button>
 				<div style="width: 100%;">
 					<a-table :row-selection="rowSelection" :row-key="record => record.id" :columns="columns"
 						:data-source="dataList" :scroll="{ x: 1600,y: 680 }">
@@ -446,8 +446,8 @@
 				</div>
 			</div>
 		</a-spin>
-		<!-- 批量发货 -->
-		<a-modal v-model:visible="fh_vis" title="批量发货" @cancel="fh_vis=false;selectedRowKeys=[];formRef.resetFields();">
+		<!-- 批量打印 -->
+		<a-modal v-model:visible="fh_vis" title="批量打印" @cancel="fh_vis=false;selectedRowKeys=[];formRef.resetFields();">
 			<a-spin :spinning="spinning">
 				<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 					:wrapper-col="{ span: 16 }">
