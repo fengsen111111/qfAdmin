@@ -85,25 +85,32 @@
 
     // const url = 'https://api.kuaidi100.com/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3';
     function wzzzdy() {
-        console.log('打印iframe');
-        LODOP.PRINT_INITA(""); // 初始化打印任务
-        LODOP.SET_PRINTER_INDEX(dyjmc.value); // 设置打印机
-        LODOP.SET_PRINT_MODE("PRINTQUALITY", 1); // 打印质量
-        LODOP.SET_PRINT_PAGESIZE(1, 1130, 1400, 'mm'); // 设置纸张大小
-        LODOP.SET_PRINT_MODE("COLOR_MODE", 1); // 彩印模式（1 彩色，0 黑白）
-        // 重点：加载并打印远程网页
-        LODOP.ADD_PRINT_URL(0, 0, "100%", "100%", "https://pic2.zhimg.com/v2-9f6ddcc5571bc89328a5dc4abe7d237b_b.jpg");
-        // 预览
-        LODOP.PREVIEW();
-        // LODOP.PRINT_INIT("PDF打印");
-        // const iframe = document.getElementById('printFrame')
-        // if (iframe && iframe.contentWindow) {
-        //     console.log('打印 iframe')
-        //     iframe.contentWindow.focus()
-        //     iframe.contentWindow.print()
-        // } else {
-        //     console.error('iframe 未加载完成或无法访问')
-        // }
+        // fetch('/kuaidiPDF')
+        //     .then(res => res.blob())
+        //     .then(blob => {
+        //         console.log('blob',blob);
+        //         const url = URL.createObjectURL(blob);
+        //         console.log('PDF 本地代理链接:', url);
+        //     });
+        fetch('/kuaidiPDF/thirdPlatform/print/download/3FE77179BC37421785613415C448ABE3')
+            .then(res => {
+                console.log(res.headers.get('content-type'));
+                return res.text();
+            })
+            .then(text => {
+                console.log(text); // 如果是 HTML，说明是提示页/错误页
+            });
+        // console.log('打印图片');
+        // LODOP.PRINT_INITA(""); // 初始化打印任务
+        // LODOP.SET_PRINTER_INDEX(dyjmc.value); // 设置打印机
+        // LODOP.SET_PRINT_MODE("PRINTQUALITY", 1); // 打印质量
+        // LODOP.SET_PRINT_PAGESIZE(1, 600, 1400, 'mm'); // 纸张大小
+        // LODOP.SET_PRINT_MODE("COLOR_MODE", 1); // 彩印模式（1 彩色，0 黑白）
+        // // 用 ADD_PRINT_IMAGE 打印图片
+        // // LODOP.ADD_PRINT_IMAGE(0, 0, "100%", "100%", `<img src="https://pic2.zhimg.com/v2-9f6ddcc5571bc89328a5dc4abe7d237b_b.jpg"/>`);
+        // LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", location.origin + '/kuaidiPDF');
+        // LODOP.SET_PRINT_STYLEA(0, "Stretch", 2); // 按比例拉伸填满纸张
+        // LODOP.PREVIEW();
     }
 
 </script>

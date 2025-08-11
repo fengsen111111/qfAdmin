@@ -493,8 +493,8 @@
 
   // 前往店铺详情
   function toShopDetails() {
-    djtzmk('商家信息', '商家资料')
-    // djtzmk('购物商城', '订单管理')
+    // djtzmk('商家信息', '商家资料')
+    djtzmk('购物商城', '订单管理')
   }
   // 前往订单详情
   function orderLook(item) {

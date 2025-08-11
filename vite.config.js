@@ -29,6 +29,11 @@ export default defineConfig({
         changeOrigin: true,                   // 开启代理
         rewrite: (path) => path.replace(/^\/api\/kuaidi/, '/eorderapi.do'),  // 重写请求路径
       },
+      '/kuaidiPDF': {
+        target: 'https://api.kuaidi100.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/kuaidiPDF/, '')
+      }
     },
   },
   build: {
