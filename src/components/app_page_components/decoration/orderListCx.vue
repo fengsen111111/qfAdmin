@@ -273,7 +273,12 @@
 		onChange: (selectedKeys) => {
 			selectedRowKeys.value = selectedKeys
 			console.log('选中行的 key:', selectedKeys)
-		}
+		},
+		getCheckboxProps: (record) => ({
+			disabled: record.status === 'a' || record.status === 'b',
+			// 可以给禁用的复选框加个提示
+			title: (record.status === 'a' || record.status === 'b') ? '该状态行不可勾选' : '',
+		}),
 	}))
 
 	// 查看物流信息
@@ -311,6 +316,18 @@
 	function handePl() {
 		console.log('selectedRowKeys', selectedRowKeys.value);
 		fh_vis.value = true
+	}
+
+	// 获取电子面单
+	function _getExpressList(item) {
+		global.axios
+			.post('decoration/Order/getLogistics', {
+				"store_id": localStorage.getItem('storeId'),
+				"order_id": item.id,
+			}, global)
+			.then((res) => {
+				console.log('获取电子面单', res);
+			})
 	}
 
 
@@ -396,7 +413,7 @@
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
 									<!-- v-if="record.status=='c'" -->
-									<div style="color: #1890FF;">打印快递单|多份</div>
+									<div v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">打印快递单|多份</div>
 								</div>
 							</template>
 							<!-- 状态 -->
@@ -410,12 +427,15 @@
 							</template>
 							<!-- 物流公司 -->
 							<template v-if="column.dataIndex === 'logistics_code'">
-								<div>物流公司：{{record.logistics_com}}</div>
-								<div>物流单号：{{record.logistics_num}}</div>
-								<div style="display: flex;cursor: pointer;">物流进度：<div @click="_getLogistics(record)"
-										style="margin: 0 auto;color: #1890FF;">查看</div>
+								<div v-if="record.status != 'a'&&record.status != 'b'">
+									<div>物流公司：{{record.logistics_com}}</div>
+									<div>物流单号：{{record.logistics_num}}</div>
+									<div style="display: flex;cursor: pointer;">物流进度：
+										<!-- <div @click="_getLogistics(record)" -->
+										<div @click="_getExpressList(record)" style="margin: 0 auto;color: #1890FF;">查看
+										</div>
+									</div>
 								</div>
-								<!-- -->
 							</template>
 							<!-- 商家备注 -->
 							<template v-if="column.dataIndex === 'store_remark'">
