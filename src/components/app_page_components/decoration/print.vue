@@ -28,7 +28,6 @@
 
     const indicator = h(LoadingOutlined, { style: { fontSize: '50px' }, spin: true });//打印加载中
 
-
     // 获取快递管理列表
     function getExpressList() {
         global.axios.post('decoration/Express/getExpressList', {
@@ -46,6 +45,7 @@
             LODOP = getLodop();
         } else {
             azqk.value = 'lodop已安装';
+            //去除底部试用版信息
             LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
             const count = LODOP.GET_PRINTER_COUNT();
             for (let i = 0; i < count; i++) {
@@ -78,16 +78,18 @@
         console.log('开始打印');
         visPrint.value = false;
         ksDy.value = true;
+        wzzzdy()
         setTimeout(() => ksDy.value = false, 3000);
     }
     defineExpose({ setVisible: val => visible.value = val });
 
     function wzzzdy() {
-        fetch('/kuaidiPDF/thirdPlatform/print/download/xxx')
+        fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
             .then(res => res.blob())
             .then(blob => {
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
+                console.log('a',a);
                 a.download = 'kuaidi100.pdf';
                 document.body.appendChild(a);
                 a.click();
@@ -96,9 +98,10 @@
                 LODOP.PRINT_INITA(""); // 初始化
                 LODOP.SET_PRINTER_INDEX(dyjmc.value); // 选择打印机
                 LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-                LODOP.SET_PRINT_PAGESIZE(1, 760, 1400, 'mm');
-                LODOP.ADD_PRINT_PDF(0, 0, "100%", "100%", "D:\\Users\\Downloads\\kuaidi100.pdf");
-                LODOP.PREVIEW(); // 预览打印
+                // LODOP.SET_PRINT_PAGESIZE(1, 760, 1300, 'mm');
+                LODOP.ADD_PRINT_PDF(0, 0, "95%", "95%", "D:\\Users\\Downloads\\kuaidi100.pdf");
+                // LODOP.PREVIEW(); // 预览打印
+                LODOP.PRINT();
             });
     }
 
@@ -106,7 +109,7 @@
 
 <template>
     <div>
-        <div @click="wzzzdy">打印2</div>
+        <!-- <div @click="wzzzdy">打印2</div> -->
         <button @click="visible=true">打印</button>
         <!-- 打单前检查 -->
         <a-modal v-model:visible="visible" :footer="null">

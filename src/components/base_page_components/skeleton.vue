@@ -139,7 +139,7 @@
           if (!unreadMsgTimer) {
             unreadMsgTimer = setInterval(() => {
               _getUnReadStoreMsgNum();//获取商家未读消息
-              _getUnPrintOrderList()//获取商家未打印订单
+              // _getExpressList()//获取商家未打印订单
             }, 60000);
           }
         }
@@ -724,9 +724,10 @@
   }
 
   // 获取未打印订单
-  function _getUnPrintOrderList() {
-    global.axios.post('decoration/Order/getUnPrintOrderList', {
-      store_id: localStorage.getItem("storeId")
+  function _getExpressList() {
+    global.axios.post('decoration/Order/getExpressList', {
+      store_id: localStorage.getItem("storeId"),
+      order_id:''
     }, global, true).then((res) => {
       console.log('获取未打印订单', res);
       // 打印第一笔订单测试
