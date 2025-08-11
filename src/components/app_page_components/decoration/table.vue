@@ -9,7 +9,7 @@
   const pageData = props.pageData;
   const skeleton_state = props.skeleton_state //
 
-  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk",'goLookTD', 'toShopDetails', 'orderLook', 'editMobile']);
+  let emit = defineEmits(["openChildPage", "closeChildPage", "djtzmk", 'goLookTD', 'toShopDetails', 'orderLook', 'editMobile']);
 
   function openChildPage(pageData) {
     emit("openChildPage", pageData);
