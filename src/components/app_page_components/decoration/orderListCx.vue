@@ -118,7 +118,7 @@
 			"key": "logistics_code",
 			"dataIndex": 'logistics_code',
 			"title": "物流信息",
-			"width": 120,
+			"width": 150,
 			"component": "Varchar",
 			"config": {}
 		},
@@ -312,10 +312,12 @@
 			parent_page_key: pageData.page_key,
 		});
 	}
+	const pupType = ref('Keys') //弹窗类型 Keys 多选  Key 单个
 	// 批量打印
 	function handePl() {
 		console.log('selectedRowKeys', selectedRowKeys.value);
 		fh_vis.value = true
+		pupType.value = 'Keys'
 	}
 
 	// 获取电子面单
@@ -330,12 +332,70 @@
 			})
 	}
 
+	const itemObj = ref({})//打印快递单多份
+	const orderListDetails = ref([])//订单详情
+
+	// 弹窗确定
+	async function handOk() {
+		try {
+			const values = await formRef.value.validateFields();
+			spinning.value = true
+			setTimeout(() => {
+				spinning.value = false
+			}, 2000);
+			orderListDetails.value = []//清空携带数据
+			if (pupType.value == 'Key') {
+				// 单个多快递单
+				global.axios.post('decoration/Order/webGetOrderDetail', {
+					order_id: itemObj.value.id,
+				}, global, true).then((res) => {
+					orderListDetails.value = [res]
+					if (orderListDetails.value.length > 0) {
+						printSddy.value.setVisible(true)
+					}
+				})
+			} else {
+				selectedRowKeys.value.map((item) => {
+					global.axios.post('decoration/Order/webGetOrderDetail', {
+						order_id: item,
+					}, global, true).then((res) => {
+						orderListDetails.value.push(res)
+					})
+				})
+				setTimeout(() => {
+					if (orderListDetails.value.length > 0) {
+						printSddy.value.setVisible(true)
+					}
+				}, 1000);
+				// 多个
+			}
+		} catch (errorInfo) {
+			console.log('Failed:', errorInfo);
+		}
+	}
+
+	import Print from './print.vue'
+
+	// 上级跳转
+	function sondjtzmk(str, strTwo, strThree) {
+		emit("djtzmk", str, strTwo, strThree);
+	}
+
+	const printSddy = ref(null);
+
+	function cxPrint(item){
+		console.log('重新打印');
+		window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
+	}
 
 </script>
 
 <template>
 	<!--搜索-->
 	<div>
+		<div v-show="false">
+			<Print ref="printSddy" :orderListDetails="orderListDetails" @djtzmk="sondjtzmk" />
+		</div>
 		<a-spin :spinning="spinning">
 			<div style="padding: 0px 20px;border-radius: 4px;">
 				<a-row>
@@ -409,11 +469,12 @@
 							<!-- 操作 -->
 							<template v-if="column.dataIndex === 'action'">
 								<div style="font-size: 12px;cursor: pointer;">
-									<div v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">重新打印
+									<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">重新打印
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
 									<!-- v-if="record.status=='c'" -->
-									<div v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">打印快递单|多份</div>
+									<div v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;"
+										@click="itemObj=record;fh_vis=true;pupType='Key'">打印快递单|多份</div>
 								</div>
 							</template>
 							<!-- 状态 -->
@@ -447,7 +508,8 @@
 			</div>
 		</a-spin>
 		<!-- 批量打印 -->
-		<a-modal v-model:visible="fh_vis" title="批量打印" @cancel="fh_vis=false;selectedRowKeys=[];formRef.resetFields();">
+		<a-modal v-model:visible="fh_vis" :title="pupType=='Key'?'打印多份快递单':'批量打印'"
+			@cancel="fh_vis=false;selectedRowKeys=[];formRef.resetFields();" @ok="handOk()">
 			<a-spin :spinning="spinning">
 				<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 6 }"
 					:wrapper-col="{ span: 16 }">
