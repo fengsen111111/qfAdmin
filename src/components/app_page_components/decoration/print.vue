@@ -83,27 +83,53 @@
     }
     defineExpose({ setVisible: val => visible.value = val });
 
+    // pdf  base64 打印版
     function wzzzdy() {
         fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
             .then(res => res.blob())
             .then(blob => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                console.log('a',a);
-                a.download = 'kuaidi100.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                // 如果是客户端环境，下载后可以用本地路径去 LODOP 打印
-                LODOP.PRINT_INITA(""); // 初始化
-                LODOP.SET_PRINTER_INDEX(dyjmc.value); // 选择打印机
-                LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-                // LODOP.SET_PRINT_PAGESIZE(1, 760, 1300, 'mm');
-                LODOP.ADD_PRINT_PDF(0, 0, "95%", "95%", "D:\\Users\\Downloads\\kuaidi100.pdf");
-                // LODOP.PREVIEW(); // 预览打印
-                LODOP.PRINT();
+                const reader = new FileReader();
+                reader.onload = function () {
+                    let base64PDF = reader.result;
+                    // 去掉 data:application/pdf;base64, 前缀
+                    base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
+                    // LODOP 打印
+                    LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
+                    LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+                    LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
+                    // 缩放比例 90%
+                    LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
+                    LODOP.PREVIEW(); // 预览打印
+                    // LODOP.PRINT(); // 直接打印
+                };
+                reader.readAsDataURL(blob); // 转成 Base64
+            })
+            .catch(err => {
+                console.error('下载或处理 PDF 失败:', err);
             });
     }
+    // pdf下载打印版
+    // function wzzzdy() {
+    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
+    //         .then(res => res.blob())
+    //         .then(blob => {
+    //             const a = document.createElement('a');
+    //             a.href = URL.createObjectURL(blob);
+    //             console.log('a',a);
+    //             a.download = 'kuaidi100.pdf';
+    //             document.body.appendChild(a);
+    //             a.click();
+    //             document.body.removeChild(a);
+    //             // 如果是客户端环境，下载后可以用本地路径去 LODOP 打印
+    //             LODOP.PRINT_INITA(""); // 初始化
+    //             LODOP.SET_PRINTER_INDEX(dyjmc.value); // 选择打印机
+    //             LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+    //             // LODOP.SET_PRINT_PAGESIZE(1, 760, 1300, 'mm');
+    //             LODOP.ADD_PRINT_PDF(0, 0, "95%", "95%", "D:\\Users\\Downloads\\kuaidi100.pdf");
+    //             // LODOP.PREVIEW(); // 预览打印
+    //             LODOP.PRINT();
+    //         });
+    // }
 
 </script>
 
