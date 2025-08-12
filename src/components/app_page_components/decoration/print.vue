@@ -94,7 +94,7 @@
             const typedarray = new Uint8Array(reader.result);
             pdfjsLib.getDocument(typedarray).promise.then(pdf => {
                 pdf.getPage(1).then(page => {
-                    const viewport = page.getViewport({ scale: 1 }); // 缩放比例
+                    const viewport = page.getViewport({ scale: 1.3 }); // 缩放比例
                     const canvas = document.createElement('canvas');
                     const context = canvas.getContext('2d');
                     canvas.width = viewport.width;
@@ -124,6 +124,62 @@
             });
     }
 
+    // html打印版
+    // function wzzzdy() {
+    //     // 使用示例
+    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
+    //         .then(res => res.blob())
+    //         .then(blob => {
+    //             const container = document.createElement('div'); // 新建一个隐藏的容器
+    //             container.style.width = '595px';  // A4纸宽度 px（默认1pt=1.333px，可以根据需要调）
+    //             container.style.height = '842px'; // A4纸高度 px
+    //             container.style.position = 'absolute';
+    //             container.style.left = '-9999px';
+    //             document.body.appendChild(container);
+    //             pdfBlobToHtml(blob, container, () => {
+    //                 // 解析完成，调用 LODOP 打印容器的 html
+    //                 console.log('container.innerHTML', container.innerHTML);
+    //                 LODOP.PRINT_INIT("打印快递单（html文本版）");
+    //                 LODOP.ADD_PRINT_HTM(0, 0, "100%", "100%", container.innerHTML);
+    //                 LODOP.PREVIEW();
+    //                 // 打印完成后可移除临时容器
+    //                 setTimeout(() => document.body.removeChild(container), 3000);
+    //             });
+    //         });
+    // }
+
+    // function pdfBlobToHtml(blob, container, callback) {
+    //     const reader = new FileReader();
+    //     reader.onload = async () => {
+    //         const typedarray = new Uint8Array(reader.result);
+    //         const pdf = await pdfjsLib.getDocument(typedarray).promise;
+    //         const page = await pdf.getPage(1);
+    //         const viewport = page.getViewport({ scale: 1 });
+    //         const textContent = await page.getTextContent();
+    //         // 清空容器
+    //         container.innerHTML = '';
+    //         container.style.position = 'relative';
+    //         container.style.width = viewport.width + 'px';
+    //         container.style.height = viewport.height + 'px';
+    //         textContent.items.forEach((textItem) => {
+    //             const span = document.createElement('div');
+    //             span.textContent = textItem.str;
+    //             const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
+    //             span.style.position = 'absolute';
+    //             span.style.left = `${tx[4]}px`;
+    //             span.style.top = `${tx[5] - textItem.height}px`;
+    //             span.style.fontSize = `${textItem.height}px`;
+    //             span.style.whiteSpace = 'pre';
+    //             container.appendChild(span);
+    //         });
+
+    //         callback && callback();
+    //     };
+    //     reader.readAsArrayBuffer(blob);
+    // }
+
+
+
 
     // pdf  base64 打印版
     // function wzzzdy() {
@@ -138,6 +194,7 @@
     //                 // LODOP 打印
     //                 LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
     //                 LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+    //                 LODOP.SET_PRINT_MODE("PRINT_NOPROMPT", true); // 不弹任何打印提示
     //                 LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
     //                 // 缩放比例 90%
     //                 LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
