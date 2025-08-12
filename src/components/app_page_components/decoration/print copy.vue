@@ -88,41 +88,41 @@
     // 载入 pdf.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
     // pdfjsLib.GlobalWorkerOptions.disableWorker = true;
-    // function pdfBlobToImage(blob, callback) {
-    //     const reader = new FileReader();
-    //     reader.onload = function () {
-    //         const typedarray = new Uint8Array(reader.result);
-    //         pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-    //             pdf.getPage(1).then(page => {
-    //                 const viewport = page.getViewport({ scale: 1.3 }); // 缩放比例
-    //                 const canvas = document.createElement('canvas');
-    //                 const context = canvas.getContext('2d');
-    //                 canvas.width = viewport.width;
-    //                 canvas.height = viewport.height;
-    //                 page.render({ canvasContext: context, viewport: viewport }).promise.then(() => {
-    //                     const imgData = canvas.toDataURL('image/png');
-    //                     console.log('结果', imgData);
-    //                     callback(imgData); // 返回 base64 图片
-    //                 });
-    //             });
-    //         });
-    //     };
-    //     reader.readAsArrayBuffer(blob);
-    // }
-    // function wzzzdy() {
-    //     // 使用示例
-    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
-    //         .then(res => res.blob())
-    //         .then(blob => {
-    //             pdfBlobToImage(blob, (imgBase64) => {
-    //                 // 用 LODOP 打印图片
-    //                 LODOP.PRINT_INIT("打印快递单");
-    //                 LODOP.ADD_PRINT_IMAGE(0, 0, "100%", "100%", `<img src="${imgBase64}"  style="width:95%;height:auto;">`);
-    //                 LODOP.PREVIEW(); // 预览打印
-    //                 // LODOP.PRINT(); // 直接打印
-    //             });
-    //         });
-    // }
+    function pdfBlobToImage(blob, callback) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const typedarray = new Uint8Array(reader.result);
+            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                pdf.getPage(1).then(page => {
+                    const viewport = page.getViewport({ scale: 1.3 }); // 缩放比例
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    page.render({ canvasContext: context, viewport: viewport }).promise.then(() => {
+                        const imgData = canvas.toDataURL('image/png');
+                        console.log('结果', imgData);
+                        callback(imgData); // 返回 base64 图片
+                    });
+                });
+            });
+        };
+        reader.readAsArrayBuffer(blob);
+    }
+    function wzzzdy() {
+        // 使用示例
+        fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
+            .then(res => res.blob())
+            .then(blob => {
+                pdfBlobToImage(blob, (imgBase64) => {
+                    // 用 LODOP 打印图片
+                    LODOP.PRINT_INIT("打印快递单");
+                    LODOP.ADD_PRINT_IMAGE(0, 0, "100%", "100%", `<img src="${imgBase64}"  style="width:95%;height:auto;">`);
+                    LODOP.PREVIEW(); // 预览打印
+                    // LODOP.PRINT(); // 直接打印
+                });
+            });
+    }
 
     // html打印版
     // function wzzzdy() {
@@ -180,106 +180,6 @@
 
 
 
-    const container = ref(null)
-
-    function wzzzdy() {
-        fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
-            .then(res => res.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onload = function () {
-                    let base64PDF = reader.result;
-                    // 去掉 data:application/pdf;base64, 前缀
-                    base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
-                    fff(base64PDF)
-                    // LODOP 打印
-                    // LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
-                    // LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-                    // LODOP.SET_PRINT_MODE("PRINT_NOPROMPT", true); // 不弹任何打印提示
-                    // LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
-                    // // 缩放比例 90%
-                    // LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
-                    // LODOP.PREVIEW(); // 预览打印
-                    // // LODOP.PRINT(); // 直接打印
-                };
-                reader.readAsDataURL(blob); // 转成 Base64
-            })
-            .catch(err => {
-                console.error('下载或处理 PDF 失败:', err);
-            });
-    }
-
-    async function fff(base64PDF) {
-        const pdfData = atob(base64PDF);
-        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const scale = 1.5;
-            const viewport = page.getViewport({ scale });
-            // 页面容器
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-            pageDiv.style.position = 'relative';
-            pageDiv.style.width = viewport.width + 'px';
-            pageDiv.style.height = viewport.height + 'px';
-
-            // 创建 canvas
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            // 渲染 PDF 页到 canvas
-            await page.render({ canvasContext: context, viewport }).promise;
-            pageDiv.appendChild(canvas);
-            // 渲染文字层 (可复制文本)
-            const textContent = await page.getTextContent();
-            const textLayerDiv = document.createElement('div');
-            // textLayerDiv.className = 'textLayer';
-            // textLayerDiv.style.position = 'absolute';
-            // textLayerDiv.style.top = '0';
-            // textLayerDiv.style.left = '0';
-            // textLayerDiv.style.height = viewport.height + 'px';
-            // textLayerDiv.style.width = viewport.width + 'px';
-            pdfjsLib.renderTextLayer({
-                textContent,
-                container: textLayerDiv,
-                viewport,
-                textDivs: []
-            });
-            pageDiv.appendChild(textLayerDiv);
-            container.value.appendChild(pageDiv);
-            console.log('pageDiv', pageDiv);
-            const printContent = pageDiv.innerHTML
-
-            // 把 canvas 转成 base64 图片字符串
-            const imgData = canvas.toDataURL('image/png');
-            // 拼装 html，img 引用 base64 图像
-            const html = `<!DOCTYPE html>
-                <html>
-                <head>
-                <title>电子面单</title>
-                <style>
-                    body { margin:0; padding:0; background:#fff; font-family:sans-serif; }
-                    .print-container { max-width:360px; }
-                </style>
-                </head>
-                <body>
-                <div class="print-container">
-                    <img src="${imgData}" style="width:100%;" />
-                </div>
-                </body>
-                </html>`;
-            // 用 LODOP 打印
-            LODOP.ADD_PRINT_HTML('0', '0', '100%', '100%', html);
-            // 预览或打印
-            LODOP.PREVIEW();
-            // LODOP.PRINT();
-        }
-    }
-
 
     // pdf  base64 打印版
     // function wzzzdy() {
@@ -334,7 +234,6 @@
 
 <template>
     <div>
-        <div ref="container" class="pdf-container"></div>
         <!-- <div @click="wzzzdy">打印2</div> -->
         <button @click="visible=true">打印</button>
         <!-- 打单前检查 -->
@@ -429,15 +328,15 @@
                             <th scope="col">收件人</th>
                             <th scope="col">联系方式</th>
                             <th scope="col">收件地址</th>
-                            <th scope="col">支付时间</th>
-                            <th scope="col">支付金额</th>
+                            <th scope="col">快递单号</th>
+                            <th scope="col">大写头</th>
                         </tr>
                         <tr v-for="item in orderListDetails" :key="item.id">
                             <td>{{item.address_name}}</td>
                             <td>{{item.address_mobile}}</td>
                             <td>{{item.address}}</td>
-                            <td>{{item.pay_time}}</td>
-                            <td>{{item.price}}</td>
+                            <td>JT0016322576092</td>
+                            <td>710 R702-00 026</td>
                         </tr>
                     </table>
                 </div>
@@ -506,11 +405,5 @@
     td {
         border: 1px solid #e9e9e9;
         padding: 10px 20px;
-    }
-
-    .textLayer {
-        color: rgba(0, 0, 0, 0.3);
-        user-select: text;
-        pointer-events: none;
     }
 </style>

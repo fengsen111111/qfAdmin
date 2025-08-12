@@ -385,20 +385,20 @@
 	const printSddy = ref(null);
 
 	function cxPrint(item) {
-		global.axios.post('decoration/Order/createExpress', {
-			order_id: item.id,
-			number: 1
-		}, global, true).then((res) => {
-			console.log('生成电子面单', res);
-			global.axios.post('decoration/Order/getExpressList', {
-				order_id: item.id,
-				store_id: localStorage.getItem('storeId')
-			}, global, true).then((resule) => {
-				console.log('获取电子面单', resule);
-			})
-		})
+		// global.axios.post('decoration/Order/createExpress', {
+		// 	order_id: item.id,
+		// 	number: 1
+		// }, global, true).then((res) => {
+		// 	console.log('生成电子面单', res);
+		// 	global.axios.post('decoration/Order/getExpressList', {
+		// 		order_id: item.id,
+		// 		store_id: localStorage.getItem('storeId')
+		// 	}, global, true).then((resule) => {
+		// 		console.log('获取电子面单', resule);
+		// 	})
+		// })
 		// console.log('重新打印');
-		// window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
+		window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
 	}
 
 </script>
