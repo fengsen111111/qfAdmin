@@ -312,6 +312,7 @@
 			parent_page_key: pageData.page_key,
 		});
 	}
+
 	const pupType = ref('Keys') //弹窗类型 Keys 多选  Key 单个
 	// 批量打印
 	function handePl() {
@@ -383,9 +384,23 @@
 
 	const printSddy = ref(null);
 
-	function cxPrint(item){
-		console.log('重新打印');
-		window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
+	function cxPrint(item) {
+		global.axios.post('decoration/Order/createExpress', {
+			order_id: item.id,
+			number: 1
+		}, global, true).then((res) => {
+			console.log('生成电子面单', res);
+			global.axios.post('decoration/Order/getExpressList', {
+				order_id: item.id,
+				store_id: localStorage.getItem('storeId')
+			}, global, true).then((resule) => {
+				console.log('获取电子面单', resule);
+			})
+		})
+
+
+		// console.log('重新打印');
+		// window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
 	}
 
 </script>
@@ -469,7 +484,8 @@
 							<!-- 操作 -->
 							<template v-if="column.dataIndex === 'action'">
 								<div style="font-size: 12px;cursor: pointer;">
-									<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">重新打印
+									<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'"
+										style="color: #1890FF;">重新打印
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
 									<!-- v-if="record.status=='c'" -->
