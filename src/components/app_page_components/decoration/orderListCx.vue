@@ -397,8 +397,6 @@
 				console.log('获取电子面单', resule);
 			})
 		})
-
-
 		// console.log('重新打印');
 		// window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
 	}
