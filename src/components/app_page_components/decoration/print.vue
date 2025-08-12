@@ -53,7 +53,7 @@
             }
             clearInterval(intervalId);
         }
-    }, 5000);
+    }, 1000);
     // 选择打印机
     function selChange(value) {
         dyjmc.value = value;
@@ -83,31 +83,73 @@
     }
     defineExpose({ setVisible: val => visible.value = val });
 
-    // pdf  base64 打印版
+    // pdf 转图片 打印版
+    import * as pdfjsLib from 'pdfjs-dist/build/pdf';
+    // 载入 pdf.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+    // pdfjsLib.GlobalWorkerOptions.disableWorker = true;
+    function pdfBlobToImage(blob, callback) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const typedarray = new Uint8Array(reader.result);
+            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                pdf.getPage(1).then(page => {
+                    const viewport = page.getViewport({ scale: 1 }); // 缩放比例
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    page.render({ canvasContext: context, viewport: viewport }).promise.then(() => {
+                        const imgData = canvas.toDataURL('image/png');
+                        console.log('结果', imgData);
+                        callback(imgData); // 返回 base64 图片
+                    });
+                });
+            });
+        };
+        reader.readAsArrayBuffer(blob);
+    }
     function wzzzdy() {
+        // 使用示例
         fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
             .then(res => res.blob())
             .then(blob => {
-                const reader = new FileReader();
-                reader.onload = function () {
-                    let base64PDF = reader.result;
-                    // 去掉 data:application/pdf;base64, 前缀
-                    base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
-                    // LODOP 打印
-                    LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
-                    LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-                    LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
-                    // 缩放比例 90%
-                    LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
+                pdfBlobToImage(blob, (imgBase64) => {
+                    // 用 LODOP 打印图片
+                    LODOP.PRINT_INIT("打印快递单");
+                    LODOP.ADD_PRINT_IMAGE(0, 0, "100%", "100%", `<img src="${imgBase64}"  style="width:95%;height:auto;">`);
                     LODOP.PREVIEW(); // 预览打印
                     // LODOP.PRINT(); // 直接打印
-                };
-                reader.readAsDataURL(blob); // 转成 Base64
-            })
-            .catch(err => {
-                console.error('下载或处理 PDF 失败:', err);
+                });
             });
     }
+
+
+    // pdf  base64 打印版
+    // function wzzzdy() {
+    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
+    //         .then(res => res.blob())
+    //         .then(blob => {
+    //             const reader = new FileReader();
+    //             reader.onload = function () {
+    //                 let base64PDF = reader.result;
+    //                 // 去掉 data:application/pdf;base64, 前缀
+    //                 base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
+    //                 // LODOP 打印
+    //                 LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
+    //                 LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
+    //                 LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
+    //                 // 缩放比例 90%
+    //                 LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
+    //                 LODOP.PREVIEW(); // 预览打印
+    //                 // LODOP.PRINT(); // 直接打印
+    //             };
+    //             reader.readAsDataURL(blob); // 转成 Base64
+    //         })
+    //         .catch(err => {
+    //             console.error('下载或处理 PDF 失败:', err);
+    //         });
+    // }
     // pdf下载打印版
     // function wzzzdy() {
     //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
