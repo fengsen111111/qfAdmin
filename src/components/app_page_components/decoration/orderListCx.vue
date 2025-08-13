@@ -167,16 +167,16 @@
 			"component": "Varchar"
 		},
 		{
-			"key": "logistics_com",
-			"dataIndex": 'logistics_com',
-			"title": "物流公司名称",
+			"key": "logistics_num",
+			"dataIndex": 'logistics_num',
+			"title": "物流单号",
 			// "width": 60,
 			"component": "Varchar"
 		},
 		{
-			"key": "logistics_num",
-			"dataIndex": 'logistics_num',
-			"title": "物流单号",
+			"key": "logistics_com",
+			"dataIndex": 'logistics_com',
+			"title": "物流公司名称",
 			// "width": 60,
 			"component": "Varchar"
 		},
