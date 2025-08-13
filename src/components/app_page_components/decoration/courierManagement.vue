@@ -44,7 +44,7 @@
 				.post('decoration/Express/submitExpress', formState, global)
 				.then((res) => {
 					spinning.value = false
-					handCancel()//关闭弹窗
+					// handCancel()//关闭弹窗
 					_getExpressList()
 				})
 		} catch (errorInfo) {
@@ -90,11 +90,6 @@
 			dataIndex: 'action',
 			width: 120
 		},
-		// {
-		// 	title: '快递ID',
-		// 	dataIndex: 'id',
-		// 	key: 'id',
-		// },
 		{
 			title: '是否默认',
 			key: 'status',
@@ -106,15 +101,6 @@
 			key: 'company',
 			dataIndex: 'company',
 		},
-		// {
-		// 	title: '快递公司编码',
-		// 	dataIndex: 'company_code',
-		// 	key: 'company_code',
-		// }, {
-		// 	title: '快递公司名称',
-		// 	dataIndex: 'company_name',
-		// 	key: 'company_name',
-		// }, 
 		{
 			title: '网点名称/网点编号',
 			key: 'net',
@@ -125,51 +111,11 @@
 			key: 'dzmdInfo',
 			dataIndex: 'dzmdInfo',
 		},
-		// {
-		// 	title: '电子面单客户账户名称',
-		// 	key: 'partnerName',
-		// 	dataIndex: 'partnerName',
-		// }, {
-		// 	title: '电子面单账户号码',
-		// 	dataIndex: 'parterId',
-		// 	key: 'parterId',
-		// }, {
-		// 	title: '电子面单账户密码',
-		// 	key: 'partnerKey',
-		// 	dataIndex: 'partnerKey',
-		// }, {
-		// 	title: '电子面单密钥',
-		// 	key: 'partnerSecret',
-		// 	dataIndex: 'partnerSecret',
-		// }, {
-		// 	title: '电子面单承载编号',
-		// 	key: 'code',
-		// 	dataIndex: 'code',
-		// }, {
-		// 	title: '电子面单承载快递员名',
-		// 	key: 'checkMan',
-		// 	dataIndex: 'checkMan',
-		// }, 
 		{
 			title: '发货人信息',
 			key: 'fhrInfo',
 			dataIndex: 'fhrInfo',
 		},
-
-		// {
-		// 	title: '发货人',
-		// 	key: 'sender_name',
-		// 	dataIndex: 'sender_name',
-		// }, {
-		// 	title: '发货电话',
-		// 	key: 'sender_mobile',
-		// 	dataIndex: 'sender_mobile',
-		// }, {
-		// 	title: '发货地址',
-		// 	key: 'sender_address',
-		// 	dataIndex: 'sender_address',
-		// 	width: 120
-		// }, 
 		{
 			title: '第三方授权链接',
 			key: 'url',
@@ -353,10 +299,12 @@
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<span style="white-space: nowrap;">绑定电子面单账户：</span>
-				<a-button type="primary" @click="fh_vis=true;formState.net='taobao'"
+				<a-button type="primary" @click="fh_vis=true;formState.net='taobao';formState.add_type='third'"
 					style="margin-left: 10px;">淘宝面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.net='cainiao'"
+				<a-button type="primary" @click="fh_vis=true;formState.net='cainiao';formState.add_type='third'"
 					style="margin-left: 10px;">菜鸟面单</a-button>
+				<a-button type="primary" @click="fh_vis=true;formState.net='';formState.add_type='handle'"
+					style="margin-left: 10px;">直接添加</a-button>
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<div style="display: flex;align-items: center;">
@@ -466,18 +414,10 @@
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 8 }"
 						:wrapper-col="{ span: 16 }">
 						<a-form-item label="添加方式" name="add_type" :rules="[{ required: true, message: '请选择添加方式' }]">
-							<a-select ref="select" placeholder="请选择添加方式" v-model:value="formState.add_type">
+							<a-select ref="select" @click="formRef.resetFields();" placeholder="请选择添加方式"
+								v-model:value="formState.add_type">
 								<a-select-option value="handle">直接添加</a-select-option>
 								<a-select-option value="third">第三方授权</a-select-option>
-							</a-select>
-						</a-form-item>
-						<!-- 淘宝：taobao，菜鸟：cainiao -->
-						<a-form-item label="网点名称" name="net"
-							:rules="[{ required: true, message: '请填写网点名称!' }]">
-							<!-- <a-input v-model:value="formState.net" placeholder="请填写网点名称" /> -->
-							<a-select ref="select" placeholder="请选择添加方式" v-model:value="formState.net">
-								<a-select-option value="taobao">淘宝面单</a-select-option>
-								<a-select-option value="cainiao">菜鸟面单</a-select-option>
 							</a-select>
 						</a-form-item>
 						<a-form-item label="发货人" name="sender_name" :rules="[{ required: true, message: '请填写发货人!' }]">
@@ -495,38 +435,47 @@
 							<a-input v-model:value="formState.company_name"
 								:rules="[{ required: true, message: '请填写快递公司名称' }]" placeholder="请填写快递公司名称" />
 						</a-form-item>
-						<div v-show="formState.add_type=='handle'">
-							<!-- :rules="[{ required: true, message: '请输入快递公司' }]" -->
+						<!-- 淘宝：taobao，菜鸟：cainiao -->
+						<div v-if="formState.add_type=='third'">
+							<a-form-item label="网点名称" name="net">
+								<a-select ref="select" placeholder="请选择添加方式" v-model:value="formState.net">
+									<a-select-option value="taobao">淘宝面单</a-select-option>
+									<a-select-option value="cainiao">菜鸟面单</a-select-option>
+								</a-select>
+							</a-form-item>
+						</div>
+						<!-- ="formState.add_type=='handle'" -->
+						<div v-else>
 							<a-form-item label="快递公司编码" name="company_name">
 								<a-select ref="select" placeholder="请选择快递公司" v-model:value="formState.company_code">
-									<a-select-option :value="item.code" v-for="item in wlList"
+									<a-select-option @click="formState.company_name=item.name" :value="item.code" v-for="item in wlList"
 										:key="item.code">{{item.name}}</a-select-option>
 								</a-select>
 							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请输入电子面单账户号码' }]" -->
-							<a-form-item label="电子面单账户号码" name="parterId">
-								<a-input v-model:value="formState.parterId" placeholder="请输入电子面单账户号码" />
-							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请输入电子面单账户密码' }]" -->
-							<a-form-item label="电子面单账户密码" name="partnerKey">
-								<a-input v-model:value="formState.partnerKey" placeholder="请输入电子面单账户密码" />
-							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请填写电子面单密钥!' }]" -->
-							<a-form-item label="电子面单密钥" name="partnerSecret">
-								<a-input v-model:value="formState.partnerSecret" placeholder="请填写电子面单密钥" />
-							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请填写电子面单客户账户名称!' }]" -->
-							<a-form-item label="电子面单客户账户名称" name="partnerName">
-								<a-input v-model:value="formState.partnerName" placeholder="请填写电子面单客户账户名称" />
-							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请填写电子面单承载编号!' }]" -->
-							<a-form-item label="电子面单承载编号" name="code">
-								<a-input v-model:value="formState.code" placeholder="请填写电子面单承载编号" />
-							</a-form-item>
-							<!-- :rules="[{ required: true, message: '请填写电子面单承载快递员名!' }]" -->
-							<a-form-item label="电子面单承载快递员名" name="checkMan">
-								<a-input v-model:value="formState.checkMan" placeholder="请填写电子面单承载快递员名" />
-							</a-form-item>
+							<div>
+								极兔速递：
+								<a-form-item label="电子面单账户号码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入电子面单账户号码" />
+								</a-form-item>
+								<a-form-item label="电子面单账户密码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入电子面单账户密码" />
+								</a-form-item>
+							</div>
+							<div>
+								多余：
+								<a-form-item label="电子面单密钥" name="partnerSecret">
+									<a-input v-model:value="formState.partnerSecret" placeholder="请填写电子面单密钥" />
+								</a-form-item>
+								<a-form-item label="电子面单客户账户名称" name="partnerName">
+									<a-input v-model:value="formState.partnerName" placeholder="请填写电子面单客户账户名称" />
+								</a-form-item>
+								<a-form-item label="电子面单承载编号" name="code">
+									<a-input v-model:value="formState.code" placeholder="请填写电子面单承载编号" />
+								</a-form-item>
+								<a-form-item label="电子面单承载快递员名" name="checkMan">
+									<a-input v-model:value="formState.checkMan" placeholder="请填写电子面单承载快递员名" />
+								</a-form-item>
+							</div>
 						</div>
 					</a-form>
 					<div style="height: 20px;"></div>
