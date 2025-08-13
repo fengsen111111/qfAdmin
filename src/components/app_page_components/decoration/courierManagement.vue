@@ -472,8 +472,13 @@
 							</a-select>
 						</a-form-item>
 						<!-- 淘宝：taobao，菜鸟：cainiao -->
-						<a-form-item label="网点名称" name="net" :rules="[{ required: true, message: '请填写网点名称!' }]">
-							<a-input v-model:value="formState.net" disabled placeholder="请填写网点名称" />
+						<a-form-item label="网点名称" name="net"
+							:rules="[{ required: true, message: '请填写网点名称!' }]">
+							<!-- <a-input v-model:value="formState.net" placeholder="请填写网点名称" /> -->
+							<a-select ref="select" placeholder="请选择添加方式" v-model:value="formState.net">
+								<a-select-option value="taobao">淘宝面单</a-select-option>
+								<a-select-option value="cainiao">菜鸟面单</a-select-option>
+							</a-select>
 						</a-form-item>
 						<a-form-item label="发货人" name="sender_name" :rules="[{ required: true, message: '请填写发货人!' }]">
 							<a-input v-model:value="formState.sender_name" placeholder="请填写发货人" />

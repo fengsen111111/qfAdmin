@@ -620,7 +620,6 @@
 								<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
 							</div>
 						</template>
-
 					</template>
 				</a-table>
 			</a-spin>
