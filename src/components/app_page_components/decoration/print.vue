@@ -426,6 +426,23 @@
                     </div>
                     <table class="table_two" style="margin-top: 10px;">
                         <tr style="white-space:nowrap">
+                            <th scope="col">物流单号</th>
+                            <th scope="col">物流公司名称</th>
+                            <th scope="col">物流公司编码</th>
+                            <th scope="col">电子面单链接</th>
+                            <!-- <th scope="col">最新更新时间</th> -->
+                        </tr>
+                        <tr v-for="item in orderListDetails" :key="item.id">
+                            <td>JT12331342342342134</td>
+                            <td>极兔速递</td>
+                            <td>jitushudi</td>
+                            <td>
+                                <div style="width: 250px;word-wrap:break-word;word-break:normal; ">
+                                    https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- <tr style="white-space:nowrap">
                             <th scope="col">收件人</th>
                             <th scope="col">联系方式</th>
                             <th scope="col">收件地址</th>
@@ -438,7 +455,7 @@
                             <td>{{item.address}}</td>
                             <td>{{item.pay_time}}</td>
                             <td>{{item.price}}</td>
-                        </tr>
+                        </tr> -->
                     </table>
                 </div>
                 <div style="margin-top: 10px;display: flex;">
