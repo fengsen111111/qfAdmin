@@ -22,6 +22,7 @@
 		store_id.value = localStorage.getItem('storeId')
 	}, 500);
 	const fh_vis = ref(false)//新增编辑
+	const md_vis = ref(false)//新增编辑
 
 	const spinning = ref(false)//加载
 	const company_name = ref(null)//搜索项 快递公司code
@@ -114,10 +115,18 @@
 			"width": 160,
 			"component": "Varchar"
 		},
+		// {
+		// 	"key": "logistics_code",
+		// 	"dataIndex": 'logistics_code',
+		// 	"title": "物流信息",
+		// 	"width": 150,
+		// 	"component": "Varchar",
+		// 	"config": {}
+		// },
 		{
-			"key": "logistics_code",
-			"dataIndex": 'logistics_code',
-			"title": "物流信息",
+			"key": "dzmd",
+			"dataIndex": 'dzmd',
+			"title": "电子面单",
 			"width": 150,
 			"component": "Varchar",
 			"config": {}
@@ -141,6 +150,58 @@
 		}
 	]
 
+	const columnsPup = [
+		{
+			"key": "action",
+			"dataIndex": 'action',
+			"title": "操作",
+			// "width": 60,
+			"component": "Buttons",
+			"fixed": "left",
+		},
+		{
+			"key": "id",
+			"dataIndex": 'id',
+			"title": "电子面单ID ",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_com",
+			"dataIndex": 'logistics_com',
+			"title": "物流公司名称",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_num",
+			"dataIndex": 'logistics_num',
+			"title": "物流单号",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_code",
+			"dataIndex": 'logistics_code',
+			"title": "物流公司编码",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_label",
+			"dataIndex": 'logistics_label',
+			"title": "电子面单链接",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_time",
+			"dataIndex": 'logistics_time',
+			"title": "更新时间",
+			// "width": 60,
+			"component": "Varchar"
+		},
+	]
 
 	// 搜索项
 	const searchConditions = ref([
@@ -237,6 +298,7 @@
 	],)
 
 	const dataList = ref([])
+	const dataListPup = ref([])
 	//
 	function _findTableRecords() {
 		spinning.value = true
@@ -323,6 +385,7 @@
 
 	// 获取电子面单
 	function _getExpressList(item) {
+		md_vis.value = true
 		global.axios
 			.post('decoration/Order/getLogistics', {
 				"store_id": localStorage.getItem('storeId'),
@@ -330,6 +393,7 @@
 			}, global)
 			.then((res) => {
 				console.log('获取电子面单', res);
+				dataListPup.value = res.list
 			})
 	}
 
@@ -477,7 +541,7 @@
 					style="margin-bottom: 20px;">批量打印</a-button>
 				<div style="width: 100%;">
 					<a-table :row-selection="rowSelection" :row-key="record => record.id" :columns="columns"
-						:data-source="dataList" :scroll="{ x: 1600,y: 680 }">
+						:data-source="dataList" :scroll="{ x: 1600,y: 590 }">
 						<template #bodyCell="{ column, record  }">
 							<!-- 操作 -->
 							<template v-if="column.dataIndex === 'action'">
@@ -512,6 +576,15 @@
 									</div>
 								</div>
 							</template>
+							<!-- 电子面单 -->
+							<template v-if="column.dataIndex === 'dzmd'">
+								<div v-if="record.status != 'a'&&record.status != 'b'">
+									<div style="cursor: pointer;">
+										<div @click="_getExpressList(record)" style="margin: 0 auto;color: #1890FF;">查看
+										</div>
+									</div>
+								</div>
+							</template>
 							<!-- 商家备注 -->
 							<template v-if="column.dataIndex === 'store_remark'">
 								<a-input v-model:value="record.store_remark" @blur="onBlur(record)"></a-input>
@@ -531,6 +604,25 @@
 						<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 					</a-form-item>
 				</a-form>
+			</a-spin>
+		</a-modal>
+		<!-- 电子面单 -->
+		<a-modal v-model:visible="md_vis" title="电子面单" @cancel="md_vis=false;" @ok="md_vis=false;" width="1000px">
+			<a-spin :spinning="spinning">
+				<a-table :columns="columnsPup" :data-source="dataListPup" :scroll="{ x: 920}">
+					<template #bodyCell="{ column, record  }">
+						<!-- 操作 -->
+						<template v-if="column.dataIndex === 'action'">
+							<div style="font-size: 12px;cursor: pointer;">
+								<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'"
+									style="color: #1890FF;">重新打印
+								</div>
+								<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
+							</div>
+						</template>
+
+					</template>
+				</a-table>
 			</a-spin>
 		</a-modal>
 	</div>
