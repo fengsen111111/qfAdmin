@@ -237,12 +237,6 @@
             // 渲染文字层 (可复制文本)
             const textContent = await page.getTextContent();
             const textLayerDiv = document.createElement('div');
-            // textLayerDiv.className = 'textLayer';
-            // textLayerDiv.style.position = 'absolute';
-            // textLayerDiv.style.top = '0';
-            // textLayerDiv.style.left = '0';
-            // textLayerDiv.style.height = viewport.height + 'px';
-            // textLayerDiv.style.width = viewport.width + 'px';
             pdfjsLib.renderTextLayer({
                 textContent,
                 container: textLayerDiv,
@@ -430,7 +424,6 @@
                             <th scope="col">物流公司名称</th>
                             <th scope="col">物流公司编码</th>
                             <th scope="col">电子面单链接</th>
-                            <!-- <th scope="col">最新更新时间</th> -->
                         </tr>
                         <tr v-for="item in orderListDetails" :key="item.id">
                             <td>JT12331342342342134</td>
@@ -442,20 +435,6 @@
                                 </div>
                             </td>
                         </tr>
-                        <!-- <tr style="white-space:nowrap">
-                            <th scope="col">收件人</th>
-                            <th scope="col">联系方式</th>
-                            <th scope="col">收件地址</th>
-                            <th scope="col">支付时间</th>
-                            <th scope="col">支付金额</th>
-                        </tr>
-                        <tr v-for="item in orderListDetails" :key="item.id">
-                            <td>{{item.address_name}}</td>
-                            <td>{{item.address_mobile}}</td>
-                            <td>{{item.address}}</td>
-                            <td>{{item.pay_time}}</td>
-                            <td>{{item.price}}</td>
-                        </tr> -->
                     </table>
                 </div>
                 <div style="margin-top: 10px;display: flex;">
