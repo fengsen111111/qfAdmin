@@ -70,6 +70,8 @@
 
 
 <template>
+  <!-- <div @click="handle({handleType:'MerchantInfoExportBtn'})" style="color: #1890FF;font-size: 12px;cursor: pointer;">商家导出</div> -->
+  <!-- <div @click="handle({handleType:'RecommendedOfficialExportBtn'})" style="color: #1890FF;font-size: 12px;cursor: pointer;">推荐官导出</div> -->
   <div v-if="!props.structure.open">
     <a-dropdown>
       <a class="ant-dropdown-link" href="javascript:;">
@@ -95,7 +97,6 @@
     </a-dropdown>
   </div>
   <div v-else>
-    <!-- <span @click="handle({handleType:'RecommendedOfficialExportBtn'})" style="color: #1890FF;font-size: 12px;margin-top: -10px;cursor: pointer;">推荐官导出</span> -->
     <a-button v-for="(button,buttonIndex) in props.structure.config" v-show="showButton(button)" :key="buttonIndex"
       :type="button.buttonStyle?button.buttonStyle:'link'" @click="handle(button)">
       <span v-if="button.showValue" :class="button.buttonType?button.buttonType:'primary'">{{
