@@ -288,17 +288,19 @@
 					<a-cascader v-model:value="formState.adcode" :change-on-select="true" :options="treeData"
 						placeholder="请选择地区" />
 				</a-form-item>
-				<a-form-item v-show="formState.data_type=='b'" label="曝光作品" name="data_id_two">
-					<a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
+				<a-form-item v-show="formState.data_type=='b'" label="曝光作品ID" name="data_id_two">
+					<!-- <a-select ref="select" v-model:value="formState.data_id_two" placeholder="请选择!">
 						<a-select-option v-for="item in twList" :key="item.id"
 							:value="item.id">{{item.title}}</a-select-option>
-					</a-select>
+					</a-select> -->
+					<a-input v-model:value="formState.data_id_two" placeholder="请输入曝光作品ID" />
 				</a-form-item>
-				<a-form-item v-show="formState.data_type=='a'" label="曝光商品" name="data_id">
-					<a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
+				<a-form-item v-show="formState.data_type=='a'" label="曝光商品ID" name="data_id">
+					<!-- <a-select ref="select" v-model:value="formState.data_id" placeholder="请选择!">
 						<a-select-option v-for="item in shopList" :key="item.id"
 							:value="item.id">{{item.name}}</a-select-option>
-					</a-select>
+					</a-select> -->
+					<a-input v-model:value="formState.data_id" placeholder="请输入曝光商品ID" />
 				</a-form-item>
 
 				<div style="height: 20px;"></div>
