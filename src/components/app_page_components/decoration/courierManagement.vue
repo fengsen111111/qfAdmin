@@ -452,28 +452,206 @@
 										:key="item.code">{{item.name}}</a-select-option>
 								</a-select>
 							</a-form-item>
-							<div>
-								极兔速递：
-								<a-form-item label="电子面单账户号码" name="parterId">
-									<a-input v-model:value="formState.parterId" placeholder="请输入电子面单账户号码" />
+							<div v-if="formState.company_name=='安能快运'">
+								<a-form-item label="安能客户编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入安能客户编码" />
 								</a-form-item>
-								<a-form-item label="电子面单账户密码" name="partnerKey">
-									<a-input v-model:value="formState.partnerKey" placeholder="请输入电子面单账户密码" />
+								<a-form-item label="密钥" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入密钥" />
 								</a-form-item>
 							</div>
-							<div>
-								多余：
-								<a-form-item label="电子面单密钥" name="partnerSecret">
-									<a-input v-model:value="formState.partnerSecret" placeholder="请填写电子面单密钥" />
+							<div v-else-if="formState.company_name=='德邦快递'">
+								<a-form-item label="客户编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户编码" />
 								</a-form-item>
-								<a-form-item label="电子面单客户账户名称" name="partnerName">
-									<a-input v-model:value="formState.partnerName" placeholder="请填写电子面单客户账户名称" />
+							</div>
+							<div v-else-if="formState.company_name=='德邦物流'">
+								<a-form-item label="客户编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户编码" />
 								</a-form-item>
-								<a-form-item label="电子面单承载编号" name="code">
-									<a-input v-model:value="formState.code" placeholder="请填写电子面单承载编号" />
+							</div>
+							<div v-else-if="formState.company_name=='EMS'">
+								<a-form-item label="协议客户号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入协议客户号" />
 								</a-form-item>
-								<a-form-item label="电子面单承载快递员名" name="checkMan">
-									<a-input v-model:value="formState.checkMan" placeholder="请填写电子面单承载快递员名" />
+								<a-form-item label="电商客户标识" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入电商客户标识" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='京东快递'">
+								<a-form-item label="商家编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家编码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='跨越速运'">
+								<a-form-item label="商家编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家编码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='申通快递'">
+								<a-form-item label="客户名称" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户名称" />
+								</a-form-item>
+								<a-form-item label="客户密码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入客户密码" />
+								</a-form-item>
+								<a-form-item label="网点" name="net">
+									<a-input v-model:value="formState.net" placeholder="请输入网点" />
+								</a-form-item>
+								<a-form-item label="固定传44" name="code">
+									<a-input v-model:value="formState.code" placeholder="固定传44" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='顺丰（丰密面单）'">
+								<a-form-item label="月结账号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入月结账号" />
+								</a-form-item>
+								<a-form-item label="顾客编码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入顾客编码" />
+								</a-form-item>
+								<a-form-item label="校验码" name="partnerSecret">
+									<a-input v-model:value="formState.partnerSecret" placeholder="请填写校验码" />
+								</a-form-item>
+								<a-form-item label="固定传sf_secret" name="code">
+									<a-input v-model:value="formState.code" placeholder="固定传sf_secret" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='顺丰快运'">
+								<a-form-item label="月结账号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入月结账号" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='优速快递'">
+								<a-form-item label="发件客户编号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入发件客户编号" />
+								</a-form-item>
+								<a-form-item label="客户校验码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入客户校验码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='邮政快递包裹'">
+								<a-form-item label="协议客户号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入协议客户号" />
+								</a-form-item>
+								<a-form-item label="电商客户标识" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入电商客户标识" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='圆通速递'">
+								<a-form-item label="商家代码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家代码" />
+								</a-form-item>
+								<a-form-item label="商家密钥" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入商家密钥" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='圆通国际'">
+								<a-form-item label="商家代码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家代码" />
+								</a-form-item>
+								<a-form-item label="商家密钥" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入商家密钥" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='韵达快递'">
+								<a-form-item label="韵达白马账号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入韵达白马账号" />
+								</a-form-item>
+								<a-form-item label="联调密码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入联调密码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='中通快递'">
+								<a-form-item label="电子面单账号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入电子面单账号" />
+								</a-form-item>
+								<a-form-item label="打单密钥" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入打单密钥" />
+								</a-form-item>
+								<a-form-item label="网点编码" name="net">
+									<a-input v-model:value="formState.net" placeholder="请输入网点编码" />
+								</a-form-item>
+								<a-form-item label="固定传ztoOpen" name="code">
+									<a-input v-model:value="formState.code" placeholder="固定传ztoOpen" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='中通快运'">
+								<a-form-item label="合作方代码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入合作方代码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='圆通承诺达'">
+								<a-form-item label="客户编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户编码" />
+								</a-form-item>
+								<a-form-item label="客户密钥" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入客户密钥" />
+								</a-form-item>
+							</div>
+							<!--  -->
+							<div v-else-if="formState.company_name=='极兔速递'">
+								<a-form-item label="客户编码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户编码" />
+								</a-form-item>
+								<a-form-item label="客户密码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入客户密码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='汇森速运'">
+								<a-form-item label="商家编号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家编号" />
+								</a-form-item>
+								<a-form-item label="订购申请编号" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入订购申请编号" />
+								</a-form-item>
+								<a-form-item label="月结客户编码" name="partnerName">
+									<a-input v-model:value="formState.partnerName" placeholder="请输入月结客户编码" />
+								</a-form-item>
+								<a-form-item label="业务员编码" name="checkMan">
+									<a-input v-model:value="formState.checkMan" placeholder="请输入业务员编码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='顺心捷达'">
+								<a-form-item label="商户ID" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商户ID" />
+								</a-form-item>
+								<a-form-item label="服务订购号" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入服务订购号" />
+								</a-form-item>
+								<a-form-item label="网点编号" name="net">
+									<a-input v-model:value="formState.net" placeholder="请输入网点编号" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='壹米滴答'">
+								<a-form-item label="商家编号" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入商家编号" />
+								</a-form-item>
+								<a-form-item label="订购申请编号" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入订购申请编号" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='京东快运'">
+								<a-form-item label="客户账户号码" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入客户账户号码" />
+								</a-form-item>
+								<a-form-item label="事业部编码" name="code">
+									<a-input v-model:value="formState.code" placeholder="请输入事业部编码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='韵达点通达'">
+								<a-form-item label="网点编码" name="net">
+									<a-input v-model:value="formState.net" placeholder="请输入网点编码" />
+								</a-form-item>
+								<a-form-item label="快递员编码" name="checkMan">
+									<a-input v-model:value="formState.checkMan" placeholder="请输入快递员编码" />
+								</a-form-item>
+							</div>
+							<div v-else-if="formState.company_name=='韵达快运'">
+								<a-form-item label="合作商ID" name="parterId">
+									<a-input v-model:value="formState.parterId" placeholder="请输入合作商ID" />
+								</a-form-item>
+								<a-form-item label="密码" name="partnerKey">
+									<a-input v-model:value="formState.partnerKey" placeholder="请输入密码" />
 								</a-form-item>
 							</div>
 						</div>
