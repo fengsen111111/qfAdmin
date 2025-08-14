@@ -383,12 +383,12 @@
 							<template v-if="column.dataIndex === 'dzmdInfo'">
 								<div v-if="record.children">
 									<div>
-										<div>账户名称：{{record.partnerName}}</div>
-										<div>账户号码：{{record.parterId}}</div>
-										<div>账户密码：{{record.partnerKey}}</div>
-										<div>密钥：{{record.partnerSecret}}</div>
-										<div>承载编号：{{record.code}}</div>
-										<div>承载快递员名：{{record.checkMan}}</div>
+										<div v-if="record.partnerName">账户名称：{{record.partnerName}}</div>
+										<div v-if="record.parterId">账户号码：{{record.parterId}}</div>
+										<div v-if="record.partnerKey">账户密码：{{record.partnerKey}}</div>
+										<div v-if="record.partnerSecret">密钥：{{record.partnerSecret}}</div>
+										<div v-if="record.code">承载编号：{{record.code}}</div>
+										<div v-if="record.checkMan">承载快递员名：{{record.checkMan}}</div>
 									</div>
 								</div>
 								<div v-else></div>
