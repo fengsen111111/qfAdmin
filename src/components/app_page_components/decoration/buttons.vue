@@ -72,6 +72,7 @@
 <template>
   <!-- <div @click="handle({handleType:'MerchantInfoExportBtn'})" style="color: #1890FF;font-size: 12px;cursor: pointer;">商家导出</div> -->
   <!-- <div @click="handle({handleType:'RecommendedOfficialExportBtn'})" style="color: #1890FF;font-size: 12px;cursor: pointer;">推荐官导出</div> -->
+   <!-- {{props.structure}} -->
   <div v-if="!props.structure.open">
     <a-dropdown>
       <a class="ant-dropdown-link" href="javascript:;">

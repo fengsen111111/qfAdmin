@@ -486,7 +486,7 @@
 					<a-col :span="6">
 						<div style="display: flex;align-items: center;white-space:nowrap;">
 							<span style="">订单状态：</span>
-							<a-select ref="select" placeholder="请选择快递公司" v-model:value="searchConditions[1].value"
+							<a-select ref="select" placeholder="请选择" v-model:value="searchConditions[1].value"
 								style="width: 80%">
 								<a-select-option value="a" key="a">待支付</a-select-option>
 								<a-select-option value="b" key="b">待拼成</a-select-option>

@@ -36,6 +36,7 @@ import SubmitInvoice from '@/components/app_page_components/decoration/SubmitInv
 import courierManagement from '@/components/app_page_components/decoration/courierManagement.vue'//快递管理
 import powerAddEdit from '@/components/app_page_components/decoration/bgAddEdit.vue'//曝光添加修改
 import orderListCx from '@/components/app_page_components/decoration/orderListCx.vue'//订单管理重写
+import afterListCx from '@/components/app_page_components/decoration/afterListCx.vue'//售后管理重写
 
 
 
@@ -54,7 +55,8 @@ export const allPageComponents = {
     EditStoreInfo,
     courierManagement,
     powerAddEdit,
-    orderListCx
+    orderListCx,
+    afterListCx
 }
 
 // 项目名称：快鹿送酒

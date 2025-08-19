@@ -516,9 +516,9 @@
 
     //导出单个数据 推荐官列表导出按钮
     if (handleInfo.handleType == "RecommendedOfficialExportBtn" || handleInfo.handleType == "MerchantInfoExportBtn") {
-      console.log('table_state.tableData', table_state.tableData);
+      // console.log('table_state.tableData', table_state.tableData);
       let list = table_state.tableData.filter((item)=>item.id==requestParams.id)
-      console.log('list',list);
+      // console.log('list',list);
       exportToExcel(list, handleInfo.handleType)
     }
     //直接修改值
