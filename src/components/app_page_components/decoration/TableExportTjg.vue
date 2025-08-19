@@ -9,6 +9,7 @@
 		const tableEl = tableRef.value
 		if (!tableEl) return
 
+		// 先把表格转成 workbook
 		const workbook = XLSX.utils.table_to_book(tableEl, { sheet: 'Sheet1' })
 		const worksheet = workbook.Sheets['Sheet1']
 		const range = XLSX.utils.decode_range(worksheet['!ref'])
@@ -16,25 +17,55 @@
 		const totalCols = range.e.c - range.s.c + 1
 		const last4StartIndex = totalCols - 4
 
-		// 遍历所有单元格，设置样式
+		// 遍历所有单元格
 		for (let R = range.s.r; R <= range.e.r; ++R) {
 			for (let C = range.s.c; C <= range.e.c; ++C) {
 				const cellRef = XLSX.utils.encode_cell({ r: R, c: C })
 				const cell = worksheet[cellRef]
-				if (cell) {
-					cell.s = {
-						alignment: {
-							wrapText: true,
-							vertical: 'center',
-							horizontal: 'left'
+				if (!cell) continue
+
+				// -------- 统一处理逻辑 --------
+				if (typeof cell.v === 'number') {
+					// 1. 如果是大整数（15位及以上），转成字符串
+					if (String(cell.v).length >= 15) {
+						cell.v = String(cell.v)
+						cell.t = 's'
+					}
+
+					// 2. 如果 Excel 当作日期序列号解析了，转回 yyyy-MM-dd HH:mm:ss
+					if (cell.z && cell.z.includes('yy')) {
+						const jsDate = XLSX.SSF.parse_date_code(cell.v)
+						if (jsDate) {
+							const y = jsDate.y
+							const m = String(jsDate.m).padStart(2, '0')
+							const d = String(jsDate.d).padStart(2, '0')
+							const H = String(jsDate.H).padStart(2, '0')
+							const M = String(jsDate.M).padStart(2, '0')
+							const S = String(jsDate.S).padStart(2, '0')
+							cell.v = `${y}-${m}-${d} ${H}:${M}:${S}`
+							cell.t = 's'
 						}
 					}
-					if (
-						typeof cell.v === 'string' &&
-						(cell.v.includes('商家数据需求') || cell.v.includes('推荐官数据需求'))
-					) {
-						cell.s.alignment.horizontal = 'center'
+				} else if (typeof cell.v === 'string') {
+					// 3. 如果是 yyyy-MM-dd HH:mm:ss 这样的字符串，直接强制为字符串
+					if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cell.v)) {
+						cell.t = 's'
 					}
+				}
+
+				// 设置样式
+				cell.s = {
+					alignment: {
+						wrapText: true,
+						vertical: 'center',
+						horizontal: 'left'
+					}
+				}
+				if (
+					typeof cell.v === 'string' &&
+					(cell.v.includes('商家数据需求') || cell.v.includes('推荐官数据需求'))
+				) {
+					cell.s.alignment.horizontal = 'center'
 				}
 			}
 		}
@@ -45,7 +76,6 @@
 			if (C === 0) {
 				colWidths.push({ wch: 8 }) // 第一列窄
 			} else if (C >= last4StartIndex) {
-				// 最后四列自适应
 				let maxLen = 10
 				for (let R = range.s.r; R <= range.e.r; ++R) {
 					const cell = worksheet[XLSX.utils.encode_cell({ r: R, c: C })]
@@ -54,9 +84,9 @@
 						if (len > maxLen) maxLen = len
 					}
 				}
-				colWidths.push({ wch: maxLen + 2 }) // 适当留点空隙
+				colWidths.push({ wch: maxLen + 2 })
 			} else {
-				colWidths.push({ wch: 42 }) // 中间列固定宽度
+				colWidths.push({ wch: 42 })
 			}
 		}
 		worksheet['!cols'] = colWidths

@@ -22,6 +22,20 @@
 				const cellRef = XLSX.utils.encode_cell({ r: R, c: C })
 				const cell = worksheet[cellRef]
 				if (cell) {
+					// -------- 新增逻辑：避免科学计数法 --------
+					if (typeof cell.v === 'number' && String(cell.v).length >= 15) {
+						cell.v = String(cell.v) // 转成字符串
+						cell.t = 's'            // 强制标记为字符串
+					}
+					// ---------------------------------------
+					// 2. 如果是日期时间格式，强制转字符串
+					if (typeof cell.v === 'string') {
+						// 简单判断是否是 yyyy-mm-dd HH:mm:ss 格式
+						if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(cell.v)) {
+							cell.t = 's' // 明确指定为字符串
+						}
+					}
+					// ---------------------------------------------------------
 					cell.s = {
 						alignment: {
 							wrapText: true,
@@ -68,7 +82,7 @@
 			cellStyles: true
 		})
 		const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
-		saveAs(blob, `商家导出数据_${new Date().toLocaleDateString()}.xlsx`)
+		saveAs(blob, `导出数据_${new Date().toLocaleDateString()}.xlsx`)
 	}
 
 	defineExpose({ exportExcel })

@@ -253,7 +253,7 @@
 
 	// 渲染到 HTML 表格
 	function renderTable(data) {
-		if(titleType.value != '店铺信息'){
+		if (titleType.value != '店铺信息') {
 			return false
 		}
 		// console.log('渲染表格');
@@ -1218,11 +1218,124 @@
 	// 导出表格默认格式
 	import TableExportShop from './TableExportShop.vue'
 	const exportRef = ref()
+	const daochuList = ref([])//导出列表
 	// 导出子组件内容
 	function handleExport() {
 		console.log('导出');
 		exportRef.value?.exportExcel()	
 	}
+
+	// 加载需要导出数据
+	function _getStoreExportList() {
+		console.log('导出');
+		global.axios
+			.post('decoration/Store/getStoreExportList', {
+				currentPage: 1,
+				pageSize: 20,
+				recycleStatus: false,
+				sortConditions: [],
+				searchConditions: [
+					{ 
+						"field": "chat_status", 
+						"label": "聊天状态", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Radio", 
+						"config": { 
+							"values": [
+								{ "value": "N", "label": "禁言" }, 
+								{ "value": "Y", "label": "正常" }] 
+							} 
+					}, 
+					{ 
+						"field": "id", 
+						"label": "ID", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Input" 
+					}, 
+					{ 
+						"field": "status", 
+						"label": "启用状态", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Radio", 
+						"config": { 
+							"values": [
+								{ "value": "N", "label": "禁用" }, 
+								{ "value": "Y", "label": "启用" }
+							] 
+						} 
+					}, 
+					{ 
+						"field": "self_support", 
+						"label": "是否自营", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Radio", 
+						"config": { 
+							"values": [
+								{ "value": "N", "label": "否" }, 
+								{ "value": "Y", "label": "是" }
+							] 
+						} 
+					}, 
+					{ 
+						"field": "check_status", 
+						"label": "审核状态", 
+						"searchType": "=", 
+						"component": "Select", 
+						"config": { 
+							"values": [
+								{ "value": "a", "label": "待审核" }, 
+								{ "value": "b", "label": "审核通过" }, 
+								{ "value": "c", "label": "审核拒绝" }, 
+								{ "value": "z", "label": "取消入驻" }
+							] 
+						} 
+					}, 
+					{ 
+						"field": "store_name", 
+						"label": "店铺名称", 
+						"value": "", 
+						"searchType": "like", 
+						"component": "Input" 
+					}, 
+					{ 
+						"field": "name", 
+						"label": "负责人", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Input" 
+					}, 
+					{ 
+						"field": "mobile", 
+						"label": "手机号", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Input" 
+					}, 
+					{ 
+						"field": "type", 
+						"label": "商家类型", 
+						"value": "", 
+						"searchType": "=", 
+						"component": "Radio", 
+						"config": { 
+							"values": [
+								{ "value": "a", "label": "本地商家" }, 
+								{ "value": "b", "label": "网店商家" }
+							] 
+						} 
+					}],
+				store_id: localStorage.getItem('storeId')
+			}, global)
+			.then((res) => {
+				console.log('商家导出', res.list);
+				daochuList.value = res.list
+			});
+	}
+	_getStoreExportList()
 </script>
 
 <template>
@@ -1238,7 +1351,7 @@
 						<div class="a19" :class="titleType=='店铺数据'?'a18Check':''" @click="titleType='店铺数据'">店铺数据</div>
 						<div class="a20" :class="titleType=='资金日志'?'a18Check':''" @click="titleType='资金日志'">资金日志</div>
 						<!-- <div @click="handleExport" style="margin-left: 100px;">导出表格默认格式(开发中,展示固定在这)</div> -->
-						<TableExportShop ref="exportRef" />
+						<TableExportShop :daochuList="daochuList" ref="exportRef" />
 					</div>
 					<div class="a21">
 						<div>店铺详情页</div>
@@ -1533,7 +1646,8 @@
 									</div>
 								</div>
 								<div class="a61" v-for="item in sptlphlist" :key="item.id">
-									<div style="width: 160px;">{{item.name.length>10?item.name.slice(0,10)+'...':item.name}}</div>
+									<div style="width: 160px;">
+										{{item.name.length>10?item.name.slice(0,10)+'...':item.name}}</div>
 									<div>{{item.power_level_name}}</div>
 									<div>{{item.power}}曝光量</div>
 								</div>
