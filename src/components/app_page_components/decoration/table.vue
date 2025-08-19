@@ -302,6 +302,9 @@
   const detailsVis = ref(false)//是否打开详情弹窗
   const detailsObj = ref({})//弹窗基本数据
 
+  const daochuList = ref([])//商家导出数据
+  const daochuListTjg = ref([])//推荐管导出数据
+
   import * as XLSX from 'xlsx'
   import { saveAs } from 'file-saver'
   // 导出资金流水日志
@@ -309,7 +312,115 @@
     if (!list.length) return
     // 映射数据
     if (type == 'MerchantInfoExportBtn') {
-      exportRefShop.value?.exportExcel()
+      global.axios
+        .post('decoration/Store/getStoreExportList', {
+          currentPage: 1,
+          pageSize: 20,
+          recycleStatus: false,
+          sortConditions: [],
+          searchConditions: [
+            {
+              "field": "chat_status",
+              "label": "聊天状态",
+              "value": "",
+              "searchType": "=",
+              "component": "Radio",
+              "config": {
+                "values": [
+                  { "value": "N", "label": "禁言" },
+                  { "value": "Y", "label": "正常" }]
+              }
+            },
+            {
+              "field": "id",
+              "label": "ID",
+              "value": "",
+              "searchType": "=",
+              "component": "Input"
+            },
+            {
+              "field": "status",
+              "label": "启用状态",
+              "value": "",
+              "searchType": "=",
+              "component": "Radio",
+              "config": {
+                "values": [
+                  { "value": "N", "label": "禁用" },
+                  { "value": "Y", "label": "启用" }
+                ]
+              }
+            },
+            {
+              "field": "self_support",
+              "label": "是否自营",
+              "value": "",
+              "searchType": "=",
+              "component": "Radio",
+              "config": {
+                "values": [
+                  { "value": "N", "label": "否" },
+                  { "value": "Y", "label": "是" }
+                ]
+              }
+            },
+            {
+              "field": "check_status",
+              "label": "审核状态",
+              "searchType": "=",
+              "component": "Select",
+              "config": {
+                "values": [
+                  { "value": "a", "label": "待审核" },
+                  { "value": "b", "label": "审核通过" },
+                  { "value": "c", "label": "审核拒绝" },
+                  { "value": "z", "label": "取消入驻" }
+                ]
+              }
+            },
+            {
+              "field": "store_name",
+              "label": "店铺名称",
+              "value": "",
+              "searchType": "like",
+              "component": "Input"
+            },
+            {
+              "field": "name",
+              "label": "负责人",
+              "value": "",
+              "searchType": "=",
+              "component": "Input"
+            },
+            {
+              "field": "mobile",
+              "label": "手机号",
+              "value": "",
+              "searchType": "=",
+              "component": "Input"
+            },
+            {
+              "field": "type",
+              "label": "商家类型",
+              "value": "",
+              "searchType": "=",
+              "component": "Radio",
+              "config": {
+                "values": [
+                  { "value": "a", "label": "本地商家" },
+                  { "value": "b", "label": "网店商家" }
+                ]
+              }
+            }],
+          store_id: list[0].id
+        }, global)
+        .then((res) => {
+          console.log('商家导出', res.list);
+          daochuList.value = res.list
+          setTimeout(() => {
+            exportRefShop.value?.exportExcel()
+          }, 1000);
+        });
       // 商家列表导出
       // const exportData = list.map(item => ({
       //   '订单编号': ['f', 'g'].includes(item.type) ? item.order_id : '',
@@ -324,7 +435,51 @@
       // const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
       // saveAs(blob, `资金流水明细_${new Date().toLocaleDateString()}.xlsx`)
     } else {
-      exportRefTjg.value?.exportExcel()
+      global.axios
+        .post('decoration/Sharer/getSharerExportList', {
+          currentPage: 1,
+          pageSize: 20,
+          recycleStatus: false,
+          sortConditions: [],
+          searchConditions: [
+            {
+              "field": "status",
+              "label": "状态",
+              "value": "",
+              "searchType": "=",
+              "component": "Select",
+              "config": {
+                "values": [
+                  { "value": "a", "label": "待审核" },
+                  { "value": "b", "label": "已通过" },
+                  { "value": "c", "label": "已拒绝" }
+                ]
+              }
+            },
+            {
+              "field": "name",
+              "label": "姓名",
+              "value": "",
+              "searchType": "like",
+              "component": "Input"
+            },
+            {
+              "field": "cert_no",
+              "label": "身份证",
+              "value": "",
+              "searchType": "like",
+              "component": "Input"
+            }
+          ],
+          // store_id: list[0].id
+        }, global)
+        .then((res) => {
+          console.log('推荐官员导出', res.list);
+          daochuListTjg.value = res.list
+          setTimeout(() => {
+            exportRefTjg.value?.exportExcel()
+          }, 1000);
+        });
       // 推荐官列表导出
       // const exportData = list.map(item => ({
       //   '用户ID': item.user_id,
@@ -829,8 +984,8 @@
 </script>
 
 <template>
-  <TableExportShop ref="exportRefShop" />
-  <TableExportTjg ref="exportRefTjg" />
+  <TableExportShop :daochuList="daochuList" ref="exportRefShop" />
+  <TableExportTjg :daochuListTjg="daochuListTjg" ref="exportRefTjg" />
   <!--搜索-->
   <div v-show="table_state.searchStructure.length > 0" :id="'searchStructureID.' + pageData.page_key">
     <a-form ref="form" layout="inline">

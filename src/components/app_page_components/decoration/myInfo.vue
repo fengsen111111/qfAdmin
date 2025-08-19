@@ -1829,9 +1829,9 @@
 							<div class="a85" @click="exportToExcel()" style="margin-left: 20px;width: 70px;">
 								<span style="margin-left: 10px;">导出</span>
 							</div>
-							<div class="a85" style="margin-left: 20px;width: 80px;color: #0c96f1;">
+							<!-- <div class="a85" style="margin-left: 20px;width: 80px;color: #0c96f1;">
 								<span>导出历史</span>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<!-- <div class="a87"></div> -->
