@@ -374,20 +374,6 @@
 		});
 	}
 
-	// 获取电子面单
-	function _getExpressList(item) {
-		md_vis.value = true
-		global.axios
-			.post('decoration/Order/getLogistics', {
-				"store_id": localStorage.getItem('storeId'),
-				"order_id": item.id,
-			}, global)
-			.then((res) => {
-				console.log('获取电子面单', res);
-				dataListPup.value = res.list
-			})
-	}
-
 	const itemObj = ref({})//打印快递单多份
 	const orderListDetails = ref([])//订单详情
 	const pupType = ref('Key') //弹窗类型 Keys 多选  Key 单个
@@ -568,24 +554,6 @@
 							<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 						</a-form-item>
 					</a-form>
-				</a-spin>
-			</a-modal>
-			<!-- 电子面单 -->
-			<a-modal v-model:visible="md_vis" title="电子面单" @cancel="md_vis=false;" @ok="md_vis=false;" width="1000px">
-				<a-spin :spinning="spinning">
-					<a-table :columns="columnsPup" :data-source="dataListPup" :scroll="{ x: 920}">
-						<template #bodyCell="{ column, record  }">
-							<!-- 操作 -->
-							<template v-if="column.dataIndex === 'action'">
-								<div style="font-size: 12px;cursor: pointer;">
-									<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'"
-										style="color: #1890FF;">重新打印
-									</div>
-									<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
-								</div>
-							</template>
-						</template>
-					</a-table>
 				</a-spin>
 			</a-modal>
 		</a-spin>
