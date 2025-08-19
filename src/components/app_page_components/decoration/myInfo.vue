@@ -1328,7 +1328,7 @@
 							] 
 						} 
 					}],
-				store_id: localStorage.getItem('storeId')
+				store_id: localStorage.getItem('storeId')==1?pageData.data.id:localStorage.getItem('storeId')
 			}, global)
 			.then((res) => {
 				console.log('商家导出', res.list);
