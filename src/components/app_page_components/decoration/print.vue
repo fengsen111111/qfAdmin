@@ -96,6 +96,9 @@
     function printExpress(item) {
         return new Promise((resolve) => {
             LODOP.PRINT_INITA('');
+            if(dyjmc.value){
+                LODOP.SET_PRINTER_INDEX(dyjmc.value);//设置使用的打印机
+            }
             LODOP.ADD_PRINT_IMAGE(
                 0, 0, "95%", "100%",
                 `<img src="${item.dzmdurl}">`
