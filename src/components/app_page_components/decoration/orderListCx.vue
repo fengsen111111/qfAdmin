@@ -499,9 +499,34 @@
 			}
 		})
 	}
+
+	import { getLodop } from '@/components/app_page_components/decoration/LodopFuncs.js';
+
+	// Lodop 初始化
+	let LODOP = null;
+	const intervalId = setInterval(() => {
+		if (!LODOP) {
+			LODOP = getLodop();
+		} else {
+			//去除底部试用版信息
+			LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
+			console.log('加载完成');
+			clearInterval(intervalId);
+		}
+	}, 1000);
+
 	// 弹窗重新打印
 	function cxPrintTwo(item) {
 		window.open(item.logistics_label, '_blank');
+		// LODOP.PRINT_INITA('');
+		// LODOP.ADD_PRINT_IMAGE(
+		// 	0, 0, "95%", "100%",
+		// 	// `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
+		// 	`<img src="${item.logistics_label}">`
+		// );
+		// LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
+		// LODOP.PREVIEW(); // 预览
+		// // LODOP.PRINT();
 	}
 
 
@@ -667,8 +692,7 @@
 				</a-table>
 			</a-spin>
 		</a-modal>
-		<a-drawer v-model:visible="wlVis" @close="wlVis=false" class="custom-class" title="物流信息" placement="right"
-			>
+		<a-drawer v-model:visible="wlVis" @close="wlVis=false" class="custom-class" title="物流信息" placement="right">
 			<div>
 				<div>物流公司：{{wlInfo.logistics_com}}</div>
 				<div>物流单号: {{wlInfo.logistics_num}}</div>

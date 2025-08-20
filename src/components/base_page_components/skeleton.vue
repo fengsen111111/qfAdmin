@@ -768,8 +768,8 @@
       LODOP.PRINT_INITA('');
       LODOP.ADD_PRINT_IMAGE(
         0, 0, "95%", "100%",
-        `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
-        // `<img src="${item.logistics_label}">`
+        // `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
+        `<img src="${item.logistics_label}">`
       );
       LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
       // LODOP.PREVIEW(); // 预览
