@@ -571,14 +571,14 @@
         id: item.id
       }, global)
       .then((res) => {
-        // console.log('查看商家消息详情', res);
+        console.log('查看商家消息详情', res);
         // a站内信 b店铺通知 c帐户资金 d违规预警 e店铺违规  f订单通知 g店铺推广 h曝光下架  
         // 订单ID  站内信和违规预警、通知打开富文本；订单打开订单详情；其余无跳转  
         if (res.type == 'f') {
           djtzmk('购物商城', '订单管理')
           msgVisible.value = false
         } else {
-          lookMsgObj.value = item
+          lookMsgObj.value = res
         }
       })
   }
@@ -1006,7 +1006,7 @@
                             <div>{{item.create_time}}</div>
                           </div>
                           <div style="margin: 5px 0px;" v-if="lookMsgObj.id == item.id">
-                            <span v-html="item.content"></span>
+                            <span v-html="lookMsgObj.content"></span>
                           </div>
                           <div v-else style="margin: 5px 0px;cursor: pointer;">查看详情</div>
                           <div style="height: 1px;width: 100%;background-color: #f5f5f5;"></div>
