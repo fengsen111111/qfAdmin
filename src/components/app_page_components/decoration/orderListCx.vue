@@ -411,13 +411,25 @@
 			orderListDetails.value = []//清空携带数据
 			if (pupType.value == 'Key') {
 				// 单个多快递单
+				// 获取订单详情
 				global.axios.post('decoration/Order/webGetOrderDetail', {
 					order_id: itemObj.value.id,
 				}, global, true).then((res) => {
 					orderListDetails.value = [res]
-					if (orderListDetails.value.length > 0) {
-						printSddy.value.setVisible(true)
-					}
+					return false
+					// 生成电子面单
+					global.axios.post('decoration/Order/createExpress', {
+						order_id: itemObj.value.id,
+						after_sale_id: '',//售后id
+						number: formState.number,//生成数量
+					}, global, true).then((res) => {
+						console.log('生成电子面单', res);
+						orderListDetails.value[0].dzmdurl = res
+						if (orderListDetails.value.length > 0) {
+							printSddy.value.setVisible(true)
+						}
+					})
+
 				})
 			} else {
 				selectedRowKeys.value.map((item) => {
@@ -425,13 +437,23 @@
 						order_id: item,
 					}, global, true).then((res) => {
 						orderListDetails.value.push(res)
+						return false
+						// 生成电子面单
+						global.axios.post('decoration/Order/createExpress', {
+							order_id: itemObj.value.id,
+							after_sale_id: '',//售后id
+							number: formState.number,//生成数量
+						}, global, true).then((res) => {
+							console.log('生成电子面单', res);
+							orderListDetails.value[orderListDetails.value.length-1].dzmdurl = res
+						})
 					})
 				})
 				setTimeout(() => {
 					if (orderListDetails.value.length > 0) {
 						printSddy.value.setVisible(true)
 					}
-				}, 1000);
+				}, 2000);
 				// 多个
 			}
 		} catch (errorInfo) {
@@ -461,8 +483,14 @@
 		// 		console.log('获取电子面单', resule);
 		// 	})
 		// })
+		global.axios.post('decoration/Order/getExpressList', {
+			order_id: item.id,
+			store_id: localStorage.getItem('storeId')
+		}, global, true).then((resule) => {
+			console.log('获取电子面单', resule);
+		})
 		// console.log('重新打印');
-		window.open('https://api.kuaidi100.com/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4', '_blank');
+		// window.open('https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426', '_blank');
 	}
 
 </script>

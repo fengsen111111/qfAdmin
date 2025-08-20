@@ -287,6 +287,7 @@
 			})
 	}
 	getRichTextContent()
+	const titlePup = ref('添加网点面单')
 
 </script>
 
@@ -299,11 +300,15 @@
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
 				<span style="white-space: nowrap;">绑定电子面单账户：</span>
-				<a-button type="primary" @click="fh_vis=true;formState.net='taobao';formState.add_type='third'"
+				<!-- <a-button type="primary" @click="fh_vis=true;formState.net='taobao';formState.add_type='third'"
 					style="margin-left: 10px;">淘宝面单</a-button>
 				<a-button type="primary" @click="fh_vis=true;formState.net='cainiao';formState.add_type='third'"
+					style="margin-left: 10px;">菜鸟面单</a-button> -->
+				<a-button type="primary" @click="fh_vis=true;formState.net='';formState.add_type='handle';titlePup='添加淘宝面单'"
+					style="margin-left: 10px;">淘宝面单</a-button>
+				<a-button type="primary" @click="fh_vis=true;formState.net='';formState.add_type='handle';titlePup='添加菜鸟面单'"
 					style="margin-left: 10px;">菜鸟面单</a-button>
-				<a-button type="primary" @click="fh_vis=true;formState.net='';formState.add_type='handle'"
+				<a-button type="primary" @click="fh_vis=true;formState.net='';formState.add_type='handle';titlePup='添加网点面单'"
 					style="margin-left: 10px;">直接添加</a-button>
 			</div>
 			<div style="display: flex;align-items: center;margin: 20px 0;">
@@ -409,7 +414,7 @@
 				</a-spin>
 			</div>
 			<!-- 添加网点面单 -->
-			<a-modal v-model:visible="fh_vis" title="添加网点面单" style="width: 600px;" :footer="null">
+			<a-modal v-model:visible="fh_vis" :title="titlePup" style="width: 600px;" :footer="null">
 				<a-spin :spinning="spinning">
 					<a-form ref="formRef" :model="formState" name="basic" :label-col="{ span: 8 }"
 						:wrapper-col="{ span: 16 }">
@@ -417,7 +422,7 @@
 							<a-select ref="select" @click="formRef.resetFields();" placeholder="请选择添加方式"
 								v-model:value="formState.add_type">
 								<a-select-option value="handle">直接添加</a-select-option>
-								<a-select-option value="third">第三方授权</a-select-option>
+								<!-- <a-select-option value="third">第三方授权</a-select-option> -->
 							</a-select>
 						</a-form-item>
 						<a-form-item label="发货人" name="sender_name" :rules="[{ required: true, message: '请填写发货人!' }]">
@@ -448,8 +453,8 @@
 						<div v-else>
 							<a-form-item label="快递公司编码" name="company_name">
 								<a-select ref="select" placeholder="请选择快递公司" v-model:value="formState.company_code">
-									<a-select-option @click="formState.company_name=item.name" :value="item.code" v-for="item in wlList"
-										:key="item.code">{{item.name}}</a-select-option>
+									<a-select-option @click="formState.company_name=item.name" :value="item.code"
+										v-for="item in wlList" :key="item.code">{{item.name}}</a-select-option>
 								</a-select>
 							</a-form-item>
 							<div v-if="formState.company_name=='安能快运'">
