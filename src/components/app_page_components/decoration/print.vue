@@ -82,258 +82,32 @@
         setTimeout(() => ksDy.value = false, 3000);
     }
     defineExpose({ setVisible: val => visible.value = val });
+    const container = ref(null)
 
-    // pdf 转图片 打印版
-    import * as pdfjsLib from 'pdfjs-dist/build/pdf';
-    // 载入 pdf.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-    // pdfjsLib.GlobalWorkerOptions.disableWorker = true;
-    // function pdfBlobToImage(blob, callback) {
-    //     const reader = new FileReader();
-    //     reader.onload = function () {
-    //         const typedarray = new Uint8Array(reader.result);
-    //         pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-    //             pdf.getPage(1).then(page => {
-    //                 const viewport = page.getViewport({ scale: 1.3 }); // 缩放比例
-    //                 const canvas = document.createElement('canvas');
-    //                 const context = canvas.getContext('2d');
-    //                 canvas.width = viewport.width;
-    //                 canvas.height = viewport.height;
-    //                 page.render({ canvasContext: context, viewport: viewport }).promise.then(() => {
-    //                     const imgData = canvas.toDataURL('image/png');
-    //                     console.log('结果', imgData);
-    //                     callback(imgData); // 返回 base64 图片
-    //                 });
-    //             });
-    //         });
-    //     };
-    //     reader.readAsArrayBuffer(blob);
-    // }
-    // function wzzzdy() {
-    //     // 使用示例
-    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
-    //         .then(res => res.blob())
-    //         .then(blob => {
-    //             pdfBlobToImage(blob, (imgBase64) => {
-    //                 // 用 LODOP 打印图片
-    //                 LODOP.PRINT_INIT("打印快递单");
-    //                 LODOP.ADD_PRINT_IMAGE(0, 0, "100%", "100%", `<img src="${imgBase64}"  style="width:95%;height:auto;">`);
-    //                 LODOP.PREVIEW(); // 预览打印
-    //                 // LODOP.PRINT(); // 直接打印
-    //             });
-    //         });
-    // }
-
-    // html打印版
-    // function wzzzdy() {
-    //     // 使用示例
-    //     fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
-    //         .then(res => res.blob())
-    //         .then(blob => {
-    //             const container = document.createElement('div'); // 新建一个隐藏的容器
-    //             container.style.width = '595px';  // A4纸宽度 px（默认1pt=1.333px，可以根据需要调）
-    //             container.style.height = '842px'; // A4纸高度 px
-    //             container.style.position = 'absolute';
-    //             container.style.left = '-9999px';
-    //             document.body.appendChild(container);
-    //             pdfBlobToHtml(blob, container, () => {
-    //                 // 解析完成，调用 LODOP 打印容器的 html
-    //                 console.log('container.innerHTML', container.innerHTML);
-    //                 LODOP.PRINT_INIT("打印快递单（html文本版）");
-    //                 LODOP.ADD_PRINT_HTM(0, 0, "100%", "100%", container.innerHTML);
-    //                 LODOP.PREVIEW();
-    //                 // 打印完成后可移除临时容器
-    //                 setTimeout(() => document.body.removeChild(container), 3000);
-    //             });
-    //         });
-    // }
-
-    // function pdfBlobToHtml(blob, container, callback) {
-    //     const reader = new FileReader();
-    //     reader.onload = async () => {
-    //         const typedarray = new Uint8Array(reader.result);
-    //         const pdf = await pdfjsLib.getDocument(typedarray).promise;
-    //         const page = await pdf.getPage(1);
-    //         const viewport = page.getViewport({ scale: 1 });
-    //         const textContent = await page.getTextContent();
-    //         // 清空容器
-    //         container.innerHTML = '';
-    //         container.style.position = 'relative';
-    //         container.style.width = viewport.width + 'px';
-    //         container.style.height = viewport.height + 'px';
-    //         textContent.items.forEach((textItem) => {
-    //             const span = document.createElement('div');
-    //             span.textContent = textItem.str;
-    //             const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
-    //             span.style.position = 'absolute';
-    //             span.style.left = `${tx[4]}px`;
-    //             span.style.top = `${tx[5] - textItem.height}px`;
-    //             span.style.fontSize = `${textItem.height}px`;
-    //             span.style.whiteSpace = 'pre';
-    //             container.appendChild(span);
-    //         });
-
-    //         callback && callback();
-    //     };
-    //     reader.readAsArrayBuffer(blob);
-    // }
-
-
-
-    // const container = ref(null)
-    // // https://api.kuaidi100.com/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993
-    // function wzzzdy() {
-    //     // fetch('/kuaidiPDF/thirdPlatform/print/download/285B0CABEE7F4A7F820B54D1C781E5D4')
-    //     fetch('/kuaidiPDF/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993')
-    //         .then(res => res.blob())
-    //         .then(blob => {
-    //             const reader = new FileReader();
-    //             reader.onload = function () {
-    //                 let base64PDF = reader.result;
-    //                 // 去掉 data:application/pdf;base64, 前缀
-    //                 base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
-    //                 fff(base64PDF)
-    //                 // LODOP 打印
-    //                 // LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
-    //                 // LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-    //                 // LODOP.SET_PRINT_MODE("PRINT_NOPROMPT", true); // 不弹任何打印提示
-    //                 // LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
-    //                 // // 缩放比例 90%
-    //                 // LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
-    //                 // LODOP.PREVIEW(); // 预览打印
-    //                 // // LODOP.PRINT(); // 直接打印
-    //             };
-    //             reader.readAsDataURL(blob); // 转成 Base64
-    //         })
-    //         .catch(err => {
-    //             console.error('下载或处理 PDF 失败:', err);
-    //         });
-    // }
-
-    // async function fff(base64PDF) {
-    //     const pdfData = atob(base64PDF);
-    //     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-    //     for (let i = 1; i <= pdf.numPages; i++) {
-    //         const page = await pdf.getPage(i);
-    //         const scale = 1.5;
-    //         const viewport = page.getViewport({ scale });
-    //         // 页面容器
-    //         const pageDiv = document.createElement('div');
-    //         pageDiv.className = 'page';
-    //         pageDiv.style.position = 'relative';
-    //         pageDiv.style.width = viewport.width + 'px';
-    //         pageDiv.style.height = viewport.height + 'px';
-
-    //         // 创建 canvas
-    //         const canvas = document.createElement('canvas');
-    //         const context = canvas.getContext('2d');
-    //         canvas.width = viewport.width;
-    //         canvas.height = viewport.height;
-    //         canvas.style.position = 'absolute';
-    //         canvas.style.top = '0';
-    //         canvas.style.left = '0';
-    //         // 渲染 PDF 页到 canvas
-    //         await page.render({ canvasContext: context, viewport }).promise;
-    //         pageDiv.appendChild(canvas);
-    //         // 渲染文字层 (可复制文本)
-    //         const textContent = await page.getTextContent();
-    //         const textLayerDiv = document.createElement('div');
-    //         pdfjsLib.renderTextLayer({
-    //             textContent,
-    //             container: textLayerDiv,
-    //             viewport,
-    //             textDivs: []
-    //         });
-    //         pageDiv.appendChild(textLayerDiv);
-    //         container.value.appendChild(pageDiv);
-    //         console.log('pageDiv', pageDiv);
-    //         const printContent = pageDiv.innerHTML
-
-    //         // 把 canvas 转成 base64 图片字符串
-    //         const imgData = canvas.toDataURL('image/png');
-    //         // 拼装 html，img 引用 base64 图像
-    //         const html = `<!DOCTYPE html>
-    //             <html>
-    //             <head>
-    //             <title>电子面单</title>
-    //             <style>
-    //                 body { margin:0; padding:0; background:#fff; font-family:sans-serif; }
-    //                 .print-container { max-width:360px; }
-    //             </style>
-    //             </head>
-    //             <body>
-    //             <div class="print-container">
-    //                 <img src="${imgData}" style="width:100%;" />
-    //             </div>
-    //             </body>
-    //             </html>`;
-    //         // 用 LODOP 打印
-    //         LODOP.ADD_PRINT_HTML('0', '0', '100%', '100%', html);
-    //         // 预览或打印
-    //         LODOP.PREVIEW();
-    //         console.log('打印结果');
-            
-    //         // LODOP.PRINT();
-    //     }
-    // }
-
-
-    // pdf  base64 打印版
-    // function wzzzdy() {
-    //     fetch('/kuaidiPDF/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993')
-    //         .then(res => res.blob())
-    //         .then(blob => {
-    //             const reader = new FileReader();
-    //             reader.onload = function () {
-    //                 let base64PDF = reader.result;
-    //                 // 去掉 data:application/pdf;base64, 前缀
-    //                 base64PDF = base64PDF.replace(/^data:application\/pdf;base64,/, '');
-    //                 // LODOP 打印
-    //                 LODOP.PRINT_INITA("0mm", "0mm", "210mm", "297mm", "快递单打印");
-    //                 LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-    //                 LODOP.SET_PRINT_MODE("PRINT_NOPROMPT", true); // 不弹任何打印提示
-    //                 LODOP.ADD_PRINT_PDF("0mm", "0mm", "100%", "100%", base64PDF);
-    //                 // 缩放比例 90%
-    //                 LODOP.SET_PRINT_STYLEA(0, "Zoom", 95);
-    //                 LODOP.PREVIEW(); // 预览打印
-    //                 // LODOP.PRINT(); // 直接打印
-    //             };
-    //             reader.readAsDataURL(blob); // 转成 Base64
-    //         })
-    //         .catch(err => {
-    //             console.error('下载或处理 PDF 失败:', err);
-    //         });
-    // }
-    // pdf下载打印版
+    // https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426
     function wzzzdy() {
-        fetch('/kuaidiPDF/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993')
-            .then(res => res.blob())
-            .then(blob => {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                console.log('a',a);
-                a.download = 'kuaidi100.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                // 如果是客户端环境，下载后可以用本地路径去 LODOP 打印
-                LODOP.PRINT_INITA(""); // 初始化
-                LODOP.SET_PRINTER_INDEX(dyjmc.value); // 选择打印机
-                LODOP.SET_PRINT_MODE("PRINTQUALITY", 1);
-                // LODOP.SET_PRINT_PAGESIZE(1, 760, 1300, 'mm');
-                LODOP.ADD_PRINT_PDF(0, 0, "95%", "95%", "D:\\Users\\Downloads\\kuaidi100.pdf");
-                // LODOP.PREVIEW(); // 预览打印
-                LODOP.PRINT();
-            });
+        LODOP.PRINT_INITA('');
+        LODOP.ADD_PRINT_IMAGE(
+            0,              // top
+            0,              // left
+            "95%",         // width
+            "100%",         // height
+            `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
+        );
+        LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
+        LODOP.PREVIEW();
+        // LODOP.PRINT(); // 直接打印
     }
-
 </script>
 
 <template>
     <div>
-        <div ref="container" class="pdf-container"></div>
-        <!-- <div @click="wzzzdy">打印2</div> -->
+        <!-- <img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426" alt=""> -->
+        <!-- /kuaidiPDF/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993   html -->
         <button @click="visible=true">打印</button>
+        <!-- <div ref="container">
+            <img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426" alt="">
+        </div> -->
         <!-- 打单前检查 -->
         <a-modal v-model:visible="visible" :footer="null">
             <div>
