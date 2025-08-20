@@ -19,7 +19,10 @@
     const visPrint = ref(false);
     const ksDy = ref(false);
 
-    const props = defineProps({ orderListDetails: Array });
+    const props = defineProps({
+        orderListDetails: Array,
+        number: Number
+    });
     const addressList = ref([]);
     const dyjmc = ref('');
     const zddyj = ref('HPRT N31BT');
@@ -86,17 +89,21 @@
 
     // https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426
     async function wzzzdy() {
+        // console.log('props.number', props.number);
         const list = props.orderListDetails || [];
         // 顺序打印
         for (const item of list) {
-            await printExpress(item);
+            // 打印 props.number 次
+            for (let i = 0; i < (props.number || 1); i++) {
+                await printExpress(item, i + 1); // 带上第几次打印
+            }
         }
     }
     // 封装打印函数，返回 Promise
     function printExpress(item) {
         return new Promise((resolve) => {
             LODOP.PRINT_INITA('');
-            if(dyjmc.value){
+            if (dyjmc.value) {
                 LODOP.SET_PRINTER_INDEX(dyjmc.value);//设置使用的打印机
             }
             LODOP.ADD_PRINT_IMAGE(
@@ -149,7 +156,7 @@
     <div>
         <!-- <img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426" alt=""> -->
         <!-- /kuaidiPDF/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993   html -->
-        <button @click="visible=true">打印</button>
+        <button v-if="orderListDetails.length>0" @click="visible=true">打印</button>
         <!-- <div ref="container">
             <img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426" alt="">
         </div> -->

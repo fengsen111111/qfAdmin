@@ -79,6 +79,7 @@
 	webGetUserInfo()
 
 	const orderDetails = ref({})//订单详情
+	const orderListDetails = ref([])//订单详情列表
 
 	// 后台获取订单详情
 	function webGetOrderDetail() {
@@ -88,17 +89,18 @@
 		}, global, true).then((res) => {
 			// console.log('后台获取订单详情', res);
 			orderDetails.value = res
-			// orderDetails.value.dzmdurl="https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F"
-			// orderDetails.value.dzmdurlID="111"
-			// https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F
 			// 获取电子面单
 			global.axios.post('decoration/Order/getExpressList', {
 				store_id: localStorage.getItem('storeId'),
 				order_id: pageData.data.id,
-			}, global, true).then((res) => {
+			}, global, true).then((resule) => {
 				// console.log('后台获取订单详情', res);
-				orderDetails.value.dzmdurl = res.list[0].logistics_label
-				orderDetails.value.dzmdurlID = res.list[0].id
+				resule.list.map((item, index) => {
+					// 深拷贝第0个对象
+					orderListDetails.value[index] = JSON.parse(JSON.stringify(orderDetails.value));
+					orderListDetails.value[index].dzmdurl = item.logistics_label;
+					orderListDetails.value[index].dzmdurlID = item.id;
+				});
 			})
 		})
 	}
@@ -344,7 +346,7 @@
 			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">
 				<!--  v-if="orderDetails.id" -->
 				<div style="display: flex;margin: 0 auto;">
-					<Print :orderListDetails="[orderDetails]" @djtzmk="sondjtzmk" />
+					<Print :orderListDetails="orderListDetails" @djtzmk="sondjtzmk" />
 				</div>
 			</div>
 		</div>

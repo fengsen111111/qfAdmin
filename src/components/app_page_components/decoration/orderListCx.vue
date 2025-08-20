@@ -431,38 +431,98 @@
 					order_id: itemObj.value.id,
 				}, global, true).then((res) => {
 					orderListDetails.value = [res]
-					// orderListDetails.value[0].dzmdurl = 'https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426'
-					// orderListDetails.value[0].dzmdurlID = '1232312312312'
-					// 生成电子面单
-					global.axios.post('decoration/Order/createExpress', {
+					// 获取面单，有就直接打印
+					global.axios.post('decoration/Order/getExpressList', {
 						order_id: itemObj.value.id,
-						after_sale_id: '',//售后id
-						number: formState.number,//生成数量
-					}, global, true).then((res) => {
-						console.log('生成电子面单', res);
-						orderListDetails.value[0].dzmdurl = res
-						orderListDetails.value[0].dzmdurlID = res
-						if (orderListDetails.value.length > 0) {
-							printSddy.value.setVisible(true)
+						store_id: localStorage.getItem('storeId')
+					}, global, true).then((resule) => {
+						console.log('获取电子面单', resule);
+						if (resule.list.length == 1) {
+							orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
+							orderListDetails.value[0].dzmdurlID = resule.list[0].id
+							if (orderListDetails.value.length > 0) {
+								printSddy.value.setVisible(true)
+							}
+						} else if (resule.list.length > 1) {
+							resule.list.map((item, index) => {
+								// 深拷贝第0个对象
+								orderListDetails.value[index] = JSON.parse(JSON.stringify(orderListDetails.value[0]));
+								orderListDetails.value[index].dzmdurl = item.logistics_label;
+								orderListDetails.value[index].dzmdurlID = item.id;
+							});
+							console.log('orderListDetails', orderListDetails.value);
+							if (orderListDetails.value.length > 0) {
+								printSddy.value.setVisible(true)
+							}
+						} else {
+							// 没有就生成电子面单，然后打印
+							console.log('生成电子面单', res);
+							global.axios.post('decoration/Order/createExpress', {
+								order_id: itemObj.value.id,
+								after_sale_id: '',//售后id
+								number: 1,//生成数量
+							}, global, true).then((res) => {
+								global.axios.post('decoration/Order/getExpressList', {
+									order_id: itemObj.value.id,
+									store_id: localStorage.getItem('storeId')
+								}, global, true).then((resule) => {
+									console.log('获取电子面单', resule);
+									orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
+									orderListDetails.value[0].dzmdurlID = resule.list[0].id
+									if (orderListDetails.value.length > 0) {
+										printSddy.value.setVisible(true)
+									}
+								})
+							})
 						}
 					})
 				})
 			} else {
-				selectedRowKeys.value.map((item) => {
+				// 多选打印
+				selectedRowKeys.value.map((item, index) => {
 					global.axios.post('decoration/Order/webGetOrderDetail', {
 						order_id: item,
 					}, global, true).then((res) => {
-						orderListDetails.value.push(res)
-						// 生成电子面单
-						global.axios.post('decoration/Order/createExpress', {
-							order_id: itemObj.value.id,
-							after_sale_id: '',//售后id
-							number: formState.number,//生成数量
-						}, global, true).then((res) => {
-							console.log('生成电子面单', res);
-							orderListDetails.value[orderListDetails.value.length - 1].dzmdurl = res
-							orderListDetails.value[orderListDetails.value.length - 1].dzmdurlID = res
+						let obj = res
+						// 获取面单，有就直接打印
+						global.axios.post('decoration/Order/getExpressList', {
+							order_id: item,
+							store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							console.log('获取电子面单', resule);
+							if (resule.list.length) {
+								resule.list.map((iss, index) => {
+									orderListDetails.value.push({
+										...JSON.parse(JSON.stringify(res)),
+										dzmdurl: iss.logistics_label,
+										dzmdurlID: iss.id,
+									})
+								})
+							} else {
+								// 没有就生成电子面单，然后打印
+								console.log('生成电子面单', res);
+								global.axios.post('decoration/Order/createExpress', {
+									order_id: item,
+									after_sale_id: '',//售后id
+									number: 1,//生成数量
+								}, global, true).then((res) => {
+									global.axios.post('decoration/Order/getExpressList', {
+										order_id: item,
+										store_id: localStorage.getItem('storeId')
+									}, global, true).then((resule) => {
+										console.log('获取电子面单', resule);
+										resule.list.map((iss, index) => {
+											orderListDetails.value.push({
+												...JSON.parse(JSON.stringify(res)),
+												dzmdurl: iss.logistics_label,
+												dzmdurlID: iss.id,
+											})
+										})
+									})
+								})
+							}
 						})
+
 					})
 				})
 				setTimeout(() => {
@@ -518,15 +578,6 @@
 	// 弹窗重新打印
 	function cxPrintTwo(item) {
 		window.open(item.logistics_label, '_blank');
-		// LODOP.PRINT_INITA('');
-		// LODOP.ADD_PRINT_IMAGE(
-		// 	0, 0, "95%", "100%",
-		// 	// `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
-		// 	`<img src="${item.logistics_label}">`
-		// );
-		// LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
-		// LODOP.PREVIEW(); // 预览
-		// // LODOP.PRINT();
 	}
 
 
@@ -536,7 +587,8 @@
 	<!--搜索-->
 	<div>
 		<div v-show="false">
-			<Print ref="printSddy" :orderListDetails="orderListDetails" @djtzmk="sondjtzmk" />
+			<Print ref="printSddy" :number="formState.number" :orderListDetails="orderListDetails"
+				@djtzmk="sondjtzmk" />
 		</div>
 		<a-spin :spinning="spinning">
 			<div style="padding: 0px 20px;border-radius: 4px;">
