@@ -347,7 +347,7 @@
 			parent_page_key: pageData.page_key,
 		});
 	}
-	// 发货
+	// 换货
 	function openSonSend(item) {
 		pupType.value = 'Key'
 		fh_vis.value = true
@@ -403,10 +403,30 @@
 				global.axios.post('decoration/Order/webGetOrderDetail', {
 					order_id: itemObj.value.order_id,
 				}, global, true).then((res) => {
-					orderListDetails.value = [res]
-					if (orderListDetails.value.length > 0) {
-						printSddy.value.setVisible(true)
-					}
+					// orderListDetails.value = [res]
+					// if (orderListDetails.value.length > 0) {
+					// 	printSddy.value.setVisible(true)
+					// }
+					// console.log('生成电子面单', res);
+					global.axios.post('decoration/Order/createExpress', {
+						order_id: itemObj.value.order_id,
+						after_sale_id: itemObj.value.id,//售后id
+						number: 1,//生成数量
+					}, global, true).then((res) => {
+						global.axios.post('decoration/Order/getExpressList', {
+							order_id: item,
+							store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							console.log('获取电子面单', resule);
+							resule.list.map((iss, index) => {
+								orderListDetails.value.push({
+									...JSON.parse(JSON.stringify(res)),
+									dzmdurl: iss.logistics_label,
+									dzmdurlID: iss.id,
+								})
+							})
+						})
+					})
 				})
 			}
 		} catch (errorInfo) {
@@ -429,7 +449,8 @@
 	<!--搜索-->
 	<div>
 		<div v-show="false">
-			<Print ref="printSddy" :orderListDetails="orderListDetails" @djtzmk="sondjtzmk" />
+			<Print ref="printSddy" :number="formState.number" :orderListDetails="orderListDetails"
+				@djtzmk="sondjtzmk" />
 		</div>
 		<a-spin :spinning="spinning">
 			<div style="padding: 0px 20px;border-radius: 4px;">
@@ -520,8 +541,7 @@
 									<div @click="openSonSh(record)" v-if="record.status=='d'" style="color: #52C41A;">收货
 									</div>
 									<div v-if="record.status=='b'||record.platform=='c'">
-										<div @click="openSonSend(record)" v-if="record.type=='b'||record.type=='d'"
-											style="color: green;">发货</div>
+										<div @click="openSonSend(record)" v-if="record.type=='b'||record.type=='d'" style="color: green;">换货</div>
 									</div>
 								</div>
 							</template>
