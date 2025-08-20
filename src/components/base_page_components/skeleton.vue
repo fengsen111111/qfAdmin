@@ -765,6 +765,7 @@
   // 封装打印函数，返回 Promise
   function printExpress(item) {
     return new Promise((resolve) => {
+      LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
       LODOP.PRINT_INITA('');
       LODOP.ADD_PRINT_IMAGE(
         0, 0, "95%", "100%",
