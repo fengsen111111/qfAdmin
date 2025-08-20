@@ -139,7 +139,7 @@
           if (!unreadMsgTimer) {
             unreadMsgTimer = setInterval(() => {
               _getUnReadStoreMsgNum();//获取商家未读消息
-              _getExpressList()//获取商家未打印订单
+              // _getExpressList()//获取商家未打印订单
             }, 60000);
           }
         }
