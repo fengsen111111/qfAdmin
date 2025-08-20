@@ -88,9 +88,9 @@
 		}, global, true).then((res) => {
 			// console.log('后台获取订单详情', res);
 			orderDetails.value = res
-			orderDetails.value.dzmdurl="https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F"
-			orderDetails.value.dzmdurlID="111"
-			https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F
+			// orderDetails.value.dzmdurl="https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F"
+			// orderDetails.value.dzmdurlID="111"
+			// https://api.kuaidi100.com/label/getImage/20250820/D849A8C4D8E04B1B8F1E13110C97935F
 			// 获取电子面单
 			global.axios.post('decoration/Order/getExpressList', {
 				store_id: localStorage.getItem('storeId'),
