@@ -310,9 +310,19 @@
 		})
 		_findTableRecords()
 	}
+	//拉起循环监控页面展示状态（比如表单页返回列表页时需要刷新页面）
+	function watchComponentShowStatus() {
+		let int = setInterval(function () {
+			if (pageData.open_status) {
+				chongzhi();
+				window.clearInterval(int);
+			}
+		}, 300);
+	}
 
 	// 打开子页面
 	function openSon(item) {
+		watchComponentShowStatus()
 		openChildPage({
 			type: 'orderDetails',
 			url: '',
@@ -326,6 +336,7 @@
 	}
 	// 售后
 	function openSonAfter(item) {
+		watchComponentShowStatus()
 		openChildPage({
 			type: "FormPage",
 			url: "decoration/AfterSale/getEditStructure",
@@ -338,9 +349,9 @@
 	}
 	// 发货
 	function openSonSend(item) {
-		pupType.value='Key'
+		pupType.value = 'Key'
 		fh_vis.value = true
-		itemObj.value=item
+		itemObj.value = item
 		// openChildPage({
 		// 	type: 'orderDetails',
 		// 	url: '',
@@ -504,10 +515,13 @@
 							<template v-if="column.dataIndex === 'action'">
 								<div style="font-size: 12px;cursor: pointer;">
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
-									<div @click="openSonAfter(record)" v-if="record.handle_status=='Y'" style="color: #ff0000;">售后</div>
-									<div @click="openSonSh(record)" v-if="record.status=='d'" style="color: #52C41A;">收货</div>
+									<div @click="openSonAfter(record)" v-if="record.handle_status=='Y'"
+										style="color: #ff0000;">售后</div>
+									<div @click="openSonSh(record)" v-if="record.status=='d'" style="color: #52C41A;">收货
+									</div>
 									<div v-if="record.status=='b'||record.platform=='c'">
-										<div @click="openSonSend(record)" v-if="record.type=='b'||record.type=='d'" style="color: green;">发货</div>
+										<div @click="openSonSend(record)" v-if="record.type=='b'||record.type=='d'"
+											style="color: green;">发货</div>
 									</div>
 								</div>
 							</template>

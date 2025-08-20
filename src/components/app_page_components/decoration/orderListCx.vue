@@ -361,8 +361,19 @@
 		_findTableRecords()
 	}
 
+	//拉起循环监控页面展示状态（比如表单页返回列表页时需要刷新页面）
+	function watchComponentShowStatus() {
+		let int = setInterval(function () {
+			if (pageData.open_status) {
+				chongzhi();
+				window.clearInterval(int);
+			}
+		}, 300);
+	}
+
 	// 打开子页面
 	function openSon(item) {
+		watchComponentShowStatus()
 		openChildPage({
 			type: 'orderDetails',
 			url: '',
@@ -445,7 +456,7 @@
 							number: formState.number,//生成数量
 						}, global, true).then((res) => {
 							console.log('生成电子面单', res);
-							orderListDetails.value[orderListDetails.value.length-1].dzmdurl = res
+							orderListDetails.value[orderListDetails.value.length - 1].dzmdurl = res
 						})
 					})
 				})
