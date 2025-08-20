@@ -85,18 +85,60 @@
     const container = ref(null)
 
     // https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426
-    function wzzzdy() {
-        LODOP.PRINT_INITA('');
-        LODOP.ADD_PRINT_IMAGE(
-            0,              // top
-            0,              // left
-            "95%",         // width
-            "100%",         // height
-            `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
-        );
-        LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
-        LODOP.PREVIEW();
-        // LODOP.PRINT(); // 直接打印
+    async function wzzzdy() {
+        const list = props.orderListDetails || [];
+        // 顺序打印
+        for (const item of list) {
+            await printExpress(item);
+        }
+    }
+    // 封装打印函数，返回 Promise
+    function printExpress(item) {
+        return new Promise((resolve) => {
+            LODOP.PRINT_INITA('');
+            LODOP.ADD_PRINT_IMAGE(
+                0, 0, "95%", "100%",
+                `<img src="${item.dzmdurl}">`
+            );
+            LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
+            // LODOP.PREVIEW(); // 预览
+            LODOP.PRINT();
+            // 可以用 setTimeout 模拟等待用户操作，这里假设等待 3 秒
+            setTimeout(async () => {
+                // 打印完成后回调接口
+                await global.axios.post(
+                    'decoration/Order/printExpress',
+                    { id: item.dzmdurlId },
+                    global,
+                    true
+                );
+                console.log('打印电子面单后的回调', item.dzmdurlId);
+                resolve(); // 完成，继续下一个
+            }, 3000); // 根据实际情况调整等待时间
+        });
+    }
+
+    // 地址*号
+    function maskAddress(address) {
+        if (!address) return '';
+        const match = address.match(/^(.{2,3}省)?(.{2,3}市)?(.*)$/);
+        if (!match) return '';
+        const province = match[1] || '';
+        const city = match[2] || '';
+        const rest = match[3] || '';
+        const masked = '*'.repeat(rest.length);
+        return province + city + masked;
+    }
+    // 姓名*号
+    function maskName(name) {
+        if (!name) return '';
+        if (name.length === 2) {
+            return name[0] + '*';
+        } else if (name.length > 2) {
+            return name[0] + '*' + name.slice(2);
+        } else {
+            return '*'; // 只有1个字
+        }
     }
 </script>
 
@@ -197,18 +239,22 @@
                     </div>
                     <table class="table_two" style="margin-top: 10px;">
                         <tr style="white-space:nowrap">
-                            <th scope="col">物流单号</th>
-                            <th scope="col">物流公司名称</th>
-                            <th scope="col">物流公司编码</th>
+                            <th scope="col">收货人</th>
+                            <th scope="col">手机号</th>
+                            <th scope="col">收货地址</th>
                             <th scope="col">电子面单链接</th>
                         </tr>
                         <tr v-for="item in orderListDetails" :key="item.id">
-                            <td>JT12331342342342134</td>
-                            <td>极兔速递</td>
-                            <td>jitushudi</td>
+                            <td>{{maskName(item.address_name)}}</td>
+                            <td>{{item.address_mobile.slice(0,3)+'****'+item.address_mobile.slice(6,10)}}</td>
+                            <td>
+                                <div style="width: 200px;word-wrap:break-word;word-break:normal; ">
+                                    {{maskAddress(item.address)}}
+                                </div>
+                            </td>
                             <td>
                                 <div style="width: 250px;word-wrap:break-word;word-break:normal; ">
-                                    https://api.kuaidi100.com/label/getHtml/20250819/3B979ED26C0648D4B551CBA6DE5E3993
+                                    {{item.dzmdurl}}
                                 </div>
                             </td>
                         </tr>

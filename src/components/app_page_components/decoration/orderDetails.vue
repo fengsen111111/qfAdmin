@@ -88,6 +88,15 @@
 		}, global, true).then((res) => {
 			// console.log('后台获取订单详情', res);
 			orderDetails.value = res
+			// 获取电子面单
+			global.axios.post('decoration/Order/getExpressList', {
+				store_id: localStorage.getItem('storeId'),
+				order_id: pageData.data.id,
+			}, global, true).then((res) => {
+				// console.log('后台获取订单详情', res);
+				orderListDetails.value[0].dzmdurl = res.list[0].logistics_label
+				orderListDetails.value[0].dzmdurlID = res.list[0].id
+			})
 		})
 	}
 	webGetOrderDetail()
@@ -153,8 +162,7 @@
 						<div
 							style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 							物流信息</div>
-						<div
-							style="margin-top: 10px;">
+						<div style="margin-top: 10px;">
 							预计到达时间: {{orderDetails.logistics_state =='0'?orderDetails.deliveryExpendTime:'未知'}}</div>
 					</div>
 					<div style="padding: 20px;">

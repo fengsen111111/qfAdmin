@@ -453,8 +453,6 @@
   function openSer() {
     serVis.value = true
   }
-  import Print from '@/components/app_page_components/decoration/print.vue'
-
   function djtzmk(str, strTwo, strThree) {
     // console.log('点击跳转对应模块', str, strTwo, strThree, skeleton_state.menuData);
     skeleton_state.menuData.map((item) => {
@@ -723,22 +721,74 @@
     openPage(page);
   }
 
-  // 获取未打印订单
-  function _getExpressList() {
-    global.axios.post('decoration/Order/getExpressList', {
-      store_id: localStorage.getItem("storeId"),
-      order_id:''
-    }, global, true).then((res) => {
-      console.log('获取未打印订单', res);
-      // 打印第一笔订单测试
-      // global.axios.post('decoration/Order/printOrder', {
-      //   order_id: '775954827933910915'
-      // }, global, true).then((res_prt) => {
-      //   console.log('打印订单', res_prt);
-      // })
-    })
-  }
+  import { getLodop } from '@/components/app_page_components/decoration/LodopFuncs.js';
 
+  // Lodop 初始化
+  let LODOP = null;
+  const intervalId = setInterval(() => {
+    if (!LODOP) {
+      LODOP = getLodop();
+    } else {
+      //去除底部试用版信息
+      LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
+      console.log('加载完成');
+      clearInterval(intervalId);
+    }
+  }, 1000);
+  // 获取未打印订单
+  async function _getExpressList() {
+    try {
+      const res = await global.axios.post(
+        'decoration/Order/getExpressList',
+        {
+          store_id: localStorage.getItem("storeId"),
+          order_id: ''
+        },
+        global,
+        true
+      );
+      console.log('获取未打印订单', res);
+      const list = res.list || [];
+      if (!LODOP) {
+        message.error('插件准备中，请稍等')
+        return false
+      } else {
+        // 顺序打印
+        for (const item of list) {
+          await printExpress(item);
+        }
+      }
+    } catch (err) {
+      console.error('获取未打印订单失败', err);
+    }
+  }
+  // 封装打印函数，返回 Promise
+  function printExpress(item) {
+    return new Promise((resolve) => {
+      LODOP.PRINT_INITA('');
+      LODOP.ADD_PRINT_IMAGE(
+        0, 0, "95%", "100%",
+        `<img src="https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426">`
+        // `<img src="${item.logistics_label}">`
+      );
+      LODOP.SET_PRINT_STYLEA(0, "Stretch", 1); // 按比例缩放
+      // LODOP.PREVIEW(); // 预览
+      LODOP.PRINT();
+      // 注意：LODOP 没有回调直接知道打印完成
+      // 可以使用 setTimeout 等待用户操作，假设等待 3 秒再继续
+      setTimeout(async () => {
+        // 打印完成后回调接口
+        await global.axios.post(
+          'decoration/Order/printExpress',
+          { id: item.id },
+          global,
+          true
+        );
+        console.log('打印电子面单后的回调', item.id);
+        resolve(); // 完成，继续下一个
+      }, 3000); // 可根据实际情况调整延迟
+    });
+  }
 </script>
 
 <template>

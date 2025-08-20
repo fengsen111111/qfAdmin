@@ -343,6 +343,8 @@
 		}),
 	}))
 
+	const wlInfo = ref({})
+	const wlVis = ref(false)
 	// 查看物流信息
 	function _getLogistics(item) {
 		global.axios
@@ -351,6 +353,8 @@
 			}, global)
 			.then((res) => {
 				console.log('查看物流信息', res);
+				wlInfo.value = res
+				wlVis.value = true
 			})
 	}
 	// 重置
@@ -398,7 +402,7 @@
 	function _getExpressList(item) {
 		md_vis.value = true
 		global.axios
-			.post('decoration/Order/getLogistics', {
+			.post('decoration/Order/getExpressList', {
 				"store_id": localStorage.getItem('storeId'),
 				"order_id": item.id,
 			}, global)
@@ -427,7 +431,8 @@
 					order_id: itemObj.value.id,
 				}, global, true).then((res) => {
 					orderListDetails.value = [res]
-					return false
+					// orderListDetails.value[0].dzmdurl = 'https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426'
+					// orderListDetails.value[0].dzmdurlID = '1232312312312'
 					// 生成电子面单
 					global.axios.post('decoration/Order/createExpress', {
 						order_id: itemObj.value.id,
@@ -436,11 +441,11 @@
 					}, global, true).then((res) => {
 						console.log('生成电子面单', res);
 						orderListDetails.value[0].dzmdurl = res
+						orderListDetails.value[0].dzmdurlID = res
 						if (orderListDetails.value.length > 0) {
 							printSddy.value.setVisible(true)
 						}
 					})
-
 				})
 			} else {
 				selectedRowKeys.value.map((item) => {
@@ -448,7 +453,6 @@
 						order_id: item,
 					}, global, true).then((res) => {
 						orderListDetails.value.push(res)
-						return false
 						// 生成电子面单
 						global.axios.post('decoration/Order/createExpress', {
 							order_id: itemObj.value.id,
@@ -457,6 +461,7 @@
 						}, global, true).then((res) => {
 							console.log('生成电子面单', res);
 							orderListDetails.value[orderListDetails.value.length - 1].dzmdurl = res
+							orderListDetails.value[orderListDetails.value.length - 1].dzmdurlID = res
 						})
 					})
 				})
@@ -482,27 +487,23 @@
 	const printSddy = ref(null);
 
 	function cxPrint(item) {
-		// global.axios.post('decoration/Order/createExpress', {
-		// 	order_id: item.id,
-		// 	number: 1
-		// }, global, true).then((res) => {
-		// 	console.log('生成电子面单', res);
-		// 	global.axios.post('decoration/Order/getExpressList', {
-		// 		order_id: item.id,
-		// 		store_id: localStorage.getItem('storeId')
-		// 	}, global, true).then((resule) => {
-		// 		console.log('获取电子面单', resule);
-		// 	})
-		// })
 		global.axios.post('decoration/Order/getExpressList', {
 			order_id: item.id,
 			store_id: localStorage.getItem('storeId')
 		}, global, true).then((resule) => {
 			console.log('获取电子面单', resule);
+			if (resule.list.length == 1) {
+				window.open(resule.list[0].logistics_label, '_blank');
+			} else {
+				md_vis.value = true
+			}
 		})
-		// console.log('重新打印');
-		// window.open('https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426', '_blank');
 	}
+	// 弹窗重新打印
+	function cxPrintTwo(item) {
+		window.open(item.logistics_label, '_blank');
+	}
+
 
 </script>
 
@@ -532,6 +533,7 @@
 								<a-select-option value="c" key="c">待发货</a-select-option>
 								<a-select-option value="d" key="d">待收货</a-select-option>
 								<a-select-option value="e" key="e">已完成</a-select-option>
+								<a-select-option value="z" kzy="z">拼单失败</a-select-option>
 							</a-select>
 						</div>
 					</a-col>
@@ -585,13 +587,15 @@
 							<!-- 操作 -->
 							<template v-if="column.dataIndex === 'action'">
 								<div style="font-size: 12px;cursor: pointer;">
-									<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'"
+									<div @click="cxPrint(record)"
+										v-if="record.status!='a'&&record.status!='b'&&record.status!='z'"
 										style="color: #1890FF;">重新打印
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
 									<!-- v-if="record.status=='c'" -->
-									<div v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;"
-										@click="itemObj=record;fh_vis=true;pupType='Key'">打印快递单|多份</div>
+									<div v-if="record.status!='a'&&record.status!='b'&&record.status!='z'"
+										style="color: #1890FF;" @click="itemObj=record;fh_vis=true;pupType='Key'">
+										打印快递单|多份</div>
 								</div>
 							</template>
 							<!-- 状态 -->
@@ -601,20 +605,20 @@
 								<div v-else-if="record.status=='c'">待发货</div>
 								<div v-else-if="record.status=='d'">待收货</div>
 								<div v-else-if="record.status=='e'">已完成</div>
+								<div v-else-if="record.status=='z'">拼单失败</div>
 								<div v-else>{{record.status}}</div>
 							</template>
 							<!-- 物流公司 -->
-							<template v-if="column.dataIndex === 'logistics_code'">
+							<!-- <template v-if="column.dataIndex === 'logistics_code'">
 								<div v-if="record.status != 'a'&&record.status != 'b'">
 									<div>物流公司：{{record.logistics_com}}</div>
 									<div>物流单号：{{record.logistics_num}}</div>
 									<div style="display: flex;cursor: pointer;">物流进度：
-										<!-- <div @click="_getLogistics(record)" -->
 										<div @click="_getExpressList(record)" style="margin: 0 auto;color: #1890FF;">查看
 										</div>
 									</div>
 								</div>
-							</template>
+							</template> -->
 							<!-- 电子面单 -->
 							<template v-if="column.dataIndex === 'dzmd'">
 								<div v-if="record.status != 'a'&&record.status != 'b'">
@@ -653,7 +657,7 @@
 						<!-- 操作 -->
 						<template v-if="column.dataIndex === 'action'">
 							<div style="font-size: 12px;cursor: pointer;">
-								<div @click="cxPrint(record)" v-if="record.status!='a'&&record.status!='b'"
+								<div @click="cxPrintTwo(record)" v-if="record.status!='a'&&record.status!='b'"
 									style="color: #1890FF;">重新打印
 								</div>
 								<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
@@ -663,6 +667,24 @@
 				</a-table>
 			</a-spin>
 		</a-modal>
+		<a-drawer v-model:visible="wlVis" @close="wlVis=false" class="custom-class" title="物流信息" placement="right"
+			>
+			<div>
+				<div>物流公司：{{wlInfo.logistics_com}}</div>
+				<div>物流单号: {{wlInfo.logistics_num}}</div>
+				<div style="display: flex;">
+					<div>物流详情：</div>
+					<div v-if="wlInfo.logistics_detail">
+						<div v-for="item in wlInfo.logistics_detail" :key="item">
+							{{item}}
+						</div>
+					</div>
+					<div v-else>
+						暂无物流详情
+					</div>
+				</div>
+			</div>
+		</a-drawer>
 	</div>
 </template>
 
