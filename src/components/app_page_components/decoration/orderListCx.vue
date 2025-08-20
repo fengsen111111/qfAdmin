@@ -562,21 +562,6 @@
 		})
 	}
 
-	import { getLodop } from '@/components/app_page_components/decoration/LodopFuncs.js';
-
-	// Lodop 初始化
-	let LODOP = null;
-	const intervalId = setInterval(() => {
-		if (!LODOP) {
-			LODOP = getLodop();
-		} else {
-			//去除底部试用版信息
-			LODOP.SET_LICENSES("", "EE0887D00FCC7D29375A695F728489A6", "C94CEE276DB2187AE6B65D56B3FC2848", "");
-			console.log('加载完成');
-			clearInterval(intervalId);
-		}
-	}, 1000);
-
 	// 弹窗重新打印
 	function cxPrintTwo(item) {
 		window.open(item.logistics_label, '_blank');
