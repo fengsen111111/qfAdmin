@@ -1192,6 +1192,24 @@
 			'流水类型': getFlowType(item.type),
 		}))
 		const worksheet = XLSX.utils.json_to_sheet(exportData)
+		// 设置列宽
+		const colWidths = Object.keys(exportData[0]).map(key => {
+			let maxLen = key.length
+			exportData.forEach(row => {
+				const cellValue = row[key] != null ? String(row[key]) : ''
+				if (cellValue.length > maxLen) maxLen = cellValue.length
+			})
+			// 流水时间和流水类型列加宽
+			if (key === '流水时间') {
+				maxLen += 5
+			}else if(key === '流水类型'){
+				maxLen += 10
+			}else {
+				maxLen += 4 // 其他列默认加点余量
+			}
+			return { wch: maxLen }
+		})
+		worksheet['!cols'] = colWidths
 		const workbook = XLSX.utils.book_new()
 		XLSX.utils.book_append_sheet(workbook, worksheet, '资金流水')
 		const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
@@ -1222,7 +1240,7 @@
 	// 导出子组件内容
 	function handleExport() {
 		console.log('导出');
-		exportRef.value?.exportExcel()	
+		exportRef.value?.exportExcel()
 	}
 
 	// 加载需要导出数据
@@ -1235,100 +1253,100 @@
 				recycleStatus: false,
 				sortConditions: [],
 				searchConditions: [
-					{ 
-						"field": "chat_status", 
-						"label": "聊天状态", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Radio", 
-						"config": { 
+					{
+						"field": "chat_status",
+						"label": "聊天状态",
+						"value": "",
+						"searchType": "=",
+						"component": "Radio",
+						"config": {
 							"values": [
-								{ "value": "N", "label": "禁言" }, 
-								{ "value": "Y", "label": "正常" }] 
-							} 
-					}, 
-					{ 
-						"field": "id", 
-						"label": "ID", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Input" 
-					}, 
-					{ 
-						"field": "status", 
-						"label": "启用状态", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Radio", 
-						"config": { 
+								{ "value": "N", "label": "禁言" },
+								{ "value": "Y", "label": "正常" }]
+						}
+					},
+					{
+						"field": "id",
+						"label": "ID",
+						"value": "",
+						"searchType": "=",
+						"component": "Input"
+					},
+					{
+						"field": "status",
+						"label": "启用状态",
+						"value": "",
+						"searchType": "=",
+						"component": "Radio",
+						"config": {
 							"values": [
-								{ "value": "N", "label": "禁用" }, 
+								{ "value": "N", "label": "禁用" },
 								{ "value": "Y", "label": "启用" }
-							] 
-						} 
-					}, 
-					{ 
-						"field": "self_support", 
-						"label": "是否自营", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Radio", 
-						"config": { 
+							]
+						}
+					},
+					{
+						"field": "self_support",
+						"label": "是否自营",
+						"value": "",
+						"searchType": "=",
+						"component": "Radio",
+						"config": {
 							"values": [
-								{ "value": "N", "label": "否" }, 
+								{ "value": "N", "label": "否" },
 								{ "value": "Y", "label": "是" }
-							] 
-						} 
-					}, 
-					{ 
-						"field": "check_status", 
-						"label": "审核状态", 
-						"searchType": "=", 
-						"component": "Select", 
-						"config": { 
+							]
+						}
+					},
+					{
+						"field": "check_status",
+						"label": "审核状态",
+						"searchType": "=",
+						"component": "Select",
+						"config": {
 							"values": [
-								{ "value": "a", "label": "待审核" }, 
-								{ "value": "b", "label": "审核通过" }, 
-								{ "value": "c", "label": "审核拒绝" }, 
+								{ "value": "a", "label": "待审核" },
+								{ "value": "b", "label": "审核通过" },
+								{ "value": "c", "label": "审核拒绝" },
 								{ "value": "z", "label": "取消入驻" }
-							] 
-						} 
-					}, 
-					{ 
-						"field": "store_name", 
-						"label": "店铺名称", 
-						"value": "", 
-						"searchType": "like", 
-						"component": "Input" 
-					}, 
-					{ 
-						"field": "name", 
-						"label": "负责人", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Input" 
-					}, 
-					{ 
-						"field": "mobile", 
-						"label": "手机号", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Input" 
-					}, 
-					{ 
-						"field": "type", 
-						"label": "商家类型", 
-						"value": "", 
-						"searchType": "=", 
-						"component": "Radio", 
-						"config": { 
+							]
+						}
+					},
+					{
+						"field": "store_name",
+						"label": "店铺名称",
+						"value": "",
+						"searchType": "like",
+						"component": "Input"
+					},
+					{
+						"field": "name",
+						"label": "负责人",
+						"value": "",
+						"searchType": "=",
+						"component": "Input"
+					},
+					{
+						"field": "mobile",
+						"label": "手机号",
+						"value": "",
+						"searchType": "=",
+						"component": "Input"
+					},
+					{
+						"field": "type",
+						"label": "商家类型",
+						"value": "",
+						"searchType": "=",
+						"component": "Radio",
+						"config": {
 							"values": [
-								{ "value": "a", "label": "本地商家" }, 
+								{ "value": "a", "label": "本地商家" },
 								{ "value": "b", "label": "网店商家" }
-							] 
-						} 
+							]
+						}
 					}],
-				store_id: localStorage.getItem('storeId')==1?pageData.data.id:localStorage.getItem('storeId')
+				store_id: localStorage.getItem('storeId') == 1 ? pageData.data.id : localStorage.getItem('storeId')
 			}, global)
 			.then((res) => {
 				console.log('商家导出', res.list);
@@ -1775,11 +1793,12 @@
 						</div>
 					</div>
 					<!-- <div class="a79">资金流水日志</div> -->
-					<a-tabs v-model:activeKey="activeKey" type="card">
+					<!-- <a-tabs v-model:activeKey="activeKey" type="card">
 						<a-tab-pane key="1" tab="全部"></a-tab-pane>
 						<a-tab-pane key="2" tab="日汇总"></a-tab-pane>
 						<a-tab-pane key="3" tab="月汇总"></a-tab-pane>
-					</a-tabs>
+					</a-tabs> -->
+					<div style="height: 20px;"></div>
 					<div class="a80" style="align-items: center;">
 						<div style="margin-right: 10px;color: #000000;font-size: 18px;"><b>资金流水</b></div>
 						<div class="a81">
@@ -1804,9 +1823,9 @@
 									<a-select-option value="j">购买曝光量</a-select-option>
 									<a-select-option value="k">提现</a-select-option>
 									<a-select-option value="l">退店</a-select-option>
-									<a-select-option value="">平台技术服务费</a-select-option>
+									<!-- <a-select-option value="">平台技术服务费</a-select-option>
 									<a-select-option value="">退款</a-select-option>
-									<a-select-option value="">推荐管分润</a-select-option>
+									<a-select-option value="">推荐管分润</a-select-option> -->
 								</a-select>
 							</div>
 						</div>
