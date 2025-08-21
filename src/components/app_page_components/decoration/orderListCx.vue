@@ -458,23 +458,23 @@
 							message.error('没有电子面单信息')
 							// 没有就生成电子面单，然后打印
 							// console.log('生成电子面单', res);
-							// global.axios.post('decoration/Order/createExpress', {
-							// 	order_id: itemObj.value.id,
-							// 	after_sale_id: '',//售后id
-							// 	number: 1,//生成数量
-							// }, global, true).then((res) => {
-							// 	global.axios.post('decoration/Order/getExpressList', {
-							// 		order_id: itemObj.value.id,
-							// 		store_id: localStorage.getItem('storeId')
-							// 	}, global, true).then((resule) => {
-							// 		console.log('获取电子面单', resule);
-							// 		orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
-							// 		orderListDetails.value[0].dzmdurlID = resule.list[0].id
-							// 		if (orderListDetails.value.length > 0) {
-							// 			printSddy.value.setVisible(true)
-							// 		}
-							// 	})
-							// })
+							global.axios.post('decoration/Order/createExpress', {
+								order_id: itemObj.value.id,
+								after_sale_id: '',//售后id
+								number: 1,//生成数量
+							}, global, true).then((res) => {
+								global.axios.post('decoration/Order/getExpressList', {
+									order_id: itemObj.value.id,
+									store_id: localStorage.getItem('storeId')
+								}, global, true).then((resule) => {
+									console.log('获取电子面单', resule);
+									orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
+									orderListDetails.value[0].dzmdurlID = resule.list[0].id
+									if (orderListDetails.value.length > 0) {
+										printSddy.value.setVisible(true)
+									}
+								})
+							})
 						}
 					})
 				})
@@ -503,25 +503,25 @@
 								message.error('订单没有电子面单信息')
 								// 没有就生成电子面单，然后打印
 								// console.log('生成电子面单', res);
-								// global.axios.post('decoration/Order/createExpress', {
-								// 	order_id: item,
-								// 	after_sale_id: '',//售后id
-								// 	number: 1,//生成数量
-								// }, global, true).then((res) => {
-								// 	global.axios.post('decoration/Order/getExpressList', {
-								// 		order_id: item,
-								// 		store_id: localStorage.getItem('storeId')
-								// 	}, global, true).then((resule) => {
-								// 		console.log('获取电子面单', resule);
-								// 		resule.list.map((iss, index) => {
-								// 			orderListDetails.value.push({
-								// 				...JSON.parse(JSON.stringify(res)),
-								// 				dzmdurl: iss.logistics_label,
-								// 				dzmdurlID: iss.id,
-								// 			})
-								// 		})
-								// 	})
-								// })
+								global.axios.post('decoration/Order/createExpress', {
+									order_id: item,
+									after_sale_id: '',//售后id
+									number: 1,//生成数量
+								}, global, true).then((res) => {
+									global.axios.post('decoration/Order/getExpressList', {
+										order_id: item,
+										store_id: localStorage.getItem('storeId')
+									}, global, true).then((resule) => {
+										console.log('获取电子面单', resule);
+										resule.list.map((iss, index) => {
+											orderListDetails.value.push({
+												...JSON.parse(JSON.stringify(res)),
+												dzmdurl: iss.logistics_label,
+												dzmdurlID: iss.id,
+											})
+										})
+									})
+								})
 							}
 						})
 

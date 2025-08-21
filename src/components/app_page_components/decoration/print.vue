@@ -118,11 +118,11 @@
                 // 打印完成后回调接口
                 await global.axios.post(
                     'decoration/Order/printExpress',
-                    { id: item.dzmdurlId },
+                    { id: item.dzmdurlID },
                     global,
                     true
                 );
-                console.log('打印电子面单后的回调', item.dzmdurlId);
+                console.log('打印电子面单后的回调', item.dzmdurlID);
                 resolve(); // 完成，继续下一个
             }, 3000); // 根据实际情况调整等待时间
         });
