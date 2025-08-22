@@ -611,7 +611,7 @@
     // 启动新的定时器
     customerRoomTimer = setInterval(() => {
       getCustomerRoomList();
-    }, 60000); // 每 10 秒执行一次
+    }, 2000); // 每 10 秒执行一次
   }
   startCustomerRoomTimer()
 
@@ -954,14 +954,14 @@
             <div @click="openVis(1)"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <BellOutlined style="font-size: 18px;" />
-              <br><span style="font-size: 12px;">消息</span>
+              <br><span style="font-size: 12px;">平台消息</span>
             </div>
           </a-badge><br>
           <a-badge :count="msgCount">
             <div @click="openSer()"
               style="width: 68px;background-color: #f5f5f5;padding: 10px;text-align: center;border-radius: 5px;color: #666666;margin-bottom: 20px;">
               <MessageOutlined style="font-size: 18px;" />
-              <br><span style="font-size: 12px;">{{ type=='商家'?'官方客服':'客服'}}</span>
+              <br><span style="font-size: 12px;">{{ type=='商家'?'客服消息':'客服消息'}}</span>
             </div>
           </a-badge>
         </div>

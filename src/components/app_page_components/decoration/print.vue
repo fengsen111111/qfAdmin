@@ -252,7 +252,9 @@
                             <th scope="col">收货人</th>
                             <th scope="col">手机号</th>
                             <th scope="col">收货地址</th>
-                            <th scope="col">电子面单链接</th>
+                            <!-- <th scope="col">电子面单链接</th> -->
+                            <th scope="col">快递名称</th>
+                            <th scope="col">快递单号</th>
                         </tr>
                         <tr v-for="item in orderListDetails" :key="item.id">
                             <td>{{maskName(item.address_name)}}</td>
@@ -262,11 +264,13 @@
                                     {{maskAddress(item.address)}}
                                 </div>
                             </td>
-                            <td>
+                            <td>{{item.logistics_com}}</td>
+                            <td>{{item.logistics_num}}</td>
+                            <!-- <td>
                                 <div style="width: 250px;word-wrap:break-word;word-break:normal; ">
                                     {{item.dzmdurl}}
                                 </div>
-                            </td>
+                            </td> -->
                         </tr>
                     </table>
                 </div>

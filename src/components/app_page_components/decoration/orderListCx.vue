@@ -29,7 +29,8 @@
 	const partnerName = ref(null)//搜索项  电子面单账户名称
 
 	const formState = reactive({
-		number: null//生成数量
+		number: 1,//生成数量
+		// dzmdId:null,//电子面单默认id
 	});
 	const formRef = ref(null);
 
@@ -85,6 +86,13 @@
 			"dataIndex": 'create_time',
 			"title": "下单时间",
 			"width": 160,
+			"component": "Varchar"
+		},
+		{
+			"key": "store_id",
+			"dataIndex": 'store_id',
+			"title": "商家ID",
+			"width": 180,
 			"component": "Varchar"
 		},
 		{
@@ -187,13 +195,13 @@
 			// "width": 60,
 			"component": "Varchar"
 		},
-		{
-			"key": "logistics_label",
-			"dataIndex": 'logistics_label',
-			"title": "电子面单链接",
-			// "width": 60,
-			"component": "Varchar"
-		},
+		// {
+		// 	"key": "logistics_label",
+		// 	"dataIndex": 'logistics_label',
+		// 	"title": "电子面单链接",
+		// 	// "width": 60,
+		// 	"component": "Varchar"
+		// },
 		{
 			"key": "logistics_time",
 			"dataIndex": 'logistics_time',
@@ -431,6 +439,8 @@
 					order_id: itemObj.value.id,
 				}, global, true).then((res) => {
 					orderListDetails.value = [res]
+					printSddy.value.setVisible(true)
+					return false  //---------------------------------暂时注释后续流程，流程可能有修改
 					// 获取面单，有就直接打印
 					global.axios.post('decoration/Order/getExpressList', {
 						order_id: itemObj.value.id,
@@ -440,6 +450,9 @@
 						if (resule.list.length == 1) {
 							orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
 							orderListDetails.value[0].dzmdurlID = resule.list[0].id
+							orderListDetails.value[0].logistics_com = resule.list[0].logistics_com
+							orderListDetails.value[0].logistics_num = resule.list[0].logistics_num
+							orderListDetails.value[0].logistics_code = resule.list[0].logistics_code
 							if (orderListDetails.value.length > 0) {
 								printSddy.value.setVisible(true)
 							}
@@ -449,6 +462,11 @@
 								orderListDetails.value[index] = JSON.parse(JSON.stringify(orderListDetails.value[0]));
 								orderListDetails.value[index].dzmdurl = item.logistics_label;
 								orderListDetails.value[index].dzmdurlID = item.id;
+								orderListDetails.value[index].logistics_com = item.logistics_com;
+								orderListDetails.value[index].logistics_num = item.logistics_num;
+								orderListDetails.value[index].logistics_code = item.logistics_code;
+
+
 							});
 							console.log('orderListDetails', orderListDetails.value);
 							if (orderListDetails.value.length > 0) {
@@ -470,6 +488,10 @@
 									console.log('获取电子面单', resule);
 									orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
 									orderListDetails.value[0].dzmdurlID = resule.list[0].id
+									orderListDetails.value[0].logistics_com = resule.list[0].logistics_com
+									orderListDetails.value[0].logistics_num = resule.list[0].logistics_num
+									orderListDetails.value[0].logistics_code = resule.list[0].logistics_code
+
 									if (orderListDetails.value.length > 0) {
 										printSddy.value.setVisible(true)
 									}
@@ -485,6 +507,9 @@
 						order_id: item,
 					}, global, true).then((res) => {
 						let obj = res
+						orderListDetails.value.push(res)
+						printSddy.value.setVisible(true)
+						return false  //---------------------------------暂时注释后续流程，流程可能有修改
 						// 获取面单，有就直接打印
 						global.axios.post('decoration/Order/getExpressList', {
 							order_id: item,
@@ -497,6 +522,9 @@
 										...JSON.parse(JSON.stringify(res)),
 										dzmdurl: iss.logistics_label,
 										dzmdurlID: iss.id,
+										logistics_com: iss.logistics_com,
+										logistics_num: iss.logistics_num,
+										logistics_code: iss.logistics_code,
 									})
 								})
 							} else {
@@ -518,6 +546,9 @@
 												...JSON.parse(JSON.stringify(res)),
 												dzmdurl: iss.logistics_label,
 												dzmdurlID: iss.id,
+												logistics_com: iss.logistics_com,
+												logistics_num: iss.logistics_num,
+												logistics_code: iss.logistics_code,
 											})
 										})
 									})
@@ -592,7 +623,7 @@
 					true
 				).then((resHd) => {
 					console.log('手动打印回调');
-				    window.open(resule.list[0].logistics_label, '_blank');
+					window.open(resule.list[0].logistics_label, '_blank');
 				})
 			} else {
 				md_vis.value = true
@@ -610,9 +641,23 @@
 			true
 		).then((resHd) => {
 			console.log('手动打印回调');
-	     	window.open(item.logistics_label, '_blank');
+			window.open(item.logistics_label, '_blank');
 		})
 	}
+
+	// const dzmdList = ref([])//电子面单List
+	//商家后台已添加的电子面单
+	// function _dzmdList() {
+	// 	spinning.value = true
+	// 	global.axios
+	// 		.post('decoration/Express/getExpressList', {
+	// 			store_id: localStorage.getItem('storeId'),
+	// 		}, global)
+	// 		.then((res) => {
+	// 			dzmdList.value = res.list
+	// 		})
+	// }
+	// _dzmdList()
 
 
 </script>
@@ -757,6 +802,12 @@
 					<a-form-item label="生成数量" name="number" :rules="[{ required: true, message: '请填写生成数量' }]">
 						<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 					</a-form-item>
+					<!-- <a-form-item label="快递公司" name="dzmdId" :rules="[{ required: true, message: '请选择快递公司' }]">
+						<a-select ref="select" placeholder="请选择" v-model:value="formState.dzmdId"
+							style="width: 100%">
+							<a-select-option :value="item.id" :key="item.id" v-for="item in dzmdList">{{item.company_name}}</a-select-option>
+						</a-select>
+					</a-form-item> -->
 				</a-form>
 			</a-spin>
 		</a-modal>

@@ -899,7 +899,10 @@
 <template>
   <div align="center" class="table">
     <span style="color: #1b95e5" v-if="customer_service_state.connect_msg === 'wait'">连接中...</span>
-    <span style="color: #0a980a" v-if="customer_service_state.connect_msg === 'success'">连接成功...</span>
+    <span style="color: #000000;" v-if="customer_service_state.connect_msg === 'success'">
+      <!-- 连接成功... -->
+      {{customer_service_state.room.nickname}}
+    </span>
     <span style="color: red" v-if="customer_service_state.connect_msg === 'error'">连接异常，请关闭页面重试或联系平台管理员</span>
     <span style="color: #efb06c" v-if="customer_service_state.connect_msg === 'close'">连接已关闭，请关闭页面重试或联系平台管理员</span>
     <div class="chat">

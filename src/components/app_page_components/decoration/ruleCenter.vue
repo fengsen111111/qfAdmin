@@ -160,7 +160,7 @@
 			<div style="padding: 20px;overflow: auto;height: 100%;width: 70vw;margin: 0 auto;">
 				<!-- <div style="font-size: 18px;margin-bottom: 20px;">规则中心</div> -->
 				<div style="display: flex;height: 87vh; width: 100%;">
-					<a-menu v-if="title.value == '学习中心'" v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
+					<a-menu v-if="title == '学习中心'" v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys"
 						style="width: 256px" mode="vertical">
 							<a-menu-item v-for="item in menuList" :key="item.id" @click="handleClick(item)">
 								{{item.question}}

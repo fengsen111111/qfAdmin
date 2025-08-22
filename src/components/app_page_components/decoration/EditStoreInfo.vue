@@ -324,7 +324,7 @@
 		</div>
 		<!--  -->
 		<a-modal v-model:visible="visible" @cancel="cancelVis"
-			:title="type=='store_name'?'店铺名称':type=='logo'?'店铺logo':type=='mobile'?'手机号':'修改'" :footer="null">
+			:title="type=='store_name'?'店铺名称':type=='logo'?'店铺logo':type=='mobile'?'新手机号':'修改'" :footer="null">
 			<div>
 				<div class="a20">
 					<ExclamationCircleOutlined class="a21" />
