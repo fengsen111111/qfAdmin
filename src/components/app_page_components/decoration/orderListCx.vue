@@ -30,7 +30,7 @@
 
 	const formState = reactive({
 		number: 1,//生成数量
-		// dzmdId:null,//电子面单默认id
+		dzmdId: null,//电子面单默认id
 	});
 	const formRef = ref(null);
 
@@ -401,9 +401,21 @@
 	const pupType = ref('Keys') //弹窗类型 Keys 多选  Key 单个
 	// 批量打印
 	function handePl() {
-		console.log('selectedRowKeys', selectedRowKeys.value);
-		fh_vis.value = true
+		// console.log('selectedRowKeys', selectedRowKeys.value);
 		pupType.value = 'Keys'
+		printSddy.value.setVisible(true)
+	}
+	// 打印快递单多份
+	function handdykdd(item) {
+		pupType.value = 'Key'
+		itemObj.value = item
+		printSddy.value.setVisible(true)
+	}
+
+	// 子组件去打单发货
+	function sonQddfh() {
+		console.log('子组件调用父组件，打开选择快递和生成数量');
+		fh_vis.value = true
 	}
 
 	// 获取电子面单
@@ -423,8 +435,26 @@
 	const itemObj = ref({})//打印快递单多份
 	const orderListDetails = ref([])//订单详情
 
-	// 弹窗确定
+	// 弹窗确定新
 	async function handOk() {
+		try {
+			const values = await formRef.value.validateFields();
+			console.log('values', values);
+			// 选择的面单设置成默认
+			global.axios
+				.post('decoration/Express/handleStatus', {
+					id: values.dzmdId
+				}, global)
+				.then((res) => {
+					console.log('默认', res);
+					handOk_old()//设置成默认后再电子面单确定
+				})
+		} catch (errorInfo) {
+			console.log('Failed:', errorInfo);
+		}
+	}
+	// 弹窗确定
+	async function handOk_old() {
 		try {
 			const values = await formRef.value.validateFields();
 			spinning.value = true
@@ -433,71 +463,32 @@
 			}, 2000);
 			orderListDetails.value = []//清空携带数据
 			if (pupType.value == 'Key') {
-				// 单个多快递单
 				// 获取订单详情
 				global.axios.post('decoration/Order/webGetOrderDetail', {
 					order_id: itemObj.value.id,
 				}, global, true).then((res) => {
 					orderListDetails.value = [res]
-					printSddy.value.setVisible(true)
-					return false  //---------------------------------暂时注释后续流程，流程可能有修改
-					// 获取面单，有就直接打印
-					global.axios.post('decoration/Order/getExpressList', {
+					// 生成面单  并打印
+					global.axios.post('decoration/Order/createExpress', {
 						order_id: itemObj.value.id,
-						store_id: localStorage.getItem('storeId')
-					}, global, true).then((resule) => {
-						console.log('获取电子面单', resule);
-						if (resule.list.length == 1) {
+						after_sale_id: '',//售后id
+						number: 1,//生成数量
+					}, global, true).then((res) => {
+						global.axios.post('decoration/Order/getExpressList', {
+							order_id: itemObj.value.id,
+							store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							console.log('获取电子面单', resule);
 							orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
 							orderListDetails.value[0].dzmdurlID = resule.list[0].id
 							orderListDetails.value[0].logistics_com = resule.list[0].logistics_com
 							orderListDetails.value[0].logistics_num = resule.list[0].logistics_num
 							orderListDetails.value[0].logistics_code = resule.list[0].logistics_code
 							if (orderListDetails.value.length > 0) {
-								printSddy.value.setVisible(true)
+								fh_vis.value = false
+								printSddy.value.setVisTwo(true)
 							}
-						} else if (resule.list.length > 1) {
-							resule.list.map((item, index) => {
-								// 深拷贝第0个对象
-								orderListDetails.value[index] = JSON.parse(JSON.stringify(orderListDetails.value[0]));
-								orderListDetails.value[index].dzmdurl = item.logistics_label;
-								orderListDetails.value[index].dzmdurlID = item.id;
-								orderListDetails.value[index].logistics_com = item.logistics_com;
-								orderListDetails.value[index].logistics_num = item.logistics_num;
-								orderListDetails.value[index].logistics_code = item.logistics_code;
-
-
-							});
-							console.log('orderListDetails', orderListDetails.value);
-							if (orderListDetails.value.length > 0) {
-								printSddy.value.setVisible(true)
-							}
-						} else {
-							// message.error('没有电子面单信息')
-							// 没有就生成电子面单，然后打印
-							// console.log('生成电子面单', res);
-							global.axios.post('decoration/Order/createExpress', {
-								order_id: itemObj.value.id,
-								after_sale_id: '',//售后id
-								number: 1,//生成数量
-							}, global, true).then((res) => {
-								global.axios.post('decoration/Order/getExpressList', {
-									order_id: itemObj.value.id,
-									store_id: localStorage.getItem('storeId')
-								}, global, true).then((resule) => {
-									console.log('获取电子面单', resule);
-									orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
-									orderListDetails.value[0].dzmdurlID = resule.list[0].id
-									orderListDetails.value[0].logistics_com = resule.list[0].logistics_com
-									orderListDetails.value[0].logistics_num = resule.list[0].logistics_num
-									orderListDetails.value[0].logistics_code = resule.list[0].logistics_code
-
-									if (orderListDetails.value.length > 0) {
-										printSddy.value.setVisible(true)
-									}
-								})
-							})
-						}
+						})
 					})
 				})
 			} else {
@@ -507,16 +498,17 @@
 						order_id: item,
 					}, global, true).then((res) => {
 						let obj = res
-						orderListDetails.value.push(res)
-						printSddy.value.setVisible(true)
-						return false  //---------------------------------暂时注释后续流程，流程可能有修改
-						// 获取面单，有就直接打印
-						global.axios.post('decoration/Order/getExpressList', {
+						// 生成电子面单 ,然后打印
+						global.axios.post('decoration/Order/createExpress', {
 							order_id: item,
-							store_id: localStorage.getItem('storeId')
-						}, global, true).then((resule) => {
-							console.log('获取电子面单', resule);
-							if (resule.list.length) {
+							after_sale_id: '',//售后id
+							number: 1,//生成数量
+						}, global, true).then((res) => {
+							global.axios.post('decoration/Order/getExpressList', {
+								order_id: item,
+								store_id: localStorage.getItem('storeId')
+							}, global, true).then((resule) => {
+								console.log('获取电子面单', resule);
 								resule.list.map((iss, index) => {
 									orderListDetails.value.push({
 										...JSON.parse(JSON.stringify(res)),
@@ -527,40 +519,14 @@
 										logistics_code: iss.logistics_code,
 									})
 								})
-							} else {
-								// message.error('订单没有电子面单信息')
-								// 没有就生成电子面单，然后打印
-								// console.log('生成电子面单', res);
-								global.axios.post('decoration/Order/createExpress', {
-									order_id: item,
-									after_sale_id: '',//售后id
-									number: 1,//生成数量
-								}, global, true).then((res) => {
-									global.axios.post('decoration/Order/getExpressList', {
-										order_id: item,
-										store_id: localStorage.getItem('storeId')
-									}, global, true).then((resule) => {
-										console.log('获取电子面单', resule);
-										resule.list.map((iss, index) => {
-											orderListDetails.value.push({
-												...JSON.parse(JSON.stringify(res)),
-												dzmdurl: iss.logistics_label,
-												dzmdurlID: iss.id,
-												logistics_com: iss.logistics_com,
-												logistics_num: iss.logistics_num,
-												logistics_code: iss.logistics_code,
-											})
-										})
-									})
-								})
-							}
+							})
 						})
-
 					})
 				})
 				setTimeout(() => {
 					if (orderListDetails.value.length > 0) {
-						printSddy.value.setVisible(true)
+						fh_vis.value = false
+						printSddy.value.setVisTwo(true)
 					}
 				}, 2000);
 				// 多个
@@ -645,19 +611,24 @@
 		})
 	}
 
-	// const dzmdList = ref([])//电子面单List
+	const dzmdList = ref([])//电子面单List
 	//商家后台已添加的电子面单
-	// function _dzmdList() {
-	// 	spinning.value = true
-	// 	global.axios
-	// 		.post('decoration/Express/getExpressList', {
-	// 			store_id: localStorage.getItem('storeId'),
-	// 		}, global)
-	// 		.then((res) => {
-	// 			dzmdList.value = res.list
-	// 		})
-	// }
-	// _dzmdList()
+	function _dzmdList() {
+		spinning.value = true
+		global.axios
+			.post('decoration/Express/getExpressList', {
+				store_id: localStorage.getItem('storeId'),
+			}, global)
+			.then((res) => {
+				dzmdList.value = res.list
+				res.list.map((item)=>{
+					if(item.status=='Y'){
+						formState.dzmdId = item.id
+					}
+				})
+			})
+	}
+	_dzmdList()
 
 
 </script>
@@ -666,8 +637,8 @@
 	<!--搜索-->
 	<div>
 		<div v-show="false">
-			<Print ref="printSddy" :number="formState.number" :orderListDetails="orderListDetails"
-				@djtzmk="sondjtzmk" />
+			<Print ref="printSddy" :number="formState.number" :orderListDetails="orderListDetails" @djtzmk="sondjtzmk"
+				@sonQddfh="sonQddfh" />
 		</div>
 		<a-spin :spinning="spinning">
 			<div style="padding: 0px 20px;border-radius: 4px;">
@@ -748,9 +719,8 @@
 										style="color: #1890FF;">重新打印
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
-									<!-- v-if="record.status=='c'" -->
 									<div v-if="record.status!='a'&&record.status!='b'&&record.status!='z'"
-										style="color: #1890FF;" @click="itemObj=record;fh_vis=true;pupType='Key'">
+										style="color: #1890FF;" @click="handdykdd(record)">
 										打印快递单|多份</div>
 								</div>
 							</template>
@@ -802,12 +772,15 @@
 					<a-form-item label="生成数量" name="number" :rules="[{ required: true, message: '请填写生成数量' }]">
 						<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 					</a-form-item>
-					<!-- <a-form-item label="快递公司" name="dzmdId" :rules="[{ required: true, message: '请选择快递公司' }]">
-						<a-select ref="select" placeholder="请选择" v-model:value="formState.dzmdId"
-							style="width: 100%">
-							<a-select-option :value="item.id" :key="item.id" v-for="item in dzmdList">{{item.company_name}}</a-select-option>
-						</a-select>
+					<!-- <a-form-item label="快递公司" name="快递公司" >
+						<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 					</a-form-item> -->
+					<a-form-item label="电子面单" name="dzmdId" :rules="[{ required: true, message: '请选择电子面单' }]">
+						<a-select ref="select" placeholder="请选择" v-model:value="formState.dzmdId" style="width: 100%">
+							<a-select-option :value="item.id" :key="item.id"
+								v-for="item in dzmdList">{{item.company_name}}</a-select-option>
+						</a-select>
+					</a-form-item>
 				</a-form>
 			</a-spin>
 		</a-modal>

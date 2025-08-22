@@ -13,7 +13,7 @@
     import { getLodop } from './LodopFuncs.js';
 
     const global = inject("global").value;
-    const emit = defineEmits(["djtzmk"]);
+    const emit = defineEmits(["djtzmk","sonQddfh"]);
 
     const visible = ref(false);
     const visPrint = ref(false);
@@ -74,7 +74,8 @@
     // 去打单发货
     function goDdfh() {
         visible.value = false;
-        visPrint.value = true;
+        // visPrint.value = true;
+        emit('sonQddfh');
     }
 
     function handleGetOrderImage() {
@@ -84,7 +85,10 @@
         wzzzdy()
         setTimeout(() => ksDy.value = false, 3000);
     }
-    defineExpose({ setVisible: val => visible.value = val });
+    defineExpose({ 
+        setVisible: val => visible.value = val,
+        setVisTwo:val => visPrint.value = val //
+     });
     const container = ref(null)
 
     // https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426
