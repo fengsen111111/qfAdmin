@@ -455,7 +455,7 @@
 								printSddy.value.setVisible(true)
 							}
 						} else {
-							message.error('没有电子面单信息')
+							// message.error('没有电子面单信息')
 							// 没有就生成电子面单，然后打印
 							// console.log('生成电子面单', res);
 							global.axios.post('decoration/Order/createExpress', {
@@ -500,7 +500,7 @@
 									})
 								})
 							} else {
-								message.error('订单没有电子面单信息')
+								// message.error('订单没有电子面单信息')
 								// 没有就生成电子面单，然后打印
 								// console.log('生成电子面单', res);
 								global.axios.post('decoration/Order/createExpress', {
@@ -554,7 +554,35 @@
 			store_id: localStorage.getItem('storeId')
 		}, global, true).then((resule) => {
 			console.log('获取电子面单', resule);
-			if (resule.list.length == 1) {
+			if (resule.list.length == 0) {
+				global.axios.post('decoration/Order/webGetOrderDetail', {
+					order_id: item.id,
+				}, global, true).then((resShop) => {
+					global.axios.post('decoration/Order/createExpress', {
+						order_id: item.id,
+						after_sale_id: '',//售后id
+						number: 1,//生成数量
+					}, global, true).then((res) => {
+						global.axios.post('decoration/Order/getExpressList', {
+							order_id: item.id,
+							store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							resule.list.map((iss, index) => {
+								orderListDetails.value.push({
+									...JSON.parse(JSON.stringify(resShop)),
+									dzmdurl: iss.logistics_label,
+									dzmdurlID: iss.id,
+								})
+								setTimeout(() => {
+									if (orderListDetails.value.length > 0) {
+										printSddy.value.setVisible(true)
+									}
+								}, 2000);
+							})
+						})
+					})
+				})
+			} else if (resule.list.length == 1) {
 				window.open(resule.list[0].logistics_label, '_blank');
 			} else {
 				md_vis.value = true

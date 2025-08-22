@@ -776,17 +776,17 @@
       LODOP.PRINT();
       // 注意：LODOP 没有回调直接知道打印完成
       // 可以使用 setTimeout 等待用户操作，假设等待 3 秒再继续
-      // setTimeout(async () => {
-      //   // 打印完成后回调接口
-      //   await global.axios.post(
-      //     'decoration/Order/printExpress',
-      //     { id: item.id },
-      //     global,
-      //     true
-      //   );
-      //   console.log('打印电子面单后的回调', item.id);
-      //   resolve(); // 完成，继续下一个
-      // }, 3000); // 可根据实际情况调整延迟
+      setTimeout(async () => {
+        // 打印完成后回调接口
+        await global.axios.post(
+          'decoration/Order/printExpress',
+          { id: item.id },
+          global,
+          true
+        );
+        console.log('打印电子面单后的回调', item.id);
+        resolve(); // 完成，继续下一个
+      }, 3000); // 可根据实际情况调整延迟
     });
   }
 </script>
