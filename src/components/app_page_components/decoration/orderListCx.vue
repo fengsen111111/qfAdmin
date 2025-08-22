@@ -555,33 +555,34 @@
 		}, global, true).then((resule) => {
 			console.log('获取电子面单', resule);
 			if (resule.list.length == 0) {
-				global.axios.post('decoration/Order/webGetOrderDetail', {
-					order_id: item.id,
-				}, global, true).then((resShop) => {
-					global.axios.post('decoration/Order/createExpress', {
-						order_id: item.id,
-						after_sale_id: '',//售后id
-						number: 1,//生成数量
-					}, global, true).then((res) => {
-						global.axios.post('decoration/Order/getExpressList', {
-							order_id: item.id,
-							store_id: localStorage.getItem('storeId')
-						}, global, true).then((resule) => {
-							resule.list.map((iss, index) => {
-								orderListDetails.value.push({
-									...JSON.parse(JSON.stringify(resShop)),
-									dzmdurl: iss.logistics_label,
-									dzmdurlID: iss.id,
-								})
-								setTimeout(() => {
-									if (orderListDetails.value.length > 0) {
-										printSddy.value.setVisible(true)
-									}
-								}, 2000);
-							})
-						})
-					})
-				})
+				// global.axios.post('decoration/Order/webGetOrderDetail', {
+				// 	order_id: item.id,
+				// }, global, true).then((resShop) => {
+				// 	global.axios.post('decoration/Order/createExpress', {
+				// 		order_id: item.id,
+				// 		after_sale_id: '',//售后id
+				// 		number: 1,//生成数量
+				// 	}, global, true).then((res) => {
+				// 		global.axios.post('decoration/Order/getExpressList', {
+				// 			order_id: item.id,
+				// 			store_id: localStorage.getItem('storeId')
+				// 		}, global, true).then((resule) => {
+				// 			resule.list.map((iss, index) => {
+				// 				orderListDetails.value.push({
+				// 					...JSON.parse(JSON.stringify(resShop)),
+				// 					dzmdurl: iss.logistics_label,
+				// 					dzmdurlID: iss.id,
+				// 				})
+				// 				setTimeout(() => {
+				// 					if (orderListDetails.value.length > 0) {
+				// 						printSddy.value.setVisible(true)
+				// 					}
+				// 				}, 2000);
+				// 			})
+				// 		})
+				// 	})
+				// })
+				message.error('当前订单暂无未打印面单')
 			} else if (resule.list.length == 1) {
 				window.open(resule.list[0].logistics_label, '_blank');
 			} else {
