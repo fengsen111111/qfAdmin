@@ -584,7 +584,16 @@
 				// })
 				message.error('当前订单暂无未打印面单')
 			} else if (resule.list.length == 1) {
-				window.open(resule.list[0].logistics_label, '_blank');
+				// 手动打印需要回调
+				global.axios.post(
+					'decoration/Order/printExpress',
+					{ id: resule.list[0].id },
+					global,
+					true
+				).then((resHd) => {
+					console.log('手动打印回调');
+				    window.open(resule.list[0].logistics_label, '_blank');
+				})
 			} else {
 				md_vis.value = true
 			}
@@ -593,7 +602,16 @@
 
 	// 弹窗重新打印
 	function cxPrintTwo(item) {
-		window.open(item.logistics_label, '_blank');
+		// 手动打印需要回调
+		global.axios.post(
+			'decoration/Order/printExpress',
+			{ id: item.id },
+			global,
+			true
+		).then((resHd) => {
+			console.log('手动打印回调');
+	     	window.open(item.logistics_label, '_blank');
+		})
 	}
 
 
