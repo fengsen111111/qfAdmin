@@ -951,11 +951,59 @@
 		}
 		return null; // 未找到
 	}
+
+	// pasForm.pas pas_vis pasOk pasCancel
+	const pasForm = ref({
+		pas: '',
+		pasTwo: ''
+	})
+	const pas_vis = ref(false)//提现密码
+
+	function pasOk() {
+		// 判断是否为空
+		if (!pasForm.value.pas || !pasForm.value.pasTwo) {
+			message.error('请输入并确认密码')
+			return false
+		}
+		// 判断长度 >= 6
+		if (pasForm.value.pas.length < 6) {
+			message.error('密码长度不能少于 6 位')
+			return false
+		}
+		// 判断两次是否一致
+		if (pasForm.value.pas !== pasForm.value.pasTwo) {
+			message.error('请检查两次输入是否一致')
+			return false
+		}
+		// 提交请求
+		global.axios
+			.post(
+				'decoration/Store/setStorePayPassword',
+				{ password: pasForm.value.pas },
+				global
+			)
+			.then((res) => {
+				message.success('设置成功')
+				pasCancel()
+			})
+	}
+	function pasCancel() {
+		pasForm.value.pas = ''
+		pasForm.value.pasTwo = ''
+		pas_vis.value = false
+	}
+
+
 	const allcz_type = ref('1')//1曝光量2商家充值3商家提现
 	function czvisopen(index) {
-		allcz_type.value = index
-		console.log('充值');
-		bgl_vis.value = true
+		if (index == 4) {
+			// 修改提现密码
+			pas_vis.value = true
+		} else {
+			allcz_type.value = index
+			console.log('充值');
+			bgl_vis.value = true
+		}
 	}
 	// 关闭三个类型的弹框
 	function handCancel() {
@@ -1202,9 +1250,9 @@
 			// 流水时间和流水类型列加宽
 			if (key === '流水时间') {
 				maxLen += 5
-			}else if(key === '流水类型'){
+			} else if (key === '流水类型') {
 				maxLen += 10
-			}else {
+			} else {
 				maxLen += 4 // 其他列默认加点余量
 			}
 			return { wch: maxLen }
@@ -1784,6 +1832,7 @@
 								<div style="padding: 20px;cursor: pointer;" v-if="shopObj.open_h_store_account=='c'">
 									<div class="a77" @click="czvisopen(2)">充值</div>
 									<div class="a78" @click="czvisopen(3)">提现</div>
+									<div class="a78_2" @click="czvisopen(4)">密码</div>
 								</div>
 								<div v-else style="padding: 20px;cursor: pointer;">
 									<div class="a77Cancel" @click="()=>{message.error('请开通商家汇付并绑定提现银行卡')}">充值</div>
@@ -1977,7 +2026,6 @@
 				</div>
 			</div>
 		</div>
-
 		<!-- 自动充值协议 -->
 		<a-drawer v-model:visible="zdcz_visible" class="custom-class" title="自动充值协议" placement="right">
 			<div>
@@ -2012,7 +2060,23 @@
 				</div>
 			</div>
 		</a-modal>
-
+		<!-- 设置提现密码 -->
+		<a-modal v-model:visible="pas_vis" title="提现密码修改" @ok="pasOk" @cancel="pasCancel">
+			<div>
+				<div style="display: flex;margin-top: 10px;">
+					<div style="display: flex;margin: 0 auto;">
+						<div style="margin-top: 5px;">提现密码：</div>
+						<a-input-password v-model:value="pasForm.pas" placeholder="请输入超6未密码" style="width: 300px;" />
+					</div>
+				</div>
+				<div style="display: flex;margin-top: 10px;">
+					<div style="display: flex;margin: 0 auto;">
+						<div style="margin-top: 5px;">确认密码：</div>
+						<a-input-password v-model:value="pasForm.pasTwo" placeholder="请输入并确认密码" style="width: 300px;" />
+					</div>
+				</div>
+			</div>
+		</a-modal>
 		<!-- 充值 -->
 		<a-modal v-model:visible="bgl_vis" :title="allcz_type==1?'曝光量充值':allcz_type==2?'商家充值':allcz_type==3?'商家提现':'充值'"
 			@ok="bglOk" @cancel="handCancel">
@@ -3086,6 +3150,14 @@
 
 	.a78 {
 		background-color: #e8c402;
+		color: #fff;
+		padding: 5px 20px;
+		border-radius: 10px;
+		margin-top: 10px;
+	}
+
+	.a78_2 {
+		background-color: #0C96F1;
 		color: #fff;
 		padding: 5px 20px;
 		border-radius: 10px;

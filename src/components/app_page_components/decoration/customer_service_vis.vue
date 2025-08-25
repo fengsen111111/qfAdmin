@@ -895,6 +895,177 @@
       })
   }
 
+
+  // 订单弹窗
+  // 搜索项
+  const searchConditions = ref([
+    {
+      "field": "id",
+      "label": "订单编号",
+      "value": "",
+      "searchType": "=",
+      "component": "Input"
+    },
+    {
+      "field": "status",
+      "label": "状态",
+      "value": "",
+      "searchType": "=",
+      "component": "Select",
+      "config": {
+        "values": [
+          {
+            "value": "a",
+            "label": "待支付"
+          },
+          {
+            "value": "b",
+            "label": "待拼成"
+          },
+          {
+            "value": "c",
+            "label": "待发货"
+          },
+          {
+            "value": "d",
+            "label": "待收货"
+          },
+          {
+            "value": "e",
+            "label": "已完成"
+          }
+        ]
+      }
+    },
+    {
+      "field": "create_time",
+      "label": "下单时间 起",
+      "value": "",
+      "searchType": ">=",
+      "component": "Date",
+      "config": {
+        "valueFormat": "YYYY-MM-DD HH:mm:ss"
+      }
+    },
+    {
+      "field": "create_time",
+      "label": "下单时间 止",
+      "value": "",
+      "searchType": "<=",
+      "component": "Date",
+      "config": {
+        "valueFormat": "YYYY-MM-DD HH:mm:ss"
+      }
+    },
+    {
+      "field": "address_name",
+      "label": "收货人",
+      "value": "",
+      "searchType": "like",
+      "component": "Input"
+    },
+    {
+      "field": "address_mobile",
+      "label": "收货电话",
+      "value": "",
+      "searchType": "=",
+      "component": "Input"
+    },
+    {
+      "field": "logistics_num",
+      "label": "快递单号",
+      "value": "",
+      "searchType": "=",
+      "component": "Input"
+    },
+    {
+      "field": "store_id",
+      "label": "商家",
+      "value": "",
+      "searchType": "=",
+      "component": "Search",
+      "config": {
+        "valueUrl": "decoration/Store/findLabel?value=",
+        "optionUrl": "decoration/Store/getRecords?key_word="
+      }
+    }
+  ],)
+  const orderVisable = ref(false)
+  // 打开商品选择
+  function xzDd() {
+    // console.log('选择商品',store_id,global.adminMsg.id);
+    if (store_id.value == global.adminMsg.id) {
+      message.error('当前身份为平台客服！')
+    } else {
+      orderVisable.value = !orderVisable.value
+    }
+  }
+  const orderList = ref([])
+  //获取与客户订单列表
+  function _orderList() {
+    global.axios.post('decoration/Order/findTableRecords', {
+      searchConditions: searchConditions.value,
+      recycleStatus: false,
+      sortConditions: []
+    }, global, true).then((res) => {
+      console.log('获取与客户订单列表', res.list);
+      // res.list.map((item) => {
+      //   if (item.name.length > 10) {
+      //     item.name = item.name.slice(0, 10) + '...'
+      //   }
+      // })
+      orderList.value = res.list
+    })
+  }
+  _orderList()
+  const columnsOrder = [
+    {
+      title: '订单编号',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: '商品名称',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: '商家名称',
+      dataIndex: 'store_name',
+      key: 'store_name',
+    },
+    {
+      title: '收货人',
+      dataIndex: 'address_name',
+      key: 'address_name',
+    },
+    {
+      title: '操作',
+      dataIndex: '',
+      key: 'action',
+    },
+  ]
+  function send_order(item) {
+    console.log('发送订单');
+    if (customer_service_state.connect_msg !== 'success') {
+      message.error('当前连接未建立，请稍等或关闭页面重连')
+      return false
+    }
+    console.log('发送订单', item);
+    let params = {
+      id: item.id,//id
+      name: item.name,//商品名称
+      store_name: item.store_name,//商家名称
+      address_name: item.address_name,//收货人
+    }
+    send({
+      content_type: 'order',
+      content: JSON.stringify(params),
+    })
+    customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'order', content: JSON.stringify(params), joiner_sign: store_id.value })
+    orderVisable.value = false
+  }
+
 </script>
 <template>
   <div align="center" class="table">
@@ -1150,9 +1321,10 @@
             style="float: right;width: 30%;height: 100%;padding: 0 10px;    display: flex;justify-self: center;justify-content: center;flex-direction: column;">
             <a-button type="primary" @click="send_word()">发送消息</a-button>
             <div
-              style="display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));grid-column-gap: 5px; align-items: center;margin: 5px 0px;">
-              <a-button type="primary" @click="xzBq()">选择表情</a-button>
-              <a-button type="primary" @click="xzSp()">选择商品</a-button>
+              style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));grid-column-gap: 5px; align-items: center;margin: 5px 0px;">
+              <a-button type="primary" @click="xzBq()">表情</a-button>
+              <a-button type="primary" @click="xzSp()">商品</a-button>
+              <a-button type="primary" @click="xzDd()">订单</a-button>
             </div>
             <div
               style="display: grid;grid-template-columns: repeat(3, minmax(0, 1fr));grid-column-gap: 5px; align-items: center;">
@@ -1181,6 +1353,23 @@
         :footer="null">
         <div style="padding: 20px;width: 100%">
           <img :src="customer_service_state.now_image" style="width:100%;height: auto" alt="">
+        </div>
+      </a-modal>
+      <!-- 选择订单弹框 -->
+      <a-modal v-model:visible="orderVisable" title="选择订单" width="800px" :footer="null">
+        <div style="width: 100%">
+          <a-table :dataSource="orderList" :columns="columnsOrder">
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'cover_image'">
+                <img @click="collapse(record.cover_image[0])" :src="record.cover_image"
+                  style="width: 40px;height: 40px;" alt="">
+              </template>
+              <template v-else-if="column.key === 'action'">
+                <!-- 操作 -->
+                <a-button @click="send_order(record)" type="primary" size="small">发送订单</a-button>
+              </template>
+            </template>
+          </a-table>
         </div>
       </a-modal>
       <!-- 选择商品弹框 -->

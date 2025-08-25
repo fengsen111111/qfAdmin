@@ -747,7 +747,7 @@
         global,
         true
       );
-      console.log('获取未打印订单', res);
+      // console.log('获取未打印订单', res);
       const list = res.list || [];
       if (!LODOP) {
         message.error('插件准备中，请稍等')
