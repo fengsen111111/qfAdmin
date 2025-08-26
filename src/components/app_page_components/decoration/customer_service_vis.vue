@@ -354,6 +354,7 @@
         emojiVisable.value = false//关闭表情
         cancelMsgNumber()// 去掉当前打开聊天框的消息红点
         _getMessage(item.id) //获取聊天内容
+        _orderList()//获取当前聊天对象的订单
         // 切换房间后自动聚焦  自动滚动到底部
         setTimeout(() => {
           scrollToBottom()
@@ -895,7 +896,6 @@
       })
   }
 
-
   // 订单弹窗
   // 搜索项
   const searchConditions = ref([
@@ -1003,21 +1003,20 @@
   const orderList = ref([])
   //获取与客户订单列表
   function _orderList() {
-    global.axios.post('decoration/Order/findTableRecords', {
-      searchConditions: searchConditions.value,
-      recycleStatus: false,
-      sortConditions: []
-    }, global, true).then((res) => {
-      console.log('获取与客户订单列表', res.list);
-      // res.list.map((item) => {
-      //   if (item.name.length > 10) {
-      //     item.name = item.name.slice(0, 10) + '...'
-      //   }
-      // })
-      orderList.value = res.list
-    })
+    // 平台无订单
+    if (customer_service_state.room.joiner_sign == 1) {
+      return false
+    } else {
+      global.axios.post('decoration/Order/webGetUserOrderList', {
+        user_id: customer_service_state.room.joiner_sign,
+        currentPage: 1,
+        perPage: 100,
+      }, global, true).then((res) => {
+        console.log('获取与客户订单列表', res.list);
+        orderList.value = res.list
+      })
+    }
   }
-  _orderList()
   const columnsOrder = [
     {
       title: '订单编号',
@@ -1025,9 +1024,14 @@
       key: 'id',
     },
     {
-      title: '商品名称',
+      title: '商品信息',
       dataIndex: 'name',
       key: 'name',
+    },
+    {
+      title: '下单时间',
+      dataIndex: 'store_name',
+      key: 'store_name',
     },
     {
       title: '商家名称',
@@ -1064,6 +1068,12 @@
     })
     customer_service_state.msg_list.push({ create_time: timeFormate(new Date()), content_type: 'order', content: JSON.stringify(params), joiner_sign: store_id.value })
     orderVisable.value = false
+  }
+
+  function fixOssUrl(url) {
+    if (!url) return '';
+    // 把 aliyuncs*** 替换成 aliyuncs.com
+    return url.replace('aliyuncs***', 'aliyuncs.com');
   }
 
 </script>
@@ -1108,6 +1118,7 @@
                   <span v-else-if="item.new_content_type=='hb'" class="col666666">[红包]</span>
                   <span v-else-if="item.new_content_type=='questions'" class="col666666">[问题列表]</span>
                   <span v-else-if="item.new_content_type=='question'" class="col666666">[自动回复问题]</span>
+                  <span v-else-if="item.new_content_type=='order'" class="col666666">[订单]</span>
                   <span v-else class="col666666"> </span>
                 </div>
               </div>
@@ -1218,6 +1229,27 @@
                       <div style="color: #666666;font-size: 14px;">规格:{{JSON.parse(item.content).goods_type_name}}
                       </div>
                       <div style="color: #FF0000;font-size: 14px;">￥{{JSON.parse(item.content).price}}</div>
+                    </div>
+                  </div>
+                  <div v-if="item.content_type == 'order'" class="left_content">
+                    <div s>
+                      <div class="">订单编号:{{JSON.parse(item.content).id}}</div>
+                      <div style="display: flex;margin-top: 10px;"
+                        v-for="(iss,index) in JSON.parse(item.content).goods_list" :key="iss.goods_id">
+                        <div>
+                          <img :src="fixOssUrl(iss.cover_image)" style="width: 60px;height: auto;float: left;border-radius: 3px;" />
+                        </div>
+                        <div style="margin-left: 10px;">
+                          <div style="display: flex;justify-content: space-between;">
+                            <div>{{iss.name}}</div>
+                            <div style="margin-left: 60px;">￥{{iss.price}}</div>
+                          </div>
+                          <div style="display: flex;justify-content: space-between;">
+                            <div>商品规格：{{iss.size_name}}</div>
+                            <div style="margin-left: 60px;">X{{iss.number}}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!--  -->
