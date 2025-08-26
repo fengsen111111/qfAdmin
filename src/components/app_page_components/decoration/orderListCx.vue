@@ -202,13 +202,13 @@
 		// 	// "width": 60,
 		// 	"component": "Varchar"
 		// },
-		{
-			"key": "logistics_time",
-			"dataIndex": 'logistics_time',
-			"title": "更新时间",
-			// "width": 60,
-			"component": "Varchar"
-		},
+		// {
+		// 	"key": "logistics_time",
+		// 	"dataIndex": 'logistics_time',
+		// 	"title": "更新时间",
+		// 	// "width": 60,
+		// 	"component": "Varchar"
+		// },
 	]
 
 	// 搜索项
@@ -345,9 +345,9 @@
 			console.log('选中行的 key:', selectedKeys)
 		},
 		getCheckboxProps: (record) => ({
-			disabled: record.status === 'a' || record.status === 'b',
+			disabled: record.status === 'a' || record.status === 'b' || record.status === 'c',
 			// 可以给禁用的复选框加个提示
-			title: (record.status === 'a' || record.status === 'b') ? '该状态行不可勾选' : '',
+			title: (record.status === 'a' || record.status === 'b' || record.status === 'c') ? '该状态行不可勾选' : '',
 		}),
 	}))
 
@@ -399,14 +399,17 @@
 	}
 
 	const pupType = ref('Keys') //弹窗类型 Keys 多选  Key 单个
+	const itemType = ref('打印')
 	// 批量打印
 	function handePl() {
+		itemType.value = '打印'
 		// console.log('selectedRowKeys', selectedRowKeys.value);
 		pupType.value = 'Keys'
 		printSddy.value.setVisible(true)
 	}
 	// 打印快递单多份
-	function handdykdd(item) {
+	function handdykdd(item, sysType) {
+		itemType.value = sysType
 		pupType.value = 'Key'
 		itemObj.value = item
 		printSddy.value.setVisible(true)
@@ -420,15 +423,15 @@
 
 	// 获取电子面单
 	function _getExpressList(item) {
-		md_vis.value = true
 		global.axios
 			.post('decoration/Order/getExpressList', {
-				"store_id": localStorage.getItem('storeId'),
+				// "store_id": localStorage.getItem('storeId'),
 				"order_id": item.id,
 			}, global)
 			.then((res) => {
 				console.log('获取电子面单', res);
 				dataListPup.value = res.list
+				md_vis.value = true
 			})
 	}
 
@@ -440,15 +443,20 @@
 		try {
 			const values = await formRef.value.validateFields();
 			console.log('values', values);
-			// 选择的面单设置成默认
-			global.axios
-				.post('decoration/Express/handleStatus', {
-					id: values.dzmdId
-				}, global)
-				.then((res) => {
-					console.log('默认', res);
-					handOk_old()//设置成默认后再电子面单确定
-				})
+			if (itemType.value == '发货') {
+				// 选择的面单设置成默认
+				global.axios
+					.post('decoration/Express/handleStatus', {
+						id: values.dzmdId
+					}, global)
+					.then((res) => {
+						console.log('默认', res);
+						handOk_old()//设置成默认后再电子面单确定
+					})
+			} else {
+				handOk_old()
+			}
+
 		} catch (errorInfo) {
 			console.log('Failed:', errorInfo);
 		}
@@ -463,34 +471,72 @@
 			}, 2000);
 			orderListDetails.value = []//清空携带数据
 			if (pupType.value == 'Key') {
-				// 获取订单详情
-				global.axios.post('decoration/Order/webGetOrderDetail', {
-					order_id: itemObj.value.id,
-				}, global, true).then((res) => {
-					orderListDetails.value = [res]
-					// 生成面单  并打印
+				if (itemObj.value.status == 'c') {
+					console.log('发货');
 					global.axios.post('decoration/Order/createExpress', {
 						order_id: itemObj.value.id,
 						after_sale_id: '',//售后id
 						number: 1,//生成数量
 					}, global, true).then((res) => {
-						global.axios.post('decoration/Order/getExpressList', {
+						global.axios.post('decoration/Order/webGetOrderDetail', {
 							order_id: itemObj.value.id,
-							store_id: localStorage.getItem('storeId')
-						}, global, true).then((resule) => {
-							console.log('获取电子面单', resule);
-							orderListDetails.value[0].dzmdurl = resule.list[0].logistics_label
-							orderListDetails.value[0].dzmdurlID = resule.list[0].id
-							orderListDetails.value[0].logistics_com = resule.list[0].logistics_com
-							orderListDetails.value[0].logistics_num = resule.list[0].logistics_num
-							orderListDetails.value[0].logistics_code = resule.list[0].logistics_code
-							if (orderListDetails.value.length > 0) {
-								fh_vis.value = false
-								printSddy.value.setVisTwo(true)
-							}
+						}, global, true).then((daxq) => {
+							global.axios.post('decoration/Order/getExpressList', {
+								order_id: itemObj.value.id,
+								// store_id: localStorage.getItem('storeId')
+							}, global, true).then((resule) => {
+								console.log('获取电子面单', resule);
+								resule.list.map((iss, index) => {
+									orderListDetails.value.push({
+										...JSON.parse(JSON.stringify(daxq)),
+										dzmdurl: iss.logistics_label,
+										dzmdurlID: iss.id,
+										logistics_com: iss.logistics_com,
+										logistics_num: iss.logistics_num,
+										logistics_code: iss.logistics_code,
+									})
+								})
+								setTimeout(() => {
+									if (orderListDetails.value.length > 0) {
+										fh_vis.value = false
+										printSddy.value.setVisTwo(true)
+										_findTableRecords()
+									}
+								}, 2000);
+							})
 						})
 					})
-				})
+				} else {
+					// 获取订单详情
+					global.axios.post('decoration/Order/webGetOrderDetail', {
+						order_id: itemObj.value.id,
+					}, global, true).then((daxq) => {
+						console.log('打印');
+						global.axios.post('decoration/Order/getExpressList', {
+							order_id: itemObj.value.id,
+							// store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							console.log('获取电子面单', resule);
+							resule.list.map((iss, index) => {
+								orderListDetails.value.push({
+									...JSON.parse(JSON.stringify(daxq)),
+									dzmdurl: iss.logistics_label,
+									dzmdurlID: iss.id,
+									logistics_com: iss.logistics_com,
+									logistics_num: iss.logistics_num,
+									logistics_code: iss.logistics_code,
+								})
+							})
+							setTimeout(() => {
+								if (orderListDetails.value.length > 0) {
+									fh_vis.value = false
+									printSddy.value.setVisTwo(true)
+								}
+							}, 2000);
+						})
+					})
+				}
+
 			} else {
 				// 多选打印
 				selectedRowKeys.value.map((item, index) => {
@@ -498,26 +544,19 @@
 						order_id: item,
 					}, global, true).then((res) => {
 						let obj = res
-						// 生成电子面单 ,然后打印
-						global.axios.post('decoration/Order/createExpress', {
+						global.axios.post('decoration/Order/getExpressList', {
 							order_id: item,
-							after_sale_id: '',//售后id
-							number: 1,//生成数量
-						}, global, true).then((res) => {
-							global.axios.post('decoration/Order/getExpressList', {
-								order_id: item,
-								store_id: localStorage.getItem('storeId')
-							}, global, true).then((resule) => {
-								console.log('获取电子面单', resule);
-								resule.list.map((iss, index) => {
-									orderListDetails.value.push({
-										...JSON.parse(JSON.stringify(res)),
-										dzmdurl: iss.logistics_label,
-										dzmdurlID: iss.id,
-										logistics_com: iss.logistics_com,
-										logistics_num: iss.logistics_num,
-										logistics_code: iss.logistics_code,
-									})
+							// store_id: localStorage.getItem('storeId')
+						}, global, true).then((resule) => {
+							console.log('获取电子面单', resule);
+							resule.list.map((iss, index) => {
+								orderListDetails.value.push({
+									...JSON.parse(JSON.stringify(res)),
+									dzmdurl: iss.logistics_label,
+									dzmdurlID: iss.id,
+									logistics_com: iss.logistics_com,
+									logistics_num: iss.logistics_num,
+									logistics_code: iss.logistics_code,
 								})
 							})
 						})
@@ -535,7 +574,6 @@
 			console.log('Failed:', errorInfo);
 		}
 	}
-
 	import Print from './print.vue'
 
 	// 上级跳转
@@ -548,37 +586,10 @@
 	function cxPrint(item) {
 		global.axios.post('decoration/Order/getExpressList', {
 			order_id: item.id,
-			store_id: localStorage.getItem('storeId')
+			// store_id: localStorage.getItem('storeId')
 		}, global, true).then((resule) => {
 			console.log('获取电子面单', resule);
 			if (resule.list.length == 0) {
-				// global.axios.post('decoration/Order/webGetOrderDetail', {
-				// 	order_id: item.id,
-				// }, global, true).then((resShop) => {
-				// 	global.axios.post('decoration/Order/createExpress', {
-				// 		order_id: item.id,
-				// 		after_sale_id: '',//售后id
-				// 		number: 1,//生成数量
-				// 	}, global, true).then((res) => {
-				// 		global.axios.post('decoration/Order/getExpressList', {
-				// 			order_id: item.id,
-				// 			store_id: localStorage.getItem('storeId')
-				// 		}, global, true).then((resule) => {
-				// 			resule.list.map((iss, index) => {
-				// 				orderListDetails.value.push({
-				// 					...JSON.parse(JSON.stringify(resShop)),
-				// 					dzmdurl: iss.logistics_label,
-				// 					dzmdurlID: iss.id,
-				// 				})
-				// 				setTimeout(() => {
-				// 					if (orderListDetails.value.length > 0) {
-				// 						printSddy.value.setVisible(true)
-				// 					}
-				// 				}, 2000);
-				// 			})
-				// 		})
-				// 	})
-				// })
 				message.error('当前订单暂无未打印面单')
 			} else if (resule.list.length == 1) {
 				// 手动打印需要回调
@@ -592,7 +603,7 @@
 					window.open(resule.list[0].logistics_label, '_blank');
 				})
 			} else {
-				md_vis.value = true
+				_getExpressList(item)
 			}
 		})
 	}
@@ -621,8 +632,8 @@
 			}, global)
 			.then((res) => {
 				dzmdList.value = res.list
-				res.list.map((item)=>{
-					if(item.status=='Y'){
+				res.list.map((item) => {
+					if (item.status == 'Y') {
 						formState.dzmdId = item.id
 					}
 				})
@@ -715,13 +726,16 @@
 							<template v-if="column.dataIndex === 'action'">
 								<div style="font-size: 12px;cursor: pointer;">
 									<div @click="cxPrint(record)"
-										v-if="record.status!='a'&&record.status!='b'&&record.status!='z'"
+										v-if="record.status!='a'&&record.status!='b'&&record.status!='c'&&record.status!='z'"
 										style="color: #1890FF;">重新打印
 									</div>
 									<div @click="openSon(record)" style="color: #1890FF;">订单详情</div>
-									<div v-if="record.status!='a'&&record.status!='b'&&record.status!='z'"
-										style="color: #1890FF;" @click="handdykdd(record)">
+									<div v-if="record.status!='a'&&record.status!='b'&&record.status!='c'&&record.status!='z'"
+										style="color: #1890FF;" @click="handdykdd(record,'打印')">
 										打印快递单|多份</div>
+									<div v-if="record.status=='c'" style="color: #1890FF;"
+										@click="handdykdd(record,'发货')">
+										发货</div>
 								</div>
 							</template>
 							<!-- 状态 -->
@@ -775,12 +789,15 @@
 					<!-- <a-form-item label="快递公司" name="快递公司" >
 						<a-input v-model:value="formState.number" placeholder="请填写生成数量" />
 					</a-form-item> -->
-					<a-form-item label="电子面单" name="dzmdId" :rules="[{ required: true, message: '请选择电子面单' }]">
-						<a-select ref="select" placeholder="请选择" v-model:value="formState.dzmdId" style="width: 100%">
-							<a-select-option :value="item.id" :key="item.id"
-								v-for="item in dzmdList">{{item.company_name}}</a-select-option>
-						</a-select>
-					</a-form-item>
+					<template v-if="itemType=='发货'">
+						<a-form-item label="电子面单" name="dzmdId" :rules="[{ required: true, message: '请选择电子面单' }]">
+							<a-select ref="select" placeholder="请选择" v-model:value="formState.dzmdId"
+								style="width: 100%">
+								<a-select-option :value="item.id" :key="item.id"
+									v-for="item in dzmdList">{{item.company_name}}</a-select-option>
+							</a-select>
+						</a-form-item>
+					</template>
 				</a-form>
 			</a-spin>
 		</a-modal>

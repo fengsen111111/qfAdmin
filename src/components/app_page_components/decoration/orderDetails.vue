@@ -91,15 +91,18 @@
 			orderDetails.value = res
 			// 获取电子面单
 			global.axios.post('decoration/Order/getExpressList', {
-				store_id: localStorage.getItem('storeId'),
+				// store_id: localStorage.getItem('storeId'),
 				order_id: pageData.data.id,
 			}, global, true).then((resule) => {
-				// console.log('后台获取订单详情', res);
+				console.log('获取电子面单', resule);
 				resule.list.map((item, index) => {
 					// 深拷贝第0个对象
 					orderListDetails.value[index] = JSON.parse(JSON.stringify(orderDetails.value));
 					orderListDetails.value[index].dzmdurl = item.logistics_label;
 					orderListDetails.value[index].dzmdurlID = item.id;
+					orderListDetails.value[index].logistics_com = item.logistics_com
+					orderListDetails.value[index].logistics_num = item.logistics_num
+					orderListDetails.value[index].logistics_code = item.logistics_code
 				});
 			})
 		})
@@ -130,6 +133,73 @@
 		}
 	}
 
+	const columnsPup = [
+		{
+			"key": "action",
+			"dataIndex": 'action',
+			"title": "操作",
+			"width": 100,
+			"component": "Buttons",
+			"fixed": "left",
+		},
+		{
+			"key": "id",
+			"dataIndex": 'id',
+			"title": "电子面单ID ",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_num",
+			"dataIndex": 'logistics_num',
+			"title": "物流单号",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_com",
+			"dataIndex": 'logistics_com',
+			"title": "物流名称",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "logistics_code",
+			"dataIndex": 'logistics_code',
+			"title": "公司编码",
+			// "width": 60,
+			"component": "Varchar"
+		},
+	]
+
+	// 弹窗重新打印
+	function cxPrintTwo(item) {
+		console.log('item', item);
+		// 手动打印需要回调
+		global.axios.post(
+			'decoration/Order/printExpress',
+			{ id: item.id },
+			global,
+			true
+		).then((resHd) => {
+			console.log('手动打印回调');
+			window.open(item.dzmdurl, '_blank');
+		})
+	}
+	const wlInfo = ref({})
+	const wlVis = ref(false)
+	// 查看物流信息
+	function _getLogistics(item) {
+		global.axios
+			.post('decoration/Order/getLogistics', {
+				"logistics_num": item.logistics_num,
+			}, global)
+			.then((res) => {
+				console.log('查看物流信息', res);
+				wlInfo.value = res
+				wlVis.value = true
+			})
+	}
 </script>
 
 <template>
@@ -161,17 +231,35 @@
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="display: flex;">
-				<div style="width: 35%;padding: 10px 30px;">
-
+				<div style="width: 50%;padding: 10px 30px;">
 					<div style="display: flex;justify-content: space-between;align-items: center;">
 						<div
 							style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 							物流信息</div>
-						<div style="margin-top: 10px;">
-							预计到达时间: {{orderDetails.logistics_state =='0'?orderDetails.deliveryExpendTime:'未知'}}</div>
+						<div style="margin-top: 10px;" v-if="orderDetails.logistics_state =='0'">
+							预计到达时间: {{orderDetails.deliveryExpendTime}}</div>
 					</div>
-					<div style="padding: 20px;">
-						<div v-for="(item,index) in orderDetails.logistics_detail" :key="index"
+					<div style="padding: 20px 0px;">
+						<div v-if="!orderListDetails.length">
+							<a-empty />
+						</div>
+						<div v-else>
+							<a-table :columns="columnsPup" :data-source="orderListDetails" :scroll="{ x: 520,y:300}">
+								<template #bodyCell="{ column, record  }">
+									<!-- 操作 -->
+									<template v-if="column.dataIndex === 'action'">
+										<div style="font-size: 12px;cursor: pointer;">
+											<div @click="cxPrintTwo(record)" v-if="record.status!='a'&&record.status!='b'"
+												style="color: #1890FF;">重新打印
+											</div>
+											<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
+										</div>
+									</template>
+								</template>
+							</a-table>
+						</div>
+						
+						<!-- <div v-for="(item,index) in orderDetails.logistics_detail" :key="index"
 							style="position: relative;padding-bottom: 10px;"
 							:style="{ 'border-left': index==orderDetails.logistics_detail.length-1 ? 'none' : '2px solid #dee5ec' }">
 							<div style="position: absolute;width: 20px;height: 20px;border-radius: 50%;top: 0px;left: -11px;"
@@ -184,11 +272,11 @@
 						</div>
 						<div v-if="!orderDetails.logistics_detail">
 							<a-empty />
-						</div>
+						</div> -->
 					</div>
 				</div>
 				<div style="width: 8px;background-color: #f5f5f5;"></div>
-				<div style="width: 65%;padding: 10px 30px;">
+				<div style="width: 50%;padding: 10px 30px;">
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 						订单信息</div>
@@ -290,7 +378,6 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 10px 30px;">
@@ -298,10 +385,11 @@
 				</div>
 				<div style="margin-top: 10px;">
 					<div class="a88" style="text-align: center;">
-						<div class="w20_100" style="text-align: left;">商品名称</div>
+						<div class="w10_100">商品ID</div>
+						<div class="w20_100">商品名称</div>
 						<div class="w10_100">商品原价</div>
 						<div class="w10_100">商品数量</div>
-						<div class="w20_100">应付金额</div>
+						<div class="w10_100">应付金额</div>
 						<div class="w10_100">优惠金额</div>
 						<div class="w10_100">实付金额</div>
 						<div class="w10_100">售后金额</div>
@@ -314,16 +402,23 @@
 					</div>
 					<div v-for="item in orderDetails.goods_list" :key="item" class="a89"
 						style="align-items: center;text-align: center;">
-						<div class="w20_100" style="display: flex;align-items: center;text-align: left;">
-							<img :src="item.cover_image" style="width: 40px;height: 40px;border-radius: 4px;" alt="">
-							<div style="padding: 5px 10px;">
-								<div>{{item.goods_name}}</div>
-								<div style="color: #999999;">规格：{{item.size_name}}</div>
+						<div class="w10_100">{{item.goods_id}}</div>
+						<div class="w20_100">
+							<div style="display: flex;">
+								<div style="display: flex;align-items: center;padding:0px 20px;margin: 0 auto;">
+									<img :src="item.cover_image" style="width: 40px;height: 40px;border-radius: 4px;"
+										alt="">
+									<div style="padding: 5px 10px;">
+										<div>{{item.goods_name}}</div>
+										<div style="color: #999999;">规格：{{item.size_name}}</div>
+									</div>
+								</div>
 							</div>
+
 						</div>
 						<div class="w10_100">{{item.old_price}}</div>
 						<div class="w10_100">X{{item.number}}</div>
-						<div class="w20_100">
+						<div class="w10_100">
 							<div>{{item.pay_price}}</div>
 							<div style="color: #999999;">商品金额：{{item.price}}</div>
 							<div style="color: #999999;">运费：{{orderDetails.carriage_price}}</div>
@@ -345,37 +440,66 @@
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">
 				<!--  v-if="orderDetails.id" -->
-				<div style="display: flex;margin: 0 auto;">
+				<!-- <div style="display: flex;margin: 0 auto;">
 					<Print :orderListDetails="orderListDetails" @djtzmk="sondjtzmk" />
-				</div>
+				</div> -->
 			</div>
 		</div>
+		<!-- 物流信息 -->
+		<a-drawer v-model:visible="wlVis" @close="wlVis=false" class="custom-class" title="物流信息" placement="right">
+			<div>
+				<div>物流公司：{{wlInfo.logistics_com}}</div>
+				<div>物流单号: {{wlInfo.logistics_num}}</div>
+				<div style="display: flex;">
+					<div>物流详情：</div>
+					<div v-if="wlInfo.logistics_detail">
+						<div v-for="item in wlInfo.logistics_detail" :key="item">
+							{{item}}
+						</div>
+					</div>
+					<div v-else>
+						暂无物流详情
+					</div>
+				</div>
+			</div>
+		</a-drawer>
 	</div>
 </template>
 
 <style lang="less" scoped>
 	.w30_100 {
 		width: 30%;
+		/* border: 1px solid red; */
 	}
 
 	.w25_100 {
 		width: 25%;
+		/* border: 1px solid red; */
+
 	}
 
 	.w20_100 {
 		width: 20%;
+		/* border: 1px solid red; */
+
 	}
 
 	.w15_100 {
 		width: 15%;
+		/* border: 1px solid red; */
+
 	}
 
 	.w10_100 {
 		width: 10%;
+		/* border: 1px solid red; */
+
 	}
 
 	.w5_100 {
 		width: 5%;
+		/* border: 1px solid red; */
+
 	}
 
 	::v-deep(.ant-select:not(.ant-select-customize-input) .ant-select-selector) {

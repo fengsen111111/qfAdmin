@@ -742,7 +742,7 @@
         'decoration/Order/getExpressList',
         {
           store_id: localStorage.getItem("storeId"),
-          order_id: ''
+          // order_id: ''
         },
         global,
         true

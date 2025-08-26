@@ -13,7 +13,7 @@
     import { getLodop } from './LodopFuncs.js';
 
     const global = inject("global").value;
-    const emit = defineEmits(["djtzmk","sonQddfh"]);
+    const emit = defineEmits(["djtzmk", "sonQddfh"]);
 
     const visible = ref(false);
     const visPrint = ref(false);
@@ -85,10 +85,10 @@
         wzzzdy()
         setTimeout(() => ksDy.value = false, 3000);
     }
-    defineExpose({ 
+    defineExpose({
         setVisible: val => visible.value = val,
-        setVisTwo:val => visPrint.value = val //
-     });
+        setVisTwo: val => visPrint.value = val //
+    });
     const container = ref(null)
 
     // https://api.kuaidi100.com/label/getImage/20250820/BD0502BBCEBF4CACB738E23A6C530426
@@ -262,7 +262,7 @@
                         </tr>
                         <tr v-for="item in orderListDetails" :key="item.id">
                             <td>{{maskName(item.address_name)}}</td>
-                            <td>{{item.address_mobile.slice(0,3)+'****'+item.address_mobile.slice(6,10)}}</td>
+                            <td>{{item.address_mobile?item.address_mobile.slice(0,3)+'****'+item.address_mobile.slice(6,10):''}}</td>
                             <td>
                                 <div style="width: 200px;word-wrap:break-word;word-break:normal; ">
                                     {{maskAddress(item.address)}}
