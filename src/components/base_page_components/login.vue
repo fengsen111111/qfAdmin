@@ -786,7 +786,9 @@
         <span @click="handUrl('/ruleCenter?title=学习中心')">学习中心</span>
         <span @click="handLzjb()">廉正举报</span>
         <span style="border: 1px solid #999999;padding: 2px 10px;border-radius: 3px;">
-          <WindowsOutlined />PC版
+          <a href="https://admin.qfcss.cn/圈风PC后台.zip">
+            <WindowsOutlined />PC版
+          </a>
         </span>
       </div>
     </div>
