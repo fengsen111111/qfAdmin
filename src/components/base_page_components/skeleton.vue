@@ -750,7 +750,7 @@
       // console.log('获取未打印订单', res);
       const list = res.list || [];
       if (!LODOP) {
-        message.error('插件准备中，请稍等')
+        // message.error('插件准备中，请稍等')
         return false
       } else {
         // 顺序打印

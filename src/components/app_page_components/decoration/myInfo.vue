@@ -1402,6 +1402,23 @@
 			});
 	}
 	_getStoreExportList()
+
+	// 打开子页面
+	function openChildPage(pageData) {
+		emit("openChildPage", pageData);
+	}
+	// 修改资料
+	function editInfo() {
+		openChildPage({
+			type: 'FormPage',
+			url: 'decoration/Store/getEditStructure',
+			data: {
+				id: localStorage.getItem('storeId'),
+				recycleStatus: false,
+			},
+			parent_page_key: pageData.page_key,
+		});
+	}
 </script>
 
 <template>
@@ -1431,7 +1448,12 @@
 
 				<!-- 店铺信息 -->
 				<div v-if="titleType=='店铺信息'" style="overflow: auto;height: 80vh;">
-					<div class="a23" style="margin-top: 10px;">店铺信息</div>
+					<div style="display: flex;margin-top: 10px;">
+						<div class="a23">店铺信息</div>
+						<span @click="editInfo"
+							style="margin-left: 10px;color: #0c96f1;margin-top: 4px;cursor: pointer;">修改资料</span>
+					</div>
+
 					<div class="a24">
 						<div class="a25">
 							<template v-for="item in infoArr" :key="item">
