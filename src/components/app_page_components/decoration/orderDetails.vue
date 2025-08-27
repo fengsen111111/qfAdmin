@@ -200,6 +200,73 @@
 				wlVis.value = true
 			})
 	}
+
+
+	const columnsGoodlist = [
+		{
+			"key": "goods_id",
+			"dataIndex": 'goods_id',
+			"title": "商品ID ",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "goodInfo",
+			"dataIndex": 'goodInfo',
+			"title": "商品信息",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "old_price",
+			"dataIndex": 'old_price',
+			"title": "商品原价",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "number",
+			"dataIndex": 'number',
+			"title": "商品数量",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "moneyInfo",
+			"dataIndex": 'moneyInfo',
+			"title": "应付金额",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "not_pay_price",
+			"dataIndex": 'not_pay_price',
+			"title": "优惠金额",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "pay_price",
+			"dataIndex": 'pay_price',
+			"title": "实付金额",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "refund_price",
+			"dataIndex": 'refund_price',
+			"title": "售后金额",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "status",
+			"dataIndex": 'status',
+			"title": "订单状态",
+			// "width": 60,
+			"component": "Varchar"
+		},
+	]
 </script>
 
 <template>
@@ -249,8 +316,9 @@
 									<!-- 操作 -->
 									<template v-if="column.dataIndex === 'action'">
 										<div style="font-size: 12px;cursor: pointer;">
-											<div @click="cxPrintTwo(record)" v-if="record.status!='a'&&record.status!='b'"
-												style="color: #1890FF;">重新打印
+											<div @click="cxPrintTwo(record)"
+												v-if="record.status!='a'&&record.status!='b'" style="color: #1890FF;">
+												重新打印
 											</div>
 											<div @click="_getLogistics(record)" style="color: #1890FF;">查看物流</div>
 										</div>
@@ -258,21 +326,6 @@
 								</template>
 							</a-table>
 						</div>
-						
-						<!-- <div v-for="(item,index) in orderDetails.logistics_detail" :key="index"
-							style="position: relative;padding-bottom: 10px;"
-							:style="{ 'border-left': index==orderDetails.logistics_detail.length-1 ? 'none' : '2px solid #dee5ec' }">
-							<div style="position: absolute;width: 20px;height: 20px;border-radius: 50%;top: 0px;left: -11px;"
-								:style="{ 'background-color': index==orderDetails.logistics_detail.length-1 ? '#0c96f1' : '#dee5ec' }">
-							</div>
-							<div style="padding: 0px 20px;font-weight: bold;">
-								<div>物流状态 2020-10-10 12:12:12</div>
-								<div style="color: #999999;">物流状态物流状态物流状态</div>
-							</div>
-						</div>
-						<div v-if="!orderDetails.logistics_detail">
-							<a-empty />
-						</div> -->
 					</div>
 				</div>
 				<div style="width: 8px;background-color: #f5f5f5;"></div>
@@ -280,110 +333,176 @@
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
 						订单信息</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">商家名称：</div>
-							<div>
-								{{is_ptsj=='平台'?orderDetails.store_name:maskName(orderDetails.store_name) }}
+					<a-row style="padding: 0 20px;">
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>商家名称：</div>
+								<div>
+									{{is_ptsj=='平台'?orderDetails.store_name:maskName(orderDetails.store_name) }}
+								</div>
 							</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">订单编号：</div>
-							<div>{{orderDetails.id}}</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">下单时间：</div>
-							<div>{{orderDetails.create_time}}</div>
-						</div>
-					</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">商家电话：</div>
-							<div style="color: black;">
-								{{is_ptsj=='平台'?orderDetails.store_mobile:(orderDetails.store_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
-								'$1****$2') || '') }}
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>订单编号：</div>
+								<div style="word-break: break-all; white-space: normal;">{{orderDetails.id}}</div>
 							</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">收货时间：</div>
-							<div style="color: black;">{{orderDetails.over_time=='0'?'暂无':orderDetails.over_time}}</div>
-						</div>
-					</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>下单时间：</div>
+								<div style="word-break: break-all; white-space: normal;">{{orderDetails.create_time}}
+								</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>商家电话：</div>
+								<div style="color: black;">
+									{{is_ptsj=='平台'?orderDetails.store_mobile:(orderDetails.store_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+									'$1****$2') || '') }}
+								</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>收货时间：</div>
+								<div style="color: black;word-break: break-all; white-space: normal;">
+									{{orderDetails.over_time=='0'?'暂无':orderDetails.over_time}}
+								</div>
+							</div>
+						</a-col>
+					</a-row>
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
-						收货信息</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;padding-left: 13px;">收货人：</div>
-							<div>
-								{{is_ptsj=='平台'?orderDetails.address_name:maskName(orderDetails.address_name) }}
-							</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">联系电话：</div>
-							<div>
-								{{is_ptsj=='平台'?orderDetails.address_mobile:(orderDetails.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
-								'$1****$2') || '') }}
-							</div>
-						</div>
+						收货信息
 					</div>
-					<div style="display: flex;color: #4e5969;padding: 5px 20px 0px 40px;">
-						<div style="width: 80px;">收货地址：</div>
-						<div style="width: 82%;color: black;">
-							{{is_ptsj=='平台'?orderDetails.address:maskAddress(orderDetails.address) }}
-						</div>
-					</div>
+					<a-row style="padding: 0 20px;">
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div style="padding-left: 13px;">收货人：</div>
+								<div>
+									{{is_ptsj=='平台'?orderDetails.address_name:maskName(orderDetails.address_name) }}
+								</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>联系电话：</div>
+								<div>
+									{{is_ptsj=='平台'?orderDetails.address_mobile:(orderDetails.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+									'$1****$2') || '') }}
+								</div>
+							</div>
+						</a-col>
+						<a-col :xl="24" :lg="24">
+							<div style="display: flex;color: #4e5969;">
+								<div>收货地址：</div>
+								<div style="word-break: break-all; white-space: normal;">
+									{{is_ptsj=='平台'?orderDetails.address:maskAddress(orderDetails.address) }}
+								</div>
+							</div>
+						</a-col>
+					</a-row>
 					<div
 						style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;margin-top: 10px;">
-						支付信息</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">支付状态：</div>
-							<div v-if="orderDetails.status!=='a'">已支付</div>
-							<div v-else>待支付</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">实付金额：</div>
-							<div>{{orderDetails.pay_price}}</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 100px;margin-left: -13px;">订单总金额：</div>
-							<div style="margin-left: -7px;">{{orderDetails.price}}</div>
-						</div>
+						支付信息
 					</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">优惠金额：</div>
-							<div style="color: black;">{{orderDetails.not_pay_price}}</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 100px;margin-left: -13px;">订单服务费：</div>
-							<div style="color: black;margin-left: -7px;">{{orderDetails.plate_price}}</div>
-						</div>
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 80px;">支付时间：</div>
-							<div style="color: black;">{{orderDetails.pay_time}}</div>
-						</div>
-					</div>
-					<div
-						style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));padding: 5px 20px 0px 40px;">
-						<div style="display: flex;color: #4e5969;">
-							<div style="width: 100px;margin-left: -28px;">商家预计收入：</div>
-							<div style="color: black;margin-left: 7px;">{{orderDetails.store_price}}</div>
-						</div>
-					</div>
+					<a-row style="padding: 0 20px;">
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>支付状态：</div>
+								<div v-if="orderDetails.status!=='a'">已支付</div>
+								<div v-else>待支付</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>实付金额：</div>
+								<div>{{orderDetails.pay_price}}</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>订单总金额：</div>
+								<div style="margin-left: -7px;">{{orderDetails.price}}</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>优惠金额：</div>
+								<div style="color: black;">{{orderDetails.not_pay_price}}</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>订单服务费：</div>
+								<div style="color: black;margin-left: -7px;">{{orderDetails.plate_price}}</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>支付时间：</div>
+								<div style="word-break: break-all; white-space: normal;color: black;">
+									{{orderDetails.pay_time}}</div>
+							</div>
+						</a-col>
+						<a-col :xxl="8" :xl="12">
+							<div style="display: flex;color: #4e5969;">
+								<div>商家预计收入：</div>
+								<div style="color: black;margin-left: 7px;">{{orderDetails.store_price}}</div>
+							</div>
+						</a-col>
+					</a-row>
 				</div>
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 10px 30px;">
 				<div style="font-size: 18px;border-left: 4px solid #0c96f1;padding-left: 10px;font-weight: bold;">商品明细
 				</div>
-				<div style="margin-top: 10px;">
+				<div v-if="!orderListDetails.length">
+					<a-empty />
+				</div>
+				<div v-else>
+					<a-table :columns="columnsGoodlist" :data-source="orderDetails.goods_list"
+						:scroll="{ x:1600,y:300}">
+						<template #bodyCell="{ column, record  }">
+							<!-- 商品信息 -->
+							<template v-if="column.dataIndex === 'goodInfo'">
+								<div style="display: flex;">
+									<div style="display: flex;align-items: center;margin: 0 auto;">
+										<img :src="record.cover_image"
+											style="width: 40px;height: 40px;border-radius: 4px;" alt="">
+										<div style="padding: 5px 10px;">
+											<div>{{record.goods_name}}</div>
+											<div style="color: #999999;">规格：{{record.size_name}}</div>
+										</div>
+									</div>
+								</div>
+							</template>
+							<template v-if="column.dataIndex === 'moneyInfo'">
+								<div>
+									<div>{{record.pay_price}}</div>
+									<div style="color: #999999;">商品金额：{{record.price}}</div>
+									<div style="color: #999999;">运费：{{orderDetails.carriage_price}}</div>
+								</div>
+							</template>
+							<template v-if="column.dataIndex === 'status'">
+								<div>
+									<span v-if="orderDetails.status=='a'">待支付</span>
+									<span v-else-if="orderDetails.status=='b'">待拼成</span>
+									<span v-else-if="orderDetails.status=='c'">待发货</span>
+									<span v-else-if="orderDetails.status=='d'">待收货</span>
+									<span v-else-if="orderDetails.status=='e'">已完成</span>
+									<span v-else-if="orderDetails.status=='z'">拼团失败</span>
+								</div>
+							</template>
+
+
+						</template>
+					</a-table>
+				</div>
+				<!-- <div style="margin-top: 10px;">
 					<div class="a88" style="text-align: center;">
 						<div class="w10_100">商品ID</div>
 						<div class="w20_100">商品名称</div>
@@ -435,7 +554,7 @@
 							<span v-else-if="orderDetails.status=='z'">拼团失败</span>
 						</div>
 					</div>
-				</div>
+				</div> -->
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">

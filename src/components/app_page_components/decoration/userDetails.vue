@@ -237,7 +237,7 @@
 					<div
 						style="width: 45%;display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));border-right: 1px solid #f5f5f5;padding: 10px 0px;">
 						<div style="display: flex;">
-							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">真实姓名：</div>
+							<div style="width: 100px;text-align: right;color: #4e5969;">真实姓名：</div>
 							<div>
 								{{is_ptsj=='平台'?userInfo.auth_name:maskName(userInfo.auth_name) }}
 							</div>
@@ -251,7 +251,7 @@
 									style="cursor: pointer;color: #0c96f1;">查看</span></div>
 						</div>
 						<div style="display: flex;">
-							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">注册日期：</div>
+							<div style="width: 100px;text-align: right;color: #4e5969;">注册日期：</div>
 							<div>{{userInfo.create_time}}</div>
 						</div>
 						<div style="display: flex;">
@@ -265,7 +265,7 @@
 							</div>
 						</div>
 						<div style="display: flex;">
-							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">手机号：</div>
+							<div style="width: 100px;text-align: right;color: #4e5969;">手机号：</div>
 							<div>
 								{{is_ptsj=='平台'?userInfo.mobile:(userInfo.mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
 								'$1****$2') || '') }}
@@ -282,7 +282,7 @@
 							</div>
 						</div>
 						<div style="display: flex;">
-							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">推荐官状态：</div>
+							<div style="width: 100px;text-align: right;color: #4e5969;">推荐官状态：</div>
 							<div v-if="userInfo.sharer_status=='a'">未开通</div>
 							<div v-else-if="userInfo.sharer_status=='b'">申请开通中</div>
 							<div v-else-if="userInfo.sharer_status=='c'">已开通，未缴纳保证金</div>
@@ -299,7 +299,7 @@
 							<div>禁止<a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" style="margin: 0 5px;" />允许</div>
 						</div>
 						<div style="display: flex;">
-							<div style="width: 100px;text-align: right;margin-right: 20px;color: #4e5969;">商家状态：</div>
+							<div style="width: 100px;text-align: right;color: #4e5969;">商家状态：</div>
 							<div v-if="userInfo.store_status=='a'">未开通</div>
 							<div v-else-if="userInfo.store_status=='b'">申请开通中</div>
 							<div v-else-if="userInfo.store_status=='c'">已开通</div>
