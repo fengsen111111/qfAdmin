@@ -82,14 +82,14 @@
 
 	// 订单搜索项
 	const order_sux = ref({
-		status: '',
+		status: null,
 		time: [],
 		id: '',
 	})
 
 	// 重置
 	function chongz() {
-		order_sux.value.status = ''
+		order_sux.value.status = null
 		order_sux.value.id = ''
 		order_sux.value.time = []
 		webGetUserOrderList()
@@ -197,6 +197,71 @@
 			return '*'; // 只有1个字
 		}
 	}
+	const columnsOrder = [
+		{
+			"key": "action",
+			"dataIndex": 'action',
+			"title": "操作 ",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "id",
+			"dataIndex": 'id',
+			"title": "订单编号",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "status",
+			"dataIndex": 'status',
+			"title": "订单状态",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "pay_price",
+			"dataIndex": 'pay_price',
+			"title": "实付金额",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "goodInfo",
+			"dataIndex": 'goodInfo',
+			"title": "商品信息",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "create_time",
+			"dataIndex": 'create_time',
+			"title": "下单时间",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "nameEdit",
+			"dataIndex": 'nameEdit',
+			"title": "收货人",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "mobileEdit",
+			"dataIndex": 'mobileEdit',
+			"title": "手机号",
+			// "width": 60,
+			"component": "Varchar"
+		},
+		{
+			"key": "addressEdit",
+			"dataIndex": 'addressEdit',
+			"title": "地址",
+			// "width": 60,
+			"component": "Varchar"
+		},
+	]
 </script>
 
 <template>
@@ -247,12 +312,12 @@
 								<MessageFilled style="color: #00d521;font-size: 17px;margin-right: 10px;" />
 							</div> -->
 							<div>实名状态：</div>
-							<div>{{userInfo.auth_name?'已实名':'未实名'}} <span v-if="userInfo.auth_name" @click="showUserInfo"
-									style="cursor: pointer;color: #0c96f1;">查看</span></div>
+							<div>{{userInfo.auth_name?'已实名':'未实名'}} <span v-if="userInfo.auth_name"
+									@click="showUserInfo" style="cursor: pointer;color: #0c96f1;">查看</span></div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;color: #4e5969;">注册日期：</div>
-							<div>{{userInfo.create_time}}</div>
+							<div style="word-break: break-all;white-space: normal;">{{userInfo.create_time}}</div>
 						</div>
 						<div style="display: flex;">
 							<!-- <div>
@@ -260,8 +325,8 @@
 							</div> -->
 							<!-- <div>禁止聊天评论：</div> -->
 							<div>聊天状态：</div>
-							<div>禁止<a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'" size="small"
-									@change="ltztChange" style="margin: 0 5px;" />允许
+							<div>禁止<a-switch v-model:checked="userInfo.chat_status" :disabled="is_ptsj=='商家'"
+									size="small" @change="ltztChange" style="margin: 0 5px;" />允许
 							</div>
 						</div>
 						<div style="display: flex;">
@@ -296,7 +361,8 @@
 							</div> -->
 							<!-- <div>禁止登陆：</div> -->
 							<div>登陆状态：</div>
-							<div>禁止<a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange" style="margin: 0 5px;" />允许</div>
+							<div>禁止<a-switch v-model:checked="userInfo.status" size="small" @change="lhztChange"
+									style="margin: 0 5px;" />允许</div>
 						</div>
 						<div style="display: flex;">
 							<div style="width: 100px;text-align: right;color: #4e5969;">商家状态：</div>
@@ -378,104 +444,100 @@
 				<div style="background-color: #f5f5f5;height: 1px;"></div>
 				<!-- 店铺数据 -->
 				<div style="font-size: 17px;font-weight: bold;padding: 10px 0px;">订单记录</div>
-				<div class="a80">
-					<div class="a81">
-						<div>订单编号</div>
-						<div>
-							<a-input placeholder="请输入订单编号" v-model:value="order_sux.id" class="a82"
-								style="border:none;border-radius: 4px;"></a-input>
+				<a-row>
+					<a-col :xxl="6" :xl="12" style="margin-bottom: 10px;">
+						<div class="a81">
+							<div>订单编号：</div>
+							<div>
+								<a-input placeholder="请输入订单编号" v-model:value="order_sux.id" class="a82"
+									style="border:none;border-radius: 4px;"></a-input>
+							</div>
 						</div>
-					</div>
-					<div class="a81">
-						<div>订单状态</div>
-						<div>
-							<a-select ref="select" v-model:value="order_sux.status" class="a83">
-								<a-select-option value="a">待支付</a-select-option>
-								<a-select-option value="b">待拼成</a-select-option>
-								<a-select-option value="c">待发货</a-select-option>
-								<a-select-option value="d">待收货</a-select-option>
-								<a-select-option value="e">已完成</a-select-option>
-								<a-select-option value="z">拼团失败</a-select-option>
-							</a-select>
+					</a-col>
+					<a-col :xxl="6" :xl="12" style="margin-bottom: 10px;">
+						<div class="a81">
+							<div>订单状态：</div>
+							<div>
+								<a-select ref="select" placeholder="请选择订单状态" v-model:value="order_sux.status" class="a83">
+									<a-select-option value="a">待支付</a-select-option>
+									<a-select-option value="b">待拼成</a-select-option>
+									<a-select-option value="c">待发货</a-select-option>
+									<a-select-option value="d">待收货</a-select-option>
+									<a-select-option value="e">已完成</a-select-option>
+									<a-select-option value="z">拼团失败</a-select-option>
+								</a-select>
+							</div>
 						</div>
-					</div>
-					<div class="a81">
-						<div>流水时间</div>
-						<div>
-							<a-range-picker v-model:value="order_sux.time" class="a82" :format="'YYYY/MM/DD'"
-								:value-format="'YYYY/MM/DD'" style="border:none;border-radius: 4px;" />
+					</a-col>
+					<a-col :xxl="6" :xl="12" style="margin-bottom: 10px;">
+						<div class="a81">
+							<div>流水时间：</div>
+							<div>
+								<a-range-picker v-model:value="order_sux.time" class="a82" :format="'YYYY/MM/DD'"
+									:value-format="'YYYY/MM/DD'" style="border:none;border-radius: 4px;" />
+							</div>
 						</div>
-					</div>
-					<div class="a84">
-						<div class="a85" @click="chongz()">
-							<ReloadOutlined style="margin-right: 10px;" />
-							重置
+					</a-col>
+					<a-col :xxl="6" :xl="12" style="margin-bottom: 10px;">
+						<div class="a84">
+							<div class="a85" @click="chongz()">
+								<ReloadOutlined style="margin-right: 10px;" />
+								重置
+							</div>
+							<div class="a86" @click="chaxun()">
+								<SearchOutlined style="margin-right: 10px;" />
+								查询
+							</div>
 						</div>
-						<div class="a86" @click="chaxun()">
-							<SearchOutlined style="margin-right: 10px;" />
-							查询
-						</div>
-					</div>
-				</div>
+					</a-col>
+				</a-row>
 				<div class="a87"></div>
-				<div style="">
-					<div class="a88">
-						<div class="w5_100">操作</div>
-						<div class="w15_100">订单编号</div>
-						<div class="w5_100">订单状态</div>
-						<div class="w5_100">实付金额</div>
-						<div class="w25_100">商品信息</div>
-						<div class="w15_100">下单时间</div>
-						<div class="w5_100">收货人</div>
-						<div class="w10_100">手机号</div>
-						<div class="w15_100">地址</div>
-					</div>
-					<div v-if="orderList.length==0" style="padding: 10px;margin-top: 20px;">
-						<a-empty />
-					</div>
-					<div style="overflow: auto;height: 38vh;">
-						<div v-for="item in orderList" :key="item.id" class="a89">
-							<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情
+
+				<a-table :columns="columnsOrder" :data-source="orderList" :scroll="{ x:1500,y:350}">
+					<template #bodyCell="{ column, record  }">
+						<template v-if="column.dataIndex === 'action'">
+							<div>
+								<div @click="lookOrder(record)" style="color: #40a9ff;cursor: pointer;">查看详情
+								</div>
 							</div>
-							<div class="w15_100">{{item.id}}</div>
-							<div class="w5_100">
-								<span v-if="item.status=='a'">待支付</span>
-								<span v-else-if="item.status=='b'">待拼成</span>
-								<span v-else-if="item.status=='c'">待发货</span>
-								<span v-else-if="item.status=='d'">待收货</span>
-								<span v-else-if="item.status=='e'">已完成</span>
-								<span v-else-if="item.status=='z'">拼团失败</span>
+						</template>
+						<template v-if="column.dataIndex === 'status'">
+							<div>
+								<span v-if="record.status=='a'">待支付</span>
+								<span v-else-if="record.status=='b'">待拼成</span>
+								<span v-else-if="record.status=='c'">待发货</span>
+								<span v-else-if="record.status=='d'">待收货</span>
+								<span v-else-if="record.status=='e'">已完成</span>
+								<span v-else-if="record.status=='z'">拼团失败</span>
 							</div>
-							<div class="w5_100">{{item.pay_price}}</div>
-							<div class="w25_100">
-								<span v-for="(iss,index) in item.goods_list" :key="item.goods_id">
+						</template>
+						<!-- 商品信息 -->
+						<template v-if="column.dataIndex === 'goodInfo'">
+							<div>
+								<span v-for="(iss,index) in record.goods_list" :key="record.goods_id">
 									<span>{{iss.name}}（{{iss.size_name}}）</span>
-									<span>
-										{{index<item.goods_list.length-1?'、':'。'}} </span>
+									<span>{{index<record.goods_list.length-1?'、':'。'}} </span>
 									</span>
 							</div>
-							<div class="w15_100">{{item.create_time}}</div>
-							<div class="w5_100">
-								{{is_ptsj=='平台'?item.address_name:maskName(item.address_name) }}
+						</template>
+						<template v-if="column.dataIndex === 'nameEdit'">
+							<div>
+								{{is_ptsj=='平台'?record.address_name:maskName(record.address_name) }}
 							</div>
-							<div class="w10_100">
-								{{is_ptsj=='平台'?item.address_mobile:(item.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
+						</template>
+						<template v-if="column.dataIndex === 'mobileEdit'">
+							<div>
+								{{is_ptsj=='平台'?record.address_mobile:(record.address_mobile?.replace(/^(\d{3})\d{4}(\d{4})$/,
 								'$1****$2') || '') }}
 							</div>
-							<div class="w15_100">
-								{{is_ptsj=='平台'?item.address:maskAddress(item.address) }}
+						</template>
+						<template v-if="column.dataIndex === 'addressEdit'">
+							<div>
+								{{is_ptsj=='平台'?record.address:maskAddress(record.address) }}
 							</div>
-						</div>
-					</div>
-					<div class="a90" v-if="orderList.length>0">
-						<div></div>
-						<div class="a91">
-							<div class="a92">共 {{order_count}} 项数据</div>
-							<a-pagination v-model:current="current" :total="order_count" show-less-items
-								:showSizeChanger="false" />
-						</div>
-					</div>
-				</div>
+						</template>
+					</template>
+				</a-table>
 			</div>
 		</div>
 	</div>
@@ -572,21 +634,18 @@
 	}
 
 	.a82 {
-		margin-left: 10px;
+		width: 230px;
 		background-color: #f7f8f9;
-		width: 15vw;
 	}
 
 	.a83 {
-		margin-left: 10px;
+		width: 230px;
 		background-color: #f7f8f9 !important;
-		width: 15vw;
 	}
 
 	.a84 {
 		display: flex;
 		align-items: center;
-		width: 15vw;
 	}
 
 	.a85 {

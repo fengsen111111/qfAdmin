@@ -497,64 +497,9 @@
 									<span v-else-if="orderDetails.status=='z'">拼团失败</span>
 								</div>
 							</template>
-
-
 						</template>
 					</a-table>
 				</div>
-				<!-- <div style="margin-top: 10px;">
-					<div class="a88" style="text-align: center;">
-						<div class="w10_100">商品ID</div>
-						<div class="w20_100">商品名称</div>
-						<div class="w10_100">商品原价</div>
-						<div class="w10_100">商品数量</div>
-						<div class="w10_100">应付金额</div>
-						<div class="w10_100">优惠金额</div>
-						<div class="w10_100">实付金额</div>
-						<div class="w10_100">售后金额</div>
-						<div class="w10_100">订单状态</div>
-					</div>
-					<div v-if="orderDetails.goods_list">
-						<div v-if="orderDetails.goods_list.length==0" style="padding: 10px;">
-							<a-empty />
-						</div>
-					</div>
-					<div v-for="item in orderDetails.goods_list" :key="item" class="a89"
-						style="align-items: center;text-align: center;">
-						<div class="w10_100">{{item.goods_id}}</div>
-						<div class="w20_100">
-							<div style="display: flex;">
-								<div style="display: flex;align-items: center;padding:0px 20px;margin: 0 auto;">
-									<img :src="item.cover_image" style="width: 40px;height: 40px;border-radius: 4px;"
-										alt="">
-									<div style="padding: 5px 10px;">
-										<div>{{item.goods_name}}</div>
-										<div style="color: #999999;">规格：{{item.size_name}}</div>
-									</div>
-								</div>
-							</div>
-
-						</div>
-						<div class="w10_100">{{item.old_price}}</div>
-						<div class="w10_100">X{{item.number}}</div>
-						<div class="w10_100">
-							<div>{{item.pay_price}}</div>
-							<div style="color: #999999;">商品金额：{{item.price}}</div>
-							<div style="color: #999999;">运费：{{orderDetails.carriage_price}}</div>
-						</div>
-						<div class="w10_100">{{orderDetails.not_pay_price}}</div>
-						<div class="w10_100">{{item.pay_price}}</div>
-						<div class="w10_100">{{item.refund_price?item.refund_price:'————'}}</div>
-						<div class="w10_100">
-							<span v-if="orderDetails.status=='a'">待支付</span>
-							<span v-else-if="orderDetails.status=='b'">待拼成</span>
-							<span v-else-if="orderDetails.status=='c'">待发货</span>
-							<span v-else-if="orderDetails.status=='d'">待收货</span>
-							<span v-else-if="orderDetails.status=='e'">已完成</span>
-							<span v-else-if="orderDetails.status=='z'">拼团失败</span>
-						</div>
-					</div>
-				</div> -->
 			</div>
 			<div style="height: 8px;background-color: #f5f5f5;"></div>
 			<div style="padding: 20px;display: flex;" v-if="is_ptsj=='商家'">
