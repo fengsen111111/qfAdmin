@@ -1031,7 +1031,7 @@
       global.axios.post('decoration/Order/webGetUserOrderList', {
         user_id: customer_service_state.room.joiner_sign,
         currentPage: 1,
-        perPage: 100,
+        perPage: 20,
       }, global, true).then((res) => {
         console.log('获取与客户订单列表', res.list);
         orderList.value = res.list
