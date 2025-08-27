@@ -1007,27 +1007,27 @@
     if (customer_service_state.room.joiner_sign == 1) {
       return false
     } else {
-      orderList.value = [
-        {
-          id: '800950382300760921',
-          status: 'd',
-          pay_price: '2.00',
-          goods_list: [{
-            goods_id: '798779351880435084',
-            goods_size_id: '798779352048209906',
-            name: '纽扣送工具',
-            size_name: '1*20',
-            cover_image: 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025820/n1esd1cccns7p4nfe7it2arrqgb5npk8.png',
-            price: '2.00',
-            number: '1',
-          }],
-          create_time: '2022-12-12 12:12:12',
-          address_name: '李四',
-          address_mobile: '17377227272',
-          address: '四川省成都市武侯区',
-        }
-      ]
-      return false
+      // orderList.value = [
+      //   {
+      //     id: '800950382300760921',
+      //     status: 'd',
+      //     pay_price: '2.00',
+      //     goods_list: [{
+      //       goods_id: '798779351880435084',
+      //       goods_size_id: '798779352048209906',
+      //       name: '纽扣送工具',
+      //       size_name: '1*20',
+      //       cover_image: 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025820/n1esd1cccns7p4nfe7it2arrqgb5npk8.png',
+      //       price: '2.00',
+      //       number: '1',
+      //     }],
+      //     create_time: '2022-12-12 12:12:12',
+      //     address_name: '李四',
+      //     address_mobile: '17377227272',
+      //     address: '四川省成都市武侯区',
+      //   }
+      // ]
+      // return false
       global.axios.post('decoration/Order/webGetUserOrderList', {
         user_id: customer_service_state.room.joiner_sign,
         currentPage: 1,
