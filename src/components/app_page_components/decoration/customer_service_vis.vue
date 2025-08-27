@@ -354,7 +354,6 @@
         emojiVisable.value = false//关闭表情
         cancelMsgNumber()// 去掉当前打开聊天框的消息红点
         _getMessage(item.id) //获取聊天内容
-        _orderList()//获取当前聊天对象的订单
         // 切换房间后自动聚焦  自动滚动到底部
         setTimeout(() => {
           scrollToBottom()
@@ -998,6 +997,7 @@
       message.error('当前身份为平台客服！')
     } else {
       orderVisable.value = !orderVisable.value
+      _orderList()
     }
   }
   const orderList = ref([])
@@ -1007,6 +1007,27 @@
     if (customer_service_state.room.joiner_sign == 1) {
       return false
     } else {
+      orderList.value = [
+        {
+          id: '800950382300760921',
+          status: 'd',
+          pay_price: '2.00',
+          goods_list: [{
+            goods_id: '798779351880435084',
+            goods_size_id: '798779352048209906',
+            name: '纽扣送工具',
+            size_name: '1*20',
+            cover_image: 'https://decoration-upload.oss-cn-hangzhou.aliyuncs.com/shopImg/2025820/n1esd1cccns7p4nfe7it2arrqgb5npk8.png',
+            price: '2.00',
+            number: '1',
+          }],
+          create_time: '2022-12-12 12:12:12',
+          address_name: '李四',
+          address_mobile: '17377227272',
+          address: '四川省成都市武侯区',
+        }
+      ]
+      return false
       global.axios.post('decoration/Order/webGetUserOrderList', {
         user_id: customer_service_state.room.joiner_sign,
         currentPage: 1,
@@ -1025,24 +1046,29 @@
     },
     {
       title: '商品信息',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'goodList',
+      key: 'goodList',
     },
     {
       title: '下单时间',
-      dataIndex: 'store_name',
-      key: 'store_name',
-    },
-    {
-      title: '商家名称',
-      dataIndex: 'store_name',
-      key: 'store_name',
+      dataIndex: 'create_time',
+      key: 'create_time',
     },
     {
       title: '收货人',
       dataIndex: 'address_name',
       key: 'address_name',
     },
+    {
+      title: '手机号',
+      dataIndex: 'address_mobile',
+      key: 'address_mobile',
+    },
+    // {
+    //   title: '地址',
+    //   dataIndex: 'address',
+    //   key: 'address',
+    // },
     {
       title: '操作',
       dataIndex: '',
@@ -1058,9 +1084,7 @@
     console.log('发送订单', item);
     let params = {
       id: item.id,//id
-      name: item.name,//商品名称
-      store_name: item.store_name,//商家名称
-      address_name: item.address_name,//收货人
+      goods_list: item.goods_list,//商品信息
     }
     send({
       content_type: 'order',
@@ -1232,12 +1256,13 @@
                     </div>
                   </div>
                   <div v-if="item.content_type == 'order'" class="left_content">
-                    <div s>
+                    <div>
                       <div class="">订单编号:{{JSON.parse(item.content).id}}</div>
                       <div style="display: flex;margin-top: 10px;"
                         v-for="(iss,index) in JSON.parse(item.content).goods_list" :key="iss.goods_id">
                         <div>
-                          <img :src="fixOssUrl(iss.cover_image)" style="width: 60px;height: auto;float: left;border-radius: 3px;" />
+                          <img :src="fixOssUrl(iss.cover_image)"
+                            style="width: 60px;height: auto;float: left;border-radius: 3px;" />
                         </div>
                         <div style="margin-left: 10px;">
                           <div style="display: flex;justify-content: space-between;">
@@ -1297,6 +1322,28 @@
                       <div style="color: #666666;font-size: 14px;">规格:{{JSON.parse(item.content).goods_type_name}}
                       </div>
                       <div style="color: #FF0000;font-size: 14px;">￥{{JSON.parse(item.content).price}}</div>
+                    </div>
+                  </div>
+                  <div v-if="item.content_type == 'order'" class="left_content">
+                    <div>
+                      <div class="">订单编号:{{JSON.parse(item.content).id}}</div>
+                      <div style="display: flex;margin-top: 10px;"
+                        v-for="(iss,index) in JSON.parse(item.content).goods_list" :key="iss.goods_id">
+                        <div>
+                          <img :src="fixOssUrl(iss.cover_image)"
+                            style="width: 60px;height: auto;float: left;border-radius: 3px;" />
+                        </div>
+                        <div style="margin-left: 10px;">
+                          <div style="display: flex;justify-content: space-between;">
+                            <div>{{iss.name}}</div>
+                            <div style="margin-left: 60px;">￥{{iss.price}}</div>
+                          </div>
+                          <div style="display: flex;justify-content: space-between;">
+                            <div>商品规格：{{iss.size_name}}</div>
+                            <div style="margin-left: 60px;">X{{iss.number}}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1388,13 +1435,34 @@
         </div>
       </a-modal>
       <!-- 选择订单弹框 -->
-      <a-modal v-model:visible="orderVisable" title="选择订单" width="800px" :footer="null">
+      <a-modal v-model:visible="orderVisable" title="选择订单" width="1000px" :footer="null">
         <div style="width: 100%">
           <a-table :dataSource="orderList" :columns="columnsOrder">
             <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'cover_image'">
-                <img @click="collapse(record.cover_image[0])" :src="record.cover_image"
-                  style="width: 40px;height: 40px;" alt="">
+              <template v-if="column.key === 'goodList'">
+                <div v-if="record.goods_list">
+                  <div style="display: flex;" v-for="item in record.goods_list" :key="item.id">
+                    <img :src="item.cover_image" style="width: 60px;border-radius: 4px;" alt="">
+                    <div style="margin-left: 10px;">
+                      <div>{{item.name}}</div>
+                      <div>{{item.size_name}}</div>
+                      <div style="display: flex;justify-content: space-between;">
+                        <div>X{{item.number}}</div>
+                        <div style="color: #E74E4E;">￥{{item.price}}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-if="column.key === 'address_name'">
+                <div v-if="record.address_name">
+                  {{record.address_name.slice(0,1)+'*'+record.address_name.slice(2,record.address_name.length)}}
+                </div>
+              </template>
+              <template v-if="column.key === 'address_mobile'">
+                <div v-if="record.address_mobile">
+                  {{record.address_mobile.slice(0,3)+'****'+record.address_mobile.slice(7,12)}}
+                </div>
               </template>
               <template v-else-if="column.key === 'action'">
                 <!-- 操作 -->

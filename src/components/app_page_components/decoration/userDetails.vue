@@ -430,6 +430,9 @@
 						<div class="w10_100">手机号</div>
 						<div class="w15_100">地址</div>
 					</div>
+					<div v-if="orderList.length==0" style="padding: 10px;margin-top: 20px;">
+						<a-empty />
+					</div>
 					<div style="overflow: auto;height: 38vh;">
 						<div v-for="item in orderList" :key="item.id" class="a89">
 							<div @click="lookOrder(item)" class="w5_100" style="color: #40a9ff;cursor: pointer;">查看详情
@@ -463,9 +466,6 @@
 								{{is_ptsj=='平台'?item.address:maskAddress(item.address) }}
 							</div>
 						</div>
-					</div>
-					<div v-if="orderList.length==0" style="padding: 10px;">
-						<a-empty />
 					</div>
 					<div class="a90" v-if="orderList.length>0">
 						<div></div>
