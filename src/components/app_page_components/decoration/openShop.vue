@@ -1,12 +1,38 @@
 <script setup>
-	import { inject, onBeforeMount, reactive, ref, watch, shallowRef } from "vue";
-	import { FormComponents } from "../../form_components/form";
-	import { TableComponents } from "../../table_components/table";
-	import { Row, Col } from 'ant-design-vue';
-	import { InfoCircleOutlined, CheckCircleOutlined, PlusOutlined, CloseCircleOutlined, LeftOutlined, CheckCircleFilled, ExclamationCircleFilled, SafetyCertificateFilled } from "@ant-design/icons-vue";
+	import {
+		inject,
+		onBeforeMount,
+		reactive,
+		ref,
+		watch,
+		shallowRef,
+		onMounted
+	} from "vue";
+	import {
+		FormComponents
+	} from "../../form_components/form";
+	import {
+		TableComponents
+	} from "../../table_components/table";
+	import {
+		Row,
+		Col
+	} from 'ant-design-vue';
+	import {
+		InfoCircleOutlined,
+		CheckCircleOutlined,
+		PlusOutlined,
+		CloseCircleOutlined,
+		LeftOutlined,
+		CheckCircleFilled,
+		ExclamationCircleFilled,
+		SafetyCertificateFilled
+	} from "@ant-design/icons-vue";
 	import Map from './map.vue'
 	import AMapLoader from '@amap/amap-jsapi-loader';
-	import { bd09ToGcj02 } from './zbzh'
+	import {
+		bd09ToGcj02
+	} from './zbzh'
 
 
 	let props = defineProps(["pageData"]);
@@ -16,27 +42,31 @@
 
 	const global = inject("global").value;
 
-	const store_name = ref('')// 店铺名称
-	const logo = ref('')// 店铺门头照/LOGO  
-	const type = ref('b')//商家类型 a本地商家 b网店商家  
-	const id_card_images = ref([])// 身份证照片  
-	const license_image = ref('')//营业执照  
-	const id_card_number = ref('')//身份证号
-	const id_card_times = ref([])//身份有效时间
-	const name = ref('')// 用户姓名  
-	const mobile = ref('')// 手机号   
-	const admin_login_password = ref('')//后台登录密码  
-	const address = ref('')//店铺地址  
-	const location = ref('')//店铺地址坐标   
-	const id = ref('')//商家id
-	import { message } from 'ant-design-vue';
+	const store_name = ref('') // 店铺名称
+	const logo = ref('') // 店铺门头照/LOGO  
+	const type = ref('b') //商家类型 a本地商家 b网店商家  
+	const id_card_images = ref([]) // 身份证照片  
+	const license_image = ref('') //营业执照  
+	const id_card_number = ref('') //身份证号
+	const id_card_times = ref([]) //身份有效时间
+	const name = ref('') // 用户姓名  
+	const mobile = ref('') // 手机号   
+	const admin_login_password = ref('') //后台登录密码  
+	const address = ref('') //店铺地址  
+	const location = ref('') //店铺地址坐标   
+	const id = ref('') //商家id
+	import {
+		message
+	} from 'ant-design-vue';
 
-	import { useRoute } from 'vue-router';
+	import {
+		useRoute
+	} from 'vue-router';
 	const route = useRoute();
 	admin_login_password.value = route.query.password
 	mobile.value = route.query.mobile
 
-	const check_remark = ref('')//拒绝理由
+	const check_remark = ref('') //拒绝理由
 
 	// 商家入驻信息
 	function getSubmitEntryApplyMsg() {
@@ -77,7 +107,7 @@
 		getSubmitEntryApplyMsg()
 	}
 
-	const isMap = ref(false)//是否打开地图
+	const isMap = ref(false) //是否打开地图
 	watch(() => isMap, val => {
 		console.log('地图', val.value);
 		if (val.value) {
@@ -88,16 +118,16 @@
 			} else {
 				if (window.navigator.geolocation) {
 					window.navigator.geolocation.getCurrentPosition(
-						function (position) {
-							const hxzb = bd09ToGcj02(position.coords.longitude.toFixed(6), position.coords.latitude.toFixed(6))
+						function(position) {
+							const hxzb = bd09ToGcj02(position.coords.longitude.toFixed(6), position.coords
+								.latitude.toFixed(6))
 							component_state.lng = hxzb.gcj_lon
 							component_state.lat = hxzb.gcj_lat
 							initMap()
 						},
-						function (error) {
+						function(error) {
 							alert(`获取位置失败: ${error.message}`)
-						},
-						{
+						}, {
 							enableHighAccuracy: true
 						}
 					);
@@ -106,7 +136,9 @@
 				}
 			}
 		}
-	}, { deep: true });
+	}, {
+		deep: true
+	});
 
 	// 默认经纬度
 	const component_state = reactive({
@@ -118,7 +150,7 @@
 	// 初始化
 	function initMap() {
 		AMapLoader.load({
-			key: '15769e138ff2a58797ef751857b12e6e',//替换成key
+			key: '15769e138ff2a58797ef751857b12e6e', //替换成key
 			version: "2.0",
 			plugins: ['AMap.Polygon']
 		}).then((AMap) => {
@@ -129,24 +161,25 @@
 				center: [component_state.lng, component_state.lat]
 			});
 			addMarker(component_state.lng, component_state.lat)
-			myMap.on('click', function (e) {
+			myMap.on('click', function(e) {
 				component_state.lng = e.lnglat.getLng()
 				component_state.lat = e.lnglat.getLat()
 				addMarker(e.lnglat.getLng(), e.lnglat.getLat())
 			});
-			AMap.plugin(['AMap.PlaceSearch', 'AMap.AutoComplete'], function () {
+			AMap.plugin(['AMap.PlaceSearch', 'AMap.AutoComplete'], function() {
 				let auto = new AMap.AutoComplete({
 					input: "keyword"
 				});
 				let placeSearch = new AMap.PlaceSearch({
 					map: myMap
-				});  //构造地点查询类
-				auto.on("select", select);//注册监听，当选中某条记录时会触发
+				}); //构造地点查询类
+				auto.on("select", select); //注册监听，当选中某条记录时会触发
 				let allAddress;
+
 				function select(e) {
 					allAddress = e.poi.district;
 					placeSearch.setCity(e.poi.adcode);
-					placeSearch.search(e.poi.name, function (status, result) {
+					placeSearch.search(e.poi.name, function(status, result) {
 						//清除所有点标记
 						myMap.clearMap();
 						let pois = result.poiList.pois;
@@ -155,7 +188,8 @@
 							let poi = pois[i];
 							let marker = new AMap.Marker({
 								map: myMap,
-								icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b' + (i + 1) + '.png',
+								icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b' +
+									(i + 1) + '.png',
 								position: poi.location,
 								title: poi.name,
 								clickable: true,
@@ -178,6 +212,7 @@
 			});
 		})
 	}
+
 	function checkPoint(e) {
 		component_state.lng = e.lnglat.lng
 		component_state.lat = e.lnglat.lat
@@ -247,6 +282,7 @@
 	}
 
 	const value1 = ref()
+
 	function handUrl(url) {
 		if (url == '/login') {
 			localStorage.removeItem('Authorization')
@@ -258,7 +294,7 @@
 
 	// 关闭地图
 	function closeMap() {
-		location.value = component_state.lng + ',' + component_state.lat  //回填经纬度
+		location.value = component_state.lng + ',' + component_state.lat //回填经纬度
 		isMap.value = false
 	}
 	const spinning = ref(false)
@@ -281,6 +317,11 @@
 		}
 
 	}
+
+	import QRCode from 'qrcode'
+	const certifyUrl = ref('')
+	const qrCodeDataUrl = ref('')
+	const saomaovisible = ref(false)
 	// 开通商家
 	function kaitongshangjia() {
 		if (!xygx.value) {
@@ -379,22 +420,84 @@
 				spinning.value = false
 				console.log('申请入驻', res);
 				global.axios.post('factory_system/Base/login', {
-					account: mobile.value,
-					password: admin_login_password.value
-				}, global)
+						account: mobile.value,
+						password: admin_login_password.value
+					}, global)
 					.then(res => {
 						console.log('登陆成功', is_open_h_store_account.value);
 						localStorage.setItem('Authorization', res.token);
 						if (is_open_h_store_account.value) {
 							resule_vis.value = true //提示信息
 						} else {
-							kaitonghuifu()
+							// 先人脸检测在开通汇付
+							// 获取商家id
+							global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global, true).then(
+								(res_one) => {
+									// console.log('自己商家id和禁言状态', res_one);
+									const storeID = res_one.joiner_sign
+									// 
+									global.axios.post('decoration/CustomerService/getMyJoinerSign', {}, global,
+										true).then(
+										(res_one) => {
+											// console.log('自己商家id和禁言状态', res_one);
+											const storeId = res_one.joiner_sign
+											// 认证
+											global.axios.post('decoration/Setting/submitFaceVerify', {
+												id: storeId,
+												type: 'store',
+												name: name.value,
+												certNo: id_card_number.value,
+												metaInfo: MetaInfo.value,
+												ReturnUrl: "https://www.aliyun.com/",
+											}, global, true).then(
+												(res_two) => {
+													console.log('认证地址', res_two.certifyUrl);
+													certifyUrl.value = res_two.certifyUrl
+													// 生成二维码 Base64 图片
+													QRCode.toDataURL(res_two.certifyUrl).then((
+														res) => {
+														console.log('图片生成', res);
+														qrCodeDataUrl.value = res
+														saomaovisible.value = true
+													})
+													// 开启轮询接口，认证通过后提交开通汇付
+													setInterval(async () => {
+														try {
+															const rzjg = await global.axios
+																.post(
+																	'decoration/Setting/getFaceVerifyResult', {
+																		id: storeId,
+																		type: 'store'
+																	}, global, true)
+															console.log('认证结果:', rzjg)
+															if (rzjg.result == 'S') {
+																saomaovisible.value = false
+																kaitonghuifu()
+															}
+														} catch (err) {
+															console.error('轮询失败:', err)
+														}
+													}, 1000)
+												})
+										})
+								})
+							// kaitonghuifu()
 						}
 					})
 			})
 	}
+
+	function clearAllTimers() {
+		let id = setTimeout(() => {}, 0); // 获取当前最大的定时器 ID
+		while (id >= 0) {
+			clearTimeout(id);
+			clearInterval(id);
+			id--;
+		}
+	}
 	// 开通汇付
 	function kaitonghuifu() {
+		clearAllTimers(); //清楚页面所有定时器
 		// 店铺入驻验证通过，开始验证汇付相关字段
 		// huifu_Type = ref('')//store商家 user用户  汇付类型
 		if (huifu_Type.value == 'store') {
@@ -429,8 +532,7 @@
 					message.error('请检查汇付资料')
 					return false
 				});
-		}
-		else if (huifu_Type.value == 'user') {
+		} else if (huifu_Type.value == 'user') {
 			// 个人汇付字段验证
 			formUserRef.value
 				.validateFields()
@@ -460,7 +562,8 @@
 	const drFwb = ref('')
 
 	function handOpen(type) {
-		drTitle.value = type == 'store_entry_introduce' ? '商家入驻介绍' : type == 'store_privacy_rule' ? '商家隐私协议' : type == 'store_rule' ? '商家服务协议' : '标题'
+		drTitle.value = type == 'store_entry_introduce' ? '商家入驻介绍' : type == 'store_privacy_rule' ? '商家隐私协议' : type ==
+			'store_rule' ? '商家服务协议' : '标题'
 		global.axios
 			.post('decoration/Setting/getRichTextContent', {
 				type: type
@@ -472,11 +575,11 @@
 			})
 	}
 
-	const store_type = ref('c')//商户类型 a个人店 c个体工商户  d企业店
-	const buzhou_type = ref(1)//1选择类型 2填写信息
+	const store_type = ref('c') //商户类型 a个人店 c个体工商户  d企业店
+	const buzhou_type = ref(1) //1选择类型 2填写信息
 
 
-	const is_open_h_store_account = ref(false)//是否已开通汇付
+	const is_open_h_store_account = ref(false) //是否已开通汇付
 
 	if (route.query.type) {
 		type.value = route.query.type
@@ -498,9 +601,9 @@
 		buzhou_type.value = 2
 	}
 
-	const errMsg = ref('')//错误信息
+	const errMsg = ref('') //错误信息
 
-	const resule_vis = ref(false)//提交结果弹框
+	const resule_vis = ref(false) //提交结果弹框
 
 	// 0元开店  提交后弹窗确定 前往首页
 	function toHome() {
@@ -508,11 +611,11 @@
 	}
 
 	let pasYz = ref({
-		rule_a: false,//规则1
-		rule_b: false,//规则2
-		rule_c: false,//规则3
-		level: 0//安全等级
-	})//密码验证情况
+		rule_a: false, //规则1
+		rule_b: false, //规则2
+		rule_c: false, //规则3
+		level: 0 //安全等级
+	}) //密码验证情况
 	// 密码变化
 	function pasChange() {
 		popoverVisible.value = true
@@ -546,9 +649,9 @@
 		}
 		// 3. 至少包含三种类型字符
 		let count = 0;
-		if (/[A-Z]/.test(pwd)) count++;       // 大写
-		if (/[a-z]/.test(pwd)) count++;       // 小写
-		if (/[0-9]/.test(pwd)) count++;       // 数字
+		if (/[A-Z]/.test(pwd)) count++; // 大写
+		if (/[a-z]/.test(pwd)) count++; // 小写
+		if (/[0-9]/.test(pwd)) count++; // 数字
 		// 只计算“合法符号”
 		const symbolRegex = /[~!@#$%^&*()_+\-=`[\]{}|;:'",.<>/?]/;
 		if (symbolRegex.test(pwd)) count++; // 合法符号
@@ -562,14 +665,20 @@
 		pasYz.value.level = passedCount;
 		// 返回最终结果
 		if (passedCount === 3) {
-			return { valid: true, msg: '密码合法' };
+			return {
+				valid: true,
+				msg: '密码合法'
+			};
 		} else {
-			return { valid: false, msg: '密码未满足所有规则' };
+			return {
+				valid: false,
+				msg: '密码未满足所有规则'
+			};
 		}
 	}
 
 
-	const danger_words = ref([])//铭感词列表
+	const danger_words = ref([]) //铭感词列表
 	// 敏感词
 	function _getBaseTypes() {
 		global.axios.post('decoration/Setting/getBaseTypes', {}, global).then(res => {
@@ -595,7 +704,7 @@
 		console.log('hits', hits);
 		if (hits.length > 0 && hits[0] != '') {
 			// 清空或纠正输入
-			msgValue.value = `不得包含敏感词：${hits.join('、')}`//不重复就清空
+			msgValue.value = `不得包含敏感词：${hits.join('、')}` //不重复就清空
 			msgValue.value = msgValue.value.slice(0, msgValue.value.length - 1)
 			return false
 		} else {
@@ -604,11 +713,11 @@
 
 		// 验证店铺名称是否重复
 		global.axios.post('decoration/Store/checkStoreName', {
-			store_name: store_name.value,
-		}, global)
+				store_name: store_name.value,
+			}, global)
 			.then(res => {
 				console.log('名称是否重复', res);
-				msgValue.value = ''//不重复就清空
+				msgValue.value = '' //不重复就清空
 			})
 			.catch(error => {
 				console.log('error', error);
@@ -617,38 +726,39 @@
 	}
 	const popoverVisible = ref(false)
 
-	const huifu_Type = ref('store')//store商家 user用户  汇付类型
+	const huifu_Type = ref('store') //store商家 user用户  汇付类型
 
 	// 个人汇付
 	const formUserState = reactive({
 		name: '', //姓名 
-		mobile: '',//电话
-		cert_no: '',//身份证号码
-		cert_begin_date: '',//身份证有效期开始时间  
-		cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
-		cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
+		mobile: '', //电话
+		cert_no: '', //身份证号码
+		cert_begin_date: '', //身份证有效期开始时间  
+		cert_validity_type: '0', //身份证有效期  1长期有效  0非长期有效 
+		cert_end_date: '', //身份证有效期结束时间 非长期有效必填  
 	});
-	const formUserRef = ref();//表单绑定
+	const formUserRef = ref(); //表单绑定
 	// 商家汇付
 	const formState = reactive({
 		reg_name: '', //企业名称 
-		license_code: '',//营业执照编号
-		license_begin_date: '',//营业执照有效期起始日期
-		license_validity_type: '0',//营业执照有效期  1长期有效  0非长期有效
-		license_end_date: '',//营业执照有效期结束日期 非长期有效必填 
-		regAddress: '',//注册地址
-		reg_detail: '',//注册地址(详细信息) 
-		legal_name: '',//法人姓名
-		legal_cert_np: '',//法人身份证号码
-		legal_cert_begin_date: '',//身份证有效期开始时间  
-		legal_cert_validity_type: '0',//身份证有效期  1长期有效  0非长期有效 
-		legal_cert_end_date: '',//身份证有效期结束时间 非长期有效必填  
-		contract_name: '',//联系人姓名 
-		contract_mobile: '',//联系人手机号  
+		license_code: '', //营业执照编号
+		license_begin_date: '', //营业执照有效期起始日期
+		license_validity_type: '0', //营业执照有效期  1长期有效  0非长期有效
+		license_end_date: '', //营业执照有效期结束日期 非长期有效必填 
+		regAddress: '', //注册地址
+		reg_detail: '', //注册地址(详细信息) 
+		legal_name: '', //法人姓名
+		legal_cert_np: '', //法人身份证号码
+		legal_cert_begin_date: '', //身份证有效期开始时间  
+		legal_cert_validity_type: '0', //身份证有效期  1长期有效  0非长期有效 
+		legal_cert_end_date: '', //身份证有效期结束时间 非长期有效必填  
+		contract_name: '', //联系人姓名 
+		contract_mobile: '', //联系人手机号  
 	});
-	const formRef = ref();//表单绑定
+	const formRef = ref(); //表单绑定
 	const treeData = ref([])
 	const dateFormat = ref('YYYY/MM/DD')
+
 	function getAreas() {
 		global.axios
 			.post('factory_system/Base/getAreas', {}, global)
@@ -659,8 +769,8 @@
 	}
 	getAreas()
 
-	const isQyrz = ref(false)//是否企业认证
-	const rztcVis = ref(false)//确认认证弹窗
+	const isQyrz = ref(false) //是否企业认证
+	const rztcVis = ref(false) //确认认证弹窗
 	// 打开认证
 	function openRzVis() {
 		// name  id_card_number
@@ -688,8 +798,8 @@
 		// 身份认证
 		global.axios
 			.post('aly/api-mall/api/id_card/check', {
-				"name": name.value,//姓名
-				"idcard": id_card_number.value,//身份证号
+				"name": name.value, //姓名
+				"idcard": id_card_number.value, //身份证号
 			}, global)
 			.then((res) => {
 				console.log('身份校验', res);
@@ -704,8 +814,8 @@
 						// 企业二要素校验
 						global.axios
 							.post('aly/company_two/check', {
-								"creditCode ": formState.license_code,//统一社会信用代码
-								"companyName ": formState.reg_name,//企业名称
+								"creditCode ": formState.license_code, //统一社会信用代码
+								"companyName ": formState.reg_name, //企业名称
 							}, global)
 							.then((res) => {
 								spinning.value = false
@@ -732,10 +842,27 @@
 			})
 	}
 
+	let MetaInfo = ref(null)
+	onMounted(() => {
+		if (window.getMetaInfo) {
+			MetaInfo.value = window.getMetaInfo()
+			console.log('MetaInfo:', MetaInfo.value)
+		} else {
+			console.error('window.getMetaInfo 未定义，请确认 index.html 已引入 jsvm_all.js')
+		}
+	})
 </script>
 
 <template>
-	<a-spin :spinning="spinning">
+	<!-- <a-spin :spinning="spinning"> -->
+	<a-spin :spinning="false">
+		<!--  -->
+		<a-modal v-model:visible="saomaovisible" title="扫码认证" :footer="null" width="300px" destroyOnClose>
+			<div style="text-align:center;">
+				<img :src="qrCodeDataUrl" alt="二维码" style="width:200px;height:200px;" />
+				<p style="margin-top:10px;">请使用手机扫码认证</p>
+			</div>
+		</a-modal>
 		<!--搜索-->
 		<div>
 			<div v-if="route.path!='/'" style="background-color: #323242;height: 8vh;display: flex;">
@@ -871,7 +998,8 @@
 									<a-input @change="nameChange" v-model:value="store_name" placeholder="请输入店铺名称"
 										style="margin-left: 10px;width: 300px;" show-count :maxlength="30" />
 									<div style="position: absolute;top: 35px;left:72px;color: red;font-size: 10px;">
-										{{msgValue}}</div>
+										{{msgValue}}
+									</div>
 									<a-popover title="规范" placement="rightTop">
 										<template #content>
 											<div>不得与已经开通的店铺名称重复</div>
@@ -1057,7 +1185,8 @@
 
 								<div style="display: flex;margin-left: 171px;margin-top: 10px;">
 									<div style="background-color: #f7f7f7;">
-										<div style="padding: 10px;">请核对身份信息，若信息不符合，可手动修改（等待ocr服务）</div>
+										<!-- <div style="padding: 10px;">请核对身份信息，若信息不符合，可手动修改（等待ocr服务）</div> -->
+										<div style="padding: 10px;">请核对身份信息，若信息不符合，可手动修改</div>
 										<div style="height: 1px;background-color: #d1d0cf;"></div>
 										<div style="padding: 10px;">
 											<div style="display: flex;align-items: center;">
