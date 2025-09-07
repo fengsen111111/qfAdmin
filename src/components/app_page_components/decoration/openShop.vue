@@ -299,7 +299,7 @@
 	}
 	const spinning = ref(false)
 
-	const xygx = ref(false)
+	const xygx = ref(true)
 
 	// 提交入驻申请
 	function _submitEntryApply() {
